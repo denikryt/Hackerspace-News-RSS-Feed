@@ -1,0 +1,76 @@
+import { readFileSync } from "node:fs";
+
+import { describe, expect, it, vi } from "vitest";
+
+import { buildDataset } from "../src/buildDataset.js";
+
+const fixturePath =
+  "/home/denchik/projects/Hackerspace News Feed/tests/fixtures/source-page/user-jomat-oldid-94788-snippet.html";
+const sourceHtml = readFileSync(fixturePath, "utf8");
+const sourcePageUrl = "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds";
+
+describe("buildDataset", () => {
+  it("builds source rows, validations, normalized feeds, and html", async () => {
+    const fetchImpl = vi.fn(async (url) => {
+      if (url === sourcePageUrl) {
+        return response({
+          url,
+          contentType: "text/html; charset=utf-8",
+          body: sourceHtml,
+        });
+      }
+
+      if (url === "https://www.betamachine.fr/feed/") {
+        return response({
+          url,
+          contentType: "application/rss+xml",
+          body: `<?xml version="1.0"?>
+            <rss version="2.0">
+              <channel>
+                <title>BetaMachine Feed</title>
+                <link>https://www.betamachine.fr</link>
+                <description>Latest posts</description>
+                <item>
+                  <title>Post one</title>
+                  <link>https://www.betamachine.fr/post-1</link>
+                  <pubDate>Wed, 01 Jan 2025 10:00:00 GMT</pubDate>
+                  <description>Hello</description>
+                </item>
+              </channel>
+            </rss>`,
+        });
+      }
+
+      return response({
+        url,
+        contentType: "text/html; charset=utf-8",
+        body: "<html><body>not a feed</body></html>",
+      });
+    });
+
+    const result = await buildDataset({ sourcePageUrl, fetchImpl });
+
+    expect(result.sourceRowsPayload.urls).toHaveLength(3);
+    expect(result.validationsPayload).toHaveLength(3);
+    expect(result.normalizedPayload.feeds).toHaveLength(1);
+    expect(result.normalizedPayload.failures).toHaveLength(2);
+    expect(result.normalizedPayload.summary).toMatchObject({
+      sourceRows: 3,
+      validFeeds: 1,
+      parsedFeeds: 1,
+      failedFeeds: 2,
+    });
+    expect(result.html).toContain("BetaMachine");
+    expect(result.html).toContain("Akiba");
+  });
+});
+
+function response({ url, contentType, body, status = 200 }) {
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    url,
+    headers: new Headers({ "content-type": contentType }),
+    text: () => Promise.resolve(body),
+  };
+}
