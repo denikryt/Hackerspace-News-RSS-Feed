@@ -67,6 +67,56 @@ describe("buildDataset", () => {
     expect(result.site.pages["feed/index.html"]).toContain("Global Feed");
     expect(result.site.pages["spaces/betamachine.html"]).toContain("BetaMachine");
   });
+
+  it("builds multiple global feed pages when more than 10 items exist", async () => {
+    const fetchImpl = vi.fn(async (url) => {
+      if (url === sourcePageUrl) {
+        return response({
+          url,
+          contentType: "text/html; charset=utf-8",
+          body: sourceHtml,
+        });
+      }
+
+      if (url === "https://www.betamachine.fr/feed/") {
+        const items = Array.from({ length: 11 }, (_, index) => `
+          <item>
+            <title>Post ${index + 1}</title>
+            <link>https://www.betamachine.fr/post-${index + 1}</link>
+            <pubDate>Wed, ${String(index + 1).padStart(2, "0")} Jan 2025 10:00:00 GMT</pubDate>
+            <description>Hello</description>
+          </item>
+        `).join("");
+
+        return response({
+          url,
+          contentType: "application/rss+xml",
+          body: `<?xml version="1.0"?>
+            <rss version="2.0">
+              <channel>
+                <title>BetaMachine Feed</title>
+                <link>https://www.betamachine.fr</link>
+                <description>Latest posts</description>
+                ${items}
+              </channel>
+            </rss>`,
+        });
+      }
+
+      return response({
+        url,
+        contentType: "text/html; charset=utf-8",
+        body: "<html><body>not a feed</body></html>",
+      });
+    });
+
+    const result = await buildDataset({ sourcePageUrl, fetchImpl });
+
+    expect(Object.keys(result.site.pages)).toContain("feed/index.html");
+    expect(Object.keys(result.site.pages)).toContain("feed/page/2/index.html");
+    expect(result.site.pages["feed/index.html"]).toContain("Page 1 of 2");
+    expect(result.site.pages["feed/page/2/index.html"]).toContain("Page 2 of 2");
+  });
 });
 
 function response({ url, contentType, body, status = 200 }) {

@@ -49,6 +49,11 @@ export function renderLayout({ title, body }) {
       .content-body.rich-html pre { overflow-x: auto; white-space: pre-wrap; }
       .attachments { max-inline-size: 100%; overflow-wrap: anywhere; }
       .attachments ul { margin: 6px 0 0; padding-left: 18px; }
+      .pagination { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+      .pagination-pages { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+      .pagination-link, .pagination-ellipsis { display: inline-flex; align-items: center; justify-content: center; min-width: 2.25rem; padding: 0.45rem 0.7rem; border-radius: 999px; border: 1px solid var(--border); background: #fff; text-decoration: none; }
+      .pagination-link.current { background: #efe2d0; font-weight: 700; }
+      .pagination-link.disabled { color: var(--muted); background: #f5f1e8; }
       code { background: #f2ebe0; padding: 2px 4px; border-radius: 4px; }
       @media (max-width: 720px) {
         main { padding: 16px; }

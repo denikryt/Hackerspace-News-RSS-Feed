@@ -12,6 +12,7 @@ import { filterNormalizedPayloadForDisplay } from "./visibleData.js";
 import { buildGlobalFeedModel } from "./viewModels/globalFeed.js";
 import { buildSpaceDetailModel } from "./viewModels/spaceDetail.js";
 import { buildSpacesIndexModel } from "./viewModels/spacesIndex.js";
+import { GLOBAL_FEED_PAGE_SIZE } from "./pagination.js";
 
 export async function buildDataset({
   sourcePageUrl = SOURCE_PAGE_URL,
@@ -91,7 +92,6 @@ export async function buildDataset({
   const displayPayload = filterNormalizedPayloadForDisplay(normalizedPayload, { now });
 
   const spacesIndexModel = buildSpacesIndexModel(displayPayload);
-  const globalFeedModel = buildGlobalFeedModel(displayPayload);
   const spaceSlugs = [
     ...new Set(
       [
@@ -103,8 +103,19 @@ export async function buildDataset({
 
   const pages = {
     "index.html": renderSpacesIndex(spacesIndexModel),
-    "feed/index.html": renderGlobalFeed(globalFeedModel),
   };
+
+  const totalGlobalFeedItems = (displayPayload.feeds || []).reduce(
+    (count, feed) => count + (feed.items || []).length,
+    0,
+  );
+  const totalGlobalFeedPages = Math.max(1, Math.ceil(totalGlobalFeedItems / GLOBAL_FEED_PAGE_SIZE));
+
+  for (let currentPage = 1; currentPage <= totalGlobalFeedPages; currentPage += 1) {
+    const globalFeedModel = buildGlobalFeedModel(displayPayload, { currentPage });
+    const relativePath = currentPage === 1 ? "feed/index.html" : `feed/page/${currentPage}/index.html`;
+    pages[relativePath] = renderGlobalFeed(globalFeedModel);
+  }
 
   for (const spaceSlug of spaceSlugs) {
     pages[`spaces/${spaceSlug}.html`] = renderSpaceDetail(

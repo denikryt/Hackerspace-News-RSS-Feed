@@ -148,4 +148,33 @@ describe("multi-page view models", () => {
     });
     expect(model.items[1].title).toBe("Older post");
   });
+
+  it("builds a paginated global feed model with page links", () => {
+    const payload = {
+      ...filteredPayload,
+      feeds: [
+        {
+          ...filteredPayload.feeds[0],
+          items: Array.from({ length: 12 }, (_, index) => ({
+            id: `item-${index + 1}`,
+            title: `Post ${index + 1}`,
+            publishedAt: `2025-01-${String(12 - index).padStart(2, "0")}T10:00:00.000Z`,
+          })),
+        },
+      ],
+    };
+
+    const model = buildGlobalFeedModel(payload, { currentPage: 2, pageSize: 10 });
+
+    expect(model.currentPage).toBe(2);
+    expect(model.totalPages).toBe(2);
+    expect(model.items).toHaveLength(2);
+    expect(model.hasPreviousPage).toBe(true);
+    expect(model.hasNextPage).toBe(false);
+    expect(model.previousPageHref).toBe("/feed/");
+    expect(model.pageLinks).toEqual([
+      { type: "page", page: 1, href: "/feed/", isCurrent: false },
+      { type: "page", page: 2, href: "/feed/page/2/", isCurrent: true },
+    ]);
+  });
 });

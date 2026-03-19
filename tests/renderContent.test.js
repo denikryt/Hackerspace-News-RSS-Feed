@@ -60,4 +60,38 @@ describe("content rendering", () => {
     expect(html).toContain("max-inline-size: min(100%, 42rem)");
     expect(html).toContain('img[src*="emoji"]');
   });
+
+  it("renders pagination controls for global feed", () => {
+    const html = renderGlobalFeed({
+      items: [
+        {
+          title: "Paginated post",
+          spaceName: "BetaMachine",
+          spaceHref: "/spaces/betamachine.html",
+          publishedAt: "2025-01-01T10:00:00.000Z",
+        },
+      ],
+      homeHref: "/index.html",
+      currentPage: 2,
+      totalPages: 5,
+      currentPageLabel: "Page 2 of 5",
+      hasPreviousPage: true,
+      hasNextPage: true,
+      previousPageHref: "/feed/",
+      nextPageHref: "/feed/page/3/",
+      pageLinks: [
+        { type: "page", page: 1, href: "/feed/", isCurrent: false },
+        { type: "page", page: 2, href: "/feed/page/2/", isCurrent: true },
+        { type: "page", page: 3, href: "/feed/page/3/", isCurrent: false },
+        { type: "ellipsis" },
+        { type: "page", page: 5, href: "/feed/page/5/", isCurrent: false },
+      ],
+    });
+
+    expect(html).toContain("Page 2 of 5");
+    expect(html).toContain(">Previous<");
+    expect(html).toContain(">Next<");
+    expect(html).toContain('class="pagination-link current"');
+    expect(html).toContain("/feed/page/3/");
+  });
 });
