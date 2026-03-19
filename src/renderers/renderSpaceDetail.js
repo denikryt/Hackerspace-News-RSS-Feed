@@ -22,10 +22,6 @@ export function renderSpaceDetail(model) {
   return renderLayout({
     title: model.spaceName,
     body: `
-      ${renderNav([
-        { href: model.homeHref, label: "Hackerspaces" },
-        { href: model.globalFeedHref, label: "Global Feed" },
-      ])}
       <section class="panel panel-reading">
         <h1>${escapeHtml(model.spaceName)}</h1>
         <div class="meta">
@@ -38,6 +34,10 @@ export function renderSpaceDetail(model) {
         </div>
         ${model.errorCode ? `<p><span class="field-label">Error:</span> ${escapeHtml(model.errorCode)}</p>` : ""}
       </section>
+      ${renderNav([
+        { href: model.homeHref, label: "Hackerspaces" },
+        { href: model.globalFeedHref, label: "Global Feed" },
+      ])}
       <section class="feed-list-shell">
         <h2>Publications</h2>
         <p class="muted">${escapeHtml(model.currentPageLabel || "Page 1 of 1")}</p>

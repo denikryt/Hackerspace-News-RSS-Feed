@@ -24,15 +24,15 @@ export function renderGlobalFeed(model) {
   return renderLayout({
     title: "Global Feed",
     body: `
-      ${renderNav([
-        { href: model.homeHref, label: "Hackerspaces" },
-        { href: "/feed/index.html", label: "Global Feed" },
-      ])}
       <section class="panel panel-reading">
         <h1>Global Feed</h1>
         <p class="muted">All publications sorted from new to old.</p>
         <p class="muted">${escapeHtml(model.currentPageLabel || "Page 1 of 1")}</p>
       </section>
+      ${renderNav([
+        { href: model.homeHref, label: "Hackerspaces" },
+        { href: "/feed/index.html", label: "Global Feed", isCurrent: true },
+      ])}
       <section class="feed-list-shell">
         <div class="item-list">${items || `<p class="muted">No feed items available.</p>`}</div>
         ${pagination}

@@ -35,21 +35,20 @@ export function renderSpacesIndex(model) {
   return renderLayout({
     title: "Hackerspaces",
     body: `
-      ${renderNav([
-        { href: "/index.html", label: "Hackerspaces" },
-        { href: "/feed/index.html", label: "Global Feed" },
-      ])}
       <section class="panel">
         <h1>Hackerspaces</h1>
         <p class="muted">Source page: <a href="${model.sourcePageUrl}">${model.sourcePageUrl}</a></p>
         <div class="summary-grid">
-          ${renderMetric("Source rows", model.summary.sourceRows)}
-          ${renderMetric("Valid feeds", model.summary.validFeeds)}
-          ${renderMetric("Parsed feeds", model.summary.parsedFeeds)}
+          ${renderMetric("Total spaces", model.summary.sourceRows)}
+          ${renderMetric("Readable feeds", model.summary.parsedFeeds)}
           ${renderMetric("Empty feeds", model.summary.emptyFeeds)}
           ${renderMetric("Failed feeds", model.summary.failedFeeds)}
         </div>
       </section>
+      ${renderNav([
+        { href: "/index.html", label: "Hackerspaces", isCurrent: true },
+        { href: "/feed/index.html", label: "Global Feed" },
+      ])}
       <section class="panel">
         <h2>Spaces</h2>
         <div class="meta">

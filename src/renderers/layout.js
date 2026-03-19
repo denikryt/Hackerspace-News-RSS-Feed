@@ -20,15 +20,18 @@ export function renderLayout({ title, body }) {
       main { max-width: 1120px; margin: 0 auto; padding: 24px; }
       h1, h2, h3, h4 { margin: 0 0 12px; }
       a { color: var(--accent); }
-      nav { display: flex; gap: 16px; margin-bottom: 16px; }
+      .section-nav { display: flex; gap: 10px; margin: 0 auto 16px; flex-wrap: wrap; inline-size: min(100%, 72ch); justify-content: center; }
+      .section-nav a { display: inline-flex; align-items: center; justify-content: center; padding: 0.55rem 0.9rem; border-radius: 8px; border: 1px solid var(--border); background: rgba(255, 253, 248, 0.75); text-decoration: none; font-weight: 700; }
+      .section-nav a[aria-current="page"] { background: #efe2d0; }
       .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px; box-shadow: 0 3px 10px rgba(0,0,0,0.04); overflow: hidden; }
       .panel-reading { inline-size: min(100%, 72ch); margin-inline: auto; }
       .feed-list-shell { inline-size: min(100%, 72ch); margin: 0 auto 16px; }
       .summary-grid, .cards { display: grid; gap: 12px; }
-      .summary-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+      .summary-grid { grid-template-columns: 1fr; gap: 8px; margin-top: 12px; }
       .cards { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-      .metric, .card { border: 1px solid var(--border); border-radius: 8px; padding: 12px; background: #fff; }
-      .metric strong { display: block; font-size: 1.5rem; }
+      .metric { display: flex; align-items: baseline; gap: 8px; min-inline-size: 0; }
+      .metric strong { font-size: 1rem; line-height: 1; margin: 0; }
+      .card { border: 1px solid var(--border); border-radius: 8px; padding: 12px; background: #fff; }
       .muted { color: var(--muted); }
       .meta { display: flex; flex-wrap: wrap; gap: 10px 14px; margin: 8px 0; overflow-wrap: anywhere; }
       .field-label { font-weight: 700; }
@@ -58,6 +61,8 @@ export function renderLayout({ title, body }) {
       @media (max-width: 720px) {
         main { padding: 16px; }
         .panel { padding: 14px; }
+        .section-nav { gap: 8px; }
+        .section-nav a { flex: 1 1 0; }
       }
     </style>
   </head>
@@ -70,7 +75,7 @@ export function renderLayout({ title, body }) {
 }
 
 export function renderMetric(label, value) {
-  return `<div class="metric"><span class="muted">${escapeHtml(label)}</span><strong>${escapeHtml(String(value))}</strong></div>`;
+  return `<div class="metric"><span class="muted">${escapeHtml(label)}:</span><strong>${escapeHtml(String(value))}</strong></div>`;
 }
 
 export function renderField(label, value, isLink = false, className = "") {
@@ -84,8 +89,11 @@ export function renderField(label, value, isLink = false, className = "") {
 }
 
 export function renderNav(items) {
-  return `<nav>${items
-    .map((item) => `<a href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a>`)
+  return `<nav class="section-nav">${items
+    .map(
+      (item) =>
+        `<a href="${escapeHtml(item.href)}"${item.isCurrent ? ' aria-current="page"' : ""}>${escapeHtml(item.label)}</a>`,
+    )
     .join("")}</nav>`;
 }
 
