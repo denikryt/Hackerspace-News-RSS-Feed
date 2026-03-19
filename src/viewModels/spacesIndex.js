@@ -6,6 +6,7 @@ export function buildSpacesIndexModel(
   {
     sortMode = "alphabetical",
     showFailed = false,
+    selectedCountry = "all",
   } = {},
 ) {
   const failureCards = (normalizedPayload.failures || []).map((failure) => ({
@@ -42,6 +43,9 @@ export function buildSpacesIndexModel(
   });
 
   const cards = [...failureCards, ...feedCards].sort(createCardComparator(sortMode));
+  const availableCountries = [...new Set(cards.map((card) => card.country).filter(Boolean))].sort((left, right) =>
+    left.localeCompare(right),
+  );
   const visibleCards = cards.filter((card) => showFailed || !card.isFailure);
 
   return {
@@ -50,6 +54,8 @@ export function buildSpacesIndexModel(
     summary: normalizedPayload.summary,
     sortMode,
     showFailed,
+    selectedCountry,
+    availableCountries,
     cards,
     visibleCards,
   };

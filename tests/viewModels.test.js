@@ -84,6 +84,8 @@ describe("multi-page view models", () => {
 
     expect(model.sortMode).toBe("alphabetical");
     expect(model.showFailed).toBe(false);
+    expect(model.selectedCountry).toBe("all");
+    expect(model.availableCountries).toEqual(["France", "Germany", "Russian Federation"]);
     expect(model.cards).toHaveLength(3);
     expect(model.visibleCards.map((card) => card.spaceName)).toEqual(["BetaMachine", "C3D2"]);
     expect(model.cards.find((card) => card.spaceName === "Akiba")).toMatchObject({
@@ -127,6 +129,12 @@ describe("multi-page view models", () => {
       "Alfa",
       "BetaMachine",
       "C3D2",
+    ]);
+    expect(model.availableCountries).toEqual([
+      "Austria",
+      "France",
+      "Germany",
+      "Russian Federation",
     ]);
   });
 

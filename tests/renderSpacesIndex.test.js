@@ -15,6 +15,8 @@ describe("renderSpacesIndex", () => {
       },
       sortMode: "alphabetical",
       showFailed: false,
+      selectedCountry: "all",
+      availableCountries: ["France", "Germany", "Russian Federation"],
       cards: [
         {
           spaceName: "Akiba",
@@ -43,10 +45,15 @@ describe("renderSpacesIndex", () => {
     });
 
     expect(html).toContain("Show failed feeds");
+    expect(html).toContain("Country");
+    expect(html).toContain("All countries");
+    expect(html).toContain("Russian Federation");
     expect(html).toContain("Sort cards");
     expect(html).toContain("Latest publication");
     expect(html).toContain("localStorage");
+    expect(html).toContain("hackerspace-news-feed.country");
     expect(html).toContain("data-is-failure=\"true\"");
+    expect(html).toContain("data-country=\"France\"");
     expect(html).toContain("data-latest-item-date=\"2025-01-02T10:00:00.000Z\"");
   });
 });
