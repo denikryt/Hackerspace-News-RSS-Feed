@@ -22,7 +22,8 @@ export function renderLayout({ title, body }) {
       a { color: var(--accent); }
       nav { display: flex; gap: 16px; margin-bottom: 16px; }
       .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px; box-shadow: 0 3px 10px rgba(0,0,0,0.04); overflow: hidden; }
-      .panel-reading { inline-size: min(100%, 76ch); margin-inline: auto; }
+      .panel-reading { inline-size: min(100%, 72ch); margin-inline: auto; }
+      .feed-list-shell { margin-bottom: 16px; }
       .summary-grid, .cards { display: grid; gap: 12px; }
       .summary-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
       .cards { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
@@ -33,9 +34,8 @@ export function renderLayout({ title, body }) {
       .field-label { font-weight: 700; }
       .status { display: inline-block; padding: 3px 8px; border-radius: 999px; background: #efe2d0; }
       .status.error { background: #f7dcd6; color: #6f2414; }
-      .item-list { display: grid; gap: 12px; min-inline-size: 0; justify-items: center; }
-      .item { border-top: 1px dashed var(--border); padding-top: 12px; min-inline-size: 0; inline-size: min(100%, 72ch); }
-      .item:first-child { border-top: 0; padding-top: 0; }
+      .item-list { display: grid; gap: 16px; min-inline-size: 0; justify-items: center; }
+      .item { min-inline-size: 0; inline-size: min(100%, 72ch); padding: 18px; border: 1px solid var(--border); border-radius: 10px; background: #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.04); }
       .item-inner { max-inline-size: 100%; margin-inline: 0; min-inline-size: 0; }
       .item-inner > * { max-inline-size: 100%; }
       .content-body { margin: 10px 0; line-height: 1.55; max-inline-size: 100%; overflow-wrap: anywhere; }

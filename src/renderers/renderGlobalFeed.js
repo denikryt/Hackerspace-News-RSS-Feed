@@ -26,11 +26,11 @@ export function renderGlobalFeed(model) {
         { href: model.homeHref, label: "Hackerspaces" },
         { href: "/feed/index.html", label: "Global Feed" },
       ])}
-      <section class="panel">
+      <section class="panel panel-reading">
         <h1>Global Feed</h1>
         <p class="muted">All publications sorted from new to old.</p>
       </section>
-      <section class="panel panel-reading">
+      <section class="feed-list-shell">
         <div class="item-list">${items || `<p class="muted">No feed items available.</p>`}</div>
       </section>
     `,
