@@ -1,3 +1,4 @@
+import { renderDisplayContent } from "../contentDisplay.js";
 import { escapeHtml, renderField, renderLayout, renderNav, renderStatus } from "./layout.js";
 
 export function renderSpaceDetail(model) {
@@ -10,7 +11,7 @@ export function renderSpaceDetail(model) {
           ${renderField("Author", item.author)}
           ${renderField("Original", item.link, true)}
         </div>
-        ${item.summary ? `<p>${escapeHtml(item.summary)}</p>` : ""}
+        ${renderDisplayContent(item)}
         ${item.categories?.length ? `<p class="muted">${escapeHtml(item.categories.join(", "))}</p>` : ""}
       </article>`,
     )

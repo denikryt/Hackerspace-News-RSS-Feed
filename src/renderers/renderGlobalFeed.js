@@ -1,3 +1,4 @@
+import { renderDisplayContent } from "../contentDisplay.js";
 import { escapeHtml, renderField, renderLayout, renderNav } from "./layout.js";
 
 export function renderGlobalFeed(model) {
@@ -11,7 +12,7 @@ export function renderGlobalFeed(model) {
           ${renderField("Date", item.publishedAt)}
           ${renderField("Original", item.link, true)}
         </div>
-        ${item.summary ? `<p>${escapeHtml(item.summary)}</p>` : ""}
+        ${renderDisplayContent(item)}
       </article>`,
     )
     .join("");

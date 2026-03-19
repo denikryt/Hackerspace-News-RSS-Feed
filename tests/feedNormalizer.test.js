@@ -62,10 +62,53 @@ describe("normalizeFeed", () => {
       categories: ["News", "Updates"],
       contentHtml: "<p>Hello</p>",
       contentText: "Hello",
+      summaryText: "Hello",
     });
     expect(normalized.items[0].publishedAt).toBe("2025-01-01T10:00:00.000Z");
     expect(normalized.items[1].author).toBeUndefined();
     expect(normalized.items[1].publishedAt).toBeUndefined();
+  });
+
+  it("keeps html summaries and normalizes enclosure attachments", () => {
+    const normalized = normalizeFeed({
+      sourceRow: {
+        rowNumber: 3,
+        hackerspaceName: "C3D2",
+        hackerspaceWikiUrl: "https://wiki.hackerspaces.org/C3D2",
+        candidateFeedUrl: "https://c3d2.de/news-atom.xml",
+        country: "Germany",
+      },
+      validation: {
+        candidateUrl: "https://c3d2.de/news-atom.xml",
+        finalUrl: "https://c3d2.de/news-atom.xml",
+        detectedFormat: "atom",
+      },
+      parsedFeed: {
+        title: "C3D2 Feed",
+        items: [
+          {
+            title: "Linked post",
+            summary: '<p>Read <a href="https://example.com/more">more</a></p>',
+            enclosure: {
+              url: "https://example.com/audio.mp3",
+              type: "audio/mpeg",
+            },
+          },
+        ],
+      },
+    });
+
+    expect(normalized.items[0]).toMatchObject({
+      title: "Linked post",
+      summaryHtml: '<p>Read <a href="https://example.com/more">more</a></p>',
+      summaryText: "Read more",
+      attachments: [
+        {
+          url: "https://example.com/audio.mp3",
+          type: "audio/mpeg",
+        },
+      ],
+    });
   });
 
   it("marks feeds with no items as parsed_empty", () => {

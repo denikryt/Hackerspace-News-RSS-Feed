@@ -34,6 +34,13 @@ export function renderLayout({ title, body }) {
       .item-list { display: grid; gap: 12px; }
       .item { border-top: 1px dashed var(--border); padding-top: 12px; }
       .item:first-child { border-top: 0; padding-top: 0; }
+      .content-body { margin: 10px 0; line-height: 1.55; }
+      .content-body.plain-text { white-space: pre-wrap; }
+      .content-body.rich-html p:first-child { margin-top: 0; }
+      .content-body.rich-html p:last-child { margin-bottom: 0; }
+      .content-body.rich-html img { max-width: 100%; height: auto; display: block; margin: 10px 0; border-radius: 6px; }
+      .content-body.rich-html pre { overflow-x: auto; }
+      .attachments ul { margin: 6px 0 0; padding-left: 18px; }
       code { background: #f2ebe0; padding: 2px 4px; border-radius: 4px; }
     </style>
   </head>

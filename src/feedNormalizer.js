@@ -36,9 +36,12 @@ function normalizeItem(item) {
     updatedAt: toIsoString(item.updated),
     author: item.creator || item.author || undefined,
     summary: item.contentSnippet || item.summary || item.description || undefined,
-    contentHtml: item["content:encoded"] || item.content || undefined,
-    contentText: item.contentSnippet || stripHtml(item.summary || item.description || ""),
+    summaryHtml: getHtmlCandidate(item.summary || item.description),
+    summaryText: item.contentSnippet || stripHtml(item.summary || item.description || ""),
+    contentHtml: getHtmlCandidate(item["content:encoded"] || item.content),
+    contentText: item.contentSnippet || stripHtml(item["content:encoded"] || item.content || item.summary || item.description || ""),
     categories: normalizeCategories(item.categories),
+    attachments: normalizeAttachments(item),
     guid: item.guid || undefined,
   };
 
@@ -50,6 +53,48 @@ function normalizeCategories(categories) {
     return undefined;
   }
   return categories.map(String);
+}
+
+function normalizeAttachments(item) {
+  const candidates = [
+    item.enclosure,
+    ...(Array.isArray(item.enclosures) ? item.enclosures : []),
+    item["media:content"],
+    item["media:thumbnail"],
+  ].filter(Boolean);
+
+  if (candidates.length === 0) {
+    return undefined;
+  }
+
+  const attachments = candidates
+    .flatMap((candidate) => (Array.isArray(candidate) ? candidate : [candidate]))
+    .map((candidate) => {
+      if (typeof candidate === "string") {
+        return { url: candidate };
+      }
+
+      if (!candidate || typeof candidate !== "object") {
+        return null;
+      }
+
+      return removeUndefined({
+        url: candidate.url || candidate.$?.url || candidate.href,
+        type: candidate.type || candidate.$?.type || candidate.medium,
+        title: candidate.title || candidate.$?.title,
+      });
+    })
+    .filter((attachment) => attachment?.url);
+
+  return attachments.length > 0 ? attachments : undefined;
+}
+
+function getHtmlCandidate(value) {
+  if (!value) {
+    return undefined;
+  }
+
+  return /<[^>]+>/.test(String(value)) ? String(value) : undefined;
 }
 
 function createFeedId(sourceRow, validation) {
