@@ -26,7 +26,7 @@ export function renderSpaceDetail(model) {
         { href: model.homeHref, label: "Hackerspaces" },
         { href: model.globalFeedHref, label: "Global Feed" },
       ])}
-      <section class="panel">
+      <section class="panel panel-reading">
         <h1>${escapeHtml(model.spaceName)}</h1>
         <div class="meta">
           ${renderField("Country", model.country)}
@@ -40,8 +40,41 @@ export function renderSpaceDetail(model) {
       </section>
       <section class="feed-list-shell">
         <h2>Publications</h2>
+        <p class="muted">${escapeHtml(model.currentPageLabel || "Page 1 of 1")}</p>
         <div class="item-list">${items || `<p class="muted">No publications available.</p>`}</div>
+        ${renderPagination(model)}
       </section>
     `,
   });
+}
+
+function renderPagination(model) {
+  if (!model.totalPages || model.totalPages <= 1) {
+    return "";
+  }
+
+  const previousLink = model.hasPreviousPage
+    ? `<a class="pagination-link" href="${model.previousPageHref}">Previous</a>`
+    : `<span class="pagination-link disabled">Previous</span>`;
+
+  const nextLink = model.hasNextPage
+    ? `<a class="pagination-link" href="${model.nextPageHref}">Next</a>`
+    : `<span class="pagination-link disabled">Next</span>`;
+
+  const pageLinks = (model.pageLinks || [])
+    .map((link) => {
+      if (link.type === "ellipsis") {
+        return `<span class="pagination-ellipsis">...</span>`;
+      }
+
+      const className = link.isCurrent ? "pagination-link current" : "pagination-link";
+      return `<a class="${className}" href="${link.href}">${link.page}</a>`;
+    })
+    .join("");
+
+  return `<nav class="pagination" aria-label="Space pagination">
+    ${previousLink}
+    <span class="pagination-pages">${pageLinks}</span>
+    ${nextLink}
+  </nav>`;
 }

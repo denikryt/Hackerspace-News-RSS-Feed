@@ -23,7 +23,7 @@ export function renderLayout({ title, body }) {
       nav { display: flex; gap: 16px; margin-bottom: 16px; }
       .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px; box-shadow: 0 3px 10px rgba(0,0,0,0.04); overflow: hidden; }
       .panel-reading { inline-size: min(100%, 72ch); margin-inline: auto; }
-      .feed-list-shell { margin-bottom: 16px; }
+      .feed-list-shell { inline-size: min(100%, 72ch); margin: 0 auto 16px; }
       .summary-grid, .cards { display: grid; gap: 12px; }
       .summary-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
       .cards { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }

@@ -1,7 +1,17 @@
 import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
+import {
+  buildPageLinks,
+  getSpaceDetailHref,
+  GLOBAL_FEED_PAGE_SIZE,
+  paginateItems,
+} from "../pagination.js";
 
-export function buildSpaceDetailModel(normalizedPayload, spaceSlug) {
+export function buildSpaceDetailModel(
+  normalizedPayload,
+  spaceSlug,
+  { currentPage = 1, pageSize = GLOBAL_FEED_PAGE_SIZE } = {},
+) {
   const feed = (normalizedPayload.feeds || []).find(
     (entry) => slugify(entry.spaceName) === spaceSlug,
   );
@@ -26,10 +36,22 @@ export function buildSpaceDetailModel(normalizedPayload, spaceSlug) {
       errorCode: failure.errorCode,
       errorMessage: failure.errorMessage,
       items: [],
+      currentPage: 1,
+      totalPages: 1,
+      currentPageLabel: "Page 1 of 1",
+      hasPreviousPage: false,
+      hasNextPage: false,
+      previousPageHref: undefined,
+      nextPageHref: undefined,
+      pageLinks: [],
       homeHref: "/index.html",
-      globalFeedHref: "/feed/index.html",
+      globalFeedHref: "/feed/",
     };
   }
+
+  const allItems = [...(feed.items || [])].sort(compareItemsByDateDesc);
+  const pagination = paginateItems(allItems, currentPage, pageSize);
+  const hrefForPage = (pageNumber) => getSpaceDetailHref(spaceSlug, pageNumber);
 
   return {
     spaceName: feed.spaceName,
@@ -41,9 +63,23 @@ export function buildSpaceDetailModel(normalizedPayload, spaceSlug) {
     status: feed.status,
     errorCode: undefined,
     errorMessage: undefined,
-    items: [...(feed.items || [])].sort(compareItemsByDateDesc),
+    items: pagination.items,
+    totalItems: pagination.totalItems,
+    pageSize: pagination.pageSize,
+    currentPage: pagination.currentPage,
+    totalPages: pagination.totalPages,
+    currentPageLabel: `Page ${pagination.currentPage} of ${pagination.totalPages}`,
+    hasPreviousPage: pagination.currentPage > 1,
+    hasNextPage: pagination.currentPage < pagination.totalPages,
+    previousPageHref:
+      pagination.currentPage > 1 ? hrefForPage(pagination.currentPage - 1) : undefined,
+    nextPageHref:
+      pagination.currentPage < pagination.totalPages
+        ? hrefForPage(pagination.currentPage + 1)
+        : undefined,
+    pageLinks: buildPageLinks(pagination.currentPage, pagination.totalPages, hrefForPage),
     homeHref: "/index.html",
-    globalFeedHref: "/feed/index.html",
+    globalFeedHref: "/feed/",
   };
 }
 

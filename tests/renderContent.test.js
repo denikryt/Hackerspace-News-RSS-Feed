@@ -94,4 +94,42 @@ describe("content rendering", () => {
     expect(html).toContain('class="pagination-link current"');
     expect(html).toContain("/feed/page/3/");
   });
+
+  it("renders pagination controls for space detail pages", () => {
+    const html = renderSpaceDetail({
+      spaceName: "BetaMachine",
+      country: "France",
+      sourceWikiUrl: "https://wiki.hackerspaces.org/BetaMachine",
+      feedUrl: "https://www.betamachine.fr/feed/",
+      siteUrl: "https://www.betamachine.fr",
+      feedType: "rss",
+      status: "parsed_ok",
+      items: [
+        {
+          title: "Detail page post",
+          publishedAt: "2025-01-01T10:00:00.000Z",
+        },
+      ],
+      currentPage: 2,
+      totalPages: 5,
+      currentPageLabel: "Page 2 of 5",
+      hasPreviousPage: true,
+      hasNextPage: true,
+      previousPageHref: "/spaces/betamachine.html",
+      nextPageHref: "/spaces/betamachine/page/3/",
+      pageLinks: [
+        { type: "page", page: 1, href: "/spaces/betamachine.html", isCurrent: false },
+        { type: "page", page: 2, href: "/spaces/betamachine/page/2/", isCurrent: true },
+        { type: "page", page: 3, href: "/spaces/betamachine/page/3/", isCurrent: false },
+        { type: "ellipsis" },
+        { type: "page", page: 5, href: "/spaces/betamachine/page/5/", isCurrent: false },
+      ],
+      homeHref: "/index.html",
+      globalFeedHref: "/feed/",
+    });
+
+    expect(html).toContain("Page 2 of 5");
+    expect(html).toContain("/spaces/betamachine/page/3/");
+    expect(html).toContain('class="pagination-link current"');
+  });
 });

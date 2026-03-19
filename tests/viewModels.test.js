@@ -137,6 +137,41 @@ describe("multi-page view models", () => {
     expect(model.items.map((item) => item.title)).toEqual(["Newest post", "Older post"]);
   });
 
+  it("builds a paginated detail model with page links", () => {
+    const payload = {
+      ...filteredPayload,
+      feeds: [
+        {
+          ...filteredPayload.feeds[0],
+          items: Array.from({ length: 12 }, (_, index) => ({
+            id: `detail-${index + 1}`,
+            title: `Detail ${index + 1}`,
+            publishedAt: `2025-01-${String(12 - index).padStart(2, "0")}T10:00:00.000Z`,
+          })),
+        },
+      ],
+    };
+
+    const model = buildSpaceDetailModel(payload, "betamachine", { currentPage: 2 });
+
+    expect(model.currentPage).toBe(2);
+    expect(model.totalPages).toBe(2);
+    expect(model.items).toHaveLength(2);
+    expect(model.currentPageLabel).toBe("Page 2 of 2");
+    expect(model.hasPreviousPage).toBe(true);
+    expect(model.hasNextPage).toBe(false);
+    expect(model.previousPageHref).toBe("/spaces/betamachine.html");
+    expect(model.pageLinks).toEqual([
+      { type: "page", page: 1, href: "/spaces/betamachine.html", isCurrent: false },
+      {
+        type: "page",
+        page: 2,
+        href: "/spaces/betamachine/page/2/",
+        isCurrent: true,
+      },
+    ]);
+  });
+
   it("builds a global feed model sorted by date descending", () => {
     const model = buildGlobalFeedModel(filteredPayload);
 

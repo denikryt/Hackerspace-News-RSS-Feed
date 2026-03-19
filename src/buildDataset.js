@@ -118,9 +118,17 @@ export async function buildDataset({
   }
 
   for (const spaceSlug of spaceSlugs) {
-    pages[`spaces/${spaceSlug}.html`] = renderSpaceDetail(
-      buildSpaceDetailModel(displayPayload, spaceSlug),
-    );
+    const detailModel = buildSpaceDetailModel(displayPayload, spaceSlug);
+    const totalPages = detailModel.totalPages || 1;
+
+    for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
+      const pagedModel = buildSpaceDetailModel(displayPayload, spaceSlug, { currentPage });
+      const relativePath =
+        currentPage === 1
+          ? `spaces/${spaceSlug}.html`
+          : `spaces/${spaceSlug}/page/${currentPage}/index.html`;
+      pages[relativePath] = renderSpaceDetail(pagedModel);
+    }
   }
 
   return {
