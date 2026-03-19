@@ -1,4 +1,5 @@
 import { slugify } from "../utils/slugify.js";
+import { getEffectiveItemDate } from "../visibleData.js";
 
 export function buildGlobalFeedModel(normalizedPayload) {
   const items = (normalizedPayload.feeds || [])
@@ -23,7 +24,17 @@ export function buildGlobalFeedModel(normalizedPayload) {
 }
 
 function compareItemsByDateDesc(a, b) {
-  const aDate = a.publishedAt ? Date.parse(a.publishedAt) : -Infinity;
-  const bDate = b.publishedAt ? Date.parse(b.publishedAt) : -Infinity;
+  const aDate = getComparableTimestamp(a);
+  const bDate = getComparableTimestamp(b);
   return bDate - aDate;
+}
+
+function getComparableTimestamp(item) {
+  const effectiveDate = getEffectiveItemDate(item);
+  if (!effectiveDate) {
+    return -Infinity;
+  }
+
+  const timestamp = Date.parse(effectiveDate);
+  return Number.isNaN(timestamp) ? -Infinity : timestamp;
 }

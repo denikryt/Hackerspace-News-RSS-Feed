@@ -1,12 +1,21 @@
 import { slugify } from "../utils/slugify.js";
+import { getEffectiveItemDate } from "../visibleData.js";
 
-export function buildSpacesIndexModel(normalizedPayload) {
+export function buildSpacesIndexModel(
+  normalizedPayload,
+  {
+    sortMode = "alphabetical",
+    showFailed = false,
+  } = {},
+) {
   const failureCards = (normalizedPayload.failures || []).map((failure) => ({
     spaceName: failure.hackerspaceName,
     country: failure.country,
     sourceWikiUrl: failure.sourceWikiUrl,
     feedUrl: failure.candidateUrl,
     status: "error",
+    isFailure: true,
+    isVisibleByDefault: false,
     latestItemTitle: undefined,
     latestItemDate: undefined,
     detailHref: `/spaces/${slugify(failure.hackerspaceName)}.html`,
@@ -14,9 +23,8 @@ export function buildSpacesIndexModel(normalizedPayload) {
   }));
 
   const feedCards = (normalizedPayload.feeds || []).map((feed) => {
-    const latestItem = [...(feed.items || [])]
-      .filter((item) => item.publishedAt)
-      .sort(compareItemsByDateDesc)[0] || feed.items?.[0];
+    const latestItem =
+      [...(feed.items || [])].sort(compareItemsByDateDesc)[0] || feed.items?.[0];
 
     return {
       spaceName: feed.spaceName,
@@ -25,24 +33,57 @@ export function buildSpacesIndexModel(normalizedPayload) {
       feedUrl: feed.finalFeedUrl,
       siteUrl: feed.siteUrl,
       status: feed.status,
+      isFailure: false,
+      isVisibleByDefault: true,
       latestItemTitle: latestItem?.title,
-      latestItemDate: latestItem?.publishedAt,
+      latestItemDate: getEffectiveItemDate(latestItem),
       detailHref: `/spaces/${slugify(feed.spaceName)}.html`,
     };
   });
 
-  const cards = [...failureCards, ...feedCards].sort((a, b) =>
-    a.spaceName.localeCompare(b.spaceName),
-  );
+  const cards = [...failureCards, ...feedCards].sort(createCardComparator(sortMode));
+  const visibleCards = cards.filter((card) => showFailed || !card.isFailure);
 
   return {
     generatedAt: normalizedPayload.generatedAt,
     sourcePageUrl: normalizedPayload.sourcePageUrl,
     summary: normalizedPayload.summary,
+    sortMode,
+    showFailed,
     cards,
+    visibleCards,
   };
 }
 
 function compareItemsByDateDesc(a, b) {
-  return Date.parse(b.publishedAt || 0) - Date.parse(a.publishedAt || 0);
+  const aDate = getComparableTimestamp(a);
+  const bDate = getComparableTimestamp(b);
+  return bDate - aDate;
+}
+
+function createCardComparator(sortMode) {
+  if (sortMode === "latest-publication") {
+    return (left, right) => {
+      const leftDate = getComparableTimestamp(left);
+      const rightDate = getComparableTimestamp(right);
+
+      if (rightDate !== leftDate) {
+        return rightDate - leftDate;
+      }
+
+      return left.spaceName.localeCompare(right.spaceName);
+    };
+  }
+
+  return (left, right) => left.spaceName.localeCompare(right.spaceName);
+}
+
+function getComparableTimestamp(value) {
+  const effectiveDate = getEffectiveItemDate(value);
+  if (!effectiveDate) {
+    return -Infinity;
+  }
+
+  const timestamp = Date.parse(effectiveDate);
+  return Number.isNaN(timestamp) ? -Infinity : timestamp;
 }

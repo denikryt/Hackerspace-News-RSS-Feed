@@ -8,6 +8,7 @@ import { renderSpaceDetail } from "./renderers/renderSpaceDetail.js";
 import { renderSpacesIndex } from "./renderers/renderSpacesIndex.js";
 import { extractSourceRows } from "./sourceTableExtractor.js";
 import { slugify } from "./utils/slugify.js";
+import { filterNormalizedPayloadForDisplay } from "./visibleData.js";
 import { buildGlobalFeedModel } from "./viewModels/globalFeed.js";
 import { buildSpaceDetailModel } from "./viewModels/spaceDetail.js";
 import { buildSpacesIndexModel } from "./viewModels/spacesIndex.js";
@@ -15,6 +16,7 @@ import { buildSpacesIndexModel } from "./viewModels/spacesIndex.js";
 export async function buildDataset({
   sourcePageUrl = SOURCE_PAGE_URL,
   fetchImpl = fetch,
+  now = Date.now(),
 } = {}) {
   const html = await fetchPageHtml({ sourcePageUrl, fetchImpl });
   const sourceRows = extractSourceRows({ html, sourcePageUrl });
@@ -86,8 +88,10 @@ export async function buildDataset({
     summary,
   };
 
-  const spacesIndexModel = buildSpacesIndexModel(normalizedPayload);
-  const globalFeedModel = buildGlobalFeedModel(normalizedPayload);
+  const displayPayload = filterNormalizedPayloadForDisplay(normalizedPayload, { now });
+
+  const spacesIndexModel = buildSpacesIndexModel(displayPayload);
+  const globalFeedModel = buildGlobalFeedModel(displayPayload);
   const spaceSlugs = [
     ...new Set(
       [
@@ -104,7 +108,7 @@ export async function buildDataset({
 
   for (const spaceSlug of spaceSlugs) {
     pages[`spaces/${spaceSlug}.html`] = renderSpaceDetail(
-      buildSpaceDetailModel(normalizedPayload, spaceSlug),
+      buildSpaceDetailModel(displayPayload, spaceSlug),
     );
   }
 

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { buildGlobalFeedModel } from "../src/viewModels/globalFeed.js";
 import { buildSpaceDetailModel } from "../src/viewModels/spaceDetail.js";
 import { buildSpacesIndexModel } from "../src/viewModels/spacesIndex.js";
+import { filterNormalizedPayloadForDisplay } from "../src/visibleData.js";
 
 const normalizedPayload = {
   generatedAt: "2026-03-19T20:00:00.000Z",
@@ -32,6 +33,12 @@ const normalizedPayload = {
           link: "https://www.betamachine.fr/newest",
           publishedAt: "2025-01-02T10:00:00.000Z",
           summary: "Newest summary",
+        },
+        {
+          id: "b-future",
+          title: "Future post",
+          link: "https://www.betamachine.fr/future",
+          publishedAt: "2034-07-28T18:00:00.000Z",
         },
         {
           id: "b-2",
@@ -68,33 +75,70 @@ const normalizedPayload = {
 };
 
 describe("multi-page view models", () => {
-  it("builds spaces index cards with latest post and failed feed cards", () => {
-    const model = buildSpacesIndexModel(normalizedPayload);
+  const filteredPayload = filterNormalizedPayloadForDisplay(normalizedPayload, {
+    now: Date.parse("2026-03-19T12:00:00.000Z"),
+  });
 
+  it("builds spaces index cards hidden-failed by default and sorted alphabetically", () => {
+    const model = buildSpacesIndexModel(filteredPayload);
+
+    expect(model.sortMode).toBe("alphabetical");
+    expect(model.showFailed).toBe(false);
     expect(model.cards).toHaveLength(3);
-    expect(model.cards[0]).toMatchObject({
-      spaceName: "Akiba",
+    expect(model.visibleCards.map((card) => card.spaceName)).toEqual(["BetaMachine", "C3D2"]);
+    expect(model.cards.find((card) => card.spaceName === "Akiba")).toMatchObject({
       status: "error",
-      latestItemTitle: undefined,
+      isVisibleByDefault: false,
     });
-    expect(model.cards[1]).toMatchObject({
+    expect(model.cards.find((card) => card.spaceName === "BetaMachine")).toMatchObject({
       spaceName: "BetaMachine",
       status: "parsed_ok",
       latestItemTitle: "Newest post",
       latestItemDate: "2025-01-02T10:00:00.000Z",
     });
-    expect(model.cards[1].detailHref).toBe("/spaces/betamachine.html");
+    expect(model.cards.find((card) => card.spaceName === "BetaMachine").detailHref).toBe(
+      "/spaces/betamachine.html",
+    );
+  });
+
+  it("builds spaces index cards sorted by latest publication when requested", () => {
+    const payload = {
+      ...filteredPayload,
+      feeds: [
+        ...filteredPayload.feeds,
+        {
+          id: "row-4-alfa",
+          rowNumber: 4,
+          sourceWikiUrl: "https://wiki.hackerspaces.org/Alfa",
+          finalFeedUrl: "https://alfa.example/feed.xml",
+          siteUrl: "https://alfa.example",
+          spaceName: "Alfa",
+          country: "Austria",
+          feedType: "rss",
+          status: "parsed_ok",
+          items: [{ title: "Alfa item", publishedAt: "2025-01-03T10:00:00.000Z" }],
+        },
+      ],
+    };
+
+    const model = buildSpacesIndexModel(payload, { sortMode: "latest-publication" });
+
+    expect(model.visibleCards.map((card) => card.spaceName)).toEqual([
+      "Alfa",
+      "BetaMachine",
+      "C3D2",
+    ]);
   });
 
   it("builds a detail model with items sorted newest first", () => {
-    const model = buildSpaceDetailModel(normalizedPayload, "betamachine");
+    const model = buildSpaceDetailModel(filteredPayload, "betamachine");
 
     expect(model.spaceName).toBe("BetaMachine");
     expect(model.items.map((item) => item.title)).toEqual(["Newest post", "Older post"]);
   });
 
   it("builds a global feed model sorted by date descending", () => {
-    const model = buildGlobalFeedModel(normalizedPayload);
+    const model = buildGlobalFeedModel(filteredPayload);
 
     expect(model.items).toHaveLength(2);
     expect(model.items[0]).toMatchObject({

@@ -1,15 +1,25 @@
-import { renderField, renderLayout, renderMetric, renderNav, renderStatus } from "./layout.js";
+import {
+  escapeHtml,
+  renderField,
+  renderLayout,
+  renderMetric,
+  renderNav,
+  renderStatus,
+} from "./layout.js";
 
 export function renderSpacesIndex(model) {
   const cards = model.cards
     .map(
-      (card) => `<article class="card">
+      (card) => `<article class="card"
+        data-space-name="${escapeHtml(card.spaceName)}"
+        data-is-failure="${card.isFailure ? "true" : "false"}"
+        data-default-visible="${card.isVisibleByDefault ? "true" : "false"}"
+        data-latest-item-date="${escapeHtml(card.latestItemDate || "")}">
         <h3><a href="${card.detailHref}">${card.spaceName}</a></h3>
         <div class="meta">
           ${renderField("Country", card.country)}
           ${renderField("Wiki", card.sourceWikiUrl, true)}
           ${renderField("Feed", card.feedUrl, true)}
-          ${renderField("Status", "", false)}
           ${renderStatus(card.status)}
         </div>
         ${
@@ -42,8 +52,68 @@ export function renderSpacesIndex(model) {
       </section>
       <section class="panel">
         <h2>Spaces</h2>
-        <div class="cards">${cards}</div>
+        <div class="meta">
+          <label>
+            <input id="show-failed-toggle" type="checkbox" />
+            Show failed feeds
+          </label>
+          <label>
+            Sort cards
+            <select id="sort-mode-select">
+              <option value="alphabetical"${model.sortMode === "alphabetical" ? " selected" : ""}>Alphabetical</option>
+              <option value="latest-publication"${model.sortMode === "latest-publication" ? " selected" : ""}>Latest publication</option>
+            </select>
+          </label>
+        </div>
+        <div id="spaces-cards" class="cards">${cards}</div>
       </section>
+      <script>
+        const failedToggle = document.getElementById("show-failed-toggle");
+        const sortModeSelect = document.getElementById("sort-mode-select");
+        const cardsContainer = document.getElementById("spaces-cards");
+        const cards = Array.from(cardsContainer.querySelectorAll(".card"));
+        const storageKeys = {
+          showFailed: "hackerspace-news-feed.showFailed",
+          sortMode: "hackerspace-news-feed.sortMode",
+        };
+
+        const storedShowFailed = localStorage.getItem(storageKeys.showFailed);
+        const storedSortMode = localStorage.getItem(storageKeys.sortMode);
+
+        failedToggle.checked = storedShowFailed === null ? ${model.showFailed ? "true" : "false"} : storedShowFailed === "true";
+        sortModeSelect.value = storedSortMode || ${JSON.stringify(model.sortMode)};
+
+        function compareAlphabetical(left, right) {
+          return left.dataset.spaceName.localeCompare(right.dataset.spaceName);
+        }
+
+        function compareLatest(left, right) {
+          const leftValue = Date.parse(left.dataset.latestItemDate || "") || Number.NEGATIVE_INFINITY;
+          const rightValue = Date.parse(right.dataset.latestItemDate || "") || Number.NEGATIVE_INFINITY;
+          if (rightValue !== leftValue) return rightValue - leftValue;
+          return compareAlphabetical(left, right);
+        }
+
+        function applyUiState() {
+          const showFailed = failedToggle.checked;
+          const sortMode = sortModeSelect.value;
+
+          localStorage.setItem(storageKeys.showFailed, String(showFailed));
+          localStorage.setItem(storageKeys.sortMode, sortMode);
+
+          cards.forEach((card) => {
+            const isFailure = card.dataset.isFailure === "true";
+            card.style.display = !showFailed && isFailure ? "none" : "";
+          });
+
+          const comparator = sortMode === "latest-publication" ? compareLatest : compareAlphabetical;
+          cards.sort(comparator).forEach((card) => cardsContainer.appendChild(card));
+        }
+
+        failedToggle.addEventListener("change", applyUiState);
+        sortModeSelect.addEventListener("change", applyUiState);
+        applyUiState();
+      </script>
     `,
   });
 }
