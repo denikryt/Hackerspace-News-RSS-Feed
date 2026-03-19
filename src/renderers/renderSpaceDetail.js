@@ -38,7 +38,7 @@ export function renderSpaceDetail(model) {
         </div>
         ${model.errorCode ? `<p><span class="field-label">Error:</span> ${escapeHtml(model.errorCode)}</p>` : ""}
       </section>
-      <section class="panel">
+      <section class="panel panel-reading">
         <h2>Publications</h2>
         <div class="item-list">${items || `<p class="muted">No publications available.</p>`}</div>
       </section>

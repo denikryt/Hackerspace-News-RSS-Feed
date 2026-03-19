@@ -22,7 +22,7 @@ describe("content rendering", () => {
     expect(html).toContain('class="item-inner"');
     expect(html).toContain("First line\nSecond line");
     expect(html).toContain(".item-inner {");
-    expect(html).toContain("max-inline-size: 72ch");
+    expect(html).toContain("inline-size: min(100%, 72ch)");
     expect(html).toContain("overflow-wrap: anywhere");
   });
 

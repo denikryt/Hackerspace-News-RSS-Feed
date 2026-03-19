@@ -30,7 +30,7 @@ export function renderGlobalFeed(model) {
         <h1>Global Feed</h1>
         <p class="muted">All publications sorted from new to old.</p>
       </section>
-      <section class="panel">
+      <section class="panel panel-reading">
         <div class="item-list">${items || `<p class="muted">No feed items available.</p>`}</div>
       </section>
     `,
