@@ -6,14 +6,15 @@ export function renderGlobalFeed(model) {
     .map(
       (item) => `<article class="item">
         <div class="item-inner">
-        <h3>${escapeHtml(item.title || "Untitled item")}</h3>
-        <div class="meta">
-          ${renderField("Space", item.spaceName)}
-          <span><span class="field-label">Space page:</span> <a href="${item.spaceHref}">${escapeHtml(item.spaceName)}</a></span>
-          ${renderField("Date", item.publishedAt)}
-          ${renderField("Original", item.link, true)}
-        </div>
-        ${renderDisplayContent(item)}
+          <div class="item-header">
+            <div class="meta">
+              <span><span class="field-label">Space page:</span> <a href="${item.spaceHref}">${escapeHtml(item.spaceName)}</a></span>
+              ${renderField("Date", item.publishedAt)}
+              ${renderField("Original", item.link, true)}
+            </div>
+          </div>
+          <h3 class="item-title">${escapeHtml(item.title || "Untitled item")}</h3>
+          ${renderDisplayContent(item)}
         </div>
       </article>`,
     )

@@ -6,14 +6,16 @@ export function renderSpaceDetail(model) {
     .map(
       (item) => `<article class="item">
         <div class="item-inner">
-        <h3>${escapeHtml(item.title || "Untitled item")}</h3>
-        <div class="meta">
-          ${renderField("Date", item.publishedAt)}
-          ${renderField("Author", item.author)}
-          ${renderField("Original", item.link, true)}
-        </div>
-        ${renderDisplayContent(item)}
-        ${item.categories?.length ? `<p class="muted">${escapeHtml(item.categories.join(", "))}</p>` : ""}
+          <div class="item-header">
+            <div class="meta">
+              ${renderField("Date", item.publishedAt)}
+              ${renderField("Author", item.author)}
+              ${renderField("Original", item.link, true)}
+            </div>
+          </div>
+          <h3 class="item-title">${escapeHtml(item.title || "Untitled item")}</h3>
+          ${renderDisplayContent(item)}
+          ${item.categories?.length ? `<p class="muted">${escapeHtml(item.categories.join(", "))}</p>` : ""}
         </div>
       </article>`,
     )

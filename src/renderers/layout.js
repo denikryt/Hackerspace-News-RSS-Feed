@@ -41,6 +41,9 @@ export function renderLayout({ title, body }) {
       .item { min-inline-size: 0; inline-size: min(100%, 72ch); padding: 18px; border: 1px solid var(--border); border-radius: 10px; background: #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.04); }
       .item-inner { max-inline-size: 100%; margin-inline: 0; min-inline-size: 0; }
       .item-inner > * { max-inline-size: 100%; }
+      .item-header { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+      .item-header .meta { margin: 0; }
+      .item-title { margin: 0 0 14px; }
       .content-body { margin: 10px 0; line-height: 1.55; max-inline-size: 100%; overflow-wrap: anywhere; }
       .content-body.plain-text { white-space: pre-wrap; }
       .content-body.rich-html { overflow-wrap: anywhere; }
