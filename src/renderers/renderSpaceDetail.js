@@ -5,6 +5,7 @@ export function renderSpaceDetail(model) {
   const items = (model.items || [])
     .map(
       (item) => `<article class="item">
+        <div class="item-inner">
         <h3>${escapeHtml(item.title || "Untitled item")}</h3>
         <div class="meta">
           ${renderField("Date", item.publishedAt)}
@@ -13,6 +14,7 @@ export function renderSpaceDetail(model) {
         </div>
         ${renderDisplayContent(item)}
         ${item.categories?.length ? `<p class="muted">${escapeHtml(item.categories.join(", "))}</p>` : ""}
+        </div>
       </article>`,
     )
     .join("");

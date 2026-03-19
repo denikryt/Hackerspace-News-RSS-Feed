@@ -19,7 +19,11 @@ describe("content rendering", () => {
     });
 
     expect(html).toContain('class="content-body plain-text"');
+    expect(html).toContain('class="item-inner"');
     expect(html).toContain("First line\nSecond line");
+    expect(html).toContain(".item-inner {");
+    expect(html).toContain("max-inline-size: 72ch");
+    expect(html).toContain("overflow-wrap: anywhere");
   });
 
   it("renders sanitized html content and attachment links on detail pages", () => {
@@ -53,5 +57,7 @@ describe("content rendering", () => {
     expect(html).toContain('<a href="https://example.com/post">link</a>');
     expect(html).toContain("https://example.com/audio.mp3");
     expect(html).not.toContain("<script");
+    expect(html).toContain("max-inline-size: min(100%, 42rem)");
+    expect(html).toContain('img[src*="emoji"]');
   });
 });

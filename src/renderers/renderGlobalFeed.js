@@ -5,6 +5,7 @@ export function renderGlobalFeed(model) {
   const items = model.items
     .map(
       (item) => `<article class="item">
+        <div class="item-inner">
         <h3>${escapeHtml(item.title || "Untitled item")}</h3>
         <div class="meta">
           ${renderField("Space", item.spaceName)}
@@ -13,6 +14,7 @@ export function renderGlobalFeed(model) {
           ${renderField("Original", item.link, true)}
         </div>
         ${renderDisplayContent(item)}
+        </div>
       </article>`,
     )
     .join("");
