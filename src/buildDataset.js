@@ -3,8 +3,14 @@ import { normalizeFeed } from "./feedNormalizer.js";
 import { parseFeedBody } from "./feedParser.js";
 import { probeFeedUrl } from "./feedProbe.js";
 import { fetchPageHtml } from "./pageFetcher.js";
-import { renderHtmlPage } from "./renderHtmlPage.js";
+import { renderGlobalFeed } from "./renderers/renderGlobalFeed.js";
+import { renderSpaceDetail } from "./renderers/renderSpaceDetail.js";
+import { renderSpacesIndex } from "./renderers/renderSpacesIndex.js";
 import { extractSourceRows } from "./sourceTableExtractor.js";
+import { slugify } from "./utils/slugify.js";
+import { buildGlobalFeedModel } from "./viewModels/globalFeed.js";
+import { buildSpaceDetailModel } from "./viewModels/spaceDetail.js";
+import { buildSpacesIndexModel } from "./viewModels/spacesIndex.js";
 
 export async function buildDataset({
   sourcePageUrl = SOURCE_PAGE_URL,
@@ -22,6 +28,8 @@ export async function buildDataset({
         failure: {
           rowNumber: sourceRow.rowNumber,
           hackerspaceName: sourceRow.hackerspaceName,
+          country: sourceRow.country,
+          sourceWikiUrl: sourceRow.hackerspaceWikiUrl,
           candidateUrl: sourceRow.candidateFeedUrl,
           errorCode: validation.errorCode,
           errorMessage: validation.errorMessage,
@@ -47,6 +55,8 @@ export async function buildDataset({
         failure: {
           rowNumber: sourceRow.rowNumber,
           hackerspaceName: sourceRow.hackerspaceName,
+          country: sourceRow.country,
+          sourceWikiUrl: sourceRow.hackerspaceWikiUrl,
           candidateUrl: sourceRow.candidateFeedUrl,
           errorCode: "parse_error",
           errorMessage: error instanceof Error ? error.message : String(error),
@@ -76,6 +86,28 @@ export async function buildDataset({
     summary,
   };
 
+  const spacesIndexModel = buildSpacesIndexModel(normalizedPayload);
+  const globalFeedModel = buildGlobalFeedModel(normalizedPayload);
+  const spaceSlugs = [
+    ...new Set(
+      [
+        ...feeds.map((feed) => slugify(feed.spaceName)),
+        ...failures.map((failure) => slugify(failure.hackerspaceName)),
+      ].filter(Boolean),
+    ),
+  ];
+
+  const pages = {
+    "index.html": renderSpacesIndex(spacesIndexModel),
+    "feed/index.html": renderGlobalFeed(globalFeedModel),
+  };
+
+  for (const spaceSlug of spaceSlugs) {
+    pages[`spaces/${spaceSlug}.html`] = renderSpaceDetail(
+      buildSpaceDetailModel(normalizedPayload, spaceSlug),
+    );
+  }
+
   return {
     sourceRowsPayload: {
       sourcePageUrl,
@@ -85,13 +117,9 @@ export async function buildDataset({
     },
     validationsPayload: validations,
     normalizedPayload,
-    html: renderHtmlPage({
-      sourcePageUrl,
-      generatedAt,
-      summary,
-      feeds,
-      failures,
-    }),
+    site: {
+      pages,
+    },
   };
 }
 

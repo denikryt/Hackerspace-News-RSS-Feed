@@ -60,8 +60,12 @@ describe("buildDataset", () => {
       parsedFeeds: 1,
       failedFeeds: 2,
     });
-    expect(result.html).toContain("BetaMachine");
-    expect(result.html).toContain("Akiba");
+    expect(Object.keys(result.site.pages)).toContain("index.html");
+    expect(Object.keys(result.site.pages)).toContain("feed/index.html");
+    expect(Object.keys(result.site.pages)).toContain("spaces/betamachine.html");
+    expect(result.site.pages["index.html"]).toContain("Hackerspaces");
+    expect(result.site.pages["feed/index.html"]).toContain("Global Feed");
+    expect(result.site.pages["spaces/betamachine.html"]).toContain("BetaMachine");
   });
 });
 

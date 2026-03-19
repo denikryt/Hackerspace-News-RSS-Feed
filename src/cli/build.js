@@ -1,6 +1,7 @@
 import { buildDataset } from "../buildDataset.js";
-import { PATHS } from "../config.js";
+import { DIST_DIR, PATHS } from "../config.js";
 import { writeJson, writeText } from "../storage.js";
+import { resolve } from "node:path";
 
 async function main() {
   const result = await buildDataset();
@@ -8,12 +9,18 @@ async function main() {
   await writeJson(PATHS.sourceRows, result.sourceRowsPayload);
   await writeJson(PATHS.validations, result.validationsPayload);
   await writeJson(PATHS.normalizedFeeds, result.normalizedPayload);
-  await writeText(PATHS.htmlOutput, result.html);
+  await Promise.all(
+    Object.entries(result.site.pages).map(([relativePath, html]) =>
+      writeText(resolve(DIST_DIR, relativePath), html),
+    ),
+  );
 
   console.log(`Wrote ${PATHS.sourceRows}`);
   console.log(`Wrote ${PATHS.validations}`);
   console.log(`Wrote ${PATHS.normalizedFeeds}`);
-  console.log(`Wrote ${PATHS.htmlOutput}`);
+  Object.keys(result.site.pages).forEach((relativePath) => {
+    console.log(`Wrote dist/${relativePath}`);
+  });
 }
 
 main().catch((error) => {
