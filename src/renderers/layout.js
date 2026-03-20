@@ -54,6 +54,7 @@ export function renderLayout({ title, body }) {
       .space-card-latest-link { color: var(--text); }
       .space-card-date { font-size: 0.82rem; letter-spacing: 0.05em; text-transform: uppercase; margin-top: auto; padding-top: 1rem; }
       .muted { color: var(--muted); }
+      .about-link-muted { color: var(--muted); }
       .meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 8px 0; overflow-wrap: anywhere; font-size: 0.92rem; color: var(--muted); }
       label { display: inline-flex; align-items: center; gap: 0.45rem; }
       select {

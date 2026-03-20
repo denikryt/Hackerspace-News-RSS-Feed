@@ -1,11 +1,15 @@
-import { renderLayout, renderNav } from "./layout.js";
+import { escapeHtml, renderLayout, renderNav } from "./layout.js";
 
-export function renderAboutPage() {
+export function renderAboutPage({
+  sourcePageUrl = "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
+} = {}) {
+  const sourcePageLabel = formatSourceLabel(sourcePageUrl);
   return renderLayout({
     title: "About",
     body: `
       <section class="panel panel-reading page-shell-narrow page-masthead-compact">
         <h1>About</h1>
+        <p class="muted">Source page: <a href="${sourcePageUrl}">${escapeHtml(sourcePageLabel)}</a></p>
       </section>
       <div class="page-shell-narrow">
         ${renderNav([
@@ -20,4 +24,13 @@ export function renderAboutPage() {
       </section>
     `,
   });
+}
+
+function formatSourceLabel(value) {
+  try {
+    const url = new URL(value);
+    return url.hostname;
+  } catch {
+    return value;
+  }
 }

@@ -104,7 +104,7 @@ export async function buildDataset({
 
   const pages = {
     "index.html": renderSpacesIndex(spacesIndexModel),
-    "about/index.html": renderAboutPage(),
+    "about/index.html": renderAboutPage({ sourcePageUrl }),
   };
 
   const totalGlobalFeedItems = (displayPayload.feeds || []).reduce(
