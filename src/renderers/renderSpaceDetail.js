@@ -55,7 +55,6 @@ export function renderSpaceDetail(model) {
         ])}
       </div>
       <section class="feed-list-shell page-shell-narrow timeline-shell-narrow">
-        <h2>Publications</h2>
         <p class="muted">${escapeHtml(model.currentPageLabel || "Page 1 of 1")}</p>
         <div class="item-list">${items || `<p class="muted">No publications available.</p>`}</div>
         ${renderPagination(model)}
