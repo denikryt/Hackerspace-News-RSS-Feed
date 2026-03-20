@@ -69,13 +69,13 @@ export function renderSpacesIndex(model) {
         <div class="meta">
           <label>
             Country
-            <select id="country-filter-select">
+            <select id="country-filter-select" class="control-select control-select-country">
               ${countryOptions}
             </select>
           </label>
           <label>
             Sort cards
-            <select id="sort-mode-select">
+            <select id="sort-mode-select" class="control-select">
               <option value="alphabetical"${model.sortMode === "alphabetical" ? " selected" : ""}>Alphabetical</option>
               <option value="latest-publication"${model.sortMode === "latest-publication" ? " selected" : ""}>Latest publication</option>
             </select>

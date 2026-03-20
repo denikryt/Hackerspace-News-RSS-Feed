@@ -53,6 +53,52 @@ export function renderLayout({ title, body }) {
       .space-card-date { font-size: 0.82rem; letter-spacing: 0.05em; text-transform: uppercase; }
       .muted { color: var(--muted); }
       .meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 8px 0; overflow-wrap: anywhere; font-size: 0.92rem; color: var(--muted); }
+      label { display: inline-flex; align-items: center; gap: 0.45rem; }
+      select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        min-height: 1.9rem;
+        padding: 0.16rem 1.55rem 0.16rem 0.5rem;
+        border: 1px solid var(--border-strong);
+        border-radius: 0;
+        background-color: var(--panel);
+        background-image:
+          linear-gradient(45deg, transparent 50%, var(--text) 50%),
+          linear-gradient(135deg, var(--text) 50%, transparent 50%);
+        background-position:
+          calc(100% - 0.72rem) calc(50% - 1px),
+          calc(100% - 0.5rem) calc(50% - 1px);
+        background-size: 0.24rem 0.24rem, 0.24rem 0.24rem;
+        background-repeat: no-repeat;
+        color: var(--text);
+        font: inherit;
+        font-size: 0.9rem;
+        line-height: 1.15;
+        box-shadow: none;
+      }
+      .control-select-country { inline-size: 11rem; }
+      select:focus {
+        outline: none;
+        border-color: var(--text);
+      }
+      input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+        inline-size: 0.9rem;
+        block-size: 0.9rem;
+        margin: 0;
+        border: 1px solid var(--border-strong);
+        border-radius: 0;
+        background: var(--panel);
+        position: relative;
+      }
+      input[type="checkbox"]:checked::after {
+        content: "";
+        position: absolute;
+        inset: 0.12rem;
+        background: var(--text);
+      }
       .field-label { font-weight: 700; }
       .status { display: inline-block; padding: 0.18rem 0.55rem; border-radius: 999px; border: 1px solid var(--border); background: transparent; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
       .status.error { border-color: rgba(140, 51, 36, 0.25); color: var(--error); }
@@ -127,6 +173,8 @@ export function renderLayout({ title, body }) {
         .section-nav { gap: 12px; }
         .summary-grid { grid-template-columns: 1fr; }
         .home-summary-grid { grid-template-columns: repeat(2, max-content); gap: 10px 18px; }
+        select { min-height: 1.85rem; }
+        .control-select-country { inline-size: 10rem; max-inline-size: 100%; }
         .page-shell-narrow { inline-size: 100%; }
         .page-masthead-compact h1 { font-size: clamp(2rem, 11vw, 3.1rem); }
         .home-hero-title { font-size: clamp(2rem, 11vw, 2.55rem); }
