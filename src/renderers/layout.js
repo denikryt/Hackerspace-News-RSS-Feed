@@ -41,10 +41,16 @@ export function renderLayout({ title, body }) {
       .home-hero-title { font-size: 3.6rem; max-inline-size: 100%; }
       .summary-grid, .cards { display: grid; gap: 12px; }
       .summary-grid { grid-template-columns: repeat(auto-fit, minmax(11rem, max-content)); gap: 10px 22px; margin-top: 14px; }
+      .home-summary-grid { grid-template-columns: repeat(2, max-content); }
       .cards { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0; border-top: 1px solid var(--border); border-left: 1px solid var(--border); }
       .metric { display: flex; align-items: baseline; gap: 8px; min-inline-size: 0; font-size: 0.95rem; }
       .metric strong { font-size: 1rem; line-height: 1; margin: 0; }
       .card { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); border-radius: 0; padding: 16px; background: transparent; min-height: 100%; }
+      .space-card-title { color: var(--text); }
+      .space-card-links { display: flex; flex-wrap: wrap; gap: 0.9rem; margin: 0.55rem 0 1rem; font-size: 0.95rem; }
+      .space-card-links a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.16rem; }
+      .space-card-latest-link { color: var(--text); }
+      .space-card-date { font-size: 0.82rem; letter-spacing: 0.05em; text-transform: uppercase; }
       .muted { color: var(--muted); }
       .meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 8px 0; overflow-wrap: anywhere; font-size: 0.92rem; color: var(--muted); }
       .field-label { font-weight: 700; }
@@ -120,6 +126,7 @@ export function renderLayout({ title, body }) {
         .panel { padding: 14px 0 12px; }
         .section-nav { gap: 12px; }
         .summary-grid { grid-template-columns: 1fr; }
+        .home-summary-grid { grid-template-columns: repeat(2, max-content); gap: 10px 18px; }
         .page-shell-narrow { inline-size: 100%; }
         .page-masthead-compact h1 { font-size: clamp(2rem, 11vw, 3.1rem); }
         .home-hero-title { font-size: clamp(2rem, 11vw, 2.55rem); }
@@ -170,11 +177,33 @@ export function renderStatus(value) {
 }
 
 export function renderTimelineDate(value) {
-  const parsed = value ? new Date(value) : null;
-  if (!parsed || Number.isNaN(parsed.getTime())) {
+  const formatted = formatDisplayDateParts(value);
+  if (!formatted) {
     return `<div class="timeline-date">
       <span class="timeline-date-label">NO DATE</span>
     </div>`;
+  }
+
+  return `<div class="timeline-date">
+    <span class="timeline-date-label">${escapeHtml(formatted.month)}</span>
+    <span class="timeline-date-day">${escapeHtml(formatted.day)}</span>
+    <span class="timeline-date-year">${escapeHtml(formatted.year)}</span>
+  </div>`;
+}
+
+export function formatCompactDate(value) {
+  const formatted = formatDisplayDateParts(value);
+  if (!formatted) {
+    return "";
+  }
+
+  return `${formatted.month} ${formatted.day}, ${formatted.year}`;
+}
+
+function formatDisplayDateParts(value) {
+  const parsed = value ? new Date(value) : null;
+  if (!parsed || Number.isNaN(parsed.getTime())) {
+    return null;
   }
 
   const month = new Intl.DateTimeFormat("en-US", { month: "short", timeZone: "UTC" })
@@ -183,11 +212,7 @@ export function renderTimelineDate(value) {
   const day = new Intl.DateTimeFormat("en-US", { day: "2-digit", timeZone: "UTC" }).format(parsed);
   const year = new Intl.DateTimeFormat("en-US", { year: "numeric", timeZone: "UTC" }).format(parsed);
 
-  return `<div class="timeline-date">
-    <span class="timeline-date-label">${escapeHtml(month)}</span>
-    <span class="timeline-date-day">${escapeHtml(day)}</span>
-    <span class="timeline-date-year">${escapeHtml(year)}</span>
-  </div>`;
+  return { month, day, year };
 }
 
 export function escapeHtml(value) {

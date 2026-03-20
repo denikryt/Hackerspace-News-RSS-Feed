@@ -1,5 +1,6 @@
 import {
   escapeHtml,
+  formatCompactDate,
   renderField,
   renderLayout,
   renderMetric,
@@ -7,6 +8,7 @@ import {
 } from "./layout.js";
 
 export function renderSpacesIndex(model) {
+  const sourcePageLabel = formatSourceLabel(model.sourcePageUrl);
   const countryOptions = [
     `<option value="all"${model.selectedCountry === "all" ? " selected" : ""}>All countries</option>`,
     ...(model.availableCountries || []).map(
@@ -23,18 +25,24 @@ export function renderSpacesIndex(model) {
         data-is-failure="${card.isFailure ? "true" : "false"}"
         data-default-visible="${card.isVisibleByDefault ? "true" : "false"}"
         data-latest-item-date="${escapeHtml(card.latestItemDate || "")}">
-        <h3><a href="${card.detailHref}">${card.spaceName}</a></h3>
+        <h3><a class="space-card-title" href="${card.detailHref}">${card.spaceName}</a></h3>
         <div class="meta">
           ${renderField("Country", card.country)}
-          ${renderField("Wiki", card.sourceWikiUrl, true)}
-          ${renderField("Feed", card.feedUrl, true)}
         </div>
+        <p class="space-card-links">
+          ${card.sourceWikiUrl ? `<a href="${card.sourceWikiUrl}">Wiki</a>` : ""}
+          ${card.siteUrl ? `<a href="${card.siteUrl}">Website</a>` : ""}
+        </p>
         ${
           card.latestItemTitle
-            ? `<p><span class="field-label">Latest:</span> ${card.latestItemTitle}</p>`
+            ? `<p><span class="field-label">Latest:</span> ${
+                card.latestItemLink
+                  ? `<a class="space-card-latest-link" href="${card.latestItemLink}">${escapeHtml(card.latestItemTitle)}</a>`
+                  : escapeHtml(card.latestItemTitle)
+              }</p>`
             : `<p class="muted">No latest publication available.</p>`
         }
-        ${card.latestItemDate ? `<p class="muted">${card.latestItemDate}</p>` : ""}
+        ${card.latestItemDate ? `<p class="space-card-date muted">${escapeHtml(formatCompactDate(card.latestItemDate))}</p>` : ""}
       </article>`,
     )
     .join("");
@@ -44,12 +52,10 @@ export function renderSpacesIndex(model) {
     body: `
       <section class="panel">
         <h1 class="home-hero-title">Hackerspace News</h1>
-        <p class="muted">Source page: <a href="${model.sourcePageUrl}">${model.sourcePageUrl}</a></p>
-        <div class="summary-grid">
+        <p class="muted">Source page: <a href="${model.sourcePageUrl}">${escapeHtml(sourcePageLabel)}</a></p>
+        <div class="summary-grid home-summary-grid">
           ${renderMetric("Total spaces", model.summary.sourceRows)}
           ${renderMetric("Readable feeds", model.summary.parsedFeeds)}
-          ${renderMetric("Empty feeds", model.summary.emptyFeeds)}
-          ${renderMetric("Failed feeds", model.summary.failedFeeds)}
         </div>
       </section>
       <div class="home-nav">
@@ -68,15 +74,15 @@ export function renderSpacesIndex(model) {
             </select>
           </label>
           <label>
-            <input id="show-failed-toggle" type="checkbox" />
-            Show failed feeds
-          </label>
-          <label>
             Sort cards
             <select id="sort-mode-select">
               <option value="alphabetical"${model.sortMode === "alphabetical" ? " selected" : ""}>Alphabetical</option>
               <option value="latest-publication"${model.sortMode === "latest-publication" ? " selected" : ""}>Latest publication</option>
             </select>
+          </label>
+          <label>
+            <input id="show-failed-toggle" type="checkbox" />
+            Show failed feeds
           </label>
         </div>
         <div id="spaces-cards" class="cards">${cards}</div>
@@ -149,4 +155,13 @@ export function renderSpacesIndex(model) {
       </script>
     `,
   });
+}
+
+function formatSourceLabel(value) {
+  try {
+    const url = new URL(value);
+    return url.hostname;
+  } catch {
+    return value;
+  }
 }

@@ -37,6 +37,7 @@ export function buildSpacesIndexModel(
       isFailure: false,
       isVisibleByDefault: true,
       latestItemTitle: latestItem?.title,
+      latestItemLink: latestItem?.link,
       latestItemDate: getEffectiveItemDate(latestItem),
       detailHref: `/spaces/${slugify(feed.spaceName)}.html`,
     };
