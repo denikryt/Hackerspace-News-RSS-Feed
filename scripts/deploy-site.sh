@@ -5,13 +5,15 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist"
 TARGET_DIR="${TARGET_DIR:-/var/www/test.nachitima.com}"
-RUN_BUILD=false
+RUN_MODE="deploy"
 
 if [[ "${1:-}" == "build" ]]; then
-  RUN_BUILD=true
+  RUN_MODE="build"
+elif [[ "${1:-}" == "render" ]]; then
+  RUN_MODE="render"
 elif [[ $# -gt 0 ]]; then
   echo "Unknown argument: $1"
-  echo "Usage: ./scripts/deploy-site.sh [build]"
+  echo "Usage: ./scripts/deploy-site.sh [build|render]"
   exit 1
 fi
 
@@ -25,8 +27,10 @@ run_privileged() {
   fi
 }
 
-if [[ "$RUN_BUILD" == true ]]; then
+if [[ "$RUN_MODE" == "build" ]]; then
   npm run build
+elif [[ "$RUN_MODE" == "render" ]]; then
+  npm run render
 fi
 
 if [[ ! -d "$DIST_DIR" ]]; then
