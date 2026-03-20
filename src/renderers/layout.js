@@ -45,12 +45,12 @@ export function renderLayout({ title, body }) {
       .cards { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0; border-top: 1px solid var(--border); border-left: 1px solid var(--border); }
       .metric { display: flex; align-items: baseline; gap: 8px; min-inline-size: 0; font-size: 0.95rem; }
       .metric strong { font-size: 1rem; line-height: 1; margin: 0; }
-      .card { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); border-radius: 0; padding: 16px; background: transparent; min-height: 100%; }
+      .card { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); border-radius: 0; padding: 16px; background: transparent; min-height: 100%; display: flex; flex-direction: column; }
       .space-card-title { color: var(--text); }
       .space-card-links { display: flex; flex-wrap: wrap; gap: 0.9rem; margin: 0.55rem 0 1rem; font-size: 0.95rem; }
       .space-card-links a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.16rem; }
       .space-card-latest-link { color: var(--text); }
-      .space-card-date { font-size: 0.82rem; letter-spacing: 0.05em; text-transform: uppercase; }
+      .space-card-date { font-size: 0.82rem; letter-spacing: 0.05em; text-transform: uppercase; margin-top: auto; padding-top: 1rem; }
       .muted { color: var(--muted); }
       .meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 8px 0; overflow-wrap: anywhere; font-size: 0.92rem; color: var(--muted); }
       label { display: inline-flex; align-items: center; gap: 0.45rem; }
