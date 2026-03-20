@@ -4,7 +4,6 @@ import {
   renderLayout,
   renderMetric,
   renderNav,
-  renderStatus,
 } from "./layout.js";
 
 export function renderSpacesIndex(model) {
@@ -29,7 +28,6 @@ export function renderSpacesIndex(model) {
           ${renderField("Country", card.country)}
           ${renderField("Wiki", card.sourceWikiUrl, true)}
           ${renderField("Feed", card.feedUrl, true)}
-          ${renderStatus(card.status)}
         </div>
         ${
           card.latestItemTitle

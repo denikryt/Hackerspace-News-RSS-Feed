@@ -4,7 +4,6 @@ import {
   renderField,
   renderLayout,
   renderNav,
-  renderStatus,
   renderTimelineDate,
 } from "./layout.js";
 
@@ -39,7 +38,6 @@ export function renderSpaceDetail(model) {
           ${renderField("Site", model.siteUrl, true)}
           ${renderField("Feed", model.feedUrl, true)}
           ${renderField("Feed type", model.feedType)}
-          ${renderStatus(model.status)}
         </div>
         ${model.errorCode ? `<p><span class="field-label">Error:</span> ${escapeHtml(model.errorCode)}</p>` : ""}
       </section>
