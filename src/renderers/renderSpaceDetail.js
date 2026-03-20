@@ -12,6 +12,7 @@ export function renderSpaceDetail(model) {
     .map(
       (item) => `<article class="timeline-entry">
           ${renderTimelineDate(item.publishedAt)}
+          <div class="timeline-axis" aria-hidden="true"></div>
           <div class="timeline-content">
             <div class="item-header">
               <div class="meta">

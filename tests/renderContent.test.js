@@ -27,7 +27,7 @@ describe("content rendering", () => {
     expect(html).toContain('class="timeline-date-year">2025');
     expect(html).toContain("First line\nSecond line");
     expect(html).toContain(".timeline-entry {");
-    expect(html).toContain("grid-template-columns: 7rem minmax(0, 1fr)");
+    expect(html).toContain("grid-template-columns: 7rem 1rem minmax(0, 1fr)");
     expect(html).toContain("overflow-wrap: anywhere");
   });
 
