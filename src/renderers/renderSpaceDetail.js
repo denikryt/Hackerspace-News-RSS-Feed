@@ -37,8 +37,6 @@ export function renderSpaceDetail(model) {
           ${renderField("Country", model.country)}
           ${renderField("Wiki", model.sourceWikiUrl, true)}
           ${renderField("Site", model.siteUrl, true)}
-          ${renderField("Feed", model.feedUrl, true)}
-          ${renderField("Feed type", model.feedType)}
         </div>
         ${model.errorCode ? `<p><span class="field-label">Error:</span> ${escapeHtml(model.errorCode)}</p>` : ""}
       </section>

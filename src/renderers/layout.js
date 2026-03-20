@@ -27,7 +27,7 @@ export function renderLayout({ title, body }) {
       h2 { font-size: 2.25rem; font-weight: 800; }
       h3 { font-size: 2rem; font-weight: 800; }
       a { color: var(--accent); }
-      .section-nav { display: flex; gap: 18px; margin: 0 auto 20px; flex-wrap: wrap; inline-size: min(100%, 74rem); justify-content: flex-start; padding-block: 10px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+      .section-nav { display: flex; gap: 18px; margin: 0 auto 20px; flex-wrap: wrap; inline-size: min(100%, 74rem); justify-content: flex-start; padding-block: 10px; border-bottom: 1px solid var(--border); }
       .section-nav a { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-size: 0.96rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--muted); }
       .section-nav a[aria-current="page"] { color: var(--text); font-weight: 700; }
       .panel { background: transparent; border: 1px solid var(--border); border-radius: 0; padding: 18px 0 14px; margin-bottom: 18px; overflow: hidden; border-left: 0; border-right: 0; }
