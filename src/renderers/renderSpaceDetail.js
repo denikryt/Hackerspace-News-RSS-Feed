@@ -31,7 +31,7 @@ export function renderSpaceDetail(model) {
   return renderLayout({
     title: model.spaceName,
     body: `
-      <section class="panel panel-reading">
+      <section class="panel panel-reading page-shell-narrow page-masthead-compact">
         <h1>${escapeHtml(model.spaceName)}</h1>
         <div class="meta">
           ${renderField("Country", model.country)}
@@ -43,11 +43,13 @@ export function renderSpaceDetail(model) {
         </div>
         ${model.errorCode ? `<p><span class="field-label">Error:</span> ${escapeHtml(model.errorCode)}</p>` : ""}
       </section>
-      ${renderNav([
-        { href: model.homeHref, label: "Hackerspaces" },
-        { href: model.globalFeedHref, label: "Global Feed" },
-      ])}
-      <section class="feed-list-shell">
+      <div class="page-shell-narrow">
+        ${renderNav([
+          { href: model.homeHref, label: "Hackerspaces" },
+          { href: model.globalFeedHref, label: "Global Feed" },
+        ])}
+      </div>
+      <section class="feed-list-shell page-shell-narrow timeline-shell-narrow">
         <h2>Publications</h2>
         <p class="muted">${escapeHtml(model.currentPageLabel || "Page 1 of 1")}</p>
         <div class="item-list">${items || `<p class="muted">No publications available.</p>`}</div>
