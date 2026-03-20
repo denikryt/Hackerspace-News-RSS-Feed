@@ -1,9 +1,15 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
 import { escapeHtml, renderLayout, renderNav } from "./layout.js";
+
+const ABOUT_HTML_PATH = resolve(process.cwd(), "content/about.html");
 
 export function renderAboutPage({
   sourcePageUrl = "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
 } = {}) {
   const sourcePageLabel = formatSourceLabel(sourcePageUrl);
+  const aboutHtml = readFileSync(ABOUT_HTML_PATH, "utf8");
   return renderLayout({
     title: "About",
     body: `
@@ -18,9 +24,7 @@ export function renderAboutPage({
         ])}
       </div>
       <section class="page-shell-narrow about-copy">
-        <p>This site aggregates publications from hackerspace feeds collected from the wiki source page and presents them in a simple editorial archive.</p>
-        <p>Feed URLs are extracted from the curated hackerspaces list, validated, parsed, and normalized before the site is rendered.</p>
-        <p>The result is a lightweight browsing interface for exploring recent posts, individual hackerspace archives, and the global feed in one place.</p>
+        ${aboutHtml}
       </section>
     `,
   });
