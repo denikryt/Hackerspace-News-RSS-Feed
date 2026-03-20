@@ -30,6 +30,10 @@ export function renderLayout({ title, body }) {
       .panel { background: transparent; border: 1px solid var(--border); border-radius: 0; padding: 18px 0 14px; margin-bottom: 18px; overflow: hidden; border-left: 0; border-right: 0; }
       .panel-reading { inline-size: min(100%, 74rem); margin-inline: auto; }
       .feed-list-shell { inline-size: min(100%, 74rem); margin: 0 auto 16px; }
+      .page-shell-narrow { inline-size: min(100%, 46rem); margin-inline: auto; }
+      .page-shell-narrow > .section-nav { inline-size: 100%; }
+      .page-masthead-compact h1 { font-size: clamp(2.3rem, 5.6vw, 3.6rem); }
+      .page-masthead-compact p { max-inline-size: 30rem; }
       .summary-grid, .cards { display: grid; gap: 12px; }
       .summary-grid { grid-template-columns: repeat(auto-fit, minmax(11rem, max-content)); gap: 10px 22px; margin-top: 14px; }
       .cards { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0; border-top: 1px solid var(--border); border-left: 1px solid var(--border); }
@@ -44,10 +48,12 @@ export function renderLayout({ title, body }) {
       .item-list { display: grid; gap: 0; min-inline-size: 0; }
       .timeline-entry { display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: 24px; padding: 0 0 32px; position: relative; }
       .timeline-entry::before { content: ""; position: absolute; inset-block: 0 0; inset-inline-start: calc(7rem - 1px); inline-size: 1px; background: var(--border); }
+      .timeline-shell-narrow .timeline-entry { grid-template-columns: 4.7rem minmax(0, 1fr); gap: 16px; }
+      .timeline-shell-narrow .timeline-entry::before { inset-inline-start: calc(4.7rem - 1px); }
       .timeline-date { position: relative; padding-inline-end: 16px; background: var(--bg); z-index: 1; align-self: start; }
       .timeline-date::after { content: ""; position: absolute; inset-inline-end: -5px; inset-block-start: 0.95rem; inline-size: 9px; block-size: 9px; border-radius: 999px; background: var(--text); }
-      .timeline-date-label, .timeline-date-year { display: block; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.08em; color: var(--muted); }
-      .timeline-date-day { display: block; font-size: 2rem; font-weight: 800; line-height: 0.95; margin: 0.18rem 0 0.12rem; color: var(--text); }
+      .timeline-date-label, .timeline-date-year { display: block; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.08em; color: var(--muted); }
+      .timeline-date-day { display: block; font-size: 1.75rem; font-weight: 800; line-height: 0.95; margin: 0.14rem 0 0.1rem; color: var(--text); }
       .timeline-content { min-inline-size: 0; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
       .item-header { margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border-strong); }
       .item-header .meta { margin: 0; }
@@ -75,10 +81,16 @@ export function renderLayout({ title, body }) {
         .panel { padding: 14px 0 12px; }
         .section-nav { gap: 12px; }
         .summary-grid { grid-template-columns: 1fr; }
-        .timeline-entry { grid-template-columns: 1fr; gap: 10px; padding-bottom: 24px; }
-        .timeline-entry::before { display: none; }
-        .timeline-date { padding-inline-end: 0; }
-        .timeline-date::after { display: none; }
+        .page-shell-narrow { inline-size: 100%; }
+        .page-masthead-compact h1 { font-size: clamp(2rem, 12vw, 3.1rem); }
+        .timeline-entry,
+        .timeline-shell-narrow .timeline-entry { grid-template-columns: 1fr; gap: 10px; padding-bottom: 24px; }
+        .timeline-entry::before,
+        .timeline-shell-narrow .timeline-entry::before { display: none; }
+        .timeline-date,
+        .timeline-shell-narrow .timeline-date { padding-inline-end: 0; margin-bottom: 6px; }
+        .timeline-date::after,
+        .timeline-shell-narrow .timeline-date::after { display: none; }
         .timeline-content { padding-bottom: 22px; }
       }
     </style>
