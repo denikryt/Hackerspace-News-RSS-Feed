@@ -3,7 +3,7 @@ import {
   escapeHtml,
   renderField,
   renderLayout,
-  renderNav,
+  renderPageHeader,
   renderTimelineDate,
 } from "./layout.js";
 
@@ -39,21 +39,23 @@ export function renderSpaceDetail(model) {
   return renderLayout({
     title: model.spaceName,
     body: `
-      <section class="panel panel-reading page-shell-narrow page-masthead-compact">
-        <h1>${escapeHtml(model.spaceName)}</h1>
+      ${renderPageHeader({
+        title: model.spaceName,
+        shellClass: "page-shell-narrow page-masthead-compact",
+        introHtml: `
         <div class="meta detail-header-meta">
           ${renderField("Country", model.country)}
           ${model.sourceWikiUrl ? `<a class="global-feed-meta-link detail-header-link" href="${model.sourceWikiUrl}">Wiki</a>` : ""}
           ${model.siteUrl ? `<a class="global-feed-meta-link detail-header-link" href="${model.siteUrl}">Website</a>` : ""}
         </div>
         ${model.errorCode ? `<p><span class="field-label">Error:</span> ${escapeHtml(model.errorCode)}</p>` : ""}
-      </section>
-      <div class="page-shell-narrow">
-        ${renderNav([
+        `,
+        navItems: [
           { href: model.homeHref, label: "Hackerspaces" },
           { href: model.globalFeedHref, label: "Global Feed" },
-        ])}
-      </div>
+        ],
+        navWrapperClass: "page-shell-narrow",
+      })}
       <section class="feed-list-shell page-shell-narrow timeline-shell-narrow">
         <p class="muted">${escapeHtml(model.currentPageLabel || "Page 1 of 1")}</p>
         <div class="item-list">${items || `<p class="muted">No publications available.</p>`}</div>

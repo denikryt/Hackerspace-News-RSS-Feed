@@ -41,7 +41,6 @@ export function renderLayout({ title, body }) {
       .home-summary-panel { padding-top: 8px; }
       .home-summary-panel .summary-grid { margin-top: 0; margin-bottom: 8px; }
       .home-summary-panel .meta { margin-top: 0; }
-      .panel-reading { inline-size: min(100%, 74rem); margin-inline: auto; }
       .feed-list-shell { inline-size: min(100%, 74rem); margin: 0 auto 16px; }
       .about-copy { max-inline-size: 46rem; margin: 0 auto; color: var(--text); }
       .about-copy p { margin: 0 0 1rem; line-height: 1.6; }
@@ -112,8 +111,6 @@ export function renderLayout({ title, body }) {
         background: var(--text);
       }
       .field-label { font-weight: 700; }
-      .status { display: inline-block; padding: 0.18rem 0.55rem; border-radius: 999px; border: 1px solid var(--border); background: transparent; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
-      .status.error { border-color: rgba(140, 51, 36, 0.25); color: var(--error); }
       .item-list { display: grid; gap: 0; min-inline-size: 0; }
       .timeline-entry { display: grid; grid-template-columns: 7rem 1rem minmax(0, 1fr); column-gap: 16px; padding: 0 0 var(--timeline-entry-gap); }
       .timeline-shell-narrow .timeline-entry { grid-template-columns: 4.7rem 1rem minmax(0, 1fr); column-gap: 12px; }
@@ -230,6 +227,33 @@ export function renderLayout({ title, body }) {
 </html>`;
 }
 
+export function renderPageHeader({
+  title,
+  titleClass = "",
+  introHtml = "",
+  panelClass = "",
+  shellClass = "",
+  navItems = [],
+  navWrapperClass = "",
+}) {
+  const sectionClass = ["panel", panelClass, shellClass].filter(Boolean).join(" ");
+  const titleClassAttribute = titleClass ? ` class="${titleClass}"` : "";
+  const navHtml = navItems.length > 0 ? renderNav(navItems) : "";
+  const wrappedNavHtml = navHtml
+    ? navWrapperClass
+      ? `<div class="${navWrapperClass}">${navHtml}</div>`
+      : navHtml
+    : "";
+
+  return `
+      <section class="${sectionClass}">
+        <h1${titleClassAttribute}>${escapeHtml(title)}</h1>
+        ${introHtml}
+      </section>
+      ${wrappedNavHtml}
+    `;
+}
+
 export function renderMetric(label, value) {
   return `<div class="metric"><span class="muted">${escapeHtml(label)}:</span><strong>${escapeHtml(String(value))}</strong></div>`;
 }
@@ -251,11 +275,6 @@ export function renderNav(items) {
         `<a href="${escapeHtml(item.href)}"${item.isCurrent ? ' aria-current="page"' : ""}>${escapeHtml(item.label)}</a>`,
     )
     .join("")}</nav>`;
-}
-
-export function renderStatus(value) {
-  const className = value === "error" ? "status error" : "status";
-  return `<span class="${className}">${escapeHtml(value)}</span>`;
 }
 
 export function renderTimelineDate(value) {

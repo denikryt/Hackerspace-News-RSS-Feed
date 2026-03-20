@@ -4,7 +4,7 @@ import {
   renderField,
   renderLayout,
   renderMetric,
-  renderNav,
+  renderPageHeader,
 } from "./layout.js";
 
 export function renderSpacesIndex(model) {
@@ -49,16 +49,17 @@ export function renderSpacesIndex(model) {
   return renderLayout({
     title: "Hackerspace News",
     body: `
-      <section class="panel home-hero-panel">
-        <h1 class="home-hero-title">Hackerspace News</h1>
-        <p class="muted"><a class="about-link-muted" href="/about/index.html">About</a></p>
-      </section>
-      <div class="home-nav home-nav-compact home-nav-divider">
-        ${renderNav([
+      ${renderPageHeader({
+        title: "Hackerspace News",
+        titleClass: "home-hero-title",
+        panelClass: "home-hero-panel",
+        introHtml: `<p class="muted"><a class="about-link-muted" href="/about/index.html">About</a></p>`,
+        navItems: [
           { href: "/index.html", label: "Hackerspaces", isCurrent: true },
           { href: "/feed/index.html", label: "Global Feed" },
-        ])}
-      </div>
+        ],
+        navWrapperClass: "home-nav home-nav-compact home-nav-divider",
+      })}
       <section class="panel home-summary-panel">
         <div class="summary-grid home-summary-grid">
           ${renderMetric("Total spaces", model.summary.sourceRows)}

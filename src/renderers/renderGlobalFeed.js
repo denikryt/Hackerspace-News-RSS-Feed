@@ -1,5 +1,10 @@
 import { renderDisplayContent } from "../contentDisplay.js";
-import { escapeHtml, renderLayout, renderNav, renderTimelineDate } from "./layout.js";
+import {
+  escapeHtml,
+  renderLayout,
+  renderPageHeader,
+  renderTimelineDate,
+} from "./layout.js";
 
 export function renderGlobalFeed(model) {
   const items = model.items
@@ -34,16 +39,16 @@ export function renderGlobalFeed(model) {
   return renderLayout({
     title: "Global Feed",
     body: `
-      <section class="panel panel-reading page-shell-narrow page-masthead-compact">
-        <h1>Global Feed</h1>
-        <p class="muted">All publications sorted from new to old.</p>
-      </section>
-      <div class="page-shell-narrow">
-        ${renderNav([
+      ${renderPageHeader({
+        title: "Global Feed",
+        shellClass: "page-shell-narrow page-masthead-compact",
+        introHtml: `<p class="muted">All publications sorted from new to old.</p>`,
+        navItems: [
           { href: model.homeHref, label: "Hackerspaces" },
           { href: "/feed/index.html", label: "Global Feed", isCurrent: true },
-        ])}
-      </div>
+        ],
+        navWrapperClass: "page-shell-narrow",
+      })}
       <section class="feed-list-shell page-shell-narrow timeline-shell-narrow">
         <p class="muted">${escapeHtml(model.currentPageLabel || "Page 1 of 1")}</p>
         <div class="item-list">${items || `<p class="muted">No feed items available.</p>`}</div>
