@@ -19,10 +19,15 @@ describe("content rendering", () => {
     });
 
     expect(html).toContain('class="content-body plain-text"');
-    expect(html).toContain('class="item-inner"');
+    expect(html).toContain('class="timeline-entry"');
+    expect(html).toContain('class="timeline-date"');
+    expect(html).toContain('class="timeline-content"');
+    expect(html).toContain('class="timeline-date-label">JAN');
+    expect(html).toContain('class="timeline-date-day">01');
+    expect(html).toContain('class="timeline-date-year">2025');
     expect(html).toContain("First line\nSecond line");
-    expect(html).toContain(".item-inner {");
-    expect(html).toContain("inline-size: min(100%, 72ch)");
+    expect(html).toContain(".timeline-entry {");
+    expect(html).toContain("grid-template-columns: 7rem minmax(0, 1fr)");
     expect(html).toContain("overflow-wrap: anywhere");
   });
 
@@ -93,6 +98,7 @@ describe("content rendering", () => {
     expect(html).toContain(">Next<");
     expect(html).toContain('class="pagination-link current"');
     expect(html).toContain("/feed/page/3/");
+    expect(html).toContain('class="timeline-date-label"');
   });
 
   it("renders pagination controls for space detail pages", () => {
@@ -131,5 +137,7 @@ describe("content rendering", () => {
     expect(html).toContain("Page 2 of 5");
     expect(html).toContain("/spaces/betamachine/page/3/");
     expect(html).toContain('class="pagination-link current"');
+    expect(html).toContain('class="timeline-entry"');
+    expect(html).toContain('class="timeline-date"');
   });
 });

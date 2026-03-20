@@ -1,22 +1,29 @@
 import { renderDisplayContent } from "../contentDisplay.js";
-import { escapeHtml, renderField, renderLayout, renderNav, renderStatus } from "./layout.js";
+import {
+  escapeHtml,
+  renderField,
+  renderLayout,
+  renderNav,
+  renderStatus,
+  renderTimelineDate,
+} from "./layout.js";
 
 export function renderSpaceDetail(model) {
   const items = (model.items || [])
     .map(
-      (item) => `<article class="item">
-        <div class="item-inner">
-          <div class="item-header">
-            <div class="meta">
-              ${renderField("Date", item.publishedAt)}
-              ${renderField("Author", item.author)}
-              ${renderField("Original", item.link, true)}
+      (item) => `<article class="timeline-entry">
+          ${renderTimelineDate(item.publishedAt)}
+          <div class="timeline-content">
+            <div class="item-header">
+              <div class="meta">
+                ${renderField("Author", item.author)}
+                ${renderField("Original", item.link, true)}
+              </div>
             </div>
+            <h3 class="item-title">${escapeHtml(item.title || "Untitled item")}</h3>
+            ${renderDisplayContent(item)}
+            ${item.categories?.length ? `<p class="muted">${escapeHtml(item.categories.join(", "))}</p>` : ""}
           </div>
-          <h3 class="item-title">${escapeHtml(item.title || "Untitled item")}</h3>
-          ${renderDisplayContent(item)}
-          ${item.categories?.length ? `<p class="muted">${escapeHtml(item.categories.join(", "))}</p>` : ""}
-        </div>
       </article>`,
     )
     .join("");

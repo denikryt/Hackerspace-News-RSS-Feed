@@ -1,21 +1,21 @@
 import { renderDisplayContent } from "../contentDisplay.js";
-import { escapeHtml, renderField, renderLayout, renderNav } from "./layout.js";
+import { escapeHtml, renderField, renderLayout, renderNav, renderTimelineDate } from "./layout.js";
 
 export function renderGlobalFeed(model) {
   const items = model.items
     .map(
-      (item) => `<article class="item">
-        <div class="item-inner">
-          <div class="item-header">
-            <div class="meta">
-              <span><span class="field-label">Space page:</span> <a href="${item.spaceHref}">${escapeHtml(item.spaceName)}</a></span>
-              ${renderField("Date", item.publishedAt)}
-              ${renderField("Original", item.link, true)}
+      (item) => `<article class="timeline-entry">
+          ${renderTimelineDate(item.publishedAt)}
+          <div class="timeline-content">
+            <div class="item-header">
+              <div class="meta">
+                <span><span class="field-label">Space page:</span> <a href="${item.spaceHref}">${escapeHtml(item.spaceName)}</a></span>
+                ${renderField("Original", item.link, true)}
+              </div>
             </div>
+            <h3 class="item-title">${escapeHtml(item.title || "Untitled item")}</h3>
+            ${renderDisplayContent(item)}
           </div>
-          <h3 class="item-title">${escapeHtml(item.title || "Untitled item")}</h3>
-          ${renderDisplayContent(item)}
-        </div>
       </article>`,
     )
     .join("");
@@ -28,13 +28,13 @@ export function renderGlobalFeed(model) {
       <section class="panel panel-reading">
         <h1>Global Feed</h1>
         <p class="muted">All publications sorted from new to old.</p>
-        <p class="muted">${escapeHtml(model.currentPageLabel || "Page 1 of 1")}</p>
       </section>
       ${renderNav([
         { href: model.homeHref, label: "Hackerspaces" },
         { href: "/feed/index.html", label: "Global Feed", isCurrent: true },
       ])}
       <section class="feed-list-shell">
+        <p class="muted">${escapeHtml(model.currentPageLabel || "Page 1 of 1")}</p>
         <div class="item-list">${items || `<p class="muted">No feed items available.</p>`}</div>
         ${pagination}
       </section>
