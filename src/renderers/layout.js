@@ -20,9 +20,9 @@ export function renderLayout({ title, body }) {
       body { margin: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.45; }
       main { max-width: 1180px; margin: 0 auto; padding: 28px 24px 56px; }
       h1, h2, h3, h4 { margin: 0 0 12px; line-height: 0.95; letter-spacing: -0.04em; }
-      h1 { font-size: clamp(3.4rem, 9vw, 6.8rem); font-weight: 900; text-transform: uppercase; }
-      h2 { font-size: clamp(1.7rem, 4vw, 2.5rem); font-weight: 800; }
-      h3 { font-size: clamp(1.45rem, 2.3vw, 2.2rem); font-weight: 800; }
+      h1 { font-size: 4.6rem; font-weight: 900; text-transform: uppercase; }
+      h2 { font-size: 2.25rem; font-weight: 800; }
+      h3 { font-size: 2rem; font-weight: 800; }
       a { color: var(--accent); }
       .section-nav { display: flex; gap: 18px; margin: 0 auto 20px; flex-wrap: wrap; inline-size: min(100%, 74rem); justify-content: flex-start; padding-block: 10px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
       .section-nav a { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-size: 0.96rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--muted); }
@@ -32,7 +32,7 @@ export function renderLayout({ title, body }) {
       .feed-list-shell { inline-size: min(100%, 74rem); margin: 0 auto 16px; }
       .page-shell-narrow { inline-size: min(100%, 46rem); margin-inline: auto; }
       .page-shell-narrow > .section-nav { inline-size: 100%; }
-      .page-masthead-compact h1 { font-size: clamp(2.3rem, 5.6vw, 3.6rem); }
+      .page-masthead-compact h1 { font-size: 3.35rem; }
       .page-masthead-compact p { max-inline-size: 30rem; }
       .summary-grid, .cards { display: grid; gap: 12px; }
       .summary-grid { grid-template-columns: repeat(auto-fit, minmax(11rem, max-content)); gap: 10px 22px; margin-top: 14px; }
@@ -77,12 +77,14 @@ export function renderLayout({ title, body }) {
       code { background: #f0f0eb; padding: 2px 4px; border-radius: 4px; }
       @media (max-width: 720px) {
         main { padding: 16px; }
-        h1 { font-size: clamp(2.5rem, 15vw, 4.2rem); }
+        h1 { font-size: 3.1rem; }
+        h2 { font-size: 1.9rem; }
+        h3 { font-size: 1.45rem; }
         .panel { padding: 14px 0 12px; }
         .section-nav { gap: 12px; }
         .summary-grid { grid-template-columns: 1fr; }
         .page-shell-narrow { inline-size: 100%; }
-        .page-masthead-compact h1 { font-size: clamp(2rem, 12vw, 3.1rem); }
+        .page-masthead-compact h1 { font-size: 3.1rem; }
         .timeline-entry,
         .timeline-shell-narrow .timeline-entry { grid-template-columns: 1fr; gap: 10px; padding-bottom: 24px; }
         .timeline-entry::before,
