@@ -34,6 +34,8 @@ export function renderLayout({ title, body }) {
       .panel { background: transparent; border: 1px solid var(--border); border-radius: 0; padding: 18px 0 14px; margin-bottom: 18px; overflow: hidden; border-left: 0; border-right: 0; border-top: 0; }
       .panel-reading { inline-size: min(100%, 74rem); margin-inline: auto; }
       .feed-list-shell { inline-size: min(100%, 74rem); margin: 0 auto 16px; }
+      .about-copy { max-inline-size: 46rem; margin: 0 auto; color: var(--muted); }
+      .about-copy p { margin: 0 0 1rem; line-height: 1.6; }
       .page-shell-narrow { inline-size: min(100%, 46rem); margin-inline: auto; }
       .page-shell-narrow > .section-nav { inline-size: 100%; }
       .page-masthead-compact h1 { font-size: 3.35rem; max-inline-size: 100%; }

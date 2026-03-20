@@ -52,6 +52,8 @@ describe("renderSpacesIndex", () => {
     expect(html).toContain("Latest publication");
     expect(html).toContain("localStorage");
     expect(html).toContain("hackerspace-news-feed.country");
+    expect(html).toContain('href="/about/index.html"');
+    expect(html).toContain(">About<");
     expect(html).toContain("data-is-failure=\"true\"");
     expect(html).toContain("data-country=\"France\"");
     expect(html).toContain("data-latest-item-date=\"2025-01-02T10:00:00.000Z\"");

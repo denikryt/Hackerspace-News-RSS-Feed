@@ -52,7 +52,7 @@ export function renderSpacesIndex(model) {
     body: `
       <section class="panel">
         <h1 class="home-hero-title">Hackerspace News</h1>
-        <p class="muted">Source page: <a href="${model.sourcePageUrl}">${escapeHtml(sourcePageLabel)}</a></p>
+        <p class="muted">Source page: <a href="${model.sourcePageUrl}">${escapeHtml(sourcePageLabel)}</a> · <a href="/about/index.html">About</a></p>
         <div class="summary-grid home-summary-grid">
           ${renderMetric("Total spaces", model.summary.sourceRows)}
           ${renderMetric("Readable feeds", model.summary.parsedFeeds)}

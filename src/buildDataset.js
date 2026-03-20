@@ -4,6 +4,7 @@ import { parseFeedBody } from "./feedParser.js";
 import { probeFeedUrl } from "./feedProbe.js";
 import { fetchPageHtml } from "./pageFetcher.js";
 import { renderGlobalFeed } from "./renderers/renderGlobalFeed.js";
+import { renderAboutPage } from "./renderers/renderAboutPage.js";
 import { renderSpaceDetail } from "./renderers/renderSpaceDetail.js";
 import { renderSpacesIndex } from "./renderers/renderSpacesIndex.js";
 import { extractSourceRows } from "./sourceTableExtractor.js";
@@ -103,6 +104,7 @@ export async function buildDataset({
 
   const pages = {
     "index.html": renderSpacesIndex(spacesIndexModel),
+    "about/index.html": renderAboutPage(),
   };
 
   const totalGlobalFeedItems = (displayPayload.feeds || []).reduce(

@@ -61,9 +61,11 @@ describe("buildDataset", () => {
       failedFeeds: 2,
     });
     expect(Object.keys(result.site.pages)).toContain("index.html");
+    expect(Object.keys(result.site.pages)).toContain("about/index.html");
     expect(Object.keys(result.site.pages)).toContain("feed/index.html");
     expect(Object.keys(result.site.pages)).toContain("spaces/betamachine.html");
     expect(result.site.pages["index.html"]).toContain("Hackerspace News");
+    expect(result.site.pages["about/index.html"]).toContain("About");
     expect(result.site.pages["feed/index.html"]).toContain("Global Feed");
     expect(result.site.pages["spaces/betamachine.html"]).toContain("BetaMachine");
   });
