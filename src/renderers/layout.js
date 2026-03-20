@@ -31,7 +31,7 @@ export function renderLayout({ title, body }) {
       .section-nav a { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-size: 0.96rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--muted); }
       .section-nav a[aria-current="page"] { color: var(--text); font-weight: 700; }
       .home-nav .section-nav { margin-bottom: 0; border-bottom: 0; }
-      .panel { background: transparent; border: 1px solid var(--border); border-radius: 0; padding: 18px 0 14px; margin-bottom: 18px; overflow: hidden; border-left: 0; border-right: 0; }
+      .panel { background: transparent; border: 1px solid var(--border); border-radius: 0; padding: 18px 0 14px; margin-bottom: 18px; overflow: hidden; border-left: 0; border-right: 0; border-top: 0; }
       .panel-reading { inline-size: min(100%, 74rem); margin-inline: auto; }
       .feed-list-shell { inline-size: min(100%, 74rem); margin: 0 auto 16px; }
       .page-shell-narrow { inline-size: min(100%, 46rem); margin-inline: auto; }

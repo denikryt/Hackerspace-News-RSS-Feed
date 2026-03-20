@@ -65,7 +65,6 @@ export function renderSpacesIndex(model) {
         ])}
       </div>
       <section class="panel">
-        <h2>Spaces</h2>
         <div class="meta">
           <label>
             Country
