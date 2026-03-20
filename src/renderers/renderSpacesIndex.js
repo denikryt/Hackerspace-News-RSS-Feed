@@ -8,6 +8,7 @@ import {
 } from "./layout.js";
 
 export function renderSpacesIndex(model) {
+  const lastUpdatedIso = model.generatedAt ? escapeHtml(model.generatedAt) : "";
   const countryOptions = [
     `<option value="all"${model.selectedCountry === "all" ? " selected" : ""}>All countries</option>`,
     ...(model.availableCountries || []).map(
@@ -53,7 +54,7 @@ export function renderSpacesIndex(model) {
         title: "Hackerspace News",
         titleClass: "home-hero-title",
         headerClass: "page-header--wide page-header--compact",
-        introHtml: `<p class="muted"><a class="about-link-muted" href="/about/index.html">About</a></p>`,
+        introHtml: `<p class="muted"><a class="about-link-muted" href="/about/index.html">About</a>${lastUpdatedIso ? ` <span>• Last updated: <span id="last-updated-label" data-updated-at="${lastUpdatedIso}">${lastUpdatedIso}</span></span>` : ""}</p>`,
         navItems: [
           { href: "/index.html", label: "Hackerspaces", isCurrent: true },
           { href: "/feed/index.html", label: "Global Feed" },
@@ -105,6 +106,7 @@ export function renderSpacesIndex(model) {
         const storedSortMode = localStorage.getItem(storageKeys.sortMode);
 
         const defaultCountry = ${JSON.stringify(model.selectedCountry)};
+        const lastUpdatedLabel = document.getElementById("last-updated-label");
         const availableCountries = new Set(["all", ...Array.from(countryFilterSelect.options).map((option) => option.value)]);
 
         countryFilterSelect.value = availableCountries.has(storedCountry) ? storedCountry : defaultCountry;
@@ -120,6 +122,24 @@ export function renderSpacesIndex(model) {
           const rightValue = Date.parse(right.dataset.latestItemDate || "") || Number.NEGATIVE_INFINITY;
           if (rightValue !== leftValue) return rightValue - leftValue;
           return compareAlphabetical(left, right);
+        }
+
+        function formatLocalUpdatedAt(label) {
+          if (!label) return;
+
+          const rawValue = label.dataset.updatedAt;
+          const parsed = rawValue ? new Date(rawValue) : null;
+          if (!parsed || Number.isNaN(parsed.getTime())) return;
+
+          const formatter = new Intl.DateTimeFormat(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+
+          label.textContent = formatter.format(parsed);
         }
 
         function applyUiState() {
@@ -150,6 +170,7 @@ export function renderSpacesIndex(model) {
         countryFilterSelect.addEventListener("change", applyUiState);
         failedToggle.addEventListener("change", applyUiState);
         sortModeSelect.addEventListener("change", applyUiState);
+        formatLocalUpdatedAt(lastUpdatedLabel);
         applyUiState();
       </script>
     `,

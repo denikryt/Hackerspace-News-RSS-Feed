@@ -85,6 +85,7 @@ describe("multi-page view models", () => {
     expect(model.sortMode).toBe("alphabetical");
     expect(model.showFailed).toBe(false);
     expect(model.selectedCountry).toBe("all");
+    expect(model.generatedAt).toBe("2026-03-19T20:00:00.000Z");
     expect(model.availableCountries).toEqual(["France", "Germany", "Russian Federation"]);
     expect(model.cards).toHaveLength(3);
     expect(model.visibleCards.map((card) => card.spaceName)).toEqual(["BetaMachine", "C3D2"]);
