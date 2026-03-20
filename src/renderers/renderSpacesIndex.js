@@ -40,10 +40,10 @@ export function renderSpacesIndex(model) {
     .join("");
 
   return renderLayout({
-    title: "Hackerspaces",
+    title: "Hackerspace News",
     body: `
       <section class="panel">
-        <h1>Hackerspaces</h1>
+        <h1 class="home-hero-title">Hackerspace News</h1>
         <p class="muted">Source page: <a href="${model.sourcePageUrl}">${model.sourcePageUrl}</a></p>
         <div class="summary-grid">
           ${renderMetric("Total spaces", model.summary.sourceRows)}
@@ -52,10 +52,12 @@ export function renderSpacesIndex(model) {
           ${renderMetric("Failed feeds", model.summary.failedFeeds)}
         </div>
       </section>
-      ${renderNav([
-        { href: "/index.html", label: "Hackerspaces", isCurrent: true },
-        { href: "/feed/index.html", label: "Global Feed" },
-      ])}
+      <div class="home-nav">
+        ${renderNav([
+          { href: "/index.html", label: "Hackerspaces", isCurrent: true },
+          { href: "/feed/index.html", label: "Global Feed" },
+        ])}
+      </div>
       <section class="panel">
         <h2>Spaces</h2>
         <div class="meta">

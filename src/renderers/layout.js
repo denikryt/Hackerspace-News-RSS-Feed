@@ -30,6 +30,7 @@ export function renderLayout({ title, body }) {
       .section-nav { display: flex; gap: 18px; margin: 0 auto 20px; flex-wrap: wrap; inline-size: min(100%, 74rem); justify-content: flex-start; padding-block: 10px; border-bottom: 1px solid var(--border); }
       .section-nav a { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-size: 0.96rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--muted); }
       .section-nav a[aria-current="page"] { color: var(--text); font-weight: 700; }
+      .home-nav .section-nav { margin-bottom: 0; border-bottom: 0; }
       .panel { background: transparent; border: 1px solid var(--border); border-radius: 0; padding: 18px 0 14px; margin-bottom: 18px; overflow: hidden; border-left: 0; border-right: 0; }
       .panel-reading { inline-size: min(100%, 74rem); margin-inline: auto; }
       .feed-list-shell { inline-size: min(100%, 74rem); margin: 0 auto 16px; }
@@ -37,6 +38,7 @@ export function renderLayout({ title, body }) {
       .page-shell-narrow > .section-nav { inline-size: 100%; }
       .page-masthead-compact h1 { font-size: 3.35rem; }
       .page-masthead-compact p { max-inline-size: 30rem; }
+      .home-hero-title { font-size: 3.6rem; max-inline-size: 100%; }
       .summary-grid, .cards { display: grid; gap: 12px; }
       .summary-grid { grid-template-columns: repeat(auto-fit, minmax(11rem, max-content)); gap: 10px 22px; margin-top: 14px; }
       .cards { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0; border-top: 1px solid var(--border); border-left: 1px solid var(--border); }
@@ -120,6 +122,7 @@ export function renderLayout({ title, body }) {
         .summary-grid { grid-template-columns: 1fr; }
         .page-shell-narrow { inline-size: 100%; }
         .page-masthead-compact h1 { font-size: 3.1rem; }
+        .home-hero-title { font-size: clamp(2rem, 11vw, 2.55rem); }
         .timeline-entry,
         .timeline-shell-narrow .timeline-entry { grid-template-columns: 1fr; row-gap: 10px; column-gap: 0; padding-bottom: 24px; }
         .timeline-date,
