@@ -7,15 +7,19 @@ const ABOUT_HTML_PATH = resolve(process.cwd(), "content/about.html");
 
 export function renderAboutPage({
   sourcePageUrl = "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
+  sourceCodeUrl = "https://github.com/example/hackerspace-news-feed",
 } = {}) {
   const sourcePageLabel = formatSourceLabel(sourcePageUrl);
-  const aboutHtml = readFileSync(ABOUT_HTML_PATH, "utf8");
+  const aboutHtml = readFileSync(ABOUT_HTML_PATH, "utf8")
+    .replaceAll("__DATA_SOURCE_URL__", escapeHtml(sourcePageUrl))
+    .replaceAll("__DATA_SOURCE_LABEL__", escapeHtml(sourcePageLabel))
+    .replaceAll("__SOURCE_CODE_URL__", escapeHtml(sourceCodeUrl))
+    .replaceAll("__SOURCE_CODE_LABEL__", escapeHtml(sourceCodeUrl));
   return renderLayout({
     title: "About",
     body: `
       <section class="panel panel-reading page-shell-narrow page-masthead-compact">
         <h1>About</h1>
-        <p class="muted">Source page: <a href="${sourcePageUrl}">${escapeHtml(sourcePageLabel)}</a></p>
       </section>
       <div class="page-shell-narrow">
         ${renderNav([
