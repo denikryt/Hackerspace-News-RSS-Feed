@@ -14,7 +14,6 @@ export function renderLayout({ title, body }) {
         --text: #111111;
         --muted: #666666;
         --accent: #1b4d8a;
-        --error: #8c3324;
         --timeline-marker-offset: 5.3rem;
         --timeline-dot-size: 9px;
         --timeline-entry-gap: 32px;
@@ -258,14 +257,11 @@ export function renderMetric(label, value) {
   return `<div class="metric"><span class="muted">${escapeHtml(label)}:</span><strong>${escapeHtml(String(value))}</strong></div>`;
 }
 
-export function renderField(label, value, isLink = false, className = "") {
+export function renderField(label, value) {
   if (!value) {
     return "";
   }
-  const rendered = isLink
-    ? `<a href="${escapeHtml(value)}">${escapeHtml(value)}</a>`
-    : escapeHtml(String(value));
-  return `<span class="${className}"><span class="field-label">${escapeHtml(label)}:</span> ${rendered}</span>`;
+  return `<span><span class="field-label">${escapeHtml(label)}:</span> ${escapeHtml(String(value))}</span>`;
 }
 
 export function renderNav(items) {
