@@ -36,7 +36,7 @@ export function renderLayout({ title, body }) {
       .feed-list-shell { inline-size: min(100%, 74rem); margin: 0 auto 16px; }
       .page-shell-narrow { inline-size: min(100%, 46rem); margin-inline: auto; }
       .page-shell-narrow > .section-nav { inline-size: 100%; }
-      .page-masthead-compact h1 { font-size: 3.35rem; }
+      .page-masthead-compact h1 { font-size: 3.35rem; max-inline-size: 100%; }
       .page-masthead-compact p { max-inline-size: 30rem; }
       .home-hero-title { font-size: 3.6rem; max-inline-size: 100%; }
       .summary-grid, .cards { display: grid; gap: 12px; }
@@ -121,7 +121,7 @@ export function renderLayout({ title, body }) {
         .section-nav { gap: 12px; }
         .summary-grid { grid-template-columns: 1fr; }
         .page-shell-narrow { inline-size: 100%; }
-        .page-masthead-compact h1 { font-size: 3.1rem; }
+        .page-masthead-compact h1 { font-size: clamp(2rem, 11vw, 3.1rem); }
         .home-hero-title { font-size: clamp(2rem, 11vw, 2.55rem); }
         .timeline-entry,
         .timeline-shell-narrow .timeline-entry { grid-template-columns: 1fr; row-gap: 10px; column-gap: 0; padding-bottom: 24px; }
