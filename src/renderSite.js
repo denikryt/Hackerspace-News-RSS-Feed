@@ -1,3 +1,4 @@
+import { copyFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { DIST_DIR, PATHS } from "./config.js";
@@ -12,6 +13,8 @@ import { filterNormalizedPayloadForDisplay } from "./visibleData.js";
 import { buildGlobalFeedModel } from "./viewModels/globalFeed.js";
 import { buildSpaceDetailModel } from "./viewModels/spaceDetail.js";
 import { buildSpacesIndexModel } from "./viewModels/spacesIndex.js";
+
+const FAVICON_SOURCE_PATH = resolve(process.cwd(), "content/favicon.png");
 
 export async function renderSite({
   paths = PATHS,
@@ -73,9 +76,12 @@ export async function renderSite({
 
   if (writePages) {
     await Promise.all(
-      Object.entries(pages).map(([relativePath, html]) =>
-        writeText(resolve(distDir, relativePath), html),
-      ),
+      [
+        ...Object.entries(pages).map(([relativePath, html]) =>
+          writeText(resolve(distDir, relativePath), html),
+        ),
+        copyFile(FAVICON_SOURCE_PATH, resolve(distDir, "favicon.png")),
+      ],
     );
   }
 

@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { access, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 
@@ -107,11 +107,16 @@ describe("renderSite", () => {
         readFile(resolve(distDir, "feed/index.html"), "utf8"),
         readFile(resolve(distDir, "spaces/betamachine.html"), "utf8"),
       ]);
+      await access(resolve(distDir, "favicon.png"));
 
       expect(indexHtml).toContain("Hackerspace News");
+      expect(indexHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
       expect(aboutHtml).toContain("About");
+      expect(aboutHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
       expect(feedHtml).toContain("Global Feed");
+      expect(feedHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
       expect(detailHtml).toContain("BetaMachine");
+      expect(detailHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
       expect(globalThis.fetch).not.toHaveBeenCalled();
     } finally {
       globalThis.fetch = originalFetch;

@@ -7,12 +7,13 @@ describe("renderAboutPage", () => {
     const html = renderAboutPage();
 
     expect(html).toContain("<title>About</title>");
+    expect(html).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
     expect(html).toContain("<h1>About</h1>");
     expect(html).toContain("Data Source");
     expect(html).not.toContain("Source page:");
     expect(html).toContain('href="https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds"');
     expect(html).toContain("wiki.hackerspaces.org");
-    expect(html).toContain('href="https://github.com/example/hackerspace-news-feed"');
+    expect(html).toContain('href="https://github.com/denikryt/hackerspace-news-rss-feed"');
     expect(html).not.toContain("__DATA_SOURCE_URL__");
     expect(html).not.toContain("__SOURCE_CODE_URL__");
     expect(html).toContain('href="/index.html"');

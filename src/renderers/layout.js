@@ -5,6 +5,7 @@ export function renderLayout({ title, body }) {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${escapeHtml(title)}</title>
+    <link rel="icon" href="/favicon.png" type="image/png" />
     <style>
       :root {
         --bg: #f7f7f3;
