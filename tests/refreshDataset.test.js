@@ -7,8 +7,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { refreshDataset } from "../src/refreshDataset.js";
 
-const fixturePath =
-  "/home/denchik/projects/Hackerspace News Feed/tests/fixtures/source-page/user-jomat-oldid-94788-snippet.html";
+const fixturePath = resolve(
+  process.cwd(),
+  "tests/fixtures/source-page/user-jomat-oldid-94788-snippet.html",
+);
 const sourceHtml = readFileSync(fixturePath, "utf8");
 const sourcePageUrl = "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds";
 

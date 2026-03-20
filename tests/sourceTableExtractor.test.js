@@ -1,10 +1,13 @@
 import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { extractSourceRows } from "../src/sourceTableExtractor.js";
 
-const fixturePath =
-  "/home/denchik/projects/Hackerspace News Feed/tests/fixtures/source-page/user-jomat-oldid-94788-snippet.html";
+const fixturePath = resolve(
+  process.cwd(),
+  "tests/fixtures/source-page/user-jomat-oldid-94788-snippet.html",
+);
 const html = readFileSync(fixturePath, "utf8");
 const sourcePageUrl = "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds";
 
