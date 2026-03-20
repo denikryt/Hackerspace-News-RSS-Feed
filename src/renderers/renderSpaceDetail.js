@@ -41,7 +41,7 @@ export function renderSpaceDetail(model) {
     body: `
       ${renderPageHeader({
         title: model.spaceName,
-        shellClass: "page-shell-narrow page-masthead-compact",
+        headerClass: "page-header--narrow page-header--compact",
         introHtml: `
         <div class="meta detail-header-meta">
           ${renderField("Country", model.country)}
@@ -54,7 +54,7 @@ export function renderSpaceDetail(model) {
           { href: model.homeHref, label: "Hackerspaces" },
           { href: model.globalFeedHref, label: "Global Feed" },
         ],
-        navWrapperClass: "page-shell-narrow",
+        navClass: "page-nav--narrow",
       })}
       <section class="feed-list-shell page-shell-narrow timeline-shell-narrow">
         <p class="muted">${escapeHtml(model.currentPageLabel || "Page 1 of 1")}</p>

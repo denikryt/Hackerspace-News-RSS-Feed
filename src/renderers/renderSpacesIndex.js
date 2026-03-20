@@ -52,15 +52,15 @@ export function renderSpacesIndex(model) {
       ${renderPageHeader({
         title: "Hackerspace News",
         titleClass: "home-hero-title",
-        panelClass: "home-hero-panel",
+        headerClass: "page-header--wide page-header--compact",
         introHtml: `<p class="muted"><a class="about-link-muted" href="/about/index.html">About</a></p>`,
         navItems: [
           { href: "/index.html", label: "Hackerspaces", isCurrent: true },
           { href: "/feed/index.html", label: "Global Feed" },
         ],
-        navWrapperClass: "home-nav home-nav-compact home-nav-divider",
+        navClass: "page-nav--wide page-nav--compact",
       })}
-      <section class="panel home-summary-panel">
+      <section class="panel page-summary page-summary--home">
         <div class="summary-grid home-summary-grid">
           ${renderMetric("Total spaces", model.summary.sourceRows)}
           ${renderMetric("Readable feeds", model.summary.parsedFeeds)}

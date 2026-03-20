@@ -29,24 +29,24 @@ export function renderLayout({ title, body }) {
       .section-nav { display: flex; gap: 18px; margin: 0 auto 20px; flex-wrap: wrap; inline-size: min(100%, 74rem); justify-content: flex-start; padding-block: 10px; border-bottom: 1px solid var(--border); }
       .section-nav a { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-size: 0.96rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--muted); }
       .section-nav a[aria-current="page"] { color: var(--text); font-weight: 700; }
-      .home-nav .section-nav { margin-bottom: 0; border-bottom: 0; }
       .panel { background: transparent; border: 1px solid var(--border); border-radius: 0; padding: 18px 0 14px; margin-bottom: 18px; overflow: hidden; border-left: 0; border-right: 0; border-top: 0; }
-      .home-hero-panel { padding-bottom: 6px; margin-bottom: 6px; }
-      .home-hero-panel .home-hero-title { margin-bottom: 6px; }
-      .home-hero-panel .muted { margin: 0; }
-      .home-nav-compact .section-nav { margin-bottom: 6px; padding-block: 8px 6px; }
-      .home-nav-divider { border-bottom: 1px solid var(--border); margin-bottom: 10px; }
-      .home-nav-divider .section-nav { border-bottom: 0; margin-bottom: 0; }
-      .home-summary-panel { padding-top: 8px; }
-      .home-summary-panel .summary-grid { margin-top: 0; margin-bottom: 8px; }
-      .home-summary-panel .meta { margin-top: 0; }
+      .page-header--compact { padding-bottom: 6px; margin-bottom: 6px; }
+      .page-header--compact h1 { margin-bottom: 6px; }
+      .page-header--compact .muted { margin: 0; }
+      .page-header--narrow { inline-size: min(100%, 46rem); margin-inline: auto; }
+      .page-header--narrow.page-header--compact h1 { font-size: 3.35rem; max-inline-size: 100%; }
+      .page-header--narrow.page-header--compact p { max-inline-size: 30rem; }
+      .page-nav--narrow { inline-size: min(100%, 46rem); margin-inline: auto; }
+      .page-nav--narrow > .section-nav { inline-size: 100%; }
+      .page-nav--compact .section-nav { margin-bottom: 10px; padding-block: 8px 6px; }
+      .page-summary { padding-top: 8px; }
+      .page-summary--home .summary-grid { margin-top: 0; margin-bottom: 8px; }
+      .page-summary--home .meta { margin-top: 0; }
       .feed-list-shell { inline-size: min(100%, 74rem); margin: 0 auto 16px; }
-      .about-copy { max-inline-size: 46rem; margin: 0 auto; color: var(--text); }
+      .page-copy--narrow { inline-size: min(100%, 46rem); margin-inline: auto; }
+      .about-copy { color: var(--text); }
       .about-copy p { margin: 0 0 1rem; line-height: 1.6; }
       .page-shell-narrow { inline-size: min(100%, 46rem); margin-inline: auto; }
-      .page-shell-narrow > .section-nav { inline-size: 100%; }
-      .page-masthead-compact h1 { font-size: 3.35rem; max-inline-size: 100%; }
-      .page-masthead-compact p { max-inline-size: 30rem; }
       .home-hero-title { font-size: 3.6rem; max-inline-size: 100%; }
       .summary-grid, .cards { display: grid; gap: 12px; }
       .summary-grid { grid-template-columns: repeat(auto-fit, minmax(11rem, max-content)); gap: 10px 22px; margin-top: 14px; }
@@ -205,8 +205,11 @@ export function renderLayout({ title, body }) {
         .home-summary-grid { grid-template-columns: repeat(2, max-content); gap: 10px 18px; }
         select { min-height: 1.85rem; }
         .control-select-country { inline-size: 10rem; max-inline-size: 100%; }
-        .page-shell-narrow { inline-size: 100%; }
-        .page-masthead-compact h1 { font-size: clamp(2rem, 11vw, 3.1rem); }
+        .page-shell-narrow,
+        .page-header--narrow,
+        .page-nav--narrow,
+        .page-copy--narrow { inline-size: 100%; }
+        .page-header--narrow.page-header--compact h1 { font-size: clamp(2rem, 11vw, 3.1rem); }
         .home-hero-title { font-size: clamp(2rem, 11vw, 2.55rem); }
         .timeline-entry,
         .timeline-shell-narrow .timeline-entry { grid-template-columns: 1fr; row-gap: 10px; column-gap: 0; padding-bottom: 24px; }
@@ -230,17 +233,16 @@ export function renderPageHeader({
   title,
   titleClass = "",
   introHtml = "",
-  panelClass = "",
-  shellClass = "",
+  headerClass = "",
   navItems = [],
-  navWrapperClass = "",
+  navClass = "",
 }) {
-  const sectionClass = ["panel", panelClass, shellClass].filter(Boolean).join(" ");
+  const sectionClass = ["panel", "page-header", headerClass].filter(Boolean).join(" ");
   const titleClassAttribute = titleClass ? ` class="${titleClass}"` : "";
   const navHtml = navItems.length > 0 ? renderNav(navItems) : "";
   const wrappedNavHtml = navHtml
-    ? navWrapperClass
-      ? `<div class="${navWrapperClass}">${navHtml}</div>`
+    ? navClass
+      ? `<div class="page-nav ${navClass}">${navHtml}</div>`
       : navHtml
     : "";
 

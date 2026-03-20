@@ -11,7 +11,7 @@ describe("feed page headers", () => {
       currentPageLabel: "Page 1 of 1",
     });
 
-    expect(html).toContain('class="panel page-shell-narrow page-masthead-compact"');
+    expect(html).toContain('class="panel page-header page-header--narrow page-header--compact"');
     expect(html).toContain("<h1>Global Feed</h1>");
     expect(html).toContain("All publications sorted from new to old.");
     expect(html).toContain('href="/index.html"');
@@ -30,7 +30,7 @@ describe("feed page headers", () => {
       items: [],
     });
 
-    expect(html).toContain('class="panel page-shell-narrow page-masthead-compact"');
+    expect(html).toContain('class="panel page-header page-header--narrow page-header--compact"');
     expect(html).toContain("<h1>Technik.cafe</h1>");
     expect(html).toContain("Country:");
     expect(html).toContain(">Wiki<");

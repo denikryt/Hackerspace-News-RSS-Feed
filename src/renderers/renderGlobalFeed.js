@@ -41,13 +41,13 @@ export function renderGlobalFeed(model) {
     body: `
       ${renderPageHeader({
         title: "Global Feed",
-        shellClass: "page-shell-narrow page-masthead-compact",
+        headerClass: "page-header--narrow page-header--compact",
         introHtml: `<p class="muted">All publications sorted from new to old.</p>`,
         navItems: [
           { href: model.homeHref, label: "Hackerspaces" },
           { href: "/feed/index.html", label: "Global Feed", isCurrent: true },
         ],
-        navWrapperClass: "page-shell-narrow",
+        navClass: "page-nav--narrow",
       })}
       <section class="feed-list-shell page-shell-narrow timeline-shell-narrow">
         <p class="muted">${escapeHtml(model.currentPageLabel || "Page 1 of 1")}</p>

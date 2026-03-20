@@ -20,14 +20,14 @@ export function renderAboutPage({
     body: `
       ${renderPageHeader({
         title: "About",
-        shellClass: "page-shell-narrow page-masthead-compact",
+        headerClass: "page-header--narrow page-header--compact",
         navItems: [
           { href: "/index.html", label: "Hackerspaces" },
           { href: "/feed/index.html", label: "Global Feed" },
         ],
-        navWrapperClass: "page-shell-narrow",
+        navClass: "page-nav--narrow",
       })}
-      <section class="page-shell-narrow about-copy">
+      <section class="page-copy page-copy--narrow about-copy">
         ${aboutHtml}
       </section>
     `,
