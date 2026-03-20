@@ -24,7 +24,7 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 WorkingDirectory=$ESCAPED_PROJECT_ROOT
-ExecStart=$ESCAPED_DEPLOY_SCRIPT
+ExecStart=$ESCAPED_DEPLOY_SCRIPT build
 EOF
 
 sudo tee "$TIMER_PATH" > /dev/null <<EOF
