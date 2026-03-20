@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 
 import { DIST_DIR } from "../config.js";
 
-const port = Number(process.env.PORT || 4173);
+const port = Number(process.env.PORT || 8090);
 
 async function main() {
   const server = createServer(async (request, response) => {

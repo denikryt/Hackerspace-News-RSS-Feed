@@ -151,19 +151,23 @@ export function renderLayout({ title, body }) {
         white-space: nowrap;
         font-weight: 600;
         line-height: 1.05;
-        padding-bottom: 0.02em;
+        padding-bottom: 0.14em;
         text-decoration: none;
-        border-bottom: 1px solid currentColor;
+        background-image: linear-gradient(currentColor, currentColor);
+        background-repeat: no-repeat;
+        background-size: 100% 1px;
+        background-position: 0 100%;
       }
-      .global-feed-space-link { font-size: 1.18rem; }
+      .global-feed-space-link { font-size: 1.1rem; }
+      .global-feed-original-link { font-size: 0.98rem; font-weight: 500; }
       .detail-header-meta { align-items: baseline; }
-      .detail-header-link { line-height: 1.2; padding-bottom: 0.02em; }
+      .detail-header-link { line-height: 1.2; padding-bottom: 0.14em; }
       .item-header-detail { min-block-size: 2.4rem; margin-bottom: 10px; padding-bottom: 10px; }
       .item-header-global { min-block-size: auto; }
       .global-feed-meta { display: flex !important; flex-wrap: nowrap; gap: 0.9rem; align-items: flex-end; }
       .global-feed-meta > span { display: inline-flex; align-items: flex-end; }
       .detail-item-meta { align-items: baseline; }
-      .detail-item-meta-link { padding-bottom: 0.02em; }
+      .detail-item-meta-link { padding-bottom: 0.14em; }
       .item-title { margin: 0 0 14px; text-transform: uppercase; }
       .content-body { margin: 10px 0; line-height: 1.55; max-inline-size: 100%; overflow-wrap: anywhere; }
       .content-body.plain-text { white-space: pre-wrap; }

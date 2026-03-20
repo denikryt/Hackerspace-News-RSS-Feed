@@ -17,7 +17,7 @@ export function renderGlobalFeed(model) {
                 }
                 ${
                   item.link
-                    ? `<span><a class="global-feed-meta-link" href="${item.link}">Original</a></span>`
+                    ? `<span><a class="global-feed-meta-link global-feed-original-link" href="${item.link}">Original</a></span>`
                     : ""
                 }
               </div>

@@ -1,7 +1,7 @@
 export async function probeFeedUrl({ sourceRow, fetchImpl = fetch }) {
   const candidateUrl = sourceRow.candidateFeedUrl;
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 8_000);
+  const timeoutId = setTimeout(() => controller.abort(), 20_000);
 
   try {
     const response = await fetchImpl(candidateUrl, {
