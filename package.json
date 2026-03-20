@@ -6,6 +6,8 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
+    "refresh": "node src/cli/refresh.js",
+    "render": "node src/cli/render.js",
     "build": "node src/cli/build.js",
     "start": "node src/cli/serve.js"
   },

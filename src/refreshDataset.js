@@ -1,0 +1,125 @@
+import { SOURCE_PAGE_URL, PATHS } from "./config.js";
+import { normalizeFeed } from "./feedNormalizer.js";
+import { parseFeedBody } from "./feedParser.js";
+import { probeFeedUrl } from "./feedProbe.js";
+import { fetchPageHtml } from "./pageFetcher.js";
+import { extractSourceRows } from "./sourceTableExtractor.js";
+import { writeJson } from "./storage.js";
+
+export async function refreshDataset({
+  sourcePageUrl = SOURCE_PAGE_URL,
+  fetchImpl = fetch,
+  paths = PATHS,
+  writeSnapshots = false,
+} = {}) {
+  const html = await fetchPageHtml({ sourcePageUrl, fetchImpl });
+  const sourceRows = extractSourceRows({ html, sourcePageUrl });
+  const results = await mapWithConcurrency(sourceRows, 8, async (sourceRow) => {
+    const validation = await probeFeedUrl({ sourceRow, fetchImpl });
+
+    if (!validation.fetchOk || !validation.isParsable || !validation.body) {
+      return {
+        validation: stripBody(validation),
+        feed: null,
+        failure: {
+          rowNumber: sourceRow.rowNumber,
+          hackerspaceName: sourceRow.hackerspaceName,
+          country: sourceRow.country,
+          sourceWikiUrl: sourceRow.hackerspaceWikiUrl,
+          candidateUrl: sourceRow.candidateFeedUrl,
+          errorCode: validation.errorCode,
+          errorMessage: validation.errorMessage,
+        },
+      };
+    }
+
+    try {
+      const parsedFeed = await parseFeedBody({ xml: validation.body, validation });
+      return {
+        validation: stripBody(validation),
+        feed: normalizeFeed({
+          sourceRow,
+          validation,
+          parsedFeed,
+        }),
+        failure: null,
+      };
+    } catch (error) {
+      return {
+        validation: stripBody(validation),
+        feed: null,
+        failure: {
+          rowNumber: sourceRow.rowNumber,
+          hackerspaceName: sourceRow.hackerspaceName,
+          country: sourceRow.country,
+          sourceWikiUrl: sourceRow.hackerspaceWikiUrl,
+          candidateUrl: sourceRow.candidateFeedUrl,
+          errorCode: "parse_error",
+          errorMessage: error instanceof Error ? error.message : String(error),
+        },
+      };
+    }
+  });
+
+  const validations = results.map((entry) => entry.validation);
+  const feeds = results.map((entry) => entry.feed).filter(Boolean);
+  const failures = results.map((entry) => entry.failure).filter(Boolean);
+  const generatedAt = new Date().toISOString();
+
+  const result = {
+    sourceRowsPayload: {
+      sourcePageUrl,
+      sectionTitle: "Spaces with RSS feeds",
+      extractedAt: generatedAt,
+      urls: sourceRows,
+    },
+    validationsPayload: validations,
+    normalizedPayload: {
+      generatedAt,
+      sourcePageUrl,
+      feeds,
+      failures,
+      summary: {
+        sourceRows: sourceRows.length,
+        validFeeds: validations.filter((entry) => entry.isParsable).length,
+        parsedFeeds: feeds.filter((entry) => entry.status === "parsed_ok").length,
+        emptyFeeds: feeds.filter((entry) => entry.status === "parsed_empty").length,
+        failedFeeds: failures.length,
+      },
+    },
+  };
+
+  if (writeSnapshots) {
+    await Promise.all([
+      writeJson(paths.sourceRows, result.sourceRowsPayload),
+      writeJson(paths.validations, result.validationsPayload),
+      writeJson(paths.normalizedFeeds, result.normalizedPayload),
+    ]);
+  }
+
+  return result;
+}
+
+function stripBody(validation) {
+  const { body, ...rest } = validation;
+  return rest;
+}
+
+async function mapWithConcurrency(items, concurrency, mapper) {
+  const results = new Array(items.length);
+  let index = 0;
+
+  async function worker() {
+    while (index < items.length) {
+      const currentIndex = index;
+      index += 1;
+      results[currentIndex] = await mapper(items[currentIndex], currentIndex);
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, items.length) }, () => worker()),
+  );
+
+  return results;
+}
