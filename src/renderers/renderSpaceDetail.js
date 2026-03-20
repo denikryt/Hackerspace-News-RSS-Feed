@@ -14,10 +14,18 @@ export function renderSpaceDetail(model) {
           ${renderTimelineDate(item.publishedAt)}
           <div class="timeline-axis" aria-hidden="true"></div>
           <div class="timeline-content">
-            <div class="item-header item-header-detail">
-              <div class="meta">
-                ${renderField("Author", item.author)}
-                ${renderField("Original", item.link, true)}
+            <div class="item-header item-header-detail item-header-global">
+              <div class="meta global-feed-meta detail-item-meta">
+                ${
+                  item.author
+                    ? `<span>${renderField("Author", item.author)}</span>`
+                    : ""
+                }
+                ${
+                  item.link
+                    ? `<span><a class="global-feed-meta-link detail-item-meta-link" href="${item.link}">Original</a></span>`
+                    : ""
+                }
               </div>
             </div>
             <h3 class="item-title">${escapeHtml(item.title || "Untitled item")}</h3>
@@ -33,10 +41,10 @@ export function renderSpaceDetail(model) {
     body: `
       <section class="panel panel-reading page-shell-narrow page-masthead-compact">
         <h1>${escapeHtml(model.spaceName)}</h1>
-        <div class="meta">
+        <div class="meta detail-header-meta">
           ${renderField("Country", model.country)}
-          ${renderField("Wiki", model.sourceWikiUrl, true)}
-          ${renderField("Site", model.siteUrl, true)}
+          ${model.sourceWikiUrl ? `<a class="global-feed-meta-link detail-header-link" href="${model.sourceWikiUrl}">Wiki</a>` : ""}
+          ${model.siteUrl ? `<a class="global-feed-meta-link detail-header-link" href="${model.siteUrl}">Website</a>` : ""}
         </div>
         ${model.errorCode ? `<p><span class="field-label">Error:</span> ${escapeHtml(model.errorCode)}</p>` : ""}
       </section>
