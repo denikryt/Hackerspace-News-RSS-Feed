@@ -49,17 +49,17 @@ export function renderSpacesIndex(model) {
   return renderLayout({
     title: "Hackerspace News",
     body: `
-      <section class="panel">
+      <section class="panel home-hero-panel">
         <h1 class="home-hero-title">Hackerspace News</h1>
         <p class="muted"><a class="about-link-muted" href="/about/index.html">About</a></p>
       </section>
-      <div class="home-nav">
+      <div class="home-nav home-nav-compact home-nav-divider">
         ${renderNav([
           { href: "/index.html", label: "Hackerspaces", isCurrent: true },
           { href: "/feed/index.html", label: "Global Feed" },
         ])}
       </div>
-      <section class="panel">
+      <section class="panel home-summary-panel">
         <div class="summary-grid home-summary-grid">
           ${renderMetric("Total spaces", model.summary.sourceRows)}
           ${renderMetric("Readable feeds", model.summary.parsedFeeds)}

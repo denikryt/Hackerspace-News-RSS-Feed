@@ -10,7 +10,8 @@ describe("renderAboutPage", () => {
 
     expect(html).toContain("<title>About</title>");
     expect(html).toContain("<h1>About</h1>");
-    expect(html).toContain("Source page:");
+    expect(html).toContain("Data Source");
+    expect(html).not.toContain("Source page:");
     expect(html).toContain("wiki.hackerspaces.org");
     expect(html).toContain('href="/index.html"');
     expect(html).toContain('href="/feed/index.html"');

@@ -56,6 +56,9 @@ describe("renderSpacesIndex", () => {
     expect(html).toContain('class="about-link-muted"');
     expect(html).toContain(">About<");
     expect(html).not.toContain("Source page:");
+    expect(html).toContain('class="panel home-hero-panel"');
+    expect(html).toContain('class="panel home-summary-panel"');
+    expect(html).toContain('class="home-nav home-nav-compact home-nav-divider"');
     expect(html).toContain("data-is-failure=\"true\"");
     expect(html).toContain("data-country=\"France\"");
     expect(html).toContain("data-latest-item-date=\"2025-01-02T10:00:00.000Z\"");

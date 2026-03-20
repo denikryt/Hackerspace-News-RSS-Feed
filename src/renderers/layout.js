@@ -32,6 +32,15 @@ export function renderLayout({ title, body }) {
       .section-nav a[aria-current="page"] { color: var(--text); font-weight: 700; }
       .home-nav .section-nav { margin-bottom: 0; border-bottom: 0; }
       .panel { background: transparent; border: 1px solid var(--border); border-radius: 0; padding: 18px 0 14px; margin-bottom: 18px; overflow: hidden; border-left: 0; border-right: 0; border-top: 0; }
+      .home-hero-panel { padding-bottom: 6px; margin-bottom: 6px; }
+      .home-hero-panel .home-hero-title { margin-bottom: 6px; }
+      .home-hero-panel .muted { margin: 0; }
+      .home-nav-compact .section-nav { margin-bottom: 6px; padding-block: 8px 6px; }
+      .home-nav-divider { border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+      .home-nav-divider .section-nav { border-bottom: 0; margin-bottom: 0; }
+      .home-summary-panel { padding-top: 8px; }
+      .home-summary-panel .summary-grid { margin-top: 0; margin-bottom: 8px; }
+      .home-summary-panel .meta { margin-top: 0; }
       .panel-reading { inline-size: min(100%, 74rem); margin-inline: auto; }
       .feed-list-shell { inline-size: min(100%, 74rem); margin: 0 auto 16px; }
       .about-copy { max-inline-size: 46rem; margin: 0 auto; color: var(--text); }
