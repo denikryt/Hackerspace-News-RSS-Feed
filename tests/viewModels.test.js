@@ -143,6 +143,7 @@ describe("multi-page view models", () => {
 
     expect(model.spaceName).toBe("BetaMachine");
     expect(model.items.map((item) => item.title)).toEqual(["Newest post", "Older post"]);
+    expect(model.globalFeedHref).toBe("/feed/index.html");
   });
 
   it("builds a paginated detail model with page links", () => {
@@ -214,9 +215,9 @@ describe("multi-page view models", () => {
     expect(model.items).toHaveLength(2);
     expect(model.hasPreviousPage).toBe(true);
     expect(model.hasNextPage).toBe(false);
-    expect(model.previousPageHref).toBe("/feed/");
+    expect(model.previousPageHref).toBe("/feed/index.html");
     expect(model.pageLinks).toEqual([
-      { type: "page", page: 1, href: "/feed/", isCurrent: false },
+      { type: "page", page: 1, href: "/feed/index.html", isCurrent: false },
       { type: "page", page: 2, href: "/feed/page/2/", isCurrent: true },
     ]);
   });

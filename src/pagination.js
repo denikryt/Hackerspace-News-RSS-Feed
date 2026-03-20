@@ -64,7 +64,7 @@ export function buildPageLinks(currentPage, totalPages, hrefForPage) {
 }
 
 export function getGlobalFeedHref(pageNumber) {
-  return pageNumber <= 1 ? "/feed/" : `/feed/page/${pageNumber}/`;
+  return pageNumber <= 1 ? "/feed/index.html" : `/feed/page/${pageNumber}/`;
 }
 
 export function getSpaceDetailHref(spaceSlug, pageNumber) {
