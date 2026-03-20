@@ -1,5 +1,5 @@
 import { renderDisplayContent } from "../contentDisplay.js";
-import { escapeHtml, renderField, renderLayout, renderNav, renderTimelineDate } from "./layout.js";
+import { escapeHtml, renderLayout, renderNav, renderTimelineDate } from "./layout.js";
 
 export function renderGlobalFeed(model) {
   const items = model.items
@@ -8,10 +8,18 @@ export function renderGlobalFeed(model) {
           ${renderTimelineDate(item.publishedAt)}
           <div class="timeline-axis" aria-hidden="true"></div>
           <div class="timeline-content">
-            <div class="item-header">
-              <div class="meta">
-                <span><span class="field-label">Space page:</span> <a href="${item.spaceHref}">${escapeHtml(item.spaceName)}</a></span>
-                ${renderField("Original", item.link, true)}
+            <div class="item-header item-header-global">
+              <div class="meta global-feed-meta">
+                ${
+                  item.spaceHref
+                    ? `<span><a class="global-feed-meta-link global-feed-space-link" href="${item.spaceHref}">${escapeHtml(item.spaceName || "Hackerspace")}</a></span>`
+                    : ""
+                }
+                ${
+                  item.link
+                    ? `<span><a class="global-feed-meta-link" href="${item.link}">Original</a></span>`
+                    : ""
+                }
               </div>
             </div>
             <h3 class="item-title">${escapeHtml(item.title || "Untitled item")}</h3>

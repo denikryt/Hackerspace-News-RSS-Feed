@@ -145,7 +145,21 @@ export function renderLayout({ title, body }) {
         white-space: nowrap;
         vertical-align: bottom;
       }
+      .global-feed-meta-link {
+        color: var(--muted);
+        display: inline-block !important;
+        white-space: nowrap;
+        font-weight: 600;
+        line-height: 1.05;
+        padding-bottom: 0.08em;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.14em;
+      }
+      .global-feed-space-link { font-size: 1.18rem; }
       .item-header-detail { min-block-size: 2.4rem; margin-bottom: 10px; padding-bottom: 10px; }
+      .item-header-global { min-block-size: auto; }
+      .global-feed-meta { display: flex !important; flex-wrap: nowrap; gap: 0.9rem; align-items: flex-end; }
+      .global-feed-meta > span { display: inline-flex; align-items: flex-end; }
       .item-title { margin: 0 0 14px; text-transform: uppercase; }
       .content-body { margin: 10px 0; line-height: 1.55; max-inline-size: 100%; overflow-wrap: anywhere; }
       .content-body.plain-text { white-space: pre-wrap; }
