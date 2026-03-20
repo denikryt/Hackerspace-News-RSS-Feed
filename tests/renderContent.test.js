@@ -137,7 +137,7 @@ describe("content rendering", () => {
     expect(html).toContain("Page 2 of 5");
     expect(html).toContain("/spaces/betamachine/page/3/");
     expect(html).toContain('class="pagination-link current"');
-    expect(html).toContain('class="timeline-entry"');
+    expect(html).toContain('class="timeline-entry timeline-entry-detail"');
     expect(html).toContain('class="timeline-date"');
   });
 });

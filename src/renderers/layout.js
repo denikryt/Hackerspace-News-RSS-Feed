@@ -91,6 +91,7 @@ export function renderLayout({ title, body }) {
         white-space: nowrap;
         vertical-align: bottom;
       }
+      .item-header-detail { min-block-size: 2.4rem; margin-bottom: 10px; padding-bottom: 10px; }
       .item-title { margin: 0 0 14px; text-transform: uppercase; }
       .content-body { margin: 10px 0; line-height: 1.55; max-inline-size: 100%; overflow-wrap: anywhere; }
       .content-body.plain-text { white-space: pre-wrap; }

@@ -10,11 +10,11 @@ import {
 export function renderSpaceDetail(model) {
   const items = (model.items || [])
     .map(
-      (item) => `<article class="timeline-entry">
+      (item) => `<article class="timeline-entry timeline-entry-detail">
           ${renderTimelineDate(item.publishedAt)}
           <div class="timeline-axis" aria-hidden="true"></div>
           <div class="timeline-content">
-            <div class="item-header">
+            <div class="item-header item-header-detail">
               <div class="meta">
                 ${renderField("Author", item.author)}
                 ${renderField("Original", item.link, true)}
