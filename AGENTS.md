@@ -6,6 +6,33 @@ This file fixes the core development rules for this project.
 
 The most important rule is strict TDD.
 
+## Project Context
+
+This project is a static site generator for hackerspace news feeds.
+
+At a high level, the project is split into two main flows:
+
+- data refresh flow: fetches and validates source data, parses feeds, and updates local snapshots;
+- render flow: builds static HTML pages from the local project data.
+
+Important structure:
+
+- `src/cli/refresh.js` runs the refresh pipeline;
+- `src/cli/render.js` runs the render pipeline;
+- `src/cli/build.js` runs refresh and then render;
+- `src/refreshDataset.js` is the main data refresh entry point;
+- `src/renderSite.js` is the main site rendering entry point;
+- `src/viewModels/` contains page-level view-model builders;
+- `src/renderers/` contains HTML renderers for concrete pages;
+- `tests/` contains the automated test suite.
+
+When working on this repository, prefer understanding changes in terms of:
+
+- input acquisition and refresh logic;
+- normalization and view-model contracts;
+- page rendering from existing prepared data;
+- CLI entry points that connect the pipeline together.
+
 ## Mandatory Development Rules
 
 ### 1. Strict TDD
@@ -25,38 +52,7 @@ What this means in practice:
 - do not weaken tests just to make them pass;
 - do not silently change output contracts without updating tests first.
 
-### 2. Source of Truth
-
-The current source list comes from:
-
-- `https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds`
-
-Only the `Spaces with RSS feeds` section is relevant.
-
-### 3. Data Handling
-
-Normalized JSON is the project’s current local data layer.
-
-Until there is a proven need for a database:
-
-- keep JSON as the main local storage format;
-- build UI pages from normalized JSON;
-- avoid introducing extra persistence complexity.
-
-### 4. Feed Parsing
-
-Do not assume all XML/feed sources have the same structure.
-
-Always account for:
-
-- RSS / Atom / RDF differences;
-- namespaces and extension fields;
-- missing fields;
-- partially populated items;
-- feeds with no items;
-- HTML/non-feed URLs in the source list.
-
-### 5. Rendering
+### 2. Rendering
 
 UI must render only data that is actually present.
 
@@ -67,14 +63,6 @@ If a field is unavailable:
 - omit it from the UI;
 - keep the page stable and readable.
 
-## Current Product Direction
-
-The target UI is multi-page:
-
-- spaces index page;
-- per-space detail page;
-- global feed page sorted by date descending.
-
 ## Change Discipline
 
 Before implementing a new behavior:
@@ -83,3 +71,98 @@ Before implementing a new behavior:
 2. write tests for that contract;
 3. implement the minimum code;
 4. verify with real data after tests pass.
+
+## Plan Writing Protocol
+
+When the user explicitly asks for a plan, write it as a structured implementation plan.
+
+Every plan should include these blocks:
+
+### 1. Goal
+
+Describe:
+
+- what should be achieved;
+- why the work is needed;
+- what problem the plan is solving.
+
+### 2. Expected Behavior
+
+Describe the observable result after implementation:
+
+- what the system should do;
+- what should happen after running the feature, script, or flow;
+- what should explicitly remain unchanged.
+
+This section defines the behavior contract for the plan.
+
+### 3. Inputs
+
+Describe:
+
+- what data, files, commands, sources, or dependencies the implementation uses;
+- which inputs are primary;
+- which assumptions or constraints apply in the first version.
+
+### 4. Outputs
+
+Describe:
+
+- what artifacts, pages, JSON, CLI output, or side effects should be produced;
+- what the minimum output contract must contain.
+
+### 5. Architecture
+
+Describe the intended implementation shape before coding:
+
+- main layers, modules, or pipeline stages;
+- boundaries between responsibilities;
+- what is intentionally out of scope.
+
+### 6. Implementation Stages
+
+Break the work into sequential stages.
+
+For each stage include:
+
+- stage goal;
+- what will be implemented;
+- which tests must be written first;
+- readiness criterion.
+
+Stages should be small enough to support strict TDD.
+
+### 7. TDD Strategy
+
+Describe the order of development as short red-green-refactor cycles.
+
+This section should make clear:
+
+- which contract is tested first;
+- which minimal implementation follows;
+- how the work is expanded incrementally;
+- what should not be built too early.
+
+### 8. Test Plan
+
+List the test groups needed for confidence.
+
+Typical groups:
+
+- unit tests;
+- integration tests;
+- smoke tests;
+- fixture-based or contract tests when relevant.
+
+For each group, list the key behaviors or cases that must be covered.
+
+## Plan Quality Rules
+
+Any implementation plan should:
+
+- start from behavior and contracts, not from refactoring or UI polish;
+- be specific enough that each stage can be implemented via TDD;
+- distinguish inputs, outputs, and architecture explicitly;
+- define what is in scope and what remains unchanged;
+- include concrete readiness criteria for each stage;
+- include a test plan, not only implementation steps.
