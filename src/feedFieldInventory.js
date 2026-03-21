@@ -21,8 +21,8 @@ export async function analyzeFeedFields({
   paths = DEFAULT_PATHS,
 } = {}) {
   const resolvedPaths = {
-    ...DEFAULT_PATHS,
-    ...(paths || {}),
+    jsonReport: paths?.jsonReport || DEFAULT_PATHS.jsonReport,
+    markdownReport: paths?.markdownReport || DEFAULT_PATHS.markdownReport,
   };
   const html = await fetchPageHtml({ sourcePageUrl, fetchImpl });
   const sourceRows = extractSourceRows({ html, sourcePageUrl });
@@ -31,6 +31,8 @@ export async function analyzeFeedFields({
   const itemFieldStats = new Map();
   const rawTagStats = new Map();
   const rawNamespacedTagStats = new Map();
+  const authorValueStats = new Map();
+  const categoryValueStats = new Map();
   const feeds = [];
   const errors = [];
 
@@ -51,7 +53,13 @@ export async function analyzeFeedFields({
     try {
       const parsedFeed = await parseFeedBody({ xml: validation.body, validation });
       collectParsedFeedFields(feedFieldStats, parsedFeed, sourceRow.hackerspaceName);
-      collectParsedItemFields(itemFieldStats, parsedFeed.items || [], sourceRow.hackerspaceName);
+      collectParsedItemFields(
+        itemFieldStats,
+        authorValueStats,
+        categoryValueStats,
+        parsedFeed.items || [],
+        sourceRow.hackerspaceName,
+      );
       collectRawXmlTags(rawTagStats, rawNamespacedTagStats, validation.body, sourceRow.hackerspaceName);
 
       feeds.push(buildFeedRecord({ sourceRow, validation, parsedFeed }));
@@ -80,6 +88,10 @@ export async function analyzeFeedFields({
     dateFieldCandidates: selectCandidates(itemFieldStats, DATE_FIELD_NAMES),
     contentFieldCandidates: selectCandidates(itemFieldStats, CONTENT_FIELD_NAMES),
     summaryFieldCandidates: selectCandidates(itemFieldStats, SUMMARY_FIELD_NAMES),
+    allObservedFields: serializeFieldStats(mergeFieldStats(feedFieldStats, itemFieldStats)),
+    semanticFieldMappings: buildSemanticFieldMappings(feedFieldStats, itemFieldStats),
+    authorValues: serializeValueStats(authorValueStats),
+    categoryValues: serializeValueStats(categoryValueStats),
     feedsWithMinimalItems: feeds
       .filter((feed) => feed.hasItems && !feed.hasUsefulContent && !feed.hasAuthorSignals && !feed.hasCategorySignals)
       .map((feed) => pickFeedSummary(feed)),
@@ -112,29 +124,17 @@ export function renderMarkdownSummary(report) {
   const sections = [
     "# Feed Field Inventory Summary",
     "",
-    "## Overview",
-    `- Generated at: ${report.generatedAt}`,
-    `- Source count: ${report.sourceCount}`,
-    `- Analyzed feeds: ${report.analyzedFeedCount}`,
-    `- Failed feeds: ${report.failedFeedCount}`,
+    "## Observed Author Values",
+    ...renderValueLines(report.authorValues, { limit: Infinity, showFeeds: true }),
     "",
-    "## Top Author Candidates",
-    ...renderCandidateLines(report.authorFieldCandidates),
+    "## Observed Category Values",
+    ...renderValueLines(report.categoryValues, { limit: Infinity, showFeeds: true }),
     "",
-    "## Top Category Candidates",
-    ...renderCandidateLines(report.categoryFieldCandidates),
+    "## All Observed Fields",
+    ...renderFieldLines(report.allObservedFields, { limit: Infinity }),
     "",
-    "## Top Date Candidates",
-    ...renderCandidateLines(report.dateFieldCandidates),
-    "",
-    "## Top Content Candidates",
-    ...renderCandidateLines(report.contentFieldCandidates),
-    "",
-    "## Feeds Requiring Conservative Fallbacks",
-    ...renderFeedLines(report.feedsWithMinimalItems),
-    "",
-    "## Recommended Next Decisions",
-    ...renderRecommendations(report),
+    "## Semantic Field Mappings",
+    ...renderSemanticMappingLines(report.semanticFieldMappings),
     "",
   ];
 
@@ -178,10 +178,16 @@ function collectParsedFeedFields(stats, parsedFeed, feedName) {
   }
 }
 
-function collectParsedItemFields(stats, items, feedName) {
+function collectParsedItemFields(stats, authorValueStats, categoryValueStats, items, feedName) {
   for (const item of items || []) {
     for (const [key, value] of Object.entries(item || {})) {
       recordField(stats, key, value, feedName, "item");
+      if (AUTHOR_FIELD_NAMES.has(key)) {
+        recordValues(authorValueStats, value, feedName);
+      }
+      if (CATEGORY_FIELD_NAMES.has(key)) {
+        recordValues(categoryValueStats, value, feedName);
+      }
     }
   }
 }
@@ -241,10 +247,52 @@ function serializeFieldStats(stats) {
     .sort(compareFieldStats);
 }
 
+function mergeFieldStats(...maps) {
+  const merged = new Map();
+
+  for (const map of maps) {
+    for (const entry of map.values()) {
+      if (!merged.has(entry.name)) {
+        merged.set(entry.name, {
+          name: entry.name,
+          count: 0,
+          feedNames: new Set(),
+          itemCount: 0,
+          sampleValues: [],
+          sampleFeeds: [],
+        });
+      }
+
+      const target = merged.get(entry.name);
+      target.count += entry.count;
+      entry.feedNames.forEach((feedName) => target.feedNames.add(feedName));
+      target.itemCount += entry.itemCount || 0;
+      entry.sampleValues.forEach((value) => maybeAddSample(target.sampleValues, value));
+      entry.sampleFeeds.forEach((feedName) => maybeAddSample(target.sampleFeeds, feedName));
+    }
+  }
+
+  return merged;
+}
+
 function selectCandidates(stats, names) {
   return serializeFieldStats(
     new Map([...stats.entries()].filter(([name]) => names.has(name))),
   );
+}
+
+function buildSemanticFieldMappings(feedFieldStats, itemFieldStats) {
+  const observedFields = new Set([
+    ...feedFieldStats.keys(),
+    ...itemFieldStats.keys(),
+  ]);
+
+  return SEMANTIC_FIELD_GROUPS
+    .map((group) => ({
+      semanticRole: group.semanticRole,
+      fieldNames: group.fieldNames.filter((fieldName) => observedFields.has(fieldName)),
+    }))
+    .filter((group) => group.fieldNames.length);
 }
 
 function buildSourceSpecificObservations(feeds) {
@@ -282,6 +330,30 @@ function maybeAddSample(list, value) {
     return;
   }
   list.push(value);
+}
+
+function recordValues(stats, value, feedName) {
+  const values = Array.isArray(value) ? value : [value];
+
+  for (const rawValue of values) {
+    const normalizedValue = String(rawValue || "").trim();
+
+    if (!normalizedValue) {
+      continue;
+    }
+
+    if (!stats.has(normalizedValue)) {
+      stats.set(normalizedValue, {
+        value: normalizedValue,
+        count: 0,
+        sampleFeeds: [],
+      });
+    }
+
+    const entry = stats.get(normalizedValue);
+    entry.count += 1;
+    maybeAddSample(entry.sampleFeeds, feedName);
+  }
 }
 
 function valueToSample(value) {
@@ -325,6 +397,40 @@ function renderFeedLines(feeds) {
   return feeds.slice(0, 5).map((feed) => `- ${feed.hackerspaceName} (${feed.itemCount} items)`);
 }
 
+function renderValueLines(values, { limit = 10, showFeeds = false } = {}) {
+  if (!values.length) {
+    return ["- none"];
+  }
+
+  return values.slice(0, limit).map((entry) => {
+    const suffix = showFeeds && entry.sampleFeeds?.length
+      ? ` [${entry.sampleFeeds.join(", ")}]`
+      : "";
+
+    return `- \`${entry.value}\` - ${entry.count}${suffix}`;
+  });
+}
+
+function renderFieldLines(fields, { limit = 5 } = {}) {
+  if (!fields.length) {
+    return ["- none"];
+  }
+
+  return fields.slice(0, limit).map((field) => (
+    `- \`${field.name}\` - ${field.count}`
+  ));
+}
+
+function renderSemanticMappingLines(mappings) {
+  if (!mappings.length) {
+    return ["- none"];
+  }
+
+  return mappings.map((mapping) => (
+    `- \`${mapping.semanticRole}\` -> ${mapping.fieldNames.map((fieldName) => `\`${fieldName}\``).join(", ")}`
+  ));
+}
+
 function renderRecommendations(report) {
   const lines = [];
 
@@ -346,8 +452,24 @@ function renderRecommendations(report) {
   return lines.length ? lines : ["- No strong recommendations yet."];
 }
 
+function serializeValueStats(stats) {
+  return [...stats.values()].sort((left, right) => {
+    if (right.count !== left.count) {
+      return right.count - left.count;
+    }
+    return left.value.localeCompare(right.value);
+  });
+}
+
 const AUTHOR_FIELD_NAMES = new Set(["author", "creator", "dc:creator"]);
 const CATEGORY_FIELD_NAMES = new Set(["categories", "category"]);
 const DATE_FIELD_NAMES = new Set(["pubDate", "isoDate", "published", "updated"]);
 const CONTENT_FIELD_NAMES = new Set(["content", "content:encoded", "contentEncoded"]);
 const SUMMARY_FIELD_NAMES = new Set(["contentSnippet", "summary", "description"]);
+const SEMANTIC_FIELD_GROUPS = [
+  { semanticRole: "author", fieldNames: ["author", "creator", "dc:creator"] },
+  { semanticRole: "category", fieldNames: ["categories", "category"] },
+  { semanticRole: "date", fieldNames: ["pubDate", "isoDate", "published", "updated"] },
+  { semanticRole: "content", fieldNames: ["content", "content:encoded", "contentEncoded"] },
+  { semanticRole: "summary", fieldNames: ["contentSnippet", "summary", "description"] },
+];

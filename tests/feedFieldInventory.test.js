@@ -6,7 +6,7 @@ import { execFileSync } from "node:child_process";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { analyzeFeedFields } from "../src/feedFieldInventory.js";
+import { analyzeFeedFields, renderMarkdownSummary } from "../src/feedFieldInventory.js";
 
 const fixturePath = resolve(
   process.cwd(),
@@ -78,6 +78,10 @@ describe("analyzeFeedFields", () => {
       contentFieldCandidates: expect.any(Array),
       summaryFieldCandidates: expect.any(Array),
       dateFieldCandidates: expect.any(Array),
+      allObservedFields: expect.any(Array),
+      semanticFieldMappings: expect.any(Array),
+      authorValues: expect.any(Array),
+      categoryValues: expect.any(Array),
       feedsWithMinimalItems: expect.any(Array),
       feedsWithoutUsefulContent: expect.any(Array),
       sourceSpecificObservations: expect.any(Array),
@@ -95,6 +99,36 @@ describe("analyzeFeedFields", () => {
     expect(result.categoryFieldCandidates.map((field) => field.name)).toContain("categories");
     expect(result.contentFieldCandidates.map((field) => field.name)).toContain("content:encoded");
     expect(result.summaryFieldCandidates.map((field) => field.name)).toContain("contentSnippet");
+    expect(result.allObservedFields.map((field) => field.name)).toEqual(
+      expect.arrayContaining(["title", "link", "creator", "categories", "content:encoded", "pubDate"]),
+    );
+    expect(result.semanticFieldMappings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          semanticRole: "author",
+          fieldNames: expect.arrayContaining(["creator"]),
+        }),
+        expect.objectContaining({
+          semanticRole: "category",
+          fieldNames: expect.arrayContaining(["categories"]),
+        }),
+      ]),
+    );
+    expect(result.authorValues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          value: "Denchik",
+        }),
+      ]),
+    );
+    expect(result.categoryValues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          value: "Events",
+        }),
+      ]),
+    );
+    expect(renderMarkdownSummary(result)).toContain("`Events` - 1 [BetaMachine]");
     expect(result.dateFieldCandidates.map((field) => field.name)).toEqual(
       expect.arrayContaining(["pubDate", "isoDate"]),
     );
@@ -159,8 +193,10 @@ describe("analyzeFeedFields", () => {
       analyzedFeedCount: 3,
     });
     expect(markdownText).toContain("# Feed Field Inventory Summary");
-    expect(markdownText).toContain("## Top Author Candidates");
-    expect(markdownText).toContain("## Recommended Next Decisions");
+    expect(markdownText).toContain("## Observed Author Values");
+    expect(markdownText).toContain("## All Observed Fields");
+    expect(markdownText).toContain("## Semantic Field Mappings");
+    expect(markdownText).toContain("## Observed Category Values");
   });
 
   it("runs the analysis CLI and exits successfully", async () => {
@@ -218,6 +254,65 @@ describe("analyzeFeedFields", () => {
     const [jsonText, markdownText] = await Promise.all([
       readFile(jsonPath, "utf8"),
       readFile(markdownPath, "utf8"),
+    ]);
+
+    expect(JSON.parse(jsonText)).toMatchObject({
+      sourceCount: 3,
+      analyzedFeedCount: 3,
+    });
+    expect(markdownText).toContain("# Feed Field Inventory Summary");
+  });
+
+  it("uses default artifact paths when CLI env overrides are not provided", async () => {
+    const outputDir = await mkdtemp(resolve(tmpdir(), "hnf-analysis-cli-defaults-"));
+    tempDirs.push(outputDir);
+
+    const fetchModulePath = resolve(outputDir, "mock-fetch-defaults.mjs");
+    await writeFile(fetchModulePath, `
+      import { readFileSync } from "node:fs";
+      import { resolve } from "node:path";
+
+      const fixturePath = resolve(${JSON.stringify(process.cwd())}, "tests/fixtures/source-page/user-jomat-oldid-94788-snippet.html");
+      const sourceHtml = readFileSync(fixturePath, "utf8");
+      const sourcePageUrl = ${JSON.stringify(sourcePageUrl)};
+
+      globalThis.fetch = async (url) => {
+        if (url === sourcePageUrl) {
+          return {
+            ok: true,
+            status: 200,
+            url,
+            headers: new Headers({ "content-type": "text/html; charset=utf-8" }),
+            text: async () => sourceHtml,
+          };
+        }
+
+        return {
+          ok: true,
+          status: 200,
+          url,
+          headers: new Headers({ "content-type": "application/rss+xml" }),
+          text: async () => \`<?xml version="1.0"?><rss version="2.0"><channel><title>Feed</title><link>https://example.com</link><description>X</description><item><title>Post</title><link>https://example.com/post</link><pubDate>Wed, 01 Jan 2025 10:00:00 GMT</pubDate><description>Hello</description></item></channel></rss>\`,
+        };
+      };
+    `, "utf8");
+
+    execFileSync(process.execPath, [
+      "--import",
+      fetchModulePath,
+      resolve(process.cwd(), "src/cli/analyze.js"),
+    ], {
+      cwd: outputDir,
+      env: {
+        ...process.env,
+        SOURCE_PAGE_URL: sourcePageUrl,
+      },
+      stdio: "pipe",
+    });
+
+    const [jsonText, markdownText] = await Promise.all([
+      readFile(resolve(outputDir, "analysis/feed_field_inventory.json"), "utf8"),
+      readFile(resolve(outputDir, "analysis/feed_field_inventory.md"), "utf8"),
     ]);
 
     expect(JSON.parse(jsonText)).toMatchObject({
