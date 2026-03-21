@@ -96,6 +96,27 @@ Before implementing a new behavior:
 3. implement the minimum code;
 4. verify with real data after tests pass.
 
+## Real-Data Rule
+
+Any logic that is intended to work on real project data must be implemented based on real project data.
+
+That means:
+
+- do not invent input shapes from memory or assumptions;
+- do not design parsing, normalization, mapping, or fallback rules only from hypothetical examples;
+- first inspect the real data, fixtures, snapshots, or analysis artifacts that the logic will actually process;
+- only after that define the rule or contract and implement the logic.
+
+In practice, for any non-trivial real-data behavior:
+
+1. inspect the relevant real data first;
+2. identify the actual observed cases and variations;
+3. define the contract or rule based on those observations;
+4. write tests from those observed cases;
+5. implement the logic.
+
+If the real data has not been inspected yet, the logic is not ready to be implemented.
+
 ## Plan Writing Protocol
 
 When the user explicitly asks for a plan, write it as a structured implementation plan.
