@@ -12,6 +12,7 @@ const ANALYSIS_DIR = resolve(process.cwd(), "analysis");
 const DEFAULT_PATHS = {
   jsonReport: resolve(ANALYSIS_DIR, "feed_field_inventory.json"),
   markdownReport: resolve(ANALYSIS_DIR, "feed_field_inventory.md"),
+  categoriesBySpaceReport: resolve(ANALYSIS_DIR, "categories_by_hackerspace.md"),
 };
 
 export async function analyzeFeedFields({
@@ -23,6 +24,8 @@ export async function analyzeFeedFields({
   const resolvedPaths = {
     jsonReport: paths?.jsonReport || DEFAULT_PATHS.jsonReport,
     markdownReport: paths?.markdownReport || DEFAULT_PATHS.markdownReport,
+    categoriesBySpaceReport:
+      paths?.categoriesBySpaceReport || DEFAULT_PATHS.categoriesBySpaceReport,
   };
   const html = await fetchPageHtml({ sourcePageUrl, fetchImpl });
   const sourceRows = extractSourceRows({ html, sourcePageUrl });
@@ -33,6 +36,7 @@ export async function analyzeFeedFields({
   const rawNamespacedTagStats = new Map();
   const authorValueStats = new Map();
   const categoryValueStats = new Map();
+  const categoriesByHackerspaceStats = new Map();
   const feeds = [];
   const errors = [];
 
@@ -57,6 +61,7 @@ export async function analyzeFeedFields({
         itemFieldStats,
         authorValueStats,
         categoryValueStats,
+        categoriesByHackerspaceStats,
         parsedFeed.items || [],
         sourceRow.hackerspaceName,
       );
@@ -92,6 +97,8 @@ export async function analyzeFeedFields({
     semanticFieldMappings: buildSemanticFieldMappings(feedFieldStats, itemFieldStats),
     authorValues: serializeValueStats(authorValueStats),
     categoryValues: serializeValueStats(categoryValueStats),
+    categoriesByHackerspace: serializeCategoriesByHackerspace(categoriesByHackerspaceStats, categoryValueStats),
+    categoriesByReach: serializeCategoriesByReach(categoryValueStats),
     feedsWithMinimalItems: feeds
       .filter((feed) => feed.hasItems && !feed.hasUsefulContent && !feed.hasAuthorSignals && !feed.hasCategorySignals)
       .map((feed) => pickFeedSummary(feed)),
@@ -111,9 +118,11 @@ export async function analyzeFeedFields({
 
   if (writeArtifacts) {
     const markdown = renderMarkdownSummary(report);
+    const categoriesByHackerspaceMarkdown = renderCategoriesByHackerspaceMarkdown(report);
     await Promise.all([
       writeJson(resolvedPaths.jsonReport, report),
       writeText(resolvedPaths.markdownReport, markdown),
+      writeText(resolvedPaths.categoriesBySpaceReport, categoriesByHackerspaceMarkdown),
     ]);
   }
 
@@ -137,6 +146,49 @@ export function renderMarkdownSummary(report) {
     ...renderSemanticMappingLines(report.semanticFieldMappings),
     "",
   ];
+
+  return `${sections.join("\n")}\n`;
+}
+
+export function renderCategoriesByHackerspaceMarkdown(report) {
+  const sections = ["# Categories By Hackerspace", ""];
+
+  for (const entry of report.categoriesByHackerspace || []) {
+    sections.push(`## ${entry.hackerspaceName} - ${entry.publicationCount} publications`);
+
+    if (!entry.categories.length) {
+      sections.push("- none");
+      sections.push("");
+      continue;
+    }
+
+    for (const category of entry.categories) {
+      const otherSpacesSuffix = category.otherHackerspaces.length
+        ? ` [${category.otherHackerspaces.join(", ")}]`
+        : "";
+      sections.push(
+        `- \`${category.value}\` - ${category.localCount}/${category.globalCount}${otherSpacesSuffix}`,
+      );
+    }
+
+    sections.push("");
+  }
+
+  sections.push("## Categories By Reach");
+
+  if (!(report.categoriesByReach || []).length) {
+    sections.push("- none");
+    sections.push("");
+    return `${sections.join("\n")}\n`;
+  }
+
+  for (const category of report.categoriesByReach) {
+    sections.push(
+      `- \`${category.value}\` - ${category.hackerspaceCount} (${category.totalCount}) [${category.hackerspaces.join(", ")}]`,
+    );
+  }
+
+  sections.push("");
 
   return `${sections.join("\n")}\n`;
 }
@@ -178,7 +230,14 @@ function collectParsedFeedFields(stats, parsedFeed, feedName) {
   }
 }
 
-function collectParsedItemFields(stats, authorValueStats, categoryValueStats, items, feedName) {
+function collectParsedItemFields(
+  stats,
+  authorValueStats,
+  categoryValueStats,
+  categoriesByHackerspaceStats,
+  items,
+  feedName,
+) {
   for (const item of items || []) {
     for (const [key, value] of Object.entries(item || {})) {
       recordField(stats, key, value, feedName, "item");
@@ -187,6 +246,7 @@ function collectParsedItemFields(stats, authorValueStats, categoryValueStats, it
       }
       if (CATEGORY_FIELD_NAMES.has(key)) {
         recordValues(categoryValueStats, value, feedName);
+        recordCategoriesByHackerspace(categoriesByHackerspaceStats, value, feedName);
       }
     }
   }
@@ -356,6 +416,26 @@ function recordValues(stats, value, feedName) {
   }
 }
 
+function recordCategoriesByHackerspace(stats, value, feedName) {
+  const values = Array.isArray(value) ? value : [value];
+
+  if (!stats.has(feedName)) {
+    stats.set(feedName, new Map());
+  }
+
+  const byCategory = stats.get(feedName);
+
+  for (const rawValue of values) {
+    const normalizedValue = String(rawValue || "").trim();
+
+    if (!normalizedValue) {
+      continue;
+    }
+
+    byCategory.set(normalizedValue, (byCategory.get(normalizedValue) || 0) + 1);
+  }
+}
+
 function valueToSample(value) {
   if (typeof value === "string") {
     return value;
@@ -459,6 +539,49 @@ function serializeValueStats(stats) {
     }
     return left.value.localeCompare(right.value);
   });
+}
+
+function serializeCategoriesByHackerspace(stats, globalCategoryStats) {
+  return [...stats.entries()]
+    .sort(([leftName], [rightName]) => leftName.localeCompare(rightName))
+    .map(([hackerspaceName, categoryMap]) => ({
+      hackerspaceName,
+      publicationCount: [...categoryMap.values()].reduce((sum, count) => sum + count, 0),
+      categories: [...categoryMap.entries()]
+        .map(([value, localCount]) => ({
+          value,
+          localCount,
+          globalCount: globalCategoryStats.get(value)?.count || localCount,
+          otherHackerspaces: [...(globalCategoryStats.get(value)?.sampleFeeds || [])]
+            .filter((name) => name !== hackerspaceName)
+            .sort((left, right) => left.localeCompare(right)),
+        }))
+        .sort((left, right) => {
+          if (right.localCount !== left.localCount) {
+            return right.localCount - left.localCount;
+          }
+          return left.value.localeCompare(right.value);
+        }),
+    }));
+}
+
+function serializeCategoriesByReach(globalCategoryStats) {
+  return [...globalCategoryStats.values()]
+    .map((entry) => ({
+      value: entry.value,
+      hackerspaceCount: entry.sampleFeeds.length,
+      totalCount: entry.count,
+      hackerspaces: [...entry.sampleFeeds].sort((left, right) => left.localeCompare(right)),
+    }))
+    .sort((left, right) => {
+      if (right.hackerspaceCount !== left.hackerspaceCount) {
+        return right.hackerspaceCount - left.hackerspaceCount;
+      }
+      if (right.totalCount !== left.totalCount) {
+        return right.totalCount - left.totalCount;
+      }
+      return left.value.localeCompare(right.value);
+    });
 }
 
 const AUTHOR_FIELD_NAMES = new Set(["author", "creator", "dc:creator"]);

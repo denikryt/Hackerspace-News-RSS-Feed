@@ -16,6 +16,7 @@ async function main() {
   console.log(`Analyzed ${result.analyzedFeedCount} feeds`);
   console.log(`Wrote ${process.env.ANALYSIS_JSON_PATH || "analysis/feed_field_inventory.json"}`);
   console.log(`Wrote ${process.env.ANALYSIS_MARKDOWN_PATH || "analysis/feed_field_inventory.md"}`);
+  console.log(`Wrote ${process.env.ANALYSIS_CATEGORIES_BY_SPACE_PATH || "analysis/categories_by_hackerspace.md"}`);
 }
 
 main().catch((error) => {

@@ -6,7 +6,11 @@ import { execFileSync } from "node:child_process";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { analyzeFeedFields, renderMarkdownSummary } from "../src/feedFieldInventory.js";
+import {
+  analyzeFeedFields,
+  renderCategoriesByHackerspaceMarkdown,
+  renderMarkdownSummary,
+} from "../src/feedFieldInventory.js";
 
 const fixturePath = resolve(
   process.cwd(),
@@ -143,6 +147,7 @@ describe("analyzeFeedFields", () => {
 
     const jsonPath = resolve(outputDir, "analysis/feed_field_inventory.json");
     const markdownPath = resolve(outputDir, "analysis/feed_field_inventory.md");
+    const categoriesBySpacePath = resolve(outputDir, "analysis/categories_by_hackerspace.md");
 
     const fetchImpl = vi.fn(async (url) => {
       if (url === sourcePageUrl) {
@@ -180,12 +185,14 @@ describe("analyzeFeedFields", () => {
       paths: {
         jsonReport: jsonPath,
         markdownReport: markdownPath,
+        categoriesBySpaceReport: categoriesBySpacePath,
       },
     });
 
-    const [jsonText, markdownText] = await Promise.all([
+    const [jsonText, markdownText, categoriesBySpaceText] = await Promise.all([
       readFile(jsonPath, "utf8"),
       readFile(markdownPath, "utf8"),
+      readFile(categoriesBySpacePath, "utf8"),
     ]);
 
     expect(JSON.parse(jsonText)).toMatchObject({
@@ -197,6 +204,7 @@ describe("analyzeFeedFields", () => {
     expect(markdownText).toContain("## All Observed Fields");
     expect(markdownText).toContain("## Semantic Field Mappings");
     expect(markdownText).toContain("## Observed Category Values");
+    expect(categoriesBySpaceText).toContain("# Categories By Hackerspace");
   });
 
   it("runs the analysis CLI and exits successfully", async () => {
@@ -320,6 +328,81 @@ describe("analyzeFeedFields", () => {
       analyzedFeedCount: 3,
     });
     expect(markdownText).toContain("# Feed Field Inventory Summary");
+  });
+
+  it("renders categories grouped by hackerspace with local and global counts", () => {
+    const markdown = renderCategoriesByHackerspaceMarkdown({
+      categoriesByHackerspace: [
+        {
+          hackerspaceName: "Hackerspace-1",
+          publicationCount: 50,
+          categories: [
+            {
+              value: "category-1",
+              localCount: 5,
+              globalCount: 10,
+              otherHackerspaces: ["Hackerspace-3"],
+            },
+            {
+              value: "category-2",
+              localCount: 1,
+              globalCount: 5,
+              otherHackerspaces: ["Hackerspace-2"],
+            },
+          ],
+        },
+        {
+          hackerspaceName: "Hackerspace-2",
+          publicationCount: 12,
+          categories: [
+            {
+              value: "category-2",
+              localCount: 3,
+              globalCount: 5,
+              otherHackerspaces: ["Hackerspace-1"],
+            },
+            {
+              value: "category-3",
+              localCount: 1,
+              globalCount: 1,
+              otherHackerspaces: [],
+            },
+          ],
+        },
+      ],
+      categoriesByReach: [
+        {
+          value: "category-2",
+          hackerspaceCount: 2,
+          totalCount: 5,
+          hackerspaces: ["Hackerspace-1", "Hackerspace-2"],
+        },
+        {
+          value: "category-1",
+          hackerspaceCount: 1,
+          totalCount: 10,
+          hackerspaces: ["Hackerspace-1"],
+        },
+        {
+          value: "category-3",
+          hackerspaceCount: 1,
+          totalCount: 1,
+          hackerspaces: ["Hackerspace-2"],
+        },
+      ],
+    });
+
+    expect(markdown).toContain("# Categories By Hackerspace");
+    expect(markdown).toContain("## Hackerspace-1 - 50 publications");
+    expect(markdown).toContain("- `category-1` - 5/10 [Hackerspace-3]");
+    expect(markdown).toContain("- `category-2` - 1/5 [Hackerspace-2]");
+    expect(markdown).toContain("## Hackerspace-2 - 12 publications");
+    expect(markdown).toContain("- `category-2` - 3/5 [Hackerspace-1]");
+    expect(markdown).toContain("- `category-3` - 1/1");
+    expect(markdown).toContain("## Categories By Reach");
+    expect(markdown).toContain("- `category-2` - 2 (5) [Hackerspace-1, Hackerspace-2]");
+    expect(markdown).toContain("- `category-1` - 1 (10) [Hackerspace-1]");
+    expect(markdown).toContain("- `category-3` - 1 (1) [Hackerspace-2]");
   });
 });
 
