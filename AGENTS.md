@@ -52,6 +52,30 @@ What this means in practice:
 - do not weaken tests just to make them pass;
 - do not silently change output contracts without updating tests first.
 
+Refactor is mandatory after the first green test for any non-trivial change.
+
+The purpose of this refactor step is not cosmetic cleanup. Its purpose is to make the code easier for a human to read and understand.
+
+Refactor should improve, when needed:
+
+- naming clarity;
+- function and module boundaries;
+- separation of responsibilities;
+- removal of unnecessary branching, duplication, and incidental complexity;
+- visibility of the main data flow;
+- local readability of non-obvious logic.
+
+Readable code in this project means:
+
+- a reader can understand what the code does without mentally reconstructing hidden assumptions;
+- functions have a narrow and legible purpose;
+- modules expose clear responsibilities;
+- the main path is easy to follow;
+- special cases and fallback rules are explicit;
+- comments are added only where the intent or reasoning would otherwise remain hard to infer.
+
+Do not stop after “the test passes” if the resulting code is still awkward, overly compressed, or harder to read than necessary.
+
 ### 2. Rendering
 
 UI must render only data that is actually present.
