@@ -32,15 +32,11 @@ function normalizeItem(item) {
     id: item.guid || item.id || item.link || item.title,
     title: item.title || undefined,
     link: item.link || undefined,
-    publishedAt: toIsoString(item.isoDate || item.pubDate || item.published),
-    updatedAt: toIsoString(item.updated),
-    author: item.creator || item.author || undefined,
-    summary: item.contentSnippet || item.summary || item.description || undefined,
-    summaryHtml: getHtmlCandidate(item.summary || item.description),
-    summaryText: item.contentSnippet || stripHtml(item.summary || item.description || ""),
-    contentHtml: getHtmlCandidate(item["content:encoded"] || item.content),
-    contentText: item.contentSnippet || stripHtml(item["content:encoded"] || item.content || item.summary || item.description || ""),
-    categories: normalizeCategories(item.categories),
+    categoriesRaw: normalizeCategories(item.categories),
+    authorCandidates: normalizeAuthorCandidates(item),
+    dateCandidates: normalizeDateCandidates(item),
+    summaryCandidates: normalizeSummaryCandidates(item),
+    contentCandidates: normalizeContentCandidates(item),
     attachments: normalizeAttachments(item),
     guid: item.guid || undefined,
   };
@@ -53,6 +49,94 @@ function normalizeCategories(categories) {
     return undefined;
   }
   return categories.map(String);
+}
+
+function normalizeAuthorCandidates(item) {
+  return normalizeValueCandidates(item, ["author", "creator"]);
+}
+
+function normalizeDateCandidates(item) {
+  const candidates = [
+    normalizeDateCandidate("isoDate", item.isoDate),
+    normalizeDateCandidate("pubDate", item.pubDate),
+    normalizeDateCandidate("published", item.published),
+    normalizeDateCandidate("updated", item.updated),
+  ].filter(Boolean);
+
+  return candidates.length > 0 ? candidates : undefined;
+}
+
+function normalizeSummaryCandidates(item) {
+  const candidates = [
+    normalizeTextCandidate("contentSnippet", { text: item.contentSnippet }),
+    normalizeTextCandidate("summary", {
+      html: getHtmlCandidate(item.summary),
+      text: item.summary ? stripHtml(item.summary) : undefined,
+    }),
+    normalizeTextCandidate("description", {
+      html: getHtmlCandidate(item.description),
+      text: item.description ? stripHtml(item.description) : undefined,
+    }),
+  ].filter(Boolean);
+
+  return candidates.length > 0 ? candidates : undefined;
+}
+
+function normalizeContentCandidates(item) {
+  const candidates = [
+    normalizeTextCandidate("content:encoded", {
+      html: getHtmlCandidate(item["content:encoded"]),
+      text: item["content:encoded"] ? stripHtml(item["content:encoded"]) : undefined,
+    }),
+    normalizeTextCandidate("content", {
+      html: getHtmlCandidate(item.content),
+      text: item.content ? stripHtml(item.content) : undefined,
+    }),
+  ].filter(Boolean);
+
+  return candidates.length > 0 ? candidates : undefined;
+}
+
+function normalizeValueCandidates(item, fieldNames) {
+  const candidates = fieldNames
+    .map((field) => {
+      const value = item[field];
+      if (!value) {
+        return null;
+      }
+
+      return {
+        field,
+        value: String(value),
+      };
+    })
+    .filter(Boolean);
+
+  return candidates.length > 0 ? candidates : undefined;
+}
+
+function normalizeDateCandidate(field, value) {
+  const normalizedValue = toIsoString(value);
+  if (!normalizedValue) {
+    return null;
+  }
+
+  return {
+    field,
+    value: normalizedValue,
+  };
+}
+
+function normalizeTextCandidate(field, { html, text }) {
+  if (!html && !text) {
+    return null;
+  }
+
+  return removeUndefined({
+    field,
+    html,
+    text,
+  });
 }
 
 function normalizeAttachments(item) {

@@ -11,14 +11,14 @@ export function renderSpaceDetail(model) {
   const items = (model.items || [])
     .map(
       (item) => `<article class="timeline-entry timeline-entry-detail">
-          ${renderTimelineDate(item.publishedAt)}
+          ${renderTimelineDate(item.displayDate || item.publishedAt || item.updatedAt)}
           <div class="timeline-axis" aria-hidden="true"></div>
           <div class="timeline-content">
             <div class="item-header item-header-detail item-header-global">
               <div class="meta global-feed-meta detail-item-meta">
                 ${
-                  item.author
-                    ? `<span>${renderField("Author", item.author)}</span>`
+                  item.resolvedAuthor
+                    ? `<span>${renderField("Author", item.resolvedAuthor)}</span>`
                     : ""
                 }
                 ${
@@ -30,7 +30,7 @@ export function renderSpaceDetail(model) {
             </div>
             <h3 class="item-title">${escapeHtml(item.title || "Untitled item")}</h3>
             ${renderDisplayContent(item)}
-            ${item.categories?.length ? `<p class="muted">${escapeHtml(item.categories.join(", "))}</p>` : ""}
+            ${renderCategories(item)}
           </div>
       </article>`,
     )
@@ -63,6 +63,16 @@ export function renderSpaceDetail(model) {
       </section>
     `,
   });
+}
+
+function renderCategories(item) {
+  const categories = item.normalizedCategories || item.categoriesRaw;
+
+  if (!categories?.length) {
+    return "";
+  }
+
+  return `<p class="muted">${escapeHtml(categories.join(", "))}</p>`;
 }
 
 function renderPagination(model) {

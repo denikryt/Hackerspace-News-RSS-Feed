@@ -7,13 +7,14 @@ import {
 } from "../src/visibleData.js";
 
 describe("visible data filtering", () => {
-  it("uses publishedAt first and falls back to updatedAt", () => {
+  it("uses displayDate first and falls back to publication timestamps", () => {
     expect(
       getEffectiveItemDate({
+        displayDate: "2025-01-03T10:00:00.000Z",
         publishedAt: "2025-01-01T10:00:00.000Z",
         updatedAt: "2025-01-02T10:00:00.000Z",
       }),
-    ).toBe("2025-01-01T10:00:00.000Z");
+    ).toBe("2025-01-03T10:00:00.000Z");
 
     expect(
       getEffectiveItemDate({
@@ -27,7 +28,7 @@ describe("visible data filtering", () => {
 
     expect(
       isFutureDatedItem(
-        { publishedAt: "2034-07-28T18:00:00.000Z" },
+        { displayDate: "2034-07-28T18:00:00.000Z" },
         { now },
       ),
     ).toBe(true);
@@ -46,8 +47,8 @@ describe("visible data filtering", () => {
         {
           spaceName: "Example",
           items: [
-            { title: "Future", publishedAt: "2034-07-28T18:00:00.000Z" },
-            { title: "Visible", publishedAt: "2025-01-02T10:00:00.000Z" },
+            { title: "Future", displayDate: "2034-07-28T18:00:00.000Z" },
+            { title: "Visible", displayDate: "2025-01-02T10:00:00.000Z" },
             { title: "Fallback updated", updatedAt: "2025-01-01T10:00:00.000Z" },
           ],
         },

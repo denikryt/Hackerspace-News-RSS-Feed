@@ -1,5 +1,5 @@
 export function getEffectiveItemDate(item) {
-  return item?.publishedAt || item?.updatedAt || undefined;
+  return item?.displayDate || item?.publishedAt || item?.updatedAt || undefined;
 }
 
 export function isFutureDatedItem(item, { now = Date.now() } = {}) {

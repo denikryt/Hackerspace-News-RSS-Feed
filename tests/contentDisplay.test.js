@@ -22,7 +22,7 @@ describe("contentDisplay", () => {
   it("falls back to plain text with preserved line breaks", () => {
     const display = buildDisplayContent({
       title: "Post",
-      contentText: "First line\nSecond line",
+      summaryText: "First line\nSecond line",
     });
 
     expect(display.renderMode).toBe("text");

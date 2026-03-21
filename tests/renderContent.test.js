@@ -11,8 +11,8 @@ describe("content rendering", () => {
           title: "Plain post",
           spaceName: "BetaMachine",
           spaceHref: "/spaces/betamachine.html",
-          publishedAt: "2025-01-01T10:00:00.000Z",
-          contentText: "First line\nSecond line",
+          displayDate: "2025-01-01T10:00:00.000Z",
+          summaryText: "First line\nSecond line",
         },
       ],
       homeHref: "/index.html",
@@ -44,9 +44,11 @@ describe("content rendering", () => {
       items: [
         {
           title: "HTML post",
-          publishedAt: "2025-01-01T10:00:00.000Z",
+          displayDate: "2025-01-01T10:00:00.000Z",
+          resolvedAuthor: "Alice",
           contentHtml:
             '<p>Hello <a href="https://example.com/post">link</a></p><script>alert(1)</script>',
+          normalizedCategories: ["event", "news"],
           attachments: [
             {
               url: "https://example.com/audio.mp3",
@@ -61,6 +63,8 @@ describe("content rendering", () => {
 
     expect(html).toContain('<a href="https://example.com/post">link</a>');
     expect(html).toContain("https://example.com/audio.mp3");
+    expect(html).toContain("Alice");
+    expect(html).toContain("event, news");
     expect(html).not.toContain("<script");
     expect(html).toContain("max-inline-size: min(100%, 42rem)");
     expect(html).toContain('img[src*="emoji"]');
@@ -73,7 +77,7 @@ describe("content rendering", () => {
           title: "Paginated post",
           spaceName: "BetaMachine",
           spaceHref: "/spaces/betamachine.html",
-          publishedAt: "2025-01-01T10:00:00.000Z",
+          displayDate: "2025-01-01T10:00:00.000Z",
         },
       ],
       homeHref: "/index.html",
@@ -113,7 +117,7 @@ describe("content rendering", () => {
       items: [
         {
           title: "Detail page post",
-          publishedAt: "2025-01-01T10:00:00.000Z",
+          displayDate: "2025-01-01T10:00:00.000Z",
         },
       ],
       currentPage: 2,

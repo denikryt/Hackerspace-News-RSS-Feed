@@ -10,7 +10,7 @@ export function renderGlobalFeed(model) {
   const items = model.items
     .map(
       (item) => `<article class="timeline-entry">
-          ${renderTimelineDate(item.publishedAt)}
+          ${renderTimelineDate(item.displayDate || item.publishedAt || item.updatedAt)}
           <div class="timeline-axis" aria-hidden="true"></div>
           <div class="timeline-content">
             <div class="item-header item-header-global">

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { normalizeFeed } from "../src/feedNormalizer.js";
 
 describe("normalizeFeed", () => {
-  it("normalizes feed metadata and keeps only available fields", () => {
+  it("normalizes feed metadata and preserves observed candidates without winner selection", () => {
     const sourceRow = {
       rowNumber: 2,
       hackerspaceName: "BetaMachine",
@@ -21,11 +21,16 @@ describe("normalizeFeed", () => {
         {
           title: "Post one",
           link: "https://www.betamachine.fr/post-1",
+          author: "Ignored author",
           pubDate: "Wed, 01 Jan 2025 10:00:00 GMT",
+          isoDate: "2025-01-01T10:00:00.000Z",
+          updated: "2025-01-02T10:00:00.000Z",
           creator: "Alice",
           categories: ["News", "Updates"],
+          summary: "<p>Summary html</p>",
           content: "<p>Hello</p>",
           contentSnippet: "Hello",
+          description: "Description fallback",
           guid: "post-1",
         },
         {
@@ -58,15 +63,49 @@ describe("normalizeFeed", () => {
     expect(normalized.items).toHaveLength(2);
     expect(normalized.items[0]).toMatchObject({
       title: "Post one",
-      author: "Alice",
-      categories: ["News", "Updates"],
-      contentHtml: "<p>Hello</p>",
-      contentText: "Hello",
-      summaryText: "Hello",
+      guid: "post-1",
+      categoriesRaw: ["News", "Updates"],
+      authorCandidates: [
+        { field: "author", value: "Ignored author" },
+        { field: "creator", value: "Alice" },
+      ],
+      dateCandidates: [
+        { field: "isoDate", value: "2025-01-01T10:00:00.000Z" },
+        { field: "pubDate", value: "2025-01-01T10:00:00.000Z" },
+        { field: "updated", value: "2025-01-02T10:00:00.000Z" },
+      ],
+      summaryCandidates: [
+        {
+          field: "contentSnippet",
+          text: "Hello",
+        },
+        {
+          field: "summary",
+          html: "<p>Summary html</p>",
+          text: "Summary html",
+        },
+        {
+          field: "description",
+          text: "Description fallback",
+        },
+      ],
+      contentCandidates: [
+        {
+          field: "content",
+          html: "<p>Hello</p>",
+          text: "Hello",
+        },
+      ],
     });
-    expect(normalized.items[0].publishedAt).toBe("2025-01-01T10:00:00.000Z");
-    expect(normalized.items[1].author).toBeUndefined();
-    expect(normalized.items[1].publishedAt).toBeUndefined();
+    expect(normalized.items[0].publishedAt).toBeUndefined();
+    expect(normalized.items[0].resolvedAuthor).toBeUndefined();
+    expect(normalized.items[0].displayDate).toBeUndefined();
+    expect(normalized.items[1]).toMatchObject({
+      title: "Post two",
+      link: "https://www.betamachine.fr/post-2",
+    });
+    expect(normalized.items[1].authorCandidates).toBeUndefined();
+    expect(normalized.items[1].dateCandidates).toBeUndefined();
   });
 
   it("keeps html summaries and normalizes enclosure attachments", () => {
@@ -100,8 +139,13 @@ describe("normalizeFeed", () => {
 
     expect(normalized.items[0]).toMatchObject({
       title: "Linked post",
-      summaryHtml: '<p>Read <a href="https://example.com/more">more</a></p>',
-      summaryText: "Read more",
+      summaryCandidates: [
+        {
+          field: "summary",
+          html: '<p>Read <a href="https://example.com/more">more</a></p>',
+          text: "Read more",
+        },
+      ],
       attachments: [
         {
           url: "https://example.com/audio.mp3",

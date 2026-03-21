@@ -93,6 +93,31 @@ describe("refreshDataset", () => {
         failedFeeds: 2,
       },
     });
+    expect(JSON.parse(normalizedJson).feeds[0].items[0]).toMatchObject({
+      title: "Post one",
+      displayDate: "2025-01-01T10:00:00.000Z",
+      dateSource: "pubDate",
+      summaryText: "Hello",
+      summarySource: "contentSnippet",
+      observed: {
+        dateCandidates: [
+          {
+            field: "isoDate",
+            value: "2025-01-01T10:00:00.000Z",
+          },
+          {
+            field: "pubDate",
+            value: "2025-01-01T10:00:00.000Z",
+          },
+        ],
+        summaryCandidates: [
+          {
+            field: "contentSnippet",
+            text: "Hello",
+          },
+        ],
+      },
+    });
   });
 });
 

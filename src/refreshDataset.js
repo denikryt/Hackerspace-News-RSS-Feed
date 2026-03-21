@@ -1,4 +1,5 @@
 import { SOURCE_PAGE_URL, PATHS } from "./config.js";
+import { enrichFeed } from "./feedEnricher.js";
 import { normalizeFeed } from "./feedNormalizer.js";
 import { parseFeedBody } from "./feedParser.js";
 import { probeFeedUrl } from "./feedProbe.js";
@@ -35,13 +36,15 @@ export async function refreshDataset({
 
     try {
       const parsedFeed = await parseFeedBody({ xml: validation.body, validation });
+      const normalizedFeed = normalizeFeed({
+        sourceRow,
+        validation,
+        parsedFeed,
+      });
+
       return {
         validation: stripBody(validation),
-        feed: normalizeFeed({
-          sourceRow,
-          validation,
-          parsedFeed,
-        }),
+        feed: enrichFeed(normalizedFeed),
         failure: null,
       };
     } catch (error) {
