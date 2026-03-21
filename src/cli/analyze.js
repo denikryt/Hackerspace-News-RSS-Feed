@@ -1,0 +1,24 @@
+import { SOURCE_PAGE_URL } from "../config.js";
+import { analyzeFeedFields } from "../feedFieldInventory.js";
+
+async function main() {
+  const sourcePageUrl = process.env.SOURCE_PAGE_URL || SOURCE_PAGE_URL;
+
+  const result = await analyzeFeedFields({
+    sourcePageUrl,
+    writeArtifacts: true,
+    paths: {
+      jsonReport: process.env.ANALYSIS_JSON_PATH,
+      markdownReport: process.env.ANALYSIS_MARKDOWN_PATH,
+    },
+  });
+
+  console.log(`Analyzed ${result.analyzedFeedCount} feeds`);
+  console.log(`Wrote ${process.env.ANALYSIS_JSON_PATH || "analysis/feed_field_inventory.json"}`);
+  console.log(`Wrote ${process.env.ANALYSIS_MARKDOWN_PATH || "analysis/feed_field_inventory.md"}`);
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
