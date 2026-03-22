@@ -3,6 +3,8 @@ import {
   getAuthorDetailHref,
   getAuthorsIndexHref,
   isExcludedAuthorName,
+  normalizeAuthorDisplayName,
+  normalizeAuthorLookupKey,
 } from "../authors.js";
 import { buildPageLinks, GLOBAL_FEED_PAGE_SIZE, paginateItems } from "../pagination.js";
 import { slugify } from "../utils/slugify.js";
@@ -74,9 +76,9 @@ function collectAuthors(normalizedPayload, { excludedAuthorNames } = {}) {
       continue;
     }
 
-    const key = item.resolvedAuthor;
+    const key = normalizeAuthorLookupKey(item.resolvedAuthor);
     const existing = groupedAuthors.get(key) || {
-      displayName: item.resolvedAuthor,
+      displayName: normalizeAuthorDisplayName(item.resolvedAuthor),
       items: [],
       authorSources: new Set(),
       latestItemDate: undefined,

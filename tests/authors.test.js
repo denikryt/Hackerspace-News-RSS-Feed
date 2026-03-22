@@ -48,6 +48,14 @@ const normalizedPayload = {
           authorSource: "creator",
           displayDate: "2025-01-02T10:00:00.000Z",
         },
+        {
+          id: "at-1",
+          title: "Alice handle",
+          link: "https://example.com/alice-handle",
+          resolvedAuthor: "@Alice",
+          authorSource: "author",
+          displayDate: "2025-01-02T12:00:00.000Z",
+        },
       ],
     },
     {
@@ -88,7 +96,7 @@ describe("author view models", () => {
     expect(model.authors.map((author) => author.displayName)).toEqual(["Alice", "John Doe", "John-Doe"]);
     expect(model.authors.map((author) => author.slug)).toEqual(["alice", "john-doe", "john-doe-2"]);
     expect(model.authors.find((author) => author.displayName === "Alice")).toMatchObject({
-      itemCount: 2,
+      itemCount: 3,
       detailHref: "/authors/alice.html",
     });
   });
@@ -126,5 +134,52 @@ describe("author view models", () => {
       { type: "page", page: 2, href: "/authors/alice/page/2/", isCurrent: true },
     ]);
     expect(model.publicationCountLabel).toBe("2 of 12 publications");
+  });
+
+  it("normalizes leading at-signs for author grouping, display, and exclusion matching", () => {
+    const model = buildAuthorsIndexModel(
+      {
+        ...normalizedPayload,
+        feeds: [
+          {
+            ...normalizedPayload.feeds[0],
+            items: [
+              {
+                id: "a-1",
+                title: "Handle author",
+                resolvedAuthor: "@agumon0241",
+                authorSource: "author",
+                displayDate: "2025-01-03T10:00:00.000Z",
+              },
+              {
+                id: "a-2",
+                title: "Plain author",
+                resolvedAuthor: "agumon0241",
+                authorSource: "creator",
+                displayDate: "2025-01-02T10:00:00.000Z",
+              },
+              {
+                id: "r-1",
+                title: "Root handle",
+                resolvedAuthor: "@root",
+                authorSource: "author",
+                displayDate: "2025-01-01T10:00:00.000Z",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        excludedAuthorNames: ["root"],
+      },
+    );
+
+    expect(model.authors).toEqual([
+      expect.objectContaining({
+        displayName: "agumon0241",
+        slug: "agumon0241",
+        itemCount: 2,
+      }),
+    ]);
   });
 });

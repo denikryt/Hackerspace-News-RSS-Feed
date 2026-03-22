@@ -13,17 +13,25 @@ export function getExcludedAuthorNames() {
 }
 
 export function isExcludedAuthorName(name, excludedAuthorNames = getExcludedAuthorNames()) {
-  const normalizedName = normalizeAuthorName(name);
+  const normalizedName = normalizeAuthorLookupKey(name);
   if (!normalizedName) {
     return true;
   }
 
-  const excludedNames = new Set(excludedAuthorNames.map(normalizeAuthorName).filter(Boolean));
+  const excludedNames = new Set(excludedAuthorNames.map(normalizeAuthorLookupKey).filter(Boolean));
   return excludedNames.has(normalizedName);
 }
 
 export function createAuthorSlugBase(name) {
   return slugify(name) || "author";
+}
+
+export function normalizeAuthorDisplayName(name) {
+  return String(name || "").trim().replace(/^@+/, "").trim();
+}
+
+export function normalizeAuthorLookupKey(name) {
+  return normalizeAuthorDisplayName(name).toLowerCase();
 }
 
 export function getAuthorsIndexHref() {
@@ -40,8 +48,4 @@ export function getAuthorDetailOutputPath(authorSlug, pageNumber = 1) {
   return pageNumber <= 1
     ? `authors/${authorSlug}.html`
     : `authors/${authorSlug}/page/${pageNumber}/index.html`;
-}
-
-function normalizeAuthorName(name) {
-  return String(name || "").trim().toLowerCase();
 }
