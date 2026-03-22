@@ -211,3 +211,7 @@ Any implementation plan should:
 - define what is in scope and what remains unchanged;
 - include concrete readiness criteria for each stage;
 - include a test plan, not only implementation steps.
+
+## Plan Analysis Agent
+
+If the user asks to run an agent for plan analysis, first read `.codex/agents/plan-analyzer.toml` and use its instructions for that agent run.
