@@ -55,6 +55,7 @@ export function buildContentStreamModel(
     currentPage: pagination.currentPage,
     totalPages: pagination.totalPages,
     currentPageLabel: `Page ${pagination.currentPage} of ${pagination.totalPages}`,
+    publicationCountLabel: `${pagination.items.length} of ${pagination.totalItems} publications`,
     hasPreviousPage: pagination.currentPage > 1,
     hasNextPage: pagination.currentPage < pagination.totalPages,
     previousPageHref:

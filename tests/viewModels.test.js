@@ -170,6 +170,7 @@ describe("multi-page view models", () => {
     expect(model.totalPages).toBe(2);
     expect(model.items).toHaveLength(2);
     expect(model.currentPageLabel).toBe("Page 2 of 2");
+    expect(model.publicationCountLabel).toBe("2 of 12 publications");
     expect(model.hasPreviousPage).toBe(true);
     expect(model.hasNextPage).toBe(false);
     expect(model.previousPageHref).toBe("/spaces/betamachine.html");
@@ -216,6 +217,7 @@ describe("multi-page view models", () => {
     expect(model.currentPage).toBe(2);
     expect(model.totalPages).toBe(2);
     expect(model.items).toHaveLength(2);
+    expect(model.publicationCountLabel).toBe("2 of 12 publications");
     expect(model.hasPreviousPage).toBe(true);
     expect(model.hasNextPage).toBe(false);
     expect(model.previousPageHref).toBe("/all/index.html");

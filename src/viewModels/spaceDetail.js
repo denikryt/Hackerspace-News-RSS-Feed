@@ -40,6 +40,7 @@ export function buildSpaceDetailModel(
       currentPage: 1,
       totalPages: 1,
       currentPageLabel: "Page 1 of 1",
+      publicationCountLabel: "0 of 0 publications",
       hasPreviousPage: false,
       hasNextPage: false,
       previousPageHref: undefined,
@@ -70,6 +71,7 @@ export function buildSpaceDetailModel(
     currentPage: pagination.currentPage,
     totalPages: pagination.totalPages,
     currentPageLabel: `Page ${pagination.currentPage} of ${pagination.totalPages}`,
+    publicationCountLabel: `${pagination.items.length} of ${pagination.totalItems} publications`,
     hasPreviousPage: pagination.currentPage > 1,
     hasNextPage: pagination.currentPage < pagination.totalPages,
     previousPageHref:

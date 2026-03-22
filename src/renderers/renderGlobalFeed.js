@@ -55,12 +55,22 @@ export function renderGlobalFeed(model) {
         navClass: "page-nav--narrow",
       })}
       <section class="feed-list-shell page-shell-narrow timeline-shell-narrow">
-        <p class="muted">${escapeHtml(model.currentPageLabel || "Page 1 of 1")}</p>
+        <p class="muted">${escapeHtml(buildPageSummaryLabel(model))}</p>
         <div class="item-list">${items || `<p class="muted">No feed items available.</p>`}</div>
         ${pagination}
       </section>
     `,
   });
+}
+
+function buildPageSummaryLabel(model) {
+  const parts = [model.currentPageLabel || "Page 1 of 1"];
+
+  if (model.publicationCountLabel) {
+    parts.push(model.publicationCountLabel);
+  }
+
+  return parts.join(" · ");
 }
 
 function renderPagination(model) {

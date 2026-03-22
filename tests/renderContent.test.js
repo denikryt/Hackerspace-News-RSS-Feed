@@ -19,6 +19,7 @@ describe("content rendering", () => {
       pageTitle: "All",
       pageIntro: "All publications sorted from new to old.",
       streamNavItems: [{ href: "/all/index.html", label: "All", isCurrent: true }],
+      publicationCountLabel: "1 of 1 publications",
     });
 
     expect(html).toContain('class="content-body plain-text"');
@@ -101,9 +102,11 @@ describe("content rendering", () => {
       pageTitle: "All",
       pageIntro: "All publications sorted from new to old.",
       streamNavItems: [{ href: "/all/index.html", label: "All", isCurrent: true }],
+      publicationCountLabel: "1 of 42 publications",
     });
 
     expect(html).toContain("Page 2 of 5");
+    expect(html).toContain("1 of 42 publications");
     expect(html).toContain(">Previous<");
     expect(html).toContain(">Next<");
     expect(html).toContain('class="pagination-link current"');
@@ -142,9 +145,11 @@ describe("content rendering", () => {
       ],
       homeHref: "/index.html",
       allContentHref: "/all/index.html",
+      publicationCountLabel: "1 of 41 publications",
     });
 
     expect(html).toContain("Page 2 of 5");
+    expect(html).toContain("1 of 41 publications");
     expect(html).toContain("/spaces/betamachine/page/3/");
     expect(html).toContain('class="pagination-link current"');
     expect(html).toContain('class="timeline-entry timeline-entry-detail"');
