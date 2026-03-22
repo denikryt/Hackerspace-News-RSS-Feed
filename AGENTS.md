@@ -212,6 +212,27 @@ Any implementation plan should:
 - include concrete readiness criteria for each stage;
 - include a test plan, not only implementation steps.
 
+## Notes Writing Rules
+
+Use notes in `plans/notes/` for short idea capture, not for implementation planning.
+
+A note should be:
+
+- short and easy to scan;
+- written around one concrete problem or idea;
+- grounded in the real project structure, data, or UX;
+- explicit about why the idea matters.
+
+Default note structure:
+
+- `# Title`
+- `## Problem`
+- `## Possible Directions`
+
+Notes should describe tension and options, not implementation stages.
+
+Do not turn a note into a full plan unless the user explicitly asks for a plan.
+
 ## Plan Analysis Agent
 
 If the user asks to run an agent for plan analysis, first read `.codex/agents/plan-analyzer.toml` and use its instructions for that agent run.
