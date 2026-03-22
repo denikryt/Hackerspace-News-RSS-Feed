@@ -3,7 +3,10 @@ import { resolve } from "node:path";
 
 import { DIST_DIR, PATHS } from "./config.js";
 import { GLOBAL_FEED_PAGE_SIZE } from "./pagination.js";
+import { getAuthorDetailOutputPath } from "./authors.js";
 import { getContentStreamOutputPath } from "./contentStreams.js";
+import { renderAuthorDetail } from "./renderers/renderAuthorDetail.js";
+import { renderAuthorsIndex } from "./renderers/renderAuthorsIndex.js";
 import { renderAboutPage } from "./renderers/renderAboutPage.js";
 import { renderGlobalFeed } from "./renderers/renderGlobalFeed.js";
 import { renderSpaceDetail } from "./renderers/renderSpaceDetail.js";
@@ -11,6 +14,7 @@ import { renderSpacesIndex } from "./renderers/renderSpacesIndex.js";
 import { readJson, writeText } from "./storage.js";
 import { slugify } from "./utils/slugify.js";
 import { filterNormalizedPayloadForDisplay } from "./visibleData.js";
+import { buildAuthorDetailModel, buildAuthorsIndexModel } from "./viewModels/authors.js";
 import { buildContentStreamModel, listContentStreams } from "./viewModels/contentStreams.js";
 import { buildSpaceDetailModel } from "./viewModels/spaceDetail.js";
 import { buildSpacesIndexModel } from "./viewModels/spacesIndex.js";
@@ -49,7 +53,36 @@ export async function renderSite({
     "about/index.html": renderAboutPage({ sourcePageUrl: data.sourceRowsPayload.sourcePageUrl }),
   };
 
-  for (const stream of listContentStreams(displayPayload)) {
+  const contentStreams = listContentStreams(displayPayload);
+  const primaryStream = contentStreams.find((stream) => stream.id === "all");
+  const secondaryStreams = contentStreams.filter((stream) => stream.id !== "all");
+
+  if (primaryStream) {
+    const totalPages = Math.max(1, Math.ceil(primaryStream.totalItems / GLOBAL_FEED_PAGE_SIZE));
+
+    for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
+      const streamModel = buildContentStreamModel(displayPayload, {
+        streamId: primaryStream.id,
+        currentPage,
+      });
+      pages[getContentStreamOutputPath(primaryStream.id, currentPage)] = renderGlobalFeed(streamModel);
+    }
+  }
+
+  const authorsIndexModel = buildAuthorsIndexModel(displayPayload);
+  pages["authors/index.html"] = renderAuthorsIndex(authorsIndexModel);
+
+  for (const author of authorsIndexModel.authors) {
+    const detailModel = buildAuthorDetailModel(displayPayload, author.slug);
+    const totalPages = detailModel.totalPages || 1;
+
+    for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
+      const pagedModel = buildAuthorDetailModel(displayPayload, author.slug, { currentPage });
+      pages[getAuthorDetailOutputPath(author.slug, currentPage)] = renderAuthorDetail(pagedModel);
+    }
+  }
+
+  for (const stream of secondaryStreams) {
     const totalPages = Math.max(1, Math.ceil(stream.totalItems / GLOBAL_FEED_PAGE_SIZE));
 
     for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {

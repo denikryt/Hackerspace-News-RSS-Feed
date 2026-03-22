@@ -111,6 +111,7 @@ describe("content stream contracts", () => {
       { href: "/blogs/index.html", label: "Blogs", isCurrent: false },
       { href: "/workshops/index.html", label: "Workshops", isCurrent: false },
       { href: "/other/index.html", label: "Other", isCurrent: false },
+      { href: "/authors/index.html", label: "Authors", isCurrent: false },
     ]);
   });
 });

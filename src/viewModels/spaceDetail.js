@@ -1,3 +1,4 @@
+import { getAuthorsIndexHref } from "../authors.js";
 import { getContentStreamHref } from "../contentStreams.js";
 import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
@@ -48,6 +49,7 @@ export function buildSpaceDetailModel(
       pageLinks: [],
       homeHref: "/index.html",
       allContentHref: getContentStreamHref("all", 1),
+      authorsIndexHref: getAuthorsIndexHref(),
     };
   }
 
@@ -83,6 +85,7 @@ export function buildSpaceDetailModel(
     pageLinks: buildPageLinks(pagination.currentPage, pagination.totalPages, hrefForPage),
     homeHref: "/index.html",
     allContentHref: getContentStreamHref("all", 1),
+    authorsIndexHref: getAuthorsIndexHref(),
   };
 }
 

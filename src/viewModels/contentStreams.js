@@ -5,6 +5,7 @@ import {
   getContentStreamDefinition,
   getContentStreamHref,
 } from "../contentStreams.js";
+import { getAuthorsIndexHref } from "../authors.js";
 import { GLOBAL_FEED_PAGE_SIZE, buildPageLinks, paginateItems } from "../pagination.js";
 import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
@@ -65,11 +66,14 @@ export function buildContentStreamModel(
         ? hrefForPage(pagination.currentPage + 1)
         : undefined,
     pageLinks: buildPageLinks(pagination.currentPage, pagination.totalPages, hrefForPage),
-    streamNavItems: availableStreams.map((stream) => ({
-      href: stream.href,
-      label: stream.label,
-      isCurrent: stream.id === streamId,
-    })),
+    streamNavItems: [
+      ...availableStreams.map((stream) => ({
+        href: stream.href,
+        label: stream.label,
+        isCurrent: stream.id === streamId,
+      })),
+      { href: getAuthorsIndexHref(), label: "Authors", isCurrent: false },
+    ],
     homeHref: "/index.html",
     canonicalHref: hrefForPage(pagination.currentPage),
   };

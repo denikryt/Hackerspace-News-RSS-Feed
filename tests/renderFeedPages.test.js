@@ -13,6 +13,7 @@ describe("feed page headers", () => {
       currentPageLabel: "Page 1 of 1",
       streamNavItems: [
         { href: "/all/index.html", label: "All", isCurrent: false },
+        { href: "/authors/index.html", label: "Authors", isCurrent: false },
         { href: "/events/index.html", label: "Events", isCurrent: true },
         { href: "/other/index.html", label: "Other", isCurrent: false },
       ],
@@ -23,6 +24,7 @@ describe("feed page headers", () => {
     expect(html).toContain("Items tagged as events.");
     expect(html).toContain('href="/index.html"');
     expect(html).toContain('href="/all/index.html"');
+    expect(html).toContain('href="/authors/index.html"');
     expect(html).toContain('href="/events/index.html"');
   });
 
@@ -34,6 +36,7 @@ describe("feed page headers", () => {
       siteUrl: "https://technik.cafe",
       homeHref: "/index.html",
       allContentHref: "/all/index.html",
+      authorsIndexHref: "/authors/index.html",
       currentPageLabel: "Page 1 of 1",
       items: [],
     });
@@ -45,5 +48,6 @@ describe("feed page headers", () => {
     expect(html).toContain(">Website<");
     expect(html).toContain('href="/index.html"');
     expect(html).toContain('href="/all/index.html"');
+    expect(html).toContain('href="/authors/index.html"');
   });
 });

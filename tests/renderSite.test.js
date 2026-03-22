@@ -69,6 +69,8 @@ describe("renderSite", () => {
               id: "b-1",
               title: "Newest post",
               link: "https://www.betamachine.fr/newest",
+              resolvedAuthor: "Alice",
+              authorSource: "author",
               publishedAt: "2025-01-02T10:00:00.000Z",
               summary: "Newest summary",
             },
@@ -97,15 +99,18 @@ describe("renderSite", () => {
         "index.html",
         "about/index.html",
         "all/index.html",
+        "authors/index.html",
+        "authors/alice.html",
         "other/index.html",
         "spaces/betamachine.html",
       ]);
       expect(secondRun.pages).toEqual(firstRun.pages);
 
-      const [indexHtml, aboutHtml, feedHtml, detailHtml] = await Promise.all([
+      const [indexHtml, aboutHtml, feedHtml, authorsHtml, detailHtml] = await Promise.all([
         readFile(resolve(distDir, "index.html"), "utf8"),
         readFile(resolve(distDir, "about/index.html"), "utf8"),
         readFile(resolve(distDir, "all/index.html"), "utf8"),
+        readFile(resolve(distDir, "authors/index.html"), "utf8"),
         readFile(resolve(distDir, "spaces/betamachine.html"), "utf8"),
       ]);
       await access(resolve(distDir, "favicon.png"));
@@ -116,6 +121,7 @@ describe("renderSite", () => {
       expect(aboutHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
       expect(feedHtml).toContain("All");
       expect(feedHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
+      expect(authorsHtml).toContain("Authors");
       expect(detailHtml).toContain("BetaMachine");
       expect(detailHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
       expect(globalThis.fetch).not.toHaveBeenCalled();

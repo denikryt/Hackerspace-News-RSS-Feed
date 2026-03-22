@@ -1,0 +1,6 @@
+# One author name per line. Matching is case-insensitive after trim.
+admin
+adminbeta
+membre_v1
+root
+unknown

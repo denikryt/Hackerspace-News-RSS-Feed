@@ -17,6 +17,7 @@ export function renderAboutPage() {
         navItems: [
           { href: "/index.html", label: "Hackerspaces" },
           { href: "/all/index.html", label: "All" },
+          { href: "/authors/index.html", label: "Authors" },
         ],
         navClass: "page-nav--narrow",
       })}

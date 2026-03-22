@@ -58,6 +58,7 @@ export function renderSpacesIndex(model) {
         navItems: [
           { href: "/index.html", label: "Hackerspaces", isCurrent: true },
           { href: "/all/index.html", label: "All" },
+          { href: "/authors/index.html", label: "Authors" },
         ],
         navClass: "page-nav--wide page-nav--compact",
       })}

@@ -53,6 +53,7 @@ export function renderSpaceDetail(model) {
         navItems: [
           { href: model.homeHref, label: "Hackerspaces" },
           { href: model.allContentHref, label: "All" },
+          { href: model.authorsIndexHref, label: "Authors" },
         ],
         navClass: "page-nav--narrow",
       })}

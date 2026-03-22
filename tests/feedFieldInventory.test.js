@@ -213,6 +213,7 @@ describe("analyzeFeedFields", () => {
 
     const jsonPath = resolve(outputDir, "analysis/feed_field_inventory.json");
     const markdownPath = resolve(outputDir, "analysis/feed_field_inventory.md");
+    const categoriesBySpacePath = resolve(outputDir, "analysis/categories_by_hackerspace.md");
 
     const fetchModulePath = resolve(outputDir, "mock-fetch.mjs");
     await writeFile(fetchModulePath, `
@@ -255,13 +256,15 @@ describe("analyzeFeedFields", () => {
         SOURCE_PAGE_URL: sourcePageUrl,
         ANALYSIS_JSON_PATH: jsonPath,
         ANALYSIS_MARKDOWN_PATH: markdownPath,
+        ANALYSIS_CATEGORIES_BY_SPACE_PATH: categoriesBySpacePath,
       },
       stdio: "pipe",
     });
 
-    const [jsonText, markdownText] = await Promise.all([
+    const [jsonText, markdownText, categoriesBySpaceText] = await Promise.all([
       readFile(jsonPath, "utf8"),
       readFile(markdownPath, "utf8"),
+      readFile(categoriesBySpacePath, "utf8"),
     ]);
 
     expect(JSON.parse(jsonText)).toMatchObject({
@@ -269,6 +272,7 @@ describe("analyzeFeedFields", () => {
       analyzedFeedCount: 3,
     });
     expect(markdownText).toContain("# Feed Field Inventory Summary");
+    expect(categoriesBySpaceText).toContain("# Categories By Hackerspace");
   });
 
   it("uses default artifact paths when CLI env overrides are not provided", async () => {

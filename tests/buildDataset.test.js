@@ -36,6 +36,7 @@ describe("buildDataset", () => {
                 <item>
                   <title>Post one</title>
                   <link>https://www.betamachine.fr/post-1</link>
+                  <author>Alice</author>
                   <pubDate>Wed, 01 Jan 2025 10:00:00 GMT</pubDate>
                   <description>Hello</description>
                 </item>
@@ -66,10 +67,13 @@ describe("buildDataset", () => {
     expect(Object.keys(result.site.pages)).toContain("index.html");
     expect(Object.keys(result.site.pages)).toContain("about/index.html");
     expect(Object.keys(result.site.pages)).toContain("all/index.html");
+    expect(Object.keys(result.site.pages)).toContain("authors/index.html");
+    expect(Object.keys(result.site.pages)).toContain("authors/alice.html");
     expect(Object.keys(result.site.pages)).toContain("spaces/betamachine.html");
     expect(result.site.pages["index.html"]).toContain("Hackerspace News");
     expect(result.site.pages["about/index.html"]).toContain("About");
     expect(result.site.pages["all/index.html"]).toContain("All");
+    expect(result.site.pages["authors/index.html"]).toContain("Authors");
     expect(result.site.pages["spaces/betamachine.html"]).toContain("BetaMachine");
   });
 

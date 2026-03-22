@@ -10,6 +10,7 @@ async function main() {
     paths: {
       jsonReport: process.env.ANALYSIS_JSON_PATH,
       markdownReport: process.env.ANALYSIS_MARKDOWN_PATH,
+      categoriesBySpaceReport: process.env.ANALYSIS_CATEGORIES_BY_SPACE_PATH,
     },
   });
 
