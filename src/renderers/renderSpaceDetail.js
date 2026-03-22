@@ -52,7 +52,7 @@ export function renderSpaceDetail(model) {
         `,
         navItems: [
           { href: model.homeHref, label: "Hackerspaces" },
-          { href: model.globalFeedHref, label: "Global Feed" },
+          { href: model.allContentHref, label: "All" },
         ],
         navClass: "page-nav--narrow",
       })}

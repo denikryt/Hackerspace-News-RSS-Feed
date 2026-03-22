@@ -57,7 +57,7 @@ export function renderSpacesIndex(model) {
         introHtml: `<p class="muted"><a class="about-link-muted" href="/about/index.html">About</a>${lastUpdatedIso ? ` <span>• Last updated: <span id="last-updated-label" data-updated-at="${lastUpdatedIso}">${lastUpdatedIso}</span></span>` : ""}</p>`,
         navItems: [
           { href: "/index.html", label: "Hackerspaces", isCurrent: true },
-          { href: "/feed/index.html", label: "Global Feed" },
+          { href: "/all/index.html", label: "All" },
         ],
         navClass: "page-nav--wide page-nav--compact",
       })}

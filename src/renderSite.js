@@ -1,8 +1,9 @@
-import { copyFile } from "node:fs/promises";
+import { copyFile, mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { DIST_DIR, PATHS } from "./config.js";
 import { GLOBAL_FEED_PAGE_SIZE } from "./pagination.js";
+import { getContentStreamOutputPath } from "./contentStreams.js";
 import { renderAboutPage } from "./renderers/renderAboutPage.js";
 import { renderGlobalFeed } from "./renderers/renderGlobalFeed.js";
 import { renderSpaceDetail } from "./renderers/renderSpaceDetail.js";
@@ -10,7 +11,7 @@ import { renderSpacesIndex } from "./renderers/renderSpacesIndex.js";
 import { readJson, writeText } from "./storage.js";
 import { slugify } from "./utils/slugify.js";
 import { filterNormalizedPayloadForDisplay } from "./visibleData.js";
-import { buildGlobalFeedModel } from "./viewModels/globalFeed.js";
+import { buildContentStreamModel, listContentStreams } from "./viewModels/contentStreams.js";
 import { buildSpaceDetailModel } from "./viewModels/spaceDetail.js";
 import { buildSpacesIndexModel } from "./viewModels/spacesIndex.js";
 
@@ -48,16 +49,16 @@ export async function renderSite({
     "about/index.html": renderAboutPage({ sourcePageUrl: data.sourceRowsPayload.sourcePageUrl }),
   };
 
-  const totalGlobalFeedItems = displayPayload.feeds.reduce(
-    (count, feed) => count + feed.items.length,
-    0,
-  );
-  const totalGlobalFeedPages = Math.max(1, Math.ceil(totalGlobalFeedItems / GLOBAL_FEED_PAGE_SIZE));
+  for (const stream of listContentStreams(displayPayload)) {
+    const totalPages = Math.max(1, Math.ceil(stream.totalItems / GLOBAL_FEED_PAGE_SIZE));
 
-  for (let currentPage = 1; currentPage <= totalGlobalFeedPages; currentPage += 1) {
-    const globalFeedModel = buildGlobalFeedModel(displayPayload, { currentPage });
-    const relativePath = currentPage === 1 ? "feed/index.html" : `feed/page/${currentPage}/index.html`;
-    pages[relativePath] = renderGlobalFeed(globalFeedModel);
+    for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
+      const streamModel = buildContentStreamModel(displayPayload, {
+        streamId: stream.id,
+        currentPage,
+      });
+      pages[getContentStreamOutputPath(stream.id, currentPage)] = renderGlobalFeed(streamModel);
+    }
   }
 
   for (const spaceSlug of spaceSlugs) {
@@ -75,6 +76,7 @@ export async function renderSite({
   }
 
   if (writePages) {
+    await mkdir(distDir, { recursive: true });
     await Promise.all(
       [
         ...Object.entries(pages).map(([relativePath, html]) =>

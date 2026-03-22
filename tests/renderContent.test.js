@@ -16,6 +16,9 @@ describe("content rendering", () => {
         },
       ],
       homeHref: "/index.html",
+      pageTitle: "All",
+      pageIntro: "All publications sorted from new to old.",
+      streamNavItems: [{ href: "/all/index.html", label: "All", isCurrent: true }],
     });
 
     expect(html).toContain('class="content-body plain-text"');
@@ -58,7 +61,7 @@ describe("content rendering", () => {
         },
       ],
       homeHref: "/index.html",
-      globalFeedHref: "/feed/index.html",
+      allContentHref: "/all/index.html",
     });
 
     expect(html).toContain('<a href="https://example.com/post">link</a>');
@@ -86,22 +89,25 @@ describe("content rendering", () => {
       currentPageLabel: "Page 2 of 5",
       hasPreviousPage: true,
       hasNextPage: true,
-      previousPageHref: "/feed/",
-      nextPageHref: "/feed/page/3/",
+      previousPageHref: "/all/index.html",
+      nextPageHref: "/all/page/3/",
       pageLinks: [
-        { type: "page", page: 1, href: "/feed/", isCurrent: false },
-        { type: "page", page: 2, href: "/feed/page/2/", isCurrent: true },
-        { type: "page", page: 3, href: "/feed/page/3/", isCurrent: false },
+        { type: "page", page: 1, href: "/all/index.html", isCurrent: false },
+        { type: "page", page: 2, href: "/all/page/2/", isCurrent: true },
+        { type: "page", page: 3, href: "/all/page/3/", isCurrent: false },
         { type: "ellipsis" },
-        { type: "page", page: 5, href: "/feed/page/5/", isCurrent: false },
+        { type: "page", page: 5, href: "/all/page/5/", isCurrent: false },
       ],
+      pageTitle: "All",
+      pageIntro: "All publications sorted from new to old.",
+      streamNavItems: [{ href: "/all/index.html", label: "All", isCurrent: true }],
     });
 
     expect(html).toContain("Page 2 of 5");
     expect(html).toContain(">Previous<");
     expect(html).toContain(">Next<");
     expect(html).toContain('class="pagination-link current"');
-    expect(html).toContain("/feed/page/3/");
+    expect(html).toContain("/all/page/3/");
     expect(html).toContain('class="timeline-date-label"');
   });
 
@@ -135,7 +141,7 @@ describe("content rendering", () => {
         { type: "page", page: 5, href: "/spaces/betamachine/page/5/", isCurrent: false },
       ],
       homeHref: "/index.html",
-      globalFeedHref: "/feed/",
+      allContentHref: "/all/index.html",
     });
 
     expect(html).toContain("Page 2 of 5");

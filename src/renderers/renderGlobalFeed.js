@@ -35,17 +35,22 @@ export function renderGlobalFeed(model) {
     .join("");
 
   const pagination = renderPagination(model);
+  const pageTitle = model.pageTitle || "All";
+  const pageIntro = model.pageIntro || "All publications sorted from new to old.";
+  const streamNavItems = model.streamNavItems || [
+    { href: "/all/index.html", label: "All", isCurrent: true },
+  ];
 
   return renderLayout({
-    title: "Global Feed",
+    title: pageTitle,
     body: `
       ${renderPageHeader({
-        title: "Global Feed",
+        title: pageTitle,
         headerClass: "page-header--narrow page-header--compact",
-        introHtml: `<p class="muted">All publications sorted from new to old.</p>`,
+        introHtml: `<p class="muted">${escapeHtml(pageIntro)}</p>`,
         navItems: [
           { href: model.homeHref, label: "Hackerspaces" },
-          { href: "/feed/index.html", label: "Global Feed", isCurrent: true },
+          ...streamNavItems,
         ],
         navClass: "page-nav--narrow",
       })}

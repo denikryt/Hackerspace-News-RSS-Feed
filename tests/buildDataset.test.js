@@ -65,11 +65,11 @@ describe("buildDataset", () => {
     });
     expect(Object.keys(result.site.pages)).toContain("index.html");
     expect(Object.keys(result.site.pages)).toContain("about/index.html");
-    expect(Object.keys(result.site.pages)).toContain("feed/index.html");
+    expect(Object.keys(result.site.pages)).toContain("all/index.html");
     expect(Object.keys(result.site.pages)).toContain("spaces/betamachine.html");
     expect(result.site.pages["index.html"]).toContain("Hackerspace News");
     expect(result.site.pages["about/index.html"]).toContain("About");
-    expect(result.site.pages["feed/index.html"]).toContain("Global Feed");
+    expect(result.site.pages["all/index.html"]).toContain("All");
     expect(result.site.pages["spaces/betamachine.html"]).toContain("BetaMachine");
   });
 
@@ -117,10 +117,10 @@ describe("buildDataset", () => {
 
     const result = await buildDataset({ sourcePageUrl, fetchImpl });
 
-    expect(Object.keys(result.site.pages)).toContain("feed/index.html");
-    expect(Object.keys(result.site.pages)).toContain("feed/page/2/index.html");
-    expect(result.site.pages["feed/index.html"]).toContain("Page 1 of 2");
-    expect(result.site.pages["feed/page/2/index.html"]).toContain("Page 2 of 2");
+    expect(Object.keys(result.site.pages)).toContain("all/index.html");
+    expect(Object.keys(result.site.pages)).toContain("all/page/2/index.html");
+    expect(result.site.pages["all/index.html"]).toContain("Page 1 of 2");
+    expect(result.site.pages["all/page/2/index.html"]).toContain("Page 2 of 2");
   });
 
   it("builds paginated detail pages when a space has more than 10 items", async () => {

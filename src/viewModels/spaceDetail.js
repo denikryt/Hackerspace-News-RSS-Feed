@@ -1,8 +1,8 @@
+import { getContentStreamHref } from "../contentStreams.js";
 import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
 import {
   buildPageLinks,
-  getGlobalFeedHref,
   getSpaceDetailHref,
   GLOBAL_FEED_PAGE_SIZE,
   paginateItems,
@@ -46,7 +46,7 @@ export function buildSpaceDetailModel(
       nextPageHref: undefined,
       pageLinks: [],
       homeHref: "/index.html",
-      globalFeedHref: getGlobalFeedHref(1),
+      allContentHref: getContentStreamHref("all", 1),
     };
   }
 
@@ -80,7 +80,7 @@ export function buildSpaceDetailModel(
         : undefined,
     pageLinks: buildPageLinks(pagination.currentPage, pagination.totalPages, hrefForPage),
     homeHref: "/index.html",
-    globalFeedHref: getGlobalFeedHref(1),
+    allContentHref: getContentStreamHref("all", 1),
   };
 }
 
