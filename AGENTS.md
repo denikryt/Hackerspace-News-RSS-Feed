@@ -121,6 +121,18 @@ If the real data has not been inspected yet, the logic is not ready to be implem
 
 When the user explicitly asks for a plan, write it as a structured implementation plan.
 
+Every new plan file in `plans/` must be numbered.
+
+Plan filename rule:
+
+- use a zero-padded ordinal prefix at the start of the filename;
+- choose the next available number relative to the existing plan files in `plans/`;
+- keep the descriptive uppercase name after the numeric prefix.
+
+Example:
+
+- `04_EXAMPLE_PLAN.md`
+
 Every plan should include these blocks:
 
 ### 1. Goal
@@ -215,6 +227,18 @@ Any implementation plan should:
 ## Notes Writing Rules
 
 Use notes in `plans/notes/` for short idea capture, not for implementation planning.
+
+Every new note file in `plans/notes/` must be numbered.
+
+Note filename rule:
+
+- use a zero-padded ordinal prefix at the start of the filename;
+- choose the next available number relative to the existing note files in `plans/notes/`;
+- keep the descriptive uppercase name after the numeric prefix.
+
+Example:
+
+- `14_EXAMPLE_NOTE.md`
 
 A note should be:
 
