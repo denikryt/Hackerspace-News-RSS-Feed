@@ -6,11 +6,15 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist"
 TARGET_DIR="${TARGET_DIR:-/var/www/test.nachitima.com}"
 RUN_MODE="deploy"
+RUN_LABEL="deploy"
+SECONDS=0
 
 if [[ "${1:-}" == "build" ]]; then
   RUN_MODE="build"
+  RUN_LABEL="build deploy"
 elif [[ "${1:-}" == "render" ]]; then
   RUN_MODE="render"
+  RUN_LABEL="render deploy"
 elif [[ $# -gt 0 ]]; then
   echo "Unknown argument: $1"
   echo "Usage: ./scripts/deploy-site.sh [build|render]"
@@ -41,3 +45,5 @@ fi
 
 run_privileged rsync -av --delete "$DIST_DIR"/ "$TARGET_DIR"/
 run_privileged systemctl reload nginx
+
+echo "Completed ${RUN_LABEL} in ${SECONDS}s"

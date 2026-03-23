@@ -19,38 +19,41 @@ describe("deploy-site.sh", () => {
     const rootDir = createFixtureProject();
     const logPath = join(rootDir, "commands.log");
 
-    runScript(rootDir, [], logPath);
+    const stdout = runScript(rootDir, [], logPath);
 
     expect(readLog(logPath)).toEqual([
       `sudo rsync -av --delete ${rootDir}/dist/ ${rootDir}/target/`,
       "sudo systemctl reload nginx",
     ]);
+    expect(stdout).toMatch(/Completed deploy in \d+s/);
   });
 
   it("runs npm run build before deploy when called with build flag", () => {
     const rootDir = createFixtureProject();
     const logPath = join(rootDir, "commands.log");
 
-    runScript(rootDir, ["build"], logPath);
+    const stdout = runScript(rootDir, ["build"], logPath);
 
     expect(readLog(logPath)).toEqual([
       "npm run build",
       `sudo rsync -av --delete ${rootDir}/dist/ ${rootDir}/target/`,
       "sudo systemctl reload nginx",
     ]);
+    expect(stdout).toMatch(/Completed build deploy in \d+s/);
   });
 
   it("runs npm run render before deploy when called with render flag", () => {
     const rootDir = createFixtureProject();
     const logPath = join(rootDir, "commands.log");
 
-    runScript(rootDir, ["render"], logPath);
+    const stdout = runScript(rootDir, ["render"], logPath);
 
     expect(readLog(logPath)).toEqual([
       "npm run render",
       `sudo rsync -av --delete ${rootDir}/dist/ ${rootDir}/target/`,
       "sudo systemctl reload nginx",
     ]);
+    expect(stdout).toMatch(/Completed render deploy in \d+s/);
   });
 });
 
@@ -106,8 +109,9 @@ exit 0
 }
 
 function runScript(rootDir, args, logPath) {
-  execFileSync(join(rootDir, "scripts/deploy-site.sh"), args, {
+  return execFileSync(join(rootDir, "scripts/deploy-site.sh"), args, {
     cwd: rootDir,
+    encoding: "utf8",
     env: {
       ...process.env,
       PATH: `${join(rootDir, "bin")}:${process.env.PATH}`,
