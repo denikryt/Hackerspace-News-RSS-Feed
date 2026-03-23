@@ -182,4 +182,70 @@ describe("author view models", () => {
       }),
     ]);
   });
+
+  it("builds author groups from canonical delimiter and explicit overrides", () => {
+    const model = buildAuthorsIndexModel(
+      {
+        ...normalizedPayload,
+        feeds: [
+          {
+            ...normalizedPayload.feeds[0],
+            items: [
+              {
+                id: "ab-1",
+                title: "Shared canonical item",
+                resolvedAuthor: "Alice | Bob",
+                authorSource: "author",
+                displayDate: "2025-01-03T10:00:00.000Z",
+              },
+              {
+                id: "legacy-1",
+                title: "Legacy multi-author item",
+                resolvedAuthor: "kuchenblechmafia, s3lph",
+                authorSource: "author",
+                displayDate: "2025-01-02T10:00:00.000Z",
+              },
+              {
+                id: "single-1",
+                title: "Legacy comma single author",
+                resolvedAuthor: "Arnold, David",
+                authorSource: "author",
+                displayDate: "2025-01-01T10:00:00.000Z",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        excludedAuthorNames: ["admin"],
+        authorOverrides: {
+          "kuchenblechmafia, s3lph": ["kuchenblechmafia", "s3lph"],
+        },
+      },
+    );
+
+    expect(model.authors.map((author) => author.displayName)).toEqual([
+      "Alice",
+      "Arnold, David",
+      "Bob",
+      "kuchenblechmafia",
+      "s3lph",
+    ]);
+
+    expect(model.authors.find((author) => author.displayName === "Alice")).toMatchObject({
+      itemCount: 1,
+    });
+    expect(model.authors.find((author) => author.displayName === "Bob")).toMatchObject({
+      itemCount: 1,
+    });
+    expect(model.authors.find((author) => author.displayName === "kuchenblechmafia")).toMatchObject({
+      itemCount: 1,
+    });
+    expect(model.authors.find((author) => author.displayName === "s3lph")).toMatchObject({
+      itemCount: 1,
+    });
+    expect(model.authors.find((author) => author.displayName === "Arnold, David")).toMatchObject({
+      itemCount: 1,
+    });
+  });
 });

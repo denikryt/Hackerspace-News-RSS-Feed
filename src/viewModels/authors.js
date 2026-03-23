@@ -2,16 +2,17 @@ import {
   createAuthorSlugBase,
   getAuthorDetailHref,
   getAuthorsIndexHref,
+  getAuthorOverrides,
   isExcludedAuthorName,
-  normalizeAuthorDisplayName,
   normalizeAuthorLookupKey,
+  parseAuthorValue,
 } from "../authors.js";
 import { buildPageLinks, GLOBAL_FEED_PAGE_SIZE, paginateItems } from "../pagination.js";
 import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
 
-export function buildAuthorsIndexModel(normalizedPayload, { excludedAuthorNames } = {}) {
-  const authors = collectAuthors(normalizedPayload, { excludedAuthorNames });
+export function buildAuthorsIndexModel(normalizedPayload, { excludedAuthorNames, authorOverrides } = {}) {
+  const authors = collectAuthors(normalizedPayload, { excludedAuthorNames, authorOverrides });
 
   return {
     pageTitle: "Authors",
@@ -29,9 +30,10 @@ export function buildAuthorDetailModel(
     currentPage = 1,
     pageSize = GLOBAL_FEED_PAGE_SIZE,
     excludedAuthorNames,
+    authorOverrides,
   } = {},
 ) {
-  const authors = collectAuthors(normalizedPayload, { excludedAuthorNames });
+  const authors = collectAuthors(normalizedPayload, { excludedAuthorNames, authorOverrides });
   const author = authors.find((entry) => entry.slug === authorSlug);
 
   if (!author) {
@@ -68,33 +70,46 @@ export function buildAuthorDetailModel(
   };
 }
 
-function collectAuthors(normalizedPayload, { excludedAuthorNames } = {}) {
+function collectAuthors(
+  normalizedPayload,
+  { excludedAuthorNames, authorOverrides = getAuthorOverrides() } = {},
+) {
   const groupedAuthors = new Map();
 
   for (const item of collectAllFeedItems(normalizedPayload)) {
-    if (isExcludedAuthorName(item.resolvedAuthor, excludedAuthorNames)) {
+    const authorParsing = parseAuthorValue(item.resolvedAuthor, { authorOverrides });
+    if (!authorParsing.derivedAuthors.length) {
       continue;
     }
 
-    const key = normalizeAuthorLookupKey(item.resolvedAuthor);
-    const existing = groupedAuthors.get(key) || {
-      displayName: normalizeAuthorDisplayName(item.resolvedAuthor),
-      items: [],
-      authorSources: new Set(),
-      latestItemDate: undefined,
-    };
+    for (const authorName of authorParsing.derivedAuthors) {
+      if (isExcludedAuthorName(authorName, excludedAuthorNames)) {
+        continue;
+      }
 
-    existing.items.push(item);
-    if (item.authorSource) {
-      existing.authorSources.add(item.authorSource);
+      const key = normalizeAuthorLookupKey(authorName);
+      const existing = groupedAuthors.get(key) || {
+        displayName: authorName,
+        items: [],
+        authorSources: new Set(),
+        latestItemDate: undefined,
+      };
+
+      existing.items.push(item);
+      if (item.authorSource) {
+        existing.authorSources.add(item.authorSource);
+      }
+
+      const itemDate = getEffectiveItemDate(item);
+      if (
+        !existing.latestItemDate ||
+        getComparableTimestamp(item) > getComparableTimestamp({ displayDate: existing.latestItemDate })
+      ) {
+        existing.latestItemDate = itemDate;
+      }
+
+      groupedAuthors.set(key, existing);
     }
-
-    const itemDate = getEffectiveItemDate(item);
-    if (!existing.latestItemDate || getComparableTimestamp(item) > getComparableTimestamp({ displayDate: existing.latestItemDate })) {
-      existing.latestItemDate = itemDate;
-    }
-
-    groupedAuthors.set(key, existing);
   }
 
   const authors = [...groupedAuthors.values()]
