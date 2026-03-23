@@ -260,6 +260,10 @@ export function renderMetric(label, value) {
   return `<div class="metric"><span class="muted">${escapeHtml(label)}:</span><strong>${escapeHtml(String(value))}</strong></div>`;
 }
 
+export function renderAboutHeaderLink() {
+  return `<a class="about-link-muted" href="/about/index.html">About</a>`;
+}
+
 export function renderField(label, value) {
   if (!value) {
     return "";

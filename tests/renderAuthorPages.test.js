@@ -31,6 +31,7 @@ describe("author page rendering", () => {
     expect(html).toContain(".space-card-links .author-hackerspace-link{color:#111;}");
     expect(html).toContain(">BetaMachine<");
     expect(html).toContain(">C3D2<");
+    expect(html).toContain('class="about-link-muted" href="/about/index.html"');
     expect(html).toContain('href="/index.html"');
     expect(html).toContain('href="/feed/index.html"');
     expect(html).toContain(">Feed<");
@@ -70,6 +71,7 @@ describe("author page rendering", () => {
     });
 
     expect(html).toContain("<h1>Alice</h1>");
+    expect(html).toContain('class="about-link-muted" href="/about/index.html"');
     expect(html).toContain('href="/authors/index.html"');
     expect(html).toContain("1 of 41 publications");
     expect(html).toContain("/authors/alice/page/3/");

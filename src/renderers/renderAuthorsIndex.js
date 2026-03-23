@@ -1,6 +1,7 @@
 import {
   escapeHtml,
   formatCompactDate,
+  renderAboutHeaderLink,
   renderLayout,
   renderPageHeader,
 } from "./layout.js";
@@ -39,7 +40,7 @@ export function renderAuthorsIndex(model) {
         title: "Authors",
         titleClass: "home-hero-title",
         headerClass: "page-header--wide page-header--compact",
-        introHtml: `<p class="muted">All public authors detected from the dataset.</p>`,
+        introHtml: `<p class="muted">${renderAboutHeaderLink()} <span>• All public authors detected from the dataset.</span></p>`,
         navItems: [
           { href: homeHref, label: "Hackerspaces" },
           { href: allContentHref, label: "Feed" },

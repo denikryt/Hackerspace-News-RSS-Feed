@@ -2,6 +2,7 @@ import { renderDisplayContent } from "../contentDisplay.js";
 import { renderAuthorLinks } from "./renderAuthorLinks.js";
 import {
   escapeHtml,
+  renderAboutHeaderLink,
   renderLayout,
   renderPageHeader,
   renderTimelineDate,
@@ -49,7 +50,7 @@ export function renderGlobalFeed(model) {
       ${renderPageHeader({
         title: pageTitle,
         headerClass: "page-header--narrow page-header--compact",
-        introHtml: `<p class="muted">${escapeHtml(pageIntro)}</p>`,
+        introHtml: `<p class="muted">${renderAboutHeaderLink()} <span>• ${escapeHtml(pageIntro)}</span></p>`,
         navItems: [
           { href: model.homeHref, label: "Hackerspaces" },
           ...streamNavItems,

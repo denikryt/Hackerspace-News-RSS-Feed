@@ -22,6 +22,7 @@ describe("feed page headers", () => {
     expect(html).toContain('class="panel page-header page-header--narrow page-header--compact"');
     expect(html).toContain("<h1>Events</h1>");
     expect(html).toContain("Items tagged as events.");
+    expect(html).toContain('class="about-link-muted" href="/about/index.html"');
     expect(html).toContain('href="/index.html"');
     expect(html).toContain('href="/feed/index.html"');
     expect(html).toContain('href="/authors/index.html"');
@@ -44,6 +45,7 @@ describe("feed page headers", () => {
     expect(html).toContain('class="panel page-header page-header--narrow page-header--compact"');
     expect(html).toContain("<h1>Technik.cafe</h1>");
     expect(html).toContain("Country:");
+    expect(html).toContain('class="about-link-muted" href="/about/index.html"');
     expect(html).toContain(">Wiki<");
     expect(html).toContain(">Website<");
     expect(html).toContain('href="/index.html"');

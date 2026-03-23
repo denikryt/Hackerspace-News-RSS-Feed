@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-import { renderLayout, renderPageHeader } from "./layout.js";
+import { renderAboutHeaderLink, renderLayout, renderPageHeader } from "./layout.js";
 
 const ABOUT_HTML_PATH = resolve(process.cwd(), "content/about.html");
 
@@ -14,6 +14,7 @@ export function renderAboutPage() {
       ${renderPageHeader({
         title: "About",
         headerClass: "page-header--narrow page-header--compact",
+        introHtml: `<p class="muted">${renderAboutHeaderLink()}</p>`,
         navItems: [
           { href: "/index.html", label: "Hackerspaces" },
           { href: "/feed/index.html", label: "Feed" },

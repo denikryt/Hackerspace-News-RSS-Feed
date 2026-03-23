@@ -2,6 +2,7 @@ import { renderDisplayContent } from "../contentDisplay.js";
 import { renderAuthorLinks } from "./renderAuthorLinks.js";
 import {
   escapeHtml,
+  renderAboutHeaderLink,
   renderLayout,
   renderPageHeader,
   renderTimelineDate,
@@ -46,6 +47,7 @@ export function renderSpaceDetail(model) {
         title: model.spaceName,
         headerClass: "page-header--narrow page-header--compact",
         introHtml: `
+        <p class="muted">${renderAboutHeaderLink()}</p>
         <div class="meta detail-header-meta">
           ${renderField("Country", model.country)}
           ${model.sourceWikiUrl ? `<a class="global-feed-meta-link detail-header-link" href="${model.sourceWikiUrl}">Wiki</a>` : ""}
