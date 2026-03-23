@@ -26,16 +26,17 @@ export function renderAuthorsIndex(model) {
     body: `
       ${renderPageHeader({
         title: "Authors",
-        headerClass: "page-header--narrow page-header--compact",
+        titleClass: "home-hero-title",
+        headerClass: "page-header--wide page-header--compact",
         introHtml: `<p class="muted">All public authors detected from the dataset.</p>`,
         navItems: [
           { href: homeHref, label: "Hackerspaces" },
           { href: allContentHref, label: "All" },
           { href: authorsIndexHref, label: "Authors", isCurrent: true },
         ],
-        navClass: "page-nav--narrow",
+        navClass: "page-nav--wide page-nav--compact",
       })}
-      <section class="panel page-summary page-summary--home page-shell-narrow">
+      <section class="panel page-summary page-summary--home">
         <div class="cards">${cards || `<p class="muted">No public authors available.</p>`}</div>
       </section>
     `,

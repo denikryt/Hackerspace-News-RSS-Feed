@@ -17,12 +17,17 @@ describe("author page rendering", () => {
       ],
     });
 
-    expect(html).toContain("<h1>Authors</h1>");
+    expect(html).toContain('<h1 class="home-hero-title">Authors</h1>');
     expect(html).toContain('href="/authors/alice.html"');
     expect(html).toContain("2 publications");
     expect(html).toContain('href="/index.html"');
     expect(html).toContain('href="/all/index.html"');
     expect(html).toContain('href="/authors/index.html"');
+    expect(html).toContain('class="panel page-header page-header--wide page-header--compact"');
+    expect(html).toContain('class="page-nav page-nav--wide page-nav--compact"');
+    expect(html).toContain('class="panel page-summary page-summary--home"');
+    expect(html).not.toContain('class="panel page-summary page-summary--home page-shell-narrow"');
+    expect(html).not.toContain('class="panel page-header page-header--narrow page-header--compact"');
   });
 
   it("renders the author detail page with pagination", () => {
