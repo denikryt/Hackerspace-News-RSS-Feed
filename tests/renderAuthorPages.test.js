@@ -13,6 +13,10 @@ describe("author page rendering", () => {
           itemCount: 2,
           latestItemDate: "2025-01-02T10:00:00.000Z",
           detailHref: "/authors/alice.html",
+          hackerspaces: [
+            { name: "BetaMachine", href: "/spaces/betamachine.html" },
+            { name: "C3D2", href: "/spaces/c3d2.html" },
+          ],
         },
       ],
     });
@@ -20,6 +24,12 @@ describe("author page rendering", () => {
     expect(html).toContain('<h1 class="home-hero-title">Authors</h1>');
     expect(html).toContain('href="/authors/alice.html"');
     expect(html).toContain("2 publications");
+    expect(html).toContain('href="/spaces/betamachine.html"');
+    expect(html).toContain('href="/spaces/c3d2.html"');
+    expect(html).toContain('class="author-hackerspace-link" href="/spaces/betamachine.html"');
+    expect(html).toContain(".author-hackerspace-link{color:#111;}");
+    expect(html).toContain(">BetaMachine<");
+    expect(html).toContain(">C3D2<");
     expect(html).toContain('href="/index.html"');
     expect(html).toContain('href="/all/index.html"');
     expect(html).toContain('href="/authors/index.html"');

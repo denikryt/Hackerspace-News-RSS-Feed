@@ -17,6 +17,16 @@ export function renderAuthorsIndex(model) {
           <span>${escapeHtml(`${author.itemCount} publication${author.itemCount === 1 ? "" : "s"}`)}</span>
           ${author.latestItemDate ? `<span>${escapeHtml(formatCompactDate(author.latestItemDate))}</span>` : ""}
         </div>
+        ${
+          author.hackerspaces?.length
+            ? `<p class="space-card-links">${author.hackerspaces
+                .map(
+                  (hackerspace) =>
+                    `<a class="author-hackerspace-link" href="${escapeHtml(hackerspace.href)}">${escapeHtml(hackerspace.name)}</a>`,
+                )
+                .join("")}</p>`
+            : ""
+        }
       </article>`,
     )
     .join("");
@@ -24,6 +34,7 @@ export function renderAuthorsIndex(model) {
   return renderLayout({
     title: "Authors",
     body: `
+      <style>.author-hackerspace-link{color:#111;}</style>
       ${renderPageHeader({
         title: "Authors",
         titleClass: "home-hero-title",

@@ -98,6 +98,7 @@ describe("author view models", () => {
     expect(model.authors.find((author) => author.displayName === "Alice")).toMatchObject({
       itemCount: 3,
       detailHref: "/authors/alice.html",
+      hackerspaces: [{ name: "BetaMachine", href: "/spaces/betamachine.html" }],
     });
   });
 
@@ -247,5 +248,52 @@ describe("author view models", () => {
     expect(model.authors.find((author) => author.displayName === "Arnold, David")).toMatchObject({
       itemCount: 1,
     });
+  });
+
+  it("lists all hackerspaces where an author appears", () => {
+    const model = buildAuthorsIndexModel(
+      {
+        ...normalizedPayload,
+        feeds: [
+          {
+            ...normalizedPayload.feeds[0],
+            items: [
+              {
+                id: "a-1",
+                title: "Alice in BetaMachine",
+                resolvedAuthor: "Alice",
+                authorSource: "author",
+                displayDate: "2025-01-03T10:00:00.000Z",
+              },
+            ],
+          },
+          {
+            ...normalizedPayload.feeds[1],
+            items: [
+              {
+                id: "a-2",
+                title: "Alice in C3D2",
+                resolvedAuthor: "Alice",
+                authorSource: "author",
+                displayDate: "2025-01-02T10:00:00.000Z",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        excludedAuthorNames: ["admin"],
+      },
+    );
+
+    expect(model.authors).toEqual([
+      expect.objectContaining({
+        displayName: "Alice",
+        hackerspaces: [
+          { name: "BetaMachine", href: "/spaces/betamachine.html" },
+          { name: "C3D2", href: "/spaces/c3d2.html" },
+        ],
+      }),
+    ]);
   });
 });

@@ -92,12 +92,19 @@ export function buildAuthorDirectory(
         displayName: authorName,
         items: [],
         authorSources: new Set(),
+        hackerspaces: new Map(),
         latestItemDate: undefined,
       };
 
       existing.items.push(item);
       if (item.authorSource) {
         existing.authorSources.add(item.authorSource);
+      }
+      if (item.spaceName) {
+        existing.hackerspaces.set(item.spaceName, {
+          name: item.spaceName,
+          href: item.spaceHref,
+        });
       }
 
       const itemDate = getEffectiveItemDate(item);
@@ -117,6 +124,9 @@ export function buildAuthorDirectory(
       displayName: author.displayName,
       items: [...author.items].sort(compareItemsByDateDesc),
       authorSources: [...author.authorSources].sort(),
+      hackerspaces: [...author.hackerspaces.values()].sort((left, right) =>
+        left.name.localeCompare(right.name),
+      ),
       latestItemDate: author.latestItemDate,
     }))
     .sort((left, right) => left.displayName.localeCompare(right.displayName));
@@ -133,6 +143,7 @@ export function buildAuthorDirectory(
     latestItemDate: author.latestItemDate,
     detailHref: getAuthorDetailHref(author.slug, 1),
     authorSources: author.authorSources,
+    hackerspaces: author.hackerspaces,
     items: author.items.map((item) =>
       withAuthorLinks(item, { excludedAuthorNames, authorOverrides, slugByLookupKey }),
     ),
