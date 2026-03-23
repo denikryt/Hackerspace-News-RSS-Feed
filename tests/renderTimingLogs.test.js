@@ -1,0 +1,95 @@
+import { chmodSync, copyFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { execFileSync } from "node:child_process";
+
+import { afterEach, describe, expect, it } from "vitest";
+
+const tempDirs = [];
+
+afterEach(() => {
+  tempDirs.splice(0).forEach((directory) => {
+    rmSync(directory, { recursive: true, force: true });
+  });
+});
+
+describe("render/build timing logs", () => {
+  it("logs render duration after writing pages", () => {
+    const rootDir = createCliFixture();
+
+    const stdout = execFileSync(process.execPath, [join(rootDir, "src/cli/render.js")], {
+      cwd: rootDir,
+      encoding: "utf8",
+      stdio: "pipe",
+    });
+
+    expect(stdout).toContain(`Wrote ${join(rootDir, "dist")}/index.html`);
+    expect(stdout).toMatch(/Rendered 2 pages in \d+ms/);
+  });
+
+  it("logs page render duration during build", () => {
+    const rootDir = createCliFixture();
+
+    const stdout = execFileSync(process.execPath, [join(rootDir, "src/cli/build.js")], {
+      cwd: rootDir,
+      encoding: "utf8",
+      stdio: "pipe",
+    });
+
+    expect(stdout).toContain(`Wrote ${join(rootDir, "data/source_urls.json")}`);
+    expect(stdout).toContain(`Wrote ${join(rootDir, "dist")}/index.html`);
+    expect(stdout).toMatch(/Rendered 2 pages in \d+ms/);
+  });
+});
+
+function createCliFixture() {
+  const rootDir = mkdtempSync(join(tmpdir(), "hnf-render-cli-"));
+  tempDirs.push(rootDir);
+
+  mkdirSync(join(rootDir, "src/cli"), { recursive: true });
+  mkdirSync(join(rootDir, "src"), { recursive: true });
+  mkdirSync(join(rootDir, "dist"), { recursive: true });
+  mkdirSync(join(rootDir, "data"), { recursive: true });
+
+  copyFileSync(resolve(process.cwd(), "src/cli/render.js"), join(rootDir, "src/cli/render.js"));
+  copyFileSync(resolve(process.cwd(), "src/cli/build.js"), join(rootDir, "src/cli/build.js"));
+
+  writeFileSync(
+    join(rootDir, "src/config.js"),
+    `export const DIST_DIR = ${JSON.stringify(join(rootDir, "dist"))};
+export const PATHS = {
+  sourceRows: ${JSON.stringify(join(rootDir, "data/source_urls.json"))},
+  validations: ${JSON.stringify(join(rootDir, "data/feed_validation.json"))},
+  normalizedFeeds: ${JSON.stringify(join(rootDir, "data/feeds_normalized.json"))},
+};\n`,
+    "utf8",
+  );
+
+  writeFileSync(
+    join(rootDir, "src/renderSite.js"),
+    `export async function renderSite() {
+  return {
+    pages: {
+      "index.html": "<html></html>",
+      "about/index.html": "<html></html>",
+    },
+  };
+}\n`,
+    "utf8",
+  );
+
+  writeFileSync(
+    join(rootDir, "src/refreshDataset.js"),
+    `export async function refreshDataset() {
+  return {
+    sourceRowsPayload: {},
+    validationsPayload: {},
+    normalizedPayload: {},
+  };
+}\n`,
+    "utf8",
+  );
+
+  return rootDir;
+}
