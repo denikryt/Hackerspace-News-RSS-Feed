@@ -1,5 +1,6 @@
 import { getAuthorsIndexHref } from "../authors.js";
 import { getContentStreamHref } from "../contentStreams.js";
+import { buildAuthorDirectory, withAuthorLinks } from "./authors.js";
 import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
 import {
@@ -53,7 +54,10 @@ export function buildSpaceDetailModel(
     };
   }
 
-  const allItems = [...(feed.items || [])].sort(compareItemsByDateDesc);
+  const authorDirectory = buildAuthorDirectory(normalizedPayload);
+  const allItems = (feed.items || [])
+    .map((item) => withAuthorLinks(item, authorDirectory))
+    .sort(compareItemsByDateDesc);
   const pagination = paginateItems(allItems, currentPage, pageSize);
   const hrefForPage = (pageNumber) => getSpaceDetailHref(spaceSlug, pageNumber);
 

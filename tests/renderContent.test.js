@@ -13,6 +13,10 @@ describe("content rendering", () => {
           spaceHref: "/spaces/betamachine.html",
           displayDate: "2025-01-01T10:00:00.000Z",
           summaryText: "First line\nSecond line",
+          authorLinks: [
+            { label: "Alice", href: "/authors/alice.html" },
+            { label: "Bob", href: "/authors/bob.html" },
+          ],
         },
       ],
       homeHref: "/index.html",
@@ -30,6 +34,10 @@ describe("content rendering", () => {
     expect(html).toContain('class="timeline-date-day">01');
     expect(html).toContain('class="timeline-date-year">2025');
     expect(html).toContain("First line\nSecond line");
+    expect(html).toContain('href="/authors/alice.html"');
+    expect(html).toContain('href="/authors/bob.html"');
+    expect(html).toContain(">Alice<");
+    expect(html).toContain(">Bob<");
     expect(html).toContain(".timeline-entry {");
     expect(html).toContain("grid-template-columns: 7rem 1rem minmax(0, 1fr)");
     expect(html).toContain("overflow-wrap: anywhere");
@@ -49,7 +57,10 @@ describe("content rendering", () => {
         {
           title: "HTML post",
           displayDate: "2025-01-01T10:00:00.000Z",
-          resolvedAuthor: "Alice",
+          authorLinks: [
+            { label: "Alice", href: "/authors/alice.html" },
+            { label: "Bob", href: "/authors/bob.html" },
+          ],
           contentHtml:
             '<p>Hello <a href="https://example.com/post">link</a></p><script>alert(1)</script>',
           normalizedCategories: ["event", "news"],
@@ -67,7 +78,8 @@ describe("content rendering", () => {
 
     expect(html).toContain('<a href="https://example.com/post">link</a>');
     expect(html).toContain("https://example.com/audio.mp3");
-    expect(html).toContain("Alice");
+    expect(html).toContain('href="/authors/alice.html"');
+    expect(html).toContain('href="/authors/bob.html"');
     expect(html).toContain("event, news");
     expect(html).not.toContain("<script");
     expect(html).toContain("max-inline-size: min(100%, 42rem)");

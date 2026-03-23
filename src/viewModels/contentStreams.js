@@ -7,6 +7,7 @@ import {
 } from "../contentStreams.js";
 import { getAuthorsIndexHref } from "../authors.js";
 import { GLOBAL_FEED_PAGE_SIZE, buildPageLinks, paginateItems } from "../pagination.js";
+import { buildAuthorDirectory, withAuthorLinks } from "./authors.js";
 import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
 
@@ -30,7 +31,8 @@ export function buildContentStreamModel(
   normalizedPayload,
   { streamId = ALL_CONTENT_STREAM_ID, currentPage = 1, pageSize = GLOBAL_FEED_PAGE_SIZE } = {},
 ) {
-  const allItems = collectAllFeedItems(normalizedPayload);
+  const authorDirectory = buildAuthorDirectory(normalizedPayload);
+  const allItems = collectAllFeedItems(normalizedPayload, authorDirectory);
   const availableStreams = listContentStreams(normalizedPayload);
   const availableStreamIds = availableStreams.map((stream) => stream.id);
 
@@ -79,16 +81,21 @@ export function buildContentStreamModel(
   };
 }
 
-function collectAllFeedItems(normalizedPayload) {
+function collectAllFeedItems(normalizedPayload, authorDirectory) {
   return (normalizedPayload.feeds || [])
     .flatMap((feed) =>
-      (feed.items || []).map((item) => ({
-        ...item,
-        spaceName: feed.spaceName,
-        country: feed.country,
-        spaceHref: `/spaces/${slugify(feed.spaceName)}.html`,
-        sourceWikiUrl: feed.sourceWikiUrl,
-      })),
+      (feed.items || []).map((item) =>
+        withAuthorLinks(
+          {
+            ...item,
+            spaceName: feed.spaceName,
+            country: feed.country,
+            spaceHref: `/spaces/${slugify(feed.spaceName)}.html`,
+            sourceWikiUrl: feed.sourceWikiUrl,
+          },
+          authorDirectory,
+        ),
+      ),
     )
     .sort(compareItemsByDateDesc);
 }

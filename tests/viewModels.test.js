@@ -31,6 +31,8 @@ const normalizedPayload = {
           id: "b-1",
           title: "Newest post",
           link: "https://www.betamachine.fr/newest",
+          resolvedAuthor: "Alice | Bob",
+          authorSource: "author",
           publishedAt: "2025-01-02T10:00:00.000Z",
           displayDate: "2025-01-02T10:00:00.000Z",
           summaryText: "Newest summary",
@@ -45,6 +47,8 @@ const normalizedPayload = {
           id: "b-2",
           title: "Older post",
           link: "https://www.betamachine.fr/older",
+          resolvedAuthor: "root",
+          authorSource: "author",
           publishedAt: "2025-01-01T10:00:00.000Z",
           displayDate: "2025-01-01T10:00:00.000Z",
         },
@@ -147,6 +151,11 @@ describe("multi-page view models", () => {
     expect(model.spaceName).toBe("BetaMachine");
     expect(model.items.map((item) => item.title)).toEqual(["Newest post", "Older post"]);
     expect(model.allContentHref).toBe("/all/index.html");
+    expect(model.items[0].authorLinks).toEqual([
+      { label: "Alice", href: "/authors/alice.html" },
+      { label: "Bob", href: "/authors/bob.html" },
+    ]);
+    expect(model.items[1].authorLinks).toEqual([]);
   });
 
   it("builds a paginated detail model with page links", () => {
@@ -193,8 +202,15 @@ describe("multi-page view models", () => {
       title: "Newest post",
       spaceName: "BetaMachine",
       spaceHref: "/spaces/betamachine.html",
+      authorLinks: [
+        { label: "Alice", href: "/authors/alice.html" },
+        { label: "Bob", href: "/authors/bob.html" },
+      ],
     });
-    expect(model.items[1].title).toBe("Older post");
+    expect(model.items[1]).toMatchObject({
+      title: "Older post",
+      authorLinks: [],
+    });
   });
 
   it("builds a paginated global feed model with page links", () => {

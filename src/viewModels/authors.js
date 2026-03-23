@@ -12,7 +12,7 @@ import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
 
 export function buildAuthorsIndexModel(normalizedPayload, { excludedAuthorNames, authorOverrides } = {}) {
-  const authors = collectAuthors(normalizedPayload, { excludedAuthorNames, authorOverrides });
+  const { authors } = buildAuthorDirectory(normalizedPayload, { excludedAuthorNames, authorOverrides });
 
   return {
     pageTitle: "Authors",
@@ -33,7 +33,7 @@ export function buildAuthorDetailModel(
     authorOverrides,
   } = {},
 ) {
-  const authors = collectAuthors(normalizedPayload, { excludedAuthorNames, authorOverrides });
+  const { authors } = buildAuthorDirectory(normalizedPayload, { excludedAuthorNames, authorOverrides });
   const author = authors.find((entry) => entry.slug === authorSlug);
 
   if (!author) {
@@ -70,7 +70,7 @@ export function buildAuthorDetailModel(
   };
 }
 
-function collectAuthors(
+export function buildAuthorDirectory(
   normalizedPayload,
   { excludedAuthorNames, authorOverrides = getAuthorOverrides() } = {},
 ) {
@@ -123,14 +123,66 @@ function collectAuthors(
 
   assignAuthorSlugs(authors);
 
-  return authors.map((author) => ({
+  const slugByLookupKey = new Map(
+    authors.map((author) => [normalizeAuthorLookupKey(author.displayName), author.slug]),
+  );
+  const publicAuthors = authors.map((author) => ({
     displayName: author.displayName,
     slug: author.slug,
     itemCount: author.items.length,
     latestItemDate: author.latestItemDate,
     detailHref: getAuthorDetailHref(author.slug, 1),
     authorSources: author.authorSources,
-    items: author.items,
+    items: author.items.map((item) =>
+      withAuthorLinks(item, { excludedAuthorNames, authorOverrides, slugByLookupKey }),
+    ),
+  }));
+
+  return {
+    authors: publicAuthors,
+    slugByLookupKey,
+  };
+}
+
+export function withAuthorLinks(
+  item,
+  { excludedAuthorNames, authorOverrides = getAuthorOverrides(), slugByLookupKey } = {},
+) {
+  if (!slugByLookupKey) {
+    return {
+      ...item,
+      authorLinks: [],
+    };
+  }
+
+  const authorLinks = parseAuthorValue(item.resolvedAuthor, { authorOverrides }).derivedAuthors
+    .filter((authorName) => !isExcludedAuthorName(authorName, excludedAuthorNames))
+    .map((authorName) => {
+      const slug = slugByLookupKey.get(normalizeAuthorLookupKey(authorName));
+      if (!slug) {
+        return undefined;
+      }
+
+      return {
+        label: authorName,
+        href: getAuthorDetailHref(slug, 1),
+      };
+    })
+    .filter(Boolean);
+
+  return {
+    ...item,
+    authorLinks,
+  };
+}
+
+function collectAuthors(
+  normalizedPayload,
+  options = {},
+) {
+  return buildAuthorDirectory(normalizedPayload, options).authors.map((author) => ({
+    ...author,
+    items: author.items.map((item) => ({ ...item })),
   }));
 }
 

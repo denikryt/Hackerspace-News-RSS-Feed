@@ -1,10 +1,11 @@
 import { renderDisplayContent } from "../contentDisplay.js";
+import { renderAuthorLinks } from "./renderAuthorLinks.js";
 import {
   escapeHtml,
-  renderField,
   renderLayout,
   renderPageHeader,
   renderTimelineDate,
+  renderField,
 } from "./layout.js";
 
 export function renderSpaceDetail(model) {
@@ -17,8 +18,10 @@ export function renderSpaceDetail(model) {
             <div class="item-header item-header-detail item-header-global">
               <div class="meta global-feed-meta detail-item-meta">
                 ${
-                  item.resolvedAuthor
-                    ? `<span>${renderField("Author", item.resolvedAuthor)}</span>`
+                  item.authorLinks?.length
+                    ? renderAuthorLinks(item.authorLinks, {
+                        linkClass: "global-feed-meta-link detail-item-meta-link",
+                      })
                     : ""
                 }
                 ${

@@ -1,4 +1,5 @@
 import { renderDisplayContent } from "../contentDisplay.js";
+import { renderAuthorLinks } from "./renderAuthorLinks.js";
 import {
   escapeHtml,
   renderLayout,
@@ -20,6 +21,7 @@ export function renderGlobalFeed(model) {
                     ? `<span><a class="global-feed-meta-link global-feed-space-link" href="${item.spaceHref}">${escapeHtml(item.spaceName || "Hackerspace")}</a></span>`
                     : ""
                 }
+                ${renderAuthorLinks(item.authorLinks, { linkClass: "global-feed-meta-link global-feed-original-link" })}
                 ${
                   item.link
                     ? `<span><a class="global-feed-meta-link global-feed-original-link" href="${item.link}">Original</a></span>`
