@@ -73,7 +73,7 @@ const normalizedPayload = {
 describe("content stream contracts", () => {
   it("lists only observed public category streams plus all and fallback", () => {
     expect(listContentStreams(normalizedPayload)).toEqual([
-      { id: "all", label: "All", href: "/all/index.html", totalItems: 4 },
+      { id: "all", label: "Feed", href: "/feed/index.html", totalItems: 4 },
       { id: "event", label: "Events", href: "/events/index.html", totalItems: 2 },
       { id: "news", label: "News", href: "/news/index.html", totalItems: 1 },
       { id: "blog", label: "Blogs", href: "/blogs/index.html", totalItems: 1 },
@@ -105,7 +105,7 @@ describe("content stream contracts", () => {
     expect(newsModel.items.map((item) => item.title)).toEqual(["Big launch"]);
     expect(otherModel.items.map((item) => item.title)).not.toContain("Big launch");
     expect(newsModel.streamNavItems).toEqual([
-      { href: "/all/index.html", label: "All", isCurrent: false },
+      { href: "/feed/index.html", label: "Feed", isCurrent: false },
       { href: "/events/index.html", label: "Events", isCurrent: false },
       { href: "/news/index.html", label: "News", isCurrent: true },
       { href: "/blogs/index.html", label: "Blogs", isCurrent: false },

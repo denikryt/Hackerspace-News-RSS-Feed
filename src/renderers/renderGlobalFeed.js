@@ -37,10 +37,10 @@ export function renderGlobalFeed(model) {
     .join("");
 
   const pagination = renderPagination(model);
-  const pageTitle = model.pageTitle || "All";
+  const pageTitle = model.pageTitle || "Feed";
   const pageIntro = model.pageIntro || "All publications sorted from new to old.";
   const streamNavItems = model.streamNavItems || [
-    { href: "/all/index.html", label: "All", isCurrent: true },
+    { href: "/feed/index.html", label: "Feed", isCurrent: true },
   ];
 
   return renderLayout({

@@ -98,7 +98,7 @@ describe("renderSite", () => {
       expect(Object.keys(firstRun.pages)).toEqual([
         "index.html",
         "about/index.html",
-        "all/index.html",
+        "feed/index.html",
         "authors/index.html",
         "authors/alice.html",
         "other/index.html",
@@ -109,7 +109,7 @@ describe("renderSite", () => {
       const [indexHtml, aboutHtml, feedHtml, authorsHtml, detailHtml] = await Promise.all([
         readFile(resolve(distDir, "index.html"), "utf8"),
         readFile(resolve(distDir, "about/index.html"), "utf8"),
-        readFile(resolve(distDir, "all/index.html"), "utf8"),
+        readFile(resolve(distDir, "feed/index.html"), "utf8"),
         readFile(resolve(distDir, "authors/index.html"), "utf8"),
         readFile(resolve(distDir, "spaces/betamachine.html"), "utf8"),
       ]);
@@ -119,7 +119,7 @@ describe("renderSite", () => {
       expect(indexHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
       expect(aboutHtml).toContain("About");
       expect(aboutHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
-      expect(feedHtml).toContain("All");
+      expect(feedHtml).toContain("Feed");
       expect(feedHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
       expect(authorsHtml).toContain("Authors");
       expect(detailHtml).toContain("BetaMachine");

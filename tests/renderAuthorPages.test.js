@@ -32,7 +32,8 @@ describe("author page rendering", () => {
     expect(html).toContain(">BetaMachine<");
     expect(html).toContain(">C3D2<");
     expect(html).toContain('href="/index.html"');
-    expect(html).toContain('href="/all/index.html"');
+    expect(html).toContain('href="/feed/index.html"');
+    expect(html).toContain(">Feed<");
     expect(html).toContain('href="/authors/index.html"');
     expect(html).toContain('class="panel page-header page-header--wide page-header--compact"');
     expect(html).toContain('class="page-nav page-nav--wide page-nav--compact"');
@@ -53,7 +54,7 @@ describe("author page rendering", () => {
         },
       ],
       homeHref: "/index.html",
-      allContentHref: "/all/index.html",
+      allContentHref: "/feed/index.html",
       authorsIndexHref: "/authors/index.html",
       currentPageLabel: "Page 2 of 5",
       publicationCountLabel: "1 of 41 publications",

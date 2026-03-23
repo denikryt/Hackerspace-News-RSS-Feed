@@ -16,7 +16,7 @@ export function renderAboutPage() {
         headerClass: "page-header--narrow page-header--compact",
         navItems: [
           { href: "/index.html", label: "Hackerspaces" },
-          { href: "/all/index.html", label: "All" },
+          { href: "/feed/index.html", label: "Feed" },
           { href: "/authors/index.html", label: "Authors" },
         ],
         navClass: "page-nav--narrow",

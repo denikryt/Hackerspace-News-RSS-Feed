@@ -5,9 +5,9 @@ export const PUBLIC_CATEGORY_STREAM_IDS = ["event", "news", "blog", "project", "
 const CONTENT_STREAM_DEFINITIONS = {
   all: {
     id: "all",
-    segment: "all",
-    label: "All",
-    pageTitle: "All",
+    segment: "feed",
+    label: "Feed",
+    pageTitle: "Feed",
     pageIntro: "All publications sorted from new to old.",
   },
   event: {

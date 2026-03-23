@@ -18,7 +18,7 @@ export function buildAuthorsIndexModel(normalizedPayload, { excludedAuthorNames,
     pageTitle: "Authors",
     authors,
     homeHref: "/index.html",
-    allContentHref: "/all/index.html",
+    allContentHref: "/feed/index.html",
     authorsIndexHref: getAuthorsIndexHref(),
   };
 }
@@ -64,7 +64,7 @@ export function buildAuthorDetailModel(
         : undefined,
     pageLinks: buildPageLinks(pagination.currentPage, pagination.totalPages, hrefForPage),
     homeHref: "/index.html",
-    allContentHref: "/all/index.html",
+    allContentHref: "/feed/index.html",
     authorsIndexHref: getAuthorsIndexHref(),
     canonicalHref: hrefForPage(pagination.currentPage),
   };

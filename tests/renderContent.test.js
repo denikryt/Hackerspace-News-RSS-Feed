@@ -20,9 +20,9 @@ describe("content rendering", () => {
         },
       ],
       homeHref: "/index.html",
-      pageTitle: "All",
+      pageTitle: "Feed",
       pageIntro: "All publications sorted from new to old.",
-      streamNavItems: [{ href: "/all/index.html", label: "All", isCurrent: true }],
+      streamNavItems: [{ href: "/feed/index.html", label: "Feed", isCurrent: true }],
       publicationCountLabel: "1 of 1 publications",
     });
 
@@ -73,7 +73,7 @@ describe("content rendering", () => {
         },
       ],
       homeHref: "/index.html",
-      allContentHref: "/all/index.html",
+      allContentHref: "/feed/index.html",
     });
 
     expect(html).toContain('<a href="https://example.com/post">link</a>');
@@ -102,18 +102,18 @@ describe("content rendering", () => {
       currentPageLabel: "Page 2 of 5",
       hasPreviousPage: true,
       hasNextPage: true,
-      previousPageHref: "/all/index.html",
-      nextPageHref: "/all/page/3/",
+      previousPageHref: "/feed/index.html",
+      nextPageHref: "/feed/page/3/",
       pageLinks: [
-        { type: "page", page: 1, href: "/all/index.html", isCurrent: false },
-        { type: "page", page: 2, href: "/all/page/2/", isCurrent: true },
-        { type: "page", page: 3, href: "/all/page/3/", isCurrent: false },
+        { type: "page", page: 1, href: "/feed/index.html", isCurrent: false },
+        { type: "page", page: 2, href: "/feed/page/2/", isCurrent: true },
+        { type: "page", page: 3, href: "/feed/page/3/", isCurrent: false },
         { type: "ellipsis" },
-        { type: "page", page: 5, href: "/all/page/5/", isCurrent: false },
+        { type: "page", page: 5, href: "/feed/page/5/", isCurrent: false },
       ],
-      pageTitle: "All",
+      pageTitle: "Feed",
       pageIntro: "All publications sorted from new to old.",
-      streamNavItems: [{ href: "/all/index.html", label: "All", isCurrent: true }],
+      streamNavItems: [{ href: "/feed/index.html", label: "Feed", isCurrent: true }],
       publicationCountLabel: "1 of 42 publications",
     });
 
@@ -122,7 +122,7 @@ describe("content rendering", () => {
     expect(html).toContain(">Previous<");
     expect(html).toContain(">Next<");
     expect(html).toContain('class="pagination-link current"');
-    expect(html).toContain("/all/page/3/");
+    expect(html).toContain("/feed/page/3/");
     expect(html).toContain('class="timeline-date-label"');
   });
 
@@ -156,7 +156,7 @@ describe("content rendering", () => {
         { type: "page", page: 5, href: "/spaces/betamachine/page/5/", isCurrent: false },
       ],
       homeHref: "/index.html",
-      allContentHref: "/all/index.html",
+      allContentHref: "/feed/index.html",
       publicationCountLabel: "1 of 41 publications",
     });
 

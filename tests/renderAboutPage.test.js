@@ -17,7 +17,8 @@ describe("renderAboutPage", () => {
     expect(html).not.toContain("__DATA_SOURCE_URL__");
     expect(html).not.toContain("__SOURCE_CODE_URL__");
     expect(html).toContain('href="/index.html"');
-    expect(html).toContain('href="/all/index.html"');
+    expect(html).toContain('href="/feed/index.html"');
+    expect(html).toContain(">Feed<");
     expect(html).toContain('href="/authors/index.html"');
     expect(html).toContain("This site aggregates publications");
     expect(html).toContain('class="page-copy page-copy--narrow about-copy"');

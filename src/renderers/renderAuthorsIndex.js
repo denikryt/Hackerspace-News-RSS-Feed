@@ -7,7 +7,7 @@ import {
 
 export function renderAuthorsIndex(model) {
   const homeHref = model.homeHref || "/index.html";
-  const allContentHref = model.allContentHref || "/all/index.html";
+  const allContentHref = model.allContentHref || "/feed/index.html";
   const authorsIndexHref = model.authorsIndexHref || "/authors/index.html";
   const cards = (model.authors || [])
     .map(
@@ -42,7 +42,7 @@ export function renderAuthorsIndex(model) {
         introHtml: `<p class="muted">All public authors detected from the dataset.</p>`,
         navItems: [
           { href: homeHref, label: "Hackerspaces" },
-          { href: allContentHref, label: "All" },
+          { href: allContentHref, label: "Feed" },
           { href: authorsIndexHref, label: "Authors", isCurrent: true },
         ],
         navClass: "page-nav--wide page-nav--compact",
