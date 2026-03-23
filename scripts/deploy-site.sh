@@ -4,7 +4,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist"
-TARGET_DIR="${TARGET_DIR:-/var/www/test.nachitima.com}"
+TARGET_DIR="${TARGET_DIR:-/var/www/hackerspace.news}"
 RUN_MODE="deploy"
 RUN_LABEL="deploy"
 SECONDS=0

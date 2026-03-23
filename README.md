@@ -86,7 +86,7 @@ It does not run `npm install`.
 Current target directory defaults to:
 
 ```bash
-/var/www/test.nachitima.com
+/var/www/hackerspace.news
 ```
 
 You can change it in the script or override it through the environment:

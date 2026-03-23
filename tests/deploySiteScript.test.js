@@ -15,6 +15,18 @@ afterEach(() => {
 });
 
 describe("deploy-site.sh", () => {
+  it("uses hackerspace.news as the default target directory", () => {
+    const rootDir = createFixtureProject();
+    const logPath = join(rootDir, "commands.log");
+
+    runScript(rootDir, [], logPath, { TARGET_DIR: undefined });
+
+    expect(readLog(logPath)).toEqual([
+      "sudo rsync -av --delete " + `${rootDir}/dist/ /var/www/hackerspace.news/`,
+      "sudo systemctl reload nginx",
+    ]);
+  });
+
   it("deploys existing dist without running build by default", () => {
     const rootDir = createFixtureProject();
     const logPath = join(rootDir, "commands.log");
@@ -108,16 +120,23 @@ exit 0
   return rootDir;
 }
 
-function runScript(rootDir, args, logPath) {
+function runScript(rootDir, args, logPath, extraEnv = {}) {
+  const env = {
+    ...process.env,
+    PATH: `${join(rootDir, "bin")}:${process.env.PATH}`,
+    DEPLOY_SCRIPT_TEST_LOG: logPath,
+    TARGET_DIR: `${join(rootDir, "target")}`,
+    ...extraEnv,
+  };
+
+  if (Object.hasOwn(extraEnv, "TARGET_DIR") && extraEnv.TARGET_DIR === undefined) {
+    delete env.TARGET_DIR;
+  }
+
   return execFileSync(join(rootDir, "scripts/deploy-site.sh"), args, {
     cwd: rootDir,
     encoding: "utf8",
-    env: {
-      ...process.env,
-      PATH: `${join(rootDir, "bin")}:${process.env.PATH}`,
-      TARGET_DIR: `${join(rootDir, "target")}`,
-      DEPLOY_SCRIPT_TEST_LOG: logPath,
-    },
+    env,
     stdio: "pipe",
   });
 }
