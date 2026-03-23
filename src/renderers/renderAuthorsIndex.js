@@ -12,7 +12,7 @@ export function renderAuthorsIndex(model) {
   const cards = (model.authors || [])
     .map(
       (author) => `<article class="card">
-        <h3><a class="space-card-title" href="${author.detailHref}">${escapeHtml(author.displayName)}</a></h3>
+        <h3><a class="author-card-title" href="${author.detailHref}">${escapeHtml(author.displayName)}</a></h3>
         <div class="meta">
           <span>${escapeHtml(`${author.itemCount} publication${author.itemCount === 1 ? "" : "s"}`)}</span>
           ${author.latestItemDate ? `<span>${escapeHtml(formatCompactDate(author.latestItemDate))}</span>` : ""}
@@ -34,7 +34,7 @@ export function renderAuthorsIndex(model) {
   return renderLayout({
     title: "Authors",
     body: `
-      <style>.author-hackerspace-link{color:#111;}</style>
+      <style>.author-card-title{color:var(--text);display:inline-block;max-inline-size:100%;overflow-wrap:anywhere;word-break:break-word;}.space-card-links .author-hackerspace-link{color:#111;}</style>
       ${renderPageHeader({
         title: "Authors",
         titleClass: "home-hero-title",

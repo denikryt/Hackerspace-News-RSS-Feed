@@ -22,12 +22,13 @@ describe("author page rendering", () => {
     });
 
     expect(html).toContain('<h1 class="home-hero-title">Authors</h1>');
-    expect(html).toContain('href="/authors/alice.html"');
+    expect(html).toContain('class="author-card-title" href="/authors/alice.html"');
     expect(html).toContain("2 publications");
     expect(html).toContain('href="/spaces/betamachine.html"');
     expect(html).toContain('href="/spaces/c3d2.html"');
     expect(html).toContain('class="author-hackerspace-link" href="/spaces/betamachine.html"');
-    expect(html).toContain(".author-hackerspace-link{color:#111;}");
+    expect(html).toContain(".author-card-title{color:var(--text);display:inline-block;max-inline-size:100%;overflow-wrap:anywhere;word-break:break-word;}");
+    expect(html).toContain(".space-card-links .author-hackerspace-link{color:#111;}");
     expect(html).toContain(">BetaMachine<");
     expect(html).toContain(">C3D2<");
     expect(html).toContain('href="/index.html"');
