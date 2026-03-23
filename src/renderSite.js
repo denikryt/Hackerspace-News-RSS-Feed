@@ -1,4 +1,4 @@
-import { copyFile, mkdir } from "node:fs/promises";
+import { copyFile, mkdir, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { DIST_DIR, PATHS } from "./config.js";
@@ -109,6 +109,7 @@ export async function renderSite({
   }
 
   if (writePages) {
+    await rm(distDir, { recursive: true, force: true });
     await mkdir(distDir, { recursive: true });
     await Promise.all(
       [

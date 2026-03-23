@@ -1,4 +1,4 @@
-import { access, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { access, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 
@@ -80,6 +80,8 @@ describe("renderSite", () => {
       failures: [],
     };
 
+    await mkdir(resolve(distDir, "all"), { recursive: true });
+
     await Promise.all([
       writeJson(paths.sourceRows, sourceRowsPayload),
       writeJson(paths.validations, validationsPayload),
@@ -129,9 +131,87 @@ describe("renderSite", () => {
       globalThis.fetch = originalFetch;
     }
   });
+
+  it("writes only the current render output into dist without leaving stale artifacts", async () => {
+    const rootDir = await mkdtemp(resolve(tmpdir(), "hnf-render-"));
+    tempDirs.push(rootDir);
+
+    const dataDir = resolve(rootDir, "data");
+    const distDir = resolve(rootDir, "dist");
+    const paths = {
+      sourceRows: resolve(dataDir, "source_urls.json"),
+      validations: resolve(dataDir, "feed_validation.json"),
+      normalizedFeeds: resolve(dataDir, "feeds_normalized.json"),
+    };
+
+    const sourceRowsPayload = {
+      sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
+      sectionTitle: "Spaces with RSS feeds",
+      extractedAt: "2026-03-19T20:00:00.000Z",
+      urls: [],
+    };
+
+    const validationsPayload = [];
+    const normalizedPayload = {
+      generatedAt: "2026-03-19T20:00:00.000Z",
+      sourcePageUrl: sourceRowsPayload.sourcePageUrl,
+      summary: {
+        sourceRows: 0,
+        validFeeds: 0,
+        parsedFeeds: 0,
+        emptyFeeds: 0,
+        failedFeeds: 0,
+      },
+      feeds: [],
+      failures: [],
+    };
+
+    await Promise.all([
+      mkdir(resolve(distDir, "all"), { recursive: true }),
+      mkdir(resolve(distDir, "stale/nested"), { recursive: true }),
+    ]);
+
+    await Promise.all([
+      writeJson(paths.sourceRows, sourceRowsPayload),
+      writeJson(paths.validations, validationsPayload),
+      writeJson(paths.normalizedFeeds, normalizedPayload),
+      writeFile(resolve(distDir, "all/index.html"), "<html>stale</html>", "utf8"),
+      writeFile(resolve(distDir, "obsolete.txt"), "stale", "utf8"),
+      writeFile(resolve(distDir, "stale/nested/old.html"), "<html>old</html>", "utf8"),
+    ]);
+
+    const result = await renderSite({
+      paths,
+      distDir,
+      now: Date.parse("2026-03-19T12:00:00.000Z"),
+      writePages: true,
+    });
+
+    const actualDistFiles = await listRelativeFiles(distDir);
+    expect(actualDistFiles.sort()).toEqual(
+      [...Object.keys(result.pages), "favicon.png"].sort(),
+    );
+  });
 });
 
 async function writeJson(filePath, value) {
   await mkdir(dirname(filePath), { recursive: true });
   await writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+}
+
+async function listRelativeFiles(rootDir, currentDir = rootDir) {
+  const entries = await readdir(currentDir, { withFileTypes: true });
+  const relativePaths = await Promise.all(
+    entries.map(async (entry) => {
+      const absolutePath = resolve(currentDir, entry.name);
+
+      if (entry.isDirectory()) {
+        return listRelativeFiles(rootDir, absolutePath);
+      }
+
+      return absolutePath.slice(rootDir.length + 1);
+    }),
+  );
+
+  return relativePaths.flat();
 }
