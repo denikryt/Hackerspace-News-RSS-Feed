@@ -9,7 +9,7 @@ describe("renderAboutPage", () => {
     expect(html).toContain("<title>About</title>");
     expect(html).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
     expect(html).toContain("<h1>About</h1>");
-    expect(html).toContain('class="about-link-muted" href="/about/index.html"');
+    expect(html).not.toContain('class="about-link-muted" href="/about/index.html"');
     expect(html).toContain("Data Source");
     expect(html).not.toContain("Source page:");
     expect(html).toContain('href="https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds"');
