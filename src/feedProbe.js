@@ -1,17 +1,27 @@
-export async function probeFeedUrl({ sourceRow, fetchImpl = fetch }) {
+import { runWithNetworkRetry } from "./networkRetry.js";
+
+export async function probeFeedUrl({
+  sourceRow,
+  fetchImpl = fetch,
+  waitImpl,
+  retryDelaysMs,
+  logger,
+}) {
   const candidateUrl = sourceRow.candidateFeedUrl;
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30_000);
 
   try {
-    const response = await fetchImpl(candidateUrl, {
-      redirect: "follow",
-      signal: controller.signal,
-      headers: {
-        "user-agent": "HackerspaceNewsFeed/0.1 (+local)",
-        accept: "application/atom+xml, application/rss+xml, application/xml, text/xml, */*",
+    const response = await runWithNetworkRetry({
+      run: () => fetchFeedWithTimeout({ candidateUrl, fetchImpl }),
+      waitImpl,
+      retryDelaysMs,
+      onRetry: ({ attemptNumber, maxAttempts, delayMs, errorCode }) => {
+        if (typeof logger === "function") {
+          logger(
+            `[refresh] retrying feed fetch: ${candidateUrl} after ${errorCode} (attempt ${attemptNumber}/${maxAttempts}, wait ${delayMs}ms)`,
+          );
+        }
       },
-    }).finally(() => clearTimeout(timeoutId));
+    });
 
     const body = await response.text();
     const contentType = response.headers.get("content-type") || "";
@@ -48,6 +58,20 @@ export async function probeFeedUrl({ sourceRow, fetchImpl = fetch }) {
       body: null,
     };
   }
+}
+
+async function fetchFeedWithTimeout({ candidateUrl, fetchImpl }) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30_000);
+
+  return fetchImpl(candidateUrl, {
+    redirect: "follow",
+    signal: controller.signal,
+    headers: {
+      "user-agent": "HackerspaceNewsFeed/0.1 (+local)",
+      accept: "application/atom+xml, application/rss+xml, application/xml, text/xml, */*",
+    },
+  }).finally(() => clearTimeout(timeoutId));
 }
 
 function detectFeedFormat(body, contentType) {

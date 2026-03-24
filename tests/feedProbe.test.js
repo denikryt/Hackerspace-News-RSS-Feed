@@ -49,4 +49,69 @@ describe("probeFeedUrl", () => {
       errorCode: "non_feed_html",
     });
   });
+
+  it("retries transient network errors before parsing a feed response", async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockRejectedValueOnce(fetchFailed({ code: "ETIMEDOUT" }))
+      .mockResolvedValue({
+        ok: true,
+        status: 200,
+        url: "https://example.com/feed.xml",
+        headers: new Headers({ "content-type": "application/rss+xml; charset=utf-8" }),
+        text: () => Promise.resolve("<?xml version=\"1.0\"?><rss><channel><title>X</title></channel></rss>"),
+      });
+    const waitImpl = vi.fn().mockResolvedValue(undefined);
+    const logger = vi.fn();
+
+    const result = await probeFeedUrl({
+      sourceRow: { candidateFeedUrl: "https://example.com/feed.xml" },
+      fetchImpl,
+      waitImpl,
+      logger,
+    });
+
+    expect(result).toMatchObject({
+      fetchOk: true,
+      isParsable: true,
+      detectedFormat: "rss",
+    });
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(waitImpl).toHaveBeenCalledTimes(1);
+    expect(waitImpl).toHaveBeenCalledWith(1000);
+    expect(logger).toHaveBeenCalledWith(
+      "[refresh] retrying feed fetch: https://example.com/feed.xml after ETIMEDOUT (attempt 2/4, wait 1000ms)",
+    );
+  });
+
+  it("does not retry plain http feed responses", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 404,
+      url: "https://example.com/feed.xml",
+      headers: new Headers({ "content-type": "text/html; charset=utf-8" }),
+      text: () => Promise.resolve("<html>not found</html>"),
+    });
+    const waitImpl = vi.fn().mockResolvedValue(undefined);
+
+    const result = await probeFeedUrl({
+      sourceRow: { candidateFeedUrl: "https://example.com/feed.xml" },
+      fetchImpl,
+      waitImpl,
+    });
+
+    expect(result).toMatchObject({
+      fetchOk: false,
+      errorCode: "http_error",
+      errorMessage: "HTTP 404",
+    });
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(waitImpl).not.toHaveBeenCalled();
+  });
 });
+
+function fetchFailed({ code }) {
+  return Object.assign(new TypeError("fetch failed"), {
+    cause: Object.assign(new Error(code), { code }),
+  });
+}

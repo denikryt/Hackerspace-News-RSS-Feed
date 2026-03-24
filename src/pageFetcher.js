@@ -1,30 +1,30 @@
-const RETRY_DELAYS_MS = [1000, 2000, 3000];
+import { runWithNetworkRetry } from "./networkRetry.js";
 
 export async function fetchPageHtml({
   sourcePageUrl,
   fetchImpl = fetch,
-  waitImpl = wait,
-  retryDelaysMs = RETRY_DELAYS_MS,
+  waitImpl,
+  retryDelaysMs,
+  logger,
 }) {
-  for (let attemptIndex = 0; attemptIndex <= retryDelaysMs.length; attemptIndex += 1) {
-    try {
-      const response = await fetchWithTimeout({ sourcePageUrl, fetchImpl });
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch source page: HTTP ${response.status}`);
+  const response = await runWithNetworkRetry({
+    run: () => fetchWithTimeout({ sourcePageUrl, fetchImpl }),
+    waitImpl,
+    retryDelaysMs,
+    onRetry: ({ attemptNumber, maxAttempts, delayMs, errorCode }) => {
+      if (typeof logger === "function") {
+        logger(
+          `[refresh] retrying source page fetch: ${sourcePageUrl} after ${errorCode} (attempt ${attemptNumber}/${maxAttempts}, wait ${delayMs}ms)`,
+        );
       }
+    },
+  });
 
-      return response.text();
-    } catch (error) {
-      if (!isRetryableNetworkError(error) || attemptIndex === retryDelaysMs.length) {
-        throw error;
-      }
-
-      await waitImpl(retryDelaysMs[attemptIndex]);
-    }
+  if (!response.ok) {
+    throw new Error(`Failed to fetch source page: HTTP ${response.status}`);
   }
 
-  throw new Error("Unreachable retry state");
+  return response.text();
 }
 
 async function fetchWithTimeout({ sourcePageUrl, fetchImpl }) {
@@ -39,45 +39,4 @@ async function fetchWithTimeout({ sourcePageUrl, fetchImpl }) {
       accept: "text/html,application/xhtml+xml",
     },
   }).finally(() => clearTimeout(timeoutId));
-}
-
-function isRetryableNetworkError(error) {
-  if (error?.name === "AbortError") {
-    return true;
-  }
-
-  const retryableCodes = new Set(["AbortError", "EAI_AGAIN", "ECONNRESET", "ETIMEDOUT", "UND_ERR_CONNECT_TIMEOUT"]);
-  const codes = collectErrorCodes(error);
-
-  return codes.some((code) => retryableCodes.has(code));
-}
-
-function collectErrorCodes(error) {
-  const codes = [];
-
-  if (!error || typeof error !== "object") {
-    return codes;
-  }
-
-  if ("code" in error && typeof error.code === "string") {
-    codes.push(error.code);
-  }
-
-  if ("cause" in error) {
-    codes.push(...collectErrorCodes(error.cause));
-  }
-
-  if (error instanceof AggregateError) {
-    for (const nestedError of error.errors) {
-      codes.push(...collectErrorCodes(nestedError));
-    }
-  }
-
-  return codes;
-}
-
-function wait(delayMs) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, delayMs);
-  });
 }
