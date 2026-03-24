@@ -73,7 +73,7 @@ describe("content rendering", () => {
         },
       ],
       homeHref: "/index.html",
-      allContentHref: "/feed/index.html",
+      feedHref: "/feed/index.html",
     });
 
     expect(html).toContain('<a href="https://example.com/post">link</a>');
@@ -156,7 +156,7 @@ describe("content rendering", () => {
         { type: "page", page: 5, href: "/spaces/betamachine/page/5/", isCurrent: false },
       ],
       homeHref: "/index.html",
-      allContentHref: "/feed/index.html",
+      feedHref: "/feed/index.html",
       publicationCountLabel: "1 of 41 publications",
     });
 

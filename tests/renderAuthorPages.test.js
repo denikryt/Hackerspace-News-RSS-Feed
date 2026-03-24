@@ -55,7 +55,7 @@ describe("author page rendering", () => {
         },
       ],
       homeHref: "/index.html",
-      allContentHref: "/feed/index.html",
+      feedHref: "/feed/index.html",
       authorsIndexHref: "/authors/index.html",
       currentPageLabel: "Page 2 of 5",
       publicationCountLabel: "1 of 41 publications",

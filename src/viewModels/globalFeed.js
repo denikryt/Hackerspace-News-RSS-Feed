@@ -1,4 +1,4 @@
-import { ALL_CONTENT_STREAM_ID } from "../contentStreams.js";
+import { FEED_CONTENT_STREAM_ID } from "../contentStreams.js";
 import { buildContentStreamModel } from "./contentStreams.js";
 
 export function buildGlobalFeedModel(
@@ -7,6 +7,6 @@ export function buildGlobalFeedModel(
 ) {
   return buildContentStreamModel(normalizedPayload, {
     ...options,
-    streamId: ALL_CONTENT_STREAM_ID,
+    streamId: FEED_CONTENT_STREAM_ID,
   });
 }

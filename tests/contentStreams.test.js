@@ -71,9 +71,9 @@ const normalizedPayload = {
 };
 
 describe("content stream contracts", () => {
-  it("lists only observed public category streams plus all and fallback", () => {
+  it("lists only observed public category streams plus feed and fallback", () => {
     expect(listContentStreams(normalizedPayload)).toEqual([
-      { id: "all", label: "Feed", href: "/feed/index.html", totalItems: 4 },
+      { id: "feed", label: "Feed", href: "/feed/index.html", totalItems: 4 },
       { id: "event", label: "Events", href: "/events/index.html", totalItems: 2 },
       { id: "news", label: "News", href: "/news/index.html", totalItems: 1 },
       { id: "blog", label: "Blogs", href: "/blogs/index.html", totalItems: 1 },
@@ -82,12 +82,12 @@ describe("content stream contracts", () => {
     ]);
   });
 
-  it("builds category, all, and fallback models from normalized categories", () => {
-    const allModel = buildContentStreamModel(normalizedPayload, { streamId: "all" });
+  it("builds category, feed, and fallback models from normalized categories", () => {
+    const feedModel = buildContentStreamModel(normalizedPayload, { streamId: "feed" });
     const eventModel = buildContentStreamModel(normalizedPayload, { streamId: "event" });
     const otherModel = buildContentStreamModel(normalizedPayload, { streamId: "other" });
 
-    expect(allModel.items.map((item) => item.title)).toEqual([
+    expect(feedModel.items.map((item) => item.title)).toEqual([
       "Open night",
       "Big launch",
       "Space cleanup",

@@ -1,10 +1,10 @@
-export const ALL_CONTENT_STREAM_ID = "all";
+export const FEED_CONTENT_STREAM_ID = "feed";
 export const FALLBACK_CONTENT_STREAM_ID = "other";
 export const PUBLIC_CATEGORY_STREAM_IDS = ["event", "news", "blog", "project", "workshop"];
 
 const CONTENT_STREAM_DEFINITIONS = {
-  all: {
-    id: "all",
+  feed: {
+    id: "feed",
     segment: "feed",
     label: "Feed",
     pageTitle: "Feed",

@@ -36,7 +36,7 @@ describe("feed page headers", () => {
       sourceWikiUrl: "https://wiki.hackerspaces.org/Technik.cafe",
       siteUrl: "https://technik.cafe",
       homeHref: "/index.html",
-      allContentHref: "/feed/index.html",
+      feedHref: "/feed/index.html",
       authorsIndexHref: "/authors/index.html",
       currentPageLabel: "Page 1 of 1",
       items: [],

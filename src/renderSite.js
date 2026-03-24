@@ -2,9 +2,9 @@ import { copyFile, mkdir, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { DIST_DIR, PATHS } from "./config.js";
+import { FEED_CONTENT_STREAM_ID, getContentStreamOutputPath } from "./contentStreams.js";
 import { GLOBAL_FEED_PAGE_SIZE } from "./pagination.js";
 import { getAuthorDetailOutputPath } from "./authors.js";
-import { getContentStreamOutputPath } from "./contentStreams.js";
 import { renderAuthorDetail } from "./renderers/renderAuthorDetail.js";
 import { renderAuthorsIndex } from "./renderers/renderAuthorsIndex.js";
 import { renderAboutPage } from "./renderers/renderAboutPage.js";
@@ -54,8 +54,8 @@ export async function renderSite({
   };
 
   const contentStreams = listContentStreams(displayPayload);
-  const primaryStream = contentStreams.find((stream) => stream.id === "all");
-  const secondaryStreams = contentStreams.filter((stream) => stream.id !== "all");
+  const primaryStream = contentStreams.find((stream) => stream.id === FEED_CONTENT_STREAM_ID);
+  const secondaryStreams = contentStreams.filter((stream) => stream.id !== FEED_CONTENT_STREAM_ID);
 
   if (primaryStream) {
     const totalPages = Math.max(1, Math.ceil(primaryStream.totalItems / GLOBAL_FEED_PAGE_SIZE));

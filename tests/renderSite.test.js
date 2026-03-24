@@ -118,7 +118,7 @@ describe("renderSite", () => {
       failures: [],
     };
 
-    await mkdir(resolve(distDir, "all"), { recursive: true });
+    await mkdir(resolve(distDir, "feed"), { recursive: true });
 
     await Promise.all([
       writeJson(paths.sourceRows, sourceRowsPayload),
@@ -205,7 +205,7 @@ describe("renderSite", () => {
     };
 
     await Promise.all([
-      mkdir(resolve(distDir, "all"), { recursive: true }),
+      mkdir(resolve(distDir, "feed"), { recursive: true }),
       mkdir(resolve(distDir, "stale/nested"), { recursive: true }),
     ]);
 
@@ -213,7 +213,7 @@ describe("renderSite", () => {
       writeJson(paths.sourceRows, sourceRowsPayload),
       writeJson(paths.validations, validationsPayload),
       writeJson(paths.normalizedFeeds, normalizedPayload),
-      writeFile(resolve(distDir, "all/index.html"), "<html>stale</html>", "utf8"),
+      writeFile(resolve(distDir, "feed/index.html"), "<html>stale</html>", "utf8"),
       writeFile(resolve(distDir, "obsolete.txt"), "stale", "utf8"),
       writeFile(resolve(distDir, "stale/nested/old.html"), "<html>old</html>", "utf8"),
     ]);

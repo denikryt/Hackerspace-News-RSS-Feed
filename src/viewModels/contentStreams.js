@@ -1,5 +1,5 @@
 import {
-  ALL_CONTENT_STREAM_ID,
+  FEED_CONTENT_STREAM_ID,
   FALLBACK_CONTENT_STREAM_ID,
   PUBLIC_CATEGORY_STREAM_IDS,
   getContentStreamDefinition,
@@ -29,7 +29,7 @@ export function listContentStreams(normalizedPayload) {
 
 export function buildContentStreamModel(
   normalizedPayload,
-  { streamId = ALL_CONTENT_STREAM_ID, currentPage = 1, pageSize = GLOBAL_FEED_PAGE_SIZE } = {},
+  { streamId = FEED_CONTENT_STREAM_ID, currentPage = 1, pageSize = GLOBAL_FEED_PAGE_SIZE } = {},
 ) {
   const authorDirectory = buildAuthorDirectory(normalizedPayload);
   const allItems = collectAllFeedItems(normalizedPayload, authorDirectory);
@@ -101,7 +101,7 @@ function collectAllFeedItems(normalizedPayload, authorDirectory) {
 }
 
 function getAvailableStreamIds(items) {
-  const streamIds = [ALL_CONTENT_STREAM_ID];
+  const streamIds = [FEED_CONTENT_STREAM_ID];
 
   for (const streamId of PUBLIC_CATEGORY_STREAM_IDS) {
     if (items.some((item) => itemHasPublicCategory(item, streamId))) {
@@ -117,7 +117,7 @@ function getAvailableStreamIds(items) {
 }
 
 function selectItemsForStream(items, streamId) {
-  if (streamId === ALL_CONTENT_STREAM_ID) {
+  if (streamId === FEED_CONTENT_STREAM_ID) {
     return items;
   }
 
