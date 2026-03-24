@@ -94,6 +94,7 @@ describe("author view models", () => {
     });
 
     expect(model.selectedHackerspace).toBe("all");
+    expect(model.authorQuery).toBe("");
     expect(model.sortMode).toBe("alphabetical");
     expect(model.availableHackerspaces).toEqual(["BetaMachine", "C3D2"]);
     expect(model.authors.map((author) => author.displayName)).toEqual(["Alice", "John Doe", "John-Doe"]);
@@ -121,6 +122,17 @@ describe("author view models", () => {
       "John Doe",
       "John-Doe",
     ]);
+  });
+
+  it("filters authors by case-insensitive author name query together with hackerspace filter", () => {
+    const model = buildAuthorsIndexModel(normalizedPayload, {
+      selectedHackerspace: "BetaMachine",
+      authorQuery: "ali",
+      excludedAuthorNames: ["admin", "root", "unknown"],
+    });
+
+    expect(model.authorQuery).toBe("ali");
+    expect(model.visibleAuthors.map((author) => author.displayName)).toEqual(["Alice"]);
   });
 
   it("sorts authors by publication count descending with deterministic tie-breaks", () => {

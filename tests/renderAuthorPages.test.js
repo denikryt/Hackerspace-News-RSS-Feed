@@ -7,6 +7,7 @@ describe("author page rendering", () => {
   it("renders the authors index page", () => {
     const html = renderAuthorsIndex({
       selectedHackerspace: "all",
+      authorQuery: "ali",
       sortMode: "alphabetical",
       availableHackerspaces: ["BetaMachine", "C3D2"],
       authors: [
@@ -42,11 +43,15 @@ describe("author page rendering", () => {
     expect(html).toContain(">Feed<");
     expect(html).toContain('href="/authors/index.html"');
     expect(html).toContain("Hackerspace");
+    expect(html).toContain("Search authors");
+    expect(html).toContain('id="author-search-input"');
+    expect(html).toContain('value="ali"');
     expect(html).toContain("All hackerspaces");
     expect(html).toContain("Sort authors");
     expect(html).toContain("Publication count");
     expect(html).toContain("Latest publication");
     expect(html).toContain("localStorage");
+    expect(html).toContain("hackerspace-news-feed.authors.query");
     expect(html).toContain("hackerspace-news-feed.authors.hackerspace");
     expect(html).toContain("hackerspace-news-feed.authors.sortMode");
     expect(html).toContain('data-hackerspaces="BetaMachine|C3D2"');

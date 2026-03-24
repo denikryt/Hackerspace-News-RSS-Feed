@@ -62,6 +62,15 @@ export function renderAuthorsIndex(model) {
       <section class="panel page-summary page-summary--home">
         <div class="meta">
           <label>
+            Search authors
+            <input
+              id="author-search-input"
+              class="control-input"
+              type="search"
+              value="${escapeHtml(model.authorQuery || "")}"
+              placeholder="Search by author name" />
+          </label>
+          <label>
             Hackerspace
             <select id="author-hackerspace-filter-select" class="control-select control-select-country">
               ${hackerspaceOptions}
@@ -80,21 +89,27 @@ export function renderAuthorsIndex(model) {
         <p id="authors-empty-state" class="muted"${(model.visibleAuthors || []).length === 0 ? "" : " hidden"}>No authors match the selected hackerspace.</p>
       </section>
       <script>
+        const authorSearchInput = document.getElementById("author-search-input");
         const hackerspaceFilterSelect = document.getElementById("author-hackerspace-filter-select");
         const sortModeSelect = document.getElementById("author-sort-mode-select");
         const cardsContainer = document.getElementById("authors-cards");
         const emptyState = document.getElementById("authors-empty-state");
         const cards = Array.from(cardsContainer.querySelectorAll(".card"));
         const storageKeys = {
+          query: "hackerspace-news-feed.authors.query",
           hackerspace: "hackerspace-news-feed.authors.hackerspace",
           sortMode: "hackerspace-news-feed.authors.sortMode",
         };
 
+        const storedQuery = localStorage.getItem(storageKeys.query);
         const storedHackerspace = localStorage.getItem(storageKeys.hackerspace);
         const storedSortMode = localStorage.getItem(storageKeys.sortMode);
         const availableHackerspaces = new Set(["all", ...Array.from(hackerspaceFilterSelect.options).map((option) => option.value)]);
         const availableSortModes = new Set(Array.from(sortModeSelect.options).map((option) => option.value));
 
+        authorSearchInput.value = storedQuery === null
+          ? ${JSON.stringify(model.authorQuery || "")}
+          : storedQuery;
         hackerspaceFilterSelect.value = availableHackerspaces.has(storedHackerspace)
           ? storedHackerspace
           : ${JSON.stringify(model.selectedHackerspace || "all")};
@@ -126,16 +141,24 @@ export function renderAuthorsIndex(model) {
         }
 
         function applyUiState() {
+          const authorQuery = authorSearchInput.value;
           const selectedHackerspace = hackerspaceFilterSelect.value;
           const sortMode = sortModeSelect.value;
 
+          localStorage.setItem(storageKeys.query, authorQuery);
           localStorage.setItem(storageKeys.hackerspace, selectedHackerspace);
           localStorage.setItem(storageKeys.sortMode, sortMode);
 
+          const normalizedQuery = authorQuery.trim().toLocaleLowerCase();
           let visibleCount = 0;
           cards.forEach((card) => {
             const cardHackerspaces = (card.dataset.hackerspaces || "").split("|").filter(Boolean);
-            const isVisible = selectedHackerspace === "all" || cardHackerspaces.includes(selectedHackerspace);
+            const matchesHackerspace =
+              selectedHackerspace === "all" || cardHackerspaces.includes(selectedHackerspace);
+            const matchesQuery = normalizedQuery
+              ? (card.dataset.authorName || "").toLocaleLowerCase().includes(normalizedQuery)
+              : true;
+            const isVisible = matchesHackerspace && matchesQuery;
             card.style.display = isVisible ? "" : "none";
             if (isVisible) {
               visibleCount += 1;
@@ -152,6 +175,7 @@ export function renderAuthorsIndex(model) {
           emptyState.hidden = visibleCount !== 0;
         }
 
+        authorSearchInput.addEventListener("input", applyUiState);
         hackerspaceFilterSelect.addEventListener("change", applyUiState);
         sortModeSelect.addEventListener("change", applyUiState);
         applyUiState();

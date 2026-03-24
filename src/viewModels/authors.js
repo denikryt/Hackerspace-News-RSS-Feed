@@ -22,6 +22,7 @@ export function buildAuthorsIndexModel(
   normalizedPayload,
   {
     selectedHackerspace = "all",
+    authorQuery = "",
     sortMode = DEFAULT_AUTHOR_SORT_MODE,
     excludedAuthorNames,
     authorOverrides,
@@ -35,16 +36,19 @@ export function buildAuthorsIndexModel(
   const normalizedSortMode = AUTHOR_SORT_MODES.has(sortMode)
     ? sortMode
     : DEFAULT_AUTHOR_SORT_MODE;
+  const normalizedAuthorQuery = typeof authorQuery === "string" ? authorQuery : "";
   const sortedAuthors = [...authors].sort(createAuthorComparator(normalizedSortMode));
   const visibleAuthors = sortedAuthors.filter((author) =>
-    normalizedSelectedHackerspace === "all"
-      ? true
-      : author.hackerspaces.some((hackerspace) => hackerspace.name === normalizedSelectedHackerspace),
+    authorMatchesFilters(author, {
+      selectedHackerspace: normalizedSelectedHackerspace,
+      authorQuery: normalizedAuthorQuery,
+    }),
   );
 
   return {
     pageTitle: "Authors",
     selectedHackerspace: normalizedSelectedHackerspace,
+    authorQuery: normalizedAuthorQuery,
     sortMode: normalizedSortMode,
     availableHackerspaces,
     authors: sortedAuthors,
@@ -53,6 +57,18 @@ export function buildAuthorsIndexModel(
     feedHref: "/feed/index.html",
     authorsIndexHref: getAuthorsIndexHref(),
   };
+}
+
+function authorMatchesFilters(author, { selectedHackerspace, authorQuery }) {
+  const matchesHackerspace = selectedHackerspace === "all"
+    ? true
+    : author.hackerspaces.some((hackerspace) => hackerspace.name === selectedHackerspace);
+  const normalizedQuery = authorQuery.trim().toLocaleLowerCase();
+  const matchesQuery = normalizedQuery
+    ? author.displayName.toLocaleLowerCase().includes(normalizedQuery)
+    : true;
+
+  return matchesHackerspace && matchesQuery;
 }
 
 export function buildAuthorDetailModel(
