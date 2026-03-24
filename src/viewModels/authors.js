@@ -11,12 +11,44 @@ import { buildPageLinks, GLOBAL_FEED_PAGE_SIZE, paginateItems } from "../paginat
 import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
 
-export function buildAuthorsIndexModel(normalizedPayload, { excludedAuthorNames, authorOverrides } = {}) {
+const DEFAULT_AUTHOR_SORT_MODE = "alphabetical";
+const AUTHOR_SORT_MODES = new Set([
+  "alphabetical",
+  "publication-count",
+  "latest-publication",
+]);
+
+export function buildAuthorsIndexModel(
+  normalizedPayload,
+  {
+    selectedHackerspace = "all",
+    sortMode = DEFAULT_AUTHOR_SORT_MODE,
+    excludedAuthorNames,
+    authorOverrides,
+  } = {},
+) {
   const { authors } = buildAuthorDirectory(normalizedPayload, { excludedAuthorNames, authorOverrides });
+  const availableHackerspaces = collectAvailableHackerspaces(authors);
+  const normalizedSelectedHackerspace = availableHackerspaces.includes(selectedHackerspace)
+    ? selectedHackerspace
+    : "all";
+  const normalizedSortMode = AUTHOR_SORT_MODES.has(sortMode)
+    ? sortMode
+    : DEFAULT_AUTHOR_SORT_MODE;
+  const sortedAuthors = [...authors].sort(createAuthorComparator(normalizedSortMode));
+  const visibleAuthors = sortedAuthors.filter((author) =>
+    normalizedSelectedHackerspace === "all"
+      ? true
+      : author.hackerspaces.some((hackerspace) => hackerspace.name === normalizedSelectedHackerspace),
+  );
 
   return {
     pageTitle: "Authors",
-    authors,
+    selectedHackerspace: normalizedSelectedHackerspace,
+    sortMode: normalizedSortMode,
+    availableHackerspaces,
+    authors: sortedAuthors,
+    visibleAuthors,
     homeHref: "/index.html",
     feedHref: "/feed/index.html",
     authorsIndexHref: getAuthorsIndexHref(),
@@ -195,6 +227,53 @@ function collectAuthors(
     ...author,
     items: author.items.map((item) => ({ ...item })),
   }));
+}
+
+function collectAvailableHackerspaces(authors) {
+  return [...new Set(authors.flatMap((author) => author.hackerspaces.map((hackerspace) => hackerspace.name)))]
+    .sort((left, right) => left.localeCompare(right));
+}
+
+function createAuthorComparator(sortMode) {
+  if (sortMode === "publication-count") {
+    return (left, right) => {
+      if (right.itemCount !== left.itemCount) {
+        return right.itemCount - left.itemCount;
+      }
+
+      return compareLatestPublicationThenName(left, right);
+    };
+  }
+
+  if (sortMode === "latest-publication") {
+    return (left, right) => {
+      const dateDelta = getComparableTimestamp({ displayDate: right.latestItemDate })
+        - getComparableTimestamp({ displayDate: left.latestItemDate });
+
+      if (dateDelta !== 0) {
+        return dateDelta;
+      }
+
+      if (right.itemCount !== left.itemCount) {
+        return right.itemCount - left.itemCount;
+      }
+
+      return left.displayName.localeCompare(right.displayName);
+    };
+  }
+
+  return (left, right) => left.displayName.localeCompare(right.displayName);
+}
+
+function compareLatestPublicationThenName(left, right) {
+  const dateDelta = getComparableTimestamp({ displayDate: right.latestItemDate })
+    - getComparableTimestamp({ displayDate: left.latestItemDate });
+
+  if (dateDelta !== 0) {
+    return dateDelta;
+  }
+
+  return left.displayName.localeCompare(right.displayName);
 }
 
 function assignAuthorSlugs(authors) {
