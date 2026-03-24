@@ -17,7 +17,7 @@ export async function refreshDataset({
   const html = await fetchPageHtml({ sourcePageUrl, fetchImpl });
   const sourceRows = extractSourceRows({ html, sourcePageUrl });
   logInfo(logger, `[refresh] source rows extracted: ${sourceRows.length}`);
-  const results = await mapWithConcurrency(sourceRows, 8, async (sourceRow) => {
+  const results = await mapWithConcurrency(sourceRows, 4, async (sourceRow) => {
     const feedIndex = sourceRows.indexOf(sourceRow) + 1;
     logInfo(logger, `[refresh] probing feed ${feedIndex}/${sourceRows.length}: ${sourceRow.candidateFeedUrl}`);
     const validation = await probeFeedUrl({ sourceRow, fetchImpl });
