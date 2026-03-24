@@ -13,6 +13,44 @@ afterEach(async () => {
 });
 
 describe("renderSite", () => {
+  it("renders the about page through a static renderer contract without passing source data props", async () => {
+    vi.resetModules();
+
+    const renderAboutPage = vi.fn(() => "<html>about</html>");
+    vi.doMock("../src/renderers/renderAboutPage.js", () => ({
+      renderAboutPage,
+    }));
+
+    const { renderSite: isolatedRenderSite } = await import("../src/renderSite.js");
+
+    await isolatedRenderSite({
+      sourceRowsPayload: {
+        sectionTitle: "Spaces with RSS feeds",
+        extractedAt: "2026-03-19T20:00:00.000Z",
+        urls: [],
+      },
+      validationsPayload: [],
+      normalizedPayload: {
+        generatedAt: "2026-03-19T20:00:00.000Z",
+        sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
+        summary: {
+          sourceRows: 0,
+          validFeeds: 0,
+          parsedFeeds: 0,
+          emptyFeeds: 0,
+          failedFeeds: 0,
+        },
+        feeds: [],
+        failures: [],
+      },
+    });
+
+    expect(renderAboutPage).toHaveBeenCalledWith();
+
+    vi.doUnmock("../src/renderers/renderAboutPage.js");
+    vi.resetModules();
+  });
+
   it("renders dist pages from local json only and produces reproducible output", async () => {
     const rootDir = await mkdtemp(resolve(tmpdir(), "hnf-render-"));
     tempDirs.push(rootDir);

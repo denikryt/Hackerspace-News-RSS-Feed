@@ -50,7 +50,7 @@ export async function renderSite({
 
   const pages = {
     "index.html": renderSpacesIndex(spacesIndexModel),
-    "about/index.html": renderAboutPage({ sourcePageUrl: data.sourceRowsPayload.sourcePageUrl }),
+    "about/index.html": renderAboutPage(),
   };
 
   const contentStreams = listContentStreams(displayPayload);
