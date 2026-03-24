@@ -62,23 +62,27 @@ export function renderAuthorsIndex(model) {
       <section class="panel page-summary page-summary--home">
         <div class="meta">
           <label>
-            Search authors
             <input
               id="author-search-input"
               class="control-input"
               type="search"
+              aria-label="Search authors"
               value="${escapeHtml(model.authorQuery || "")}"
               placeholder="Search by author name" />
           </label>
           <label>
-            Hackerspace
-            <select id="author-hackerspace-filter-select" class="control-select control-select-country">
+            <select
+              id="author-hackerspace-filter-select"
+              class="control-select control-select-country"
+              aria-label="Filter authors by hackerspace">
               ${hackerspaceOptions}
             </select>
           </label>
           <label>
-            Sort authors
-            <select id="author-sort-mode-select" class="control-select">
+            <select
+              id="author-sort-mode-select"
+              class="control-select"
+              aria-label="Sort authors">
               <option value="alphabetical"${model.sortMode === "alphabetical" ? " selected" : ""}>Alphabetical</option>
               <option value="publication-count"${model.sortMode === "publication-count" ? " selected" : ""}>Publication count</option>
               <option value="latest-publication"${model.sortMode === "latest-publication" ? " selected" : ""}>Latest publication</option>

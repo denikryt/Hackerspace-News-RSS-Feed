@@ -88,8 +88,21 @@ export function renderLayout({ title, body }) {
         line-height: 1.15;
         box-shadow: none;
       }
+      .control-input {
+        min-height: 1.9rem;
+        padding: 0.16rem 0.5rem;
+        border: 1px solid var(--border-strong);
+        border-radius: 0;
+        background-color: var(--panel);
+        color: var(--text);
+        font: inherit;
+        font-size: 0.9rem;
+        line-height: 1.15;
+        box-shadow: none;
+      }
       .control-select-country { inline-size: 11rem; }
-      select:focus {
+      select:focus,
+      .control-input:focus {
         outline: none;
         border-color: var(--text);
       }
