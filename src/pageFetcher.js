@@ -1,8 +1,37 @@
-export async function fetchPageHtml({ sourcePageUrl, fetchImpl = fetch }) {
+const RETRY_DELAYS_MS = [1000, 2000, 3000];
+
+export async function fetchPageHtml({
+  sourcePageUrl,
+  fetchImpl = fetch,
+  waitImpl = wait,
+  retryDelaysMs = RETRY_DELAYS_MS,
+}) {
+  for (let attemptIndex = 0; attemptIndex <= retryDelaysMs.length; attemptIndex += 1) {
+    try {
+      const response = await fetchWithTimeout({ sourcePageUrl, fetchImpl });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch source page: HTTP ${response.status}`);
+      }
+
+      return response.text();
+    } catch (error) {
+      if (!isRetryableNetworkError(error) || attemptIndex === retryDelaysMs.length) {
+        throw error;
+      }
+
+      await waitImpl(retryDelaysMs[attemptIndex]);
+    }
+  }
+
+  throw new Error("Unreachable retry state");
+}
+
+async function fetchWithTimeout({ sourcePageUrl, fetchImpl }) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 30_000);
 
-  const response = await fetchImpl(sourcePageUrl, {
+  return fetchImpl(sourcePageUrl, {
     redirect: "follow",
     signal: controller.signal,
     headers: {
@@ -10,10 +39,45 @@ export async function fetchPageHtml({ sourcePageUrl, fetchImpl = fetch }) {
       accept: "text/html,application/xhtml+xml",
     },
   }).finally(() => clearTimeout(timeoutId));
+}
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch source page: HTTP ${response.status}`);
+function isRetryableNetworkError(error) {
+  if (error?.name === "AbortError") {
+    return true;
   }
 
-  return response.text();
+  const retryableCodes = new Set(["AbortError", "EAI_AGAIN", "ECONNRESET", "ETIMEDOUT", "UND_ERR_CONNECT_TIMEOUT"]);
+  const codes = collectErrorCodes(error);
+
+  return codes.some((code) => retryableCodes.has(code));
+}
+
+function collectErrorCodes(error) {
+  const codes = [];
+
+  if (!error || typeof error !== "object") {
+    return codes;
+  }
+
+  if ("code" in error && typeof error.code === "string") {
+    codes.push(error.code);
+  }
+
+  if ("cause" in error) {
+    codes.push(...collectErrorCodes(error.cause));
+  }
+
+  if (error instanceof AggregateError) {
+    for (const nestedError of error.errors) {
+      codes.push(...collectErrorCodes(nestedError));
+    }
+  }
+
+  return codes;
+}
+
+function wait(delayMs) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, delayMs);
+  });
 }

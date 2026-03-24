@@ -119,6 +119,62 @@ describe("refreshDataset", () => {
       },
     });
   });
+
+  it("logs feed fetch progress and outcomes when a logger is provided", async () => {
+    const logger = vi.fn();
+    const fetchImpl = vi.fn(async (url) => {
+      if (url === sourcePageUrl) {
+        return response({
+          url,
+          contentType: "text/html; charset=utf-8",
+          body: sourceHtml,
+        });
+      }
+
+      if (url === "https://www.betamachine.fr/feed/") {
+        return response({
+          url,
+          contentType: "application/rss+xml",
+          body: `<?xml version="1.0"?>
+            <rss version="2.0">
+              <channel>
+                <title>BetaMachine Feed</title>
+                <link>https://www.betamachine.fr</link>
+                <description>Latest posts</description>
+                <item>
+                  <title>Post one</title>
+                  <link>https://www.betamachine.fr/post-1</link>
+                  <pubDate>Wed, 01 Jan 2025 10:00:00 GMT</pubDate>
+                  <description>Hello</description>
+                </item>
+              </channel>
+            </rss>`,
+        });
+      }
+
+      return response({
+        url,
+        contentType: "text/html; charset=utf-8",
+        body: "<html><body>not a feed</body></html>",
+      });
+    });
+
+    await refreshDataset({
+      sourcePageUrl,
+      fetchImpl,
+      logger,
+    });
+
+    const logLines = logger.mock.calls.map(([line]) => line);
+    expect(logLines).toContain("[refresh] source rows extracted: 3");
+    expect(logLines).toContain("[refresh] probing feed 1/3: https://t.me/akiba_space");
+    expect(logLines).toContain("[refresh] failed feed 1/3: https://t.me/akiba_space (non_feed_html: 200)");
+    expect(logLines).toContain("[refresh] probing feed 2/3: https://www.betamachine.fr/feed/");
+    expect(logLines).toContain("[refresh] parsed feed 2/3: https://www.betamachine.fr/feed/ -> https://www.betamachine.fr/feed/ (items=1)");
+    expect(logLines).toContain("[refresh] probing feed 3/3: https://trac.raumfahrtagentur.org/blog?format=rss&user=anonymous");
+    expect(logLines).toContain("[refresh] failed feed 3/3: https://trac.raumfahrtagentur.org/blog?format=rss&user=anonymous (non_feed_html: 200)");
+    expect(logLines).toContain("[refresh] refresh complete: feeds=1 failures=2");
+  });
 });
 
 function response({ url, contentType, body, status = 200 }) {

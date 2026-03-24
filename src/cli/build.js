@@ -3,7 +3,7 @@ import { refreshDataset } from "../refreshDataset.js";
 import { renderSite } from "../renderSite.js";
 
 async function main() {
-  const refreshResult = await refreshDataset({ writeSnapshots: true });
+  const refreshResult = await refreshDataset({ writeSnapshots: true, logger: console.log });
   const renderStartedAt = Date.now();
   const renderResult = await renderSite({
     sourceRowsPayload: refreshResult.sourceRowsPayload,

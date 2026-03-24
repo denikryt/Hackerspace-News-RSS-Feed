@@ -12,13 +12,21 @@ export async function refreshDataset({
   fetchImpl = fetch,
   paths = PATHS,
   writeSnapshots = false,
+  logger = null,
 } = {}) {
   const html = await fetchPageHtml({ sourcePageUrl, fetchImpl });
   const sourceRows = extractSourceRows({ html, sourcePageUrl });
+  logInfo(logger, `[refresh] source rows extracted: ${sourceRows.length}`);
   const results = await mapWithConcurrency(sourceRows, 8, async (sourceRow) => {
+    const feedIndex = sourceRows.indexOf(sourceRow) + 1;
+    logInfo(logger, `[refresh] probing feed ${feedIndex}/${sourceRows.length}: ${sourceRow.candidateFeedUrl}`);
     const validation = await probeFeedUrl({ sourceRow, fetchImpl });
 
     if (!validation.fetchOk || !validation.isParsable || !validation.body) {
+      logInfo(
+        logger,
+        `[refresh] failed feed ${feedIndex}/${sourceRows.length}: ${sourceRow.candidateFeedUrl} (${validation.errorCode || "unknown_error"}: ${validation.httpStatus || "n/a"})`,
+      );
       return {
         validation: stripBody(validation),
         feed: null,
@@ -41,13 +49,23 @@ export async function refreshDataset({
         validation,
         parsedFeed,
       });
+      const enrichedFeed = enrichFeed(normalizedFeed);
+
+      logInfo(
+        logger,
+        `[refresh] parsed feed ${feedIndex}/${sourceRows.length}: ${sourceRow.candidateFeedUrl} -> ${validation.finalUrl} (items=${enrichedFeed.items.length})`,
+      );
 
       return {
         validation: stripBody(validation),
-        feed: enrichFeed(normalizedFeed),
+        feed: enrichedFeed,
         failure: null,
       };
     } catch (error) {
+      logInfo(
+        logger,
+        `[refresh] failed feed ${feedIndex}/${sourceRows.length}: ${sourceRow.candidateFeedUrl} (parse_error: ${error instanceof Error ? error.message : String(error)})`,
+      );
       return {
         validation: stripBody(validation),
         feed: null,
@@ -100,7 +118,15 @@ export async function refreshDataset({
     ]);
   }
 
+  logInfo(logger, `[refresh] refresh complete: feeds=${feeds.length} failures=${failures.length}`);
+
   return result;
+}
+
+function logInfo(logger, message) {
+  if (typeof logger === "function") {
+    logger(message);
+  }
 }
 
 function stripBody(validation) {
