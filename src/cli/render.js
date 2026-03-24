@@ -6,9 +6,7 @@ async function main() {
   const result = await renderSite({ writePages: true });
   const elapsedMs = Date.now() - startedAt;
 
-  Object.keys(result.pages).forEach((relativePath) => {
-    console.log(`Wrote ${DIST_DIR}/${relativePath}`);
-  });
+  console.log(`Rendered ${Object.keys(result.pages).length} pages into ${DIST_DIR}`);
   console.log(`Rendered ${Object.keys(result.pages).length} pages in ${elapsedMs}ms`);
 }
 

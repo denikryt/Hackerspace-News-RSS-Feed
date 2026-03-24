@@ -42,8 +42,8 @@ describe("deploy-site.sh", () => {
 
     const stdout = runScript(rootDir, [], logPath);
     const logLines = readLog(logPath);
-    const prepRsyncIndex = logLines.findIndex((line) => line.startsWith("sudo rsync -av --delete ") && line.includes("/dist/ "));
-    const publishRsyncIndex = logLines.findIndex((line) => line.startsWith("sudo rsync -av --delete ") && line.includes("/target/"));
+    const prepRsyncIndex = logLines.findIndex((line) => line.startsWith("sudo rsync -a --delete ") && line.includes("/dist/ "));
+    const publishRsyncIndex = logLines.findIndex((line) => line.startsWith("sudo rsync -a --delete ") && line.includes("/target/"));
     const reloadIndex = logLines.findIndex((line) => line === "sudo systemctl reload nginx");
 
     expect(prepRsyncIndex).toBeGreaterThan(-1);
@@ -52,6 +52,7 @@ describe("deploy-site.sh", () => {
     expect(readFileSync(join(rootDir, "target/index.html"), "utf8")).toContain("fresh build");
     expect(readFileSync(join(rootDir, "target/favicon.png"), "utf8")).toBe("png");
     expect(existsSync(join(rootDir, "target/stale.txt"))).toBe(false);
+    expect(stdout).toContain(`Deploy sync result: 2/2 files present in ${join(rootDir, "target")}`);
     expect(stdout).toMatch(/Completed deploy in \d+s/);
   });
 

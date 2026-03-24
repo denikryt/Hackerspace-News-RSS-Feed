@@ -64,13 +64,19 @@ validate_dist() {
 prepare_staging_dir() {
   run_privileged mkdir -p "$TARGET_PARENT_DIR"
   STAGING_DIR="$(run_privileged mktemp -d "$TARGET_PARENT_DIR/.deploy-staging.XXXXXX")"
-  run_privileged rsync -av --delete "$DIST_DIR"/ "$STAGING_DIR"/
+  run_privileged rsync -a --delete "$DIST_DIR"/ "$STAGING_DIR"/
 }
 
 publish_staging_dir() {
   run_privileged mkdir -p "$TARGET_DIR"
-  run_privileged rsync -av --delete "$STAGING_DIR"/ "$TARGET_DIR"/
+  run_privileged rsync -a --delete "$STAGING_DIR"/ "$TARGET_DIR"/
   run_privileged systemctl reload nginx
+}
+
+count_files() {
+  local directory="$1"
+
+  find "$directory" -type f | wc -l | tr -d ' '
 }
 
 if [[ "$RUN_MODE" == "build" ]]; then
@@ -82,5 +88,10 @@ fi
 validate_dist
 prepare_staging_dir
 publish_staging_dir
+
+DIST_FILE_COUNT="$(count_files "$DIST_DIR")"
+TARGET_FILE_COUNT="$(count_files "$TARGET_DIR")"
+
+echo "Deploy sync result: ${TARGET_FILE_COUNT}/${DIST_FILE_COUNT} files present in ${TARGET_DIR}"
 
 echo "Completed ${RUN_LABEL} in ${SECONDS}s"

@@ -4,6 +4,7 @@ import { refreshDataset } from "../refreshDataset.js";
 async function main() {
   await refreshDataset({ writeSnapshots: true, logger: console.log });
 
+  console.log("Refresh completed. Reporting snapshot artifacts.");
   console.log(`Wrote ${PATHS.sourceRows}`);
   console.log(`Wrote ${PATHS.validations}`);
   console.log(`Wrote ${PATHS.normalizedFeeds}`);

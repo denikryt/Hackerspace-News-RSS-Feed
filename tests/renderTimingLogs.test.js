@@ -15,6 +15,19 @@ afterEach(() => {
 });
 
 describe("render/build timing logs", () => {
+  it("logs the next step after refresh completes", () => {
+    const rootDir = createCliFixture();
+
+    const stdout = execFileSync(process.execPath, [join(rootDir, "src/cli/refresh.js")], {
+      cwd: rootDir,
+      encoding: "utf8",
+      stdio: "pipe",
+    });
+
+    expect(stdout).toContain("Refresh completed. Reporting snapshot artifacts.");
+    expect(stdout).toContain(`Wrote ${join(rootDir, "data/source_urls.json")}`);
+  });
+
   it("logs render duration after writing pages", () => {
     const rootDir = createCliFixture();
 
@@ -24,7 +37,8 @@ describe("render/build timing logs", () => {
       stdio: "pipe",
     });
 
-    expect(stdout).toContain(`Wrote ${join(rootDir, "dist")}/index.html`);
+    expect(stdout).toContain(`Rendered 2 pages into ${join(rootDir, "dist")}`);
+    expect(stdout).not.toContain(`Wrote ${join(rootDir, "dist")}/index.html`);
     expect(stdout).toMatch(/Rendered 2 pages in \d+ms/);
   });
 
@@ -37,8 +51,10 @@ describe("render/build timing logs", () => {
       stdio: "pipe",
     });
 
+    expect(stdout).toContain("Refresh completed. Starting site render.");
     expect(stdout).toContain(`Wrote ${join(rootDir, "data/source_urls.json")}`);
-    expect(stdout).toContain(`Wrote ${join(rootDir, "dist")}/index.html`);
+    expect(stdout).toContain(`Rendered 2 pages into ${join(rootDir, "dist")}`);
+    expect(stdout).not.toContain(`Wrote ${join(rootDir, "dist")}/index.html`);
     expect(stdout).toMatch(/Rendered 2 pages in \d+ms/);
   });
 });
@@ -52,6 +68,7 @@ function createCliFixture() {
   mkdirSync(join(rootDir, "dist"), { recursive: true });
   mkdirSync(join(rootDir, "data"), { recursive: true });
 
+  copyFileSync(resolve(process.cwd(), "src/cli/refresh.js"), join(rootDir, "src/cli/refresh.js"));
   copyFileSync(resolve(process.cwd(), "src/cli/render.js"), join(rootDir, "src/cli/render.js"));
   copyFileSync(resolve(process.cwd(), "src/cli/build.js"), join(rootDir, "src/cli/build.js"));
 
@@ -81,7 +98,10 @@ export const PATHS = {
 
   writeFileSync(
     join(rootDir, "src/refreshDataset.js"),
-    `export async function refreshDataset() {
+    `export async function refreshDataset({ logger } = {}) {
+  if (logger) {
+    logger("[refresh] refresh complete: feeds=1 failures=0");
+  }
   return {
     sourceRowsPayload: {},
     validationsPayload: {},
