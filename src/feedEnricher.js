@@ -3,7 +3,7 @@ import { normalizeCategoriesWithDictionary } from "./categoryDictionary.js";
 const AUTHOR_PRIORITY = ["author", "creator"];
 const DISPLAY_DATE_PRIORITY = ["pubDate", "published", "isoDate", "updated"];
 const CONTENT_PRIORITY = ["content:encoded", "content"];
-const SUMMARY_PRIORITY = ["contentSnippet", "summary", "description"];
+const SUMMARY_PRIORITY = ["summary", "description", "contentSnippet"];
 
 export function enrichFeed(feed) {
   return {
@@ -20,8 +20,8 @@ export function enrichFeedItem(item) {
   const content = pickTextCandidate(item.contentCandidates, CONTENT_PRIORITY);
   const summary = pickTextCandidate(item.summaryCandidates, SUMMARY_PRIORITY);
   const categories = normalizeCategoriesWithDictionary(item.categoriesRaw);
-  const primaryText = content?.text ? { source: content.field, text: content.text } : summary?.text
-    ? { source: summary.field, text: summary.text }
+  const primaryText = summary?.text ? { source: summary.field, text: summary.text } : content?.text
+    ? { source: content.field, text: content.text }
     : null;
 
   return removeUndefined({

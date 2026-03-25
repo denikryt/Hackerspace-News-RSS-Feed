@@ -76,10 +76,6 @@ describe("normalizeFeed", () => {
       ],
       summaryCandidates: [
         {
-          field: "contentSnippet",
-          text: "Hello",
-        },
-        {
           field: "summary",
           html: "<p>Summary html</p>",
           text: "Summary html",
@@ -87,6 +83,10 @@ describe("normalizeFeed", () => {
         {
           field: "description",
           text: "Description fallback",
+        },
+        {
+          field: "contentSnippet",
+          text: "Hello",
         },
       ],
       contentCandidates: [

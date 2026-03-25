@@ -68,7 +68,6 @@ function normalizeDateCandidates(item) {
 
 function normalizeSummaryCandidates(item) {
   const candidates = [
-    normalizeTextCandidate("contentSnippet", { text: item.contentSnippet }),
     normalizeTextCandidate("summary", {
       html: getHtmlCandidate(item.summary),
       text: item.summary ? stripHtml(item.summary) : undefined,
@@ -77,6 +76,7 @@ function normalizeSummaryCandidates(item) {
       html: getHtmlCandidate(item.description),
       text: item.description ? stripHtml(item.description) : undefined,
     }),
+    normalizeTextCandidate("contentSnippet", { text: item.contentSnippet }),
   ].filter(Boolean);
 
   return candidates.length > 0 ? candidates : undefined;

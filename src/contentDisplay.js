@@ -24,9 +24,104 @@ const ALLOWED_ATTRIBUTES = {
   img: new Set(["src", "alt", "title"]),
 };
 
+const MAX_CONTENT_LENGTH = 500;
+
+/**
+ * Select display text from item candidates with priority and truncation.
+ * @param {Object} item - Item with summaryCandidates and contentCandidates
+ * @returns {Object} { text: string|null, wasTruncated: boolean }
+ */
+export function selectDisplayText(item) {
+  // Try summary candidates first (preferred, untruncated)
+  if (Array.isArray(item.summaryCandidates)) {
+    for (const candidate of item.summaryCandidates) {
+      const text = getTextFromCandidate(candidate);
+      if (text) {
+        return { text, wasTruncated: false };
+      }
+    }
+  }
+
+  // Fall back to content candidates (truncate if needed)
+  if (Array.isArray(item.contentCandidates)) {
+    for (const candidate of item.contentCandidates) {
+      const text = getTextFromCandidate(candidate);
+      if (text) {
+        if (text.length > MAX_CONTENT_LENGTH) {
+          return {
+            text: text.slice(0, MAX_CONTENT_LENGTH) + "…",
+            wasTruncated: true,
+          };
+        }
+        return { text, wasTruncated: false };
+      }
+    }
+  }
+
+  return { text: null, wasTruncated: false };
+}
+
+/**
+ * Extract text from a candidate object (prefers text field).
+ * @param {Object} candidate - Candidate with optional text and html fields
+ * @returns {string|null} Text content or null if empty
+ */
+function getTextFromCandidate(candidate) {
+  if (!candidate || typeof candidate !== "object") {
+    return null;
+  }
+
+  // Prefer text field
+  if (candidate.text && typeof candidate.text === "string" && candidate.text.trim()) {
+    return candidate.text;
+  }
+
+  // Fall back to HTML if no text
+  if (candidate.html && typeof candidate.html === "string" && candidate.html.trim()) {
+    return candidate.html;
+  }
+
+  return null;
+}
+
 export function buildDisplayContent(item) {
-  const sanitizedHtml = sanitizeContentHtml(item.contentHtml || item.summaryHtml);
   const attachments = normalizeDisplayAttachments(item.attachments);
+
+  // Prefer using candidates if available (provides truncation via selectDisplayText)
+  if (item.observed?.summaryCandidates || item.observed?.contentCandidates) {
+    const display = selectDisplayText({
+      summaryCandidates: item.observed.summaryCandidates,
+      contentCandidates: item.observed.contentCandidates,
+    });
+
+    if (display.text) {
+      // Determine render mode based on whether text looks like HTML
+      const isHtml = display.text && /<[^>]+>/.test(display.text);
+      const sanitized = isHtml ? sanitizeContentHtml(display.text) : undefined;
+
+      if (sanitized) {
+        return {
+          renderMode: "html",
+          html: sanitized,
+          attachments,
+        };
+      }
+
+      return {
+        renderMode: "text",
+        text: display.text,
+        attachments,
+      };
+    }
+
+    return {
+      renderMode: attachments.length > 0 ? "attachments" : "empty",
+      attachments,
+    };
+  }
+
+  // Fallback to pre-selected fields for backward compatibility
+  const sanitizedHtml = sanitizeContentHtml(item.contentHtml || item.summaryHtml);
 
   if (sanitizedHtml) {
     return {
