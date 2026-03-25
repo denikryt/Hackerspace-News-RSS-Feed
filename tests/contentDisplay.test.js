@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  buildDisplayContent,
+  renderDisplayContent,
   sanitizeContentHtml,
 } from "../src/contentDisplay.js";
 
@@ -19,34 +19,34 @@ describe("contentDisplay", () => {
     expect(html).not.toContain("onerror=");
   });
 
-  it("falls back to plain text with preserved line breaks", () => {
-    const display = buildDisplayContent({
-      title: "Post",
-      summaryText: "First line\nSecond line",
+  it("renders plain text body with preserved line breaks", () => {
+    const html = renderDisplayContent({
+      observed: {
+        summaryCandidates: [{ field: "summary", text: "First line\nSecond line" }],
+        contentCandidates: [],
+      },
     });
 
-    expect(display.renderMode).toBe("text");
-    expect(display.text).toBe("First line\nSecond line");
-    expect(display.html).toBeUndefined();
+    expect(html).toContain('class="content-body plain-text"');
+    expect(html).toContain("First line\nSecond line");
   });
 
-  it("normalizes attachment links from enclosures", () => {
-    const display = buildDisplayContent({
-      title: "Post",
+  it("renders attachment links for safe enclosures", () => {
+    const html = renderDisplayContent({
       attachments: [
         {
           url: "https://example.com/audio.mp3",
           type: "audio/mpeg",
         },
       ],
+      observed: {
+        summaryCandidates: [],
+        contentCandidates: [],
+      },
     });
 
-    expect(display.attachments).toEqual([
-      {
-        url: "https://example.com/audio.mp3",
-        type: "audio/mpeg",
-        label: "audio.mp3",
-      },
-    ]);
+    expect(html).toContain("Attachments");
+    expect(html).toContain("audio.mp3");
+    expect(html).toContain("audio/mpeg");
   });
 });

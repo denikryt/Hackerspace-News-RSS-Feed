@@ -60,12 +60,6 @@ describe("enrichFeedItem", () => {
       updatedAt: "2025-01-03T10:00:00.000Z",
       displayDate: "2025-01-01T10:00:00.000Z",
       dateSource: "pubDate",
-      contentHtml: "<p>Full content words here</p>",
-      contentText: "Full content words here",
-      contentSource: "content:encoded",
-      summaryText: "Short summary words",
-      summarySource: "contentSnippet",
-      primaryTextSource: "contentSnippet",
       wordCount: 3,
       hasFullContent: true,
       hasSummary: true,
@@ -79,8 +73,24 @@ describe("enrichFeedItem", () => {
           { field: "author", value: "Alice Author" },
           { field: "creator", value: "Bob Creator" },
         ],
+        summaryCandidates: [
+          { field: "contentSnippet", text: "Short summary words" },
+        ],
+        contentCandidates: [
+          {
+            field: "content:encoded",
+            html: "<p>Full content words here</p>",
+            text: "Full content words here",
+          },
+        ],
       },
     });
+    expect(enriched.summaryText).toBeUndefined();
+    expect(enriched.summaryHtml).toBeUndefined();
+    expect(enriched.summarySource).toBeUndefined();
+    expect(enriched.contentText).toBeUndefined();
+    expect(enriched.contentHtml).toBeUndefined();
+    expect(enriched.contentSource).toBeUndefined();
   });
 
   it("uses summary as the primary text when full content is missing", () => {
@@ -97,16 +107,21 @@ describe("enrichFeedItem", () => {
     });
 
     expect(enriched).toMatchObject({
-      summaryHtml: "<p>Summary only text</p>",
-      summaryText: "Summary only text",
-      summarySource: "summary",
-      primaryTextSource: "summary",
       wordCount: 3,
       hasFullContent: false,
       hasSummary: true,
+      observed: {
+        summaryCandidates: [
+          {
+            field: "summary",
+            html: "<p>Summary only text</p>",
+            text: "Summary only text",
+          },
+        ],
+      },
     });
-    expect(enriched.contentHtml).toBeUndefined();
-    expect(enriched.contentText).toBeUndefined();
-    expect(enriched.contentSource).toBeUndefined();
+    expect(enriched.summaryText).toBeUndefined();
+    expect(enriched.summaryHtml).toBeUndefined();
+    expect(enriched.summarySource).toBeUndefined();
   });
 });

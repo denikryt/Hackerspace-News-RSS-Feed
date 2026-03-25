@@ -13,6 +13,8 @@ describe("selectDisplayText", () => {
       const result = selectDisplayText(item);
       expect(result.text).toBe("Brief post summary");
       expect(result.wasTruncated).toBe(false);
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("summary");
     });
 
     it("prefers summary over description when both present", () => {
@@ -27,6 +29,8 @@ describe("selectDisplayText", () => {
       const result = selectDisplayText(item);
       expect(result.text).toBe("Summary text");
       expect(result.wasTruncated).toBe(false);
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("summary");
     });
 
     it("prefers description over contentSnippet when summary missing", () => {
@@ -41,6 +45,8 @@ describe("selectDisplayText", () => {
       const result = selectDisplayText(item);
       expect(result.text).toBe("Description text");
       expect(result.wasTruncated).toBe(false);
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("description");
     });
 
     it("uses contentSnippet as fallback when summary and description missing", () => {
@@ -54,6 +60,8 @@ describe("selectDisplayText", () => {
       const result = selectDisplayText(item);
       expect(result.text).toBe("Snippet provides fallback");
       expect(result.wasTruncated).toBe(false);
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("contentSnippet");
     });
 
     it("treats empty/whitespace-only summary as missing", () => {
@@ -68,6 +76,8 @@ describe("selectDisplayText", () => {
       const result = selectDisplayText(item);
       expect(result.text).toBe("Description fallback");
       expect(result.wasTruncated).toBe(false);
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("description");
     });
 
     it("uses HTML summary when text is empty but HTML exists", () => {
@@ -81,6 +91,8 @@ describe("selectDisplayText", () => {
       const result = selectDisplayText(item);
       expect(result.text).toBe("<p>HTML summary</p>");
       expect(result.wasTruncated).toBe(false);
+      expect(result.format).toBe("html");
+      expect(result.sourceField).toBe("summary");
     });
   });
 
@@ -98,6 +110,8 @@ describe("selectDisplayText", () => {
       expect(result.text).toHaveLength(501); // 500 chars + "…"
       expect(result.text).toMatch(/…$/);
       expect(result.wasTruncated).toBe(true);
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("content:encoded");
     });
 
     it("truncates at exactly 500 characters", () => {
@@ -113,6 +127,8 @@ describe("selectDisplayText", () => {
       const withoutEllipsis = result.text.slice(0, -1); // Remove "…"
       expect(withoutEllipsis).toHaveLength(500);
       expect(withoutEllipsis).toBe("x".repeat(500));
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("content:encoded");
     });
 
     it("does not add ellipsis when content under 500 chars", () => {
@@ -128,6 +144,8 @@ describe("selectDisplayText", () => {
       expect(result.text).toBe(shortText);
       expect(result.wasTruncated).toBe(false);
       expect(result.text).not.toContain("…");
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("content:encoded");
     });
 
     it("returns content as-is when exactly 500 characters", () => {
@@ -142,6 +160,8 @@ describe("selectDisplayText", () => {
       const result = selectDisplayText(item);
       expect(result.text).toBe(exactText);
       expect(result.wasTruncated).toBe(false);
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("content:encoded");
     });
 
     it("prefers content:encoded over content when both present", () => {
@@ -156,6 +176,8 @@ describe("selectDisplayText", () => {
       const result = selectDisplayText(item);
       expect(result.text).toContain("Encoded:");
       expect(result.wasTruncated).toBe(true);
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("content:encoded");
     });
 
     it("adds ellipsis only once even if truncation needed", () => {
@@ -170,6 +192,45 @@ describe("selectDisplayText", () => {
       const result = selectDisplayText(item);
       const ellipsisCount = (result.text.match(/…/g) || []).length;
       expect(ellipsisCount).toBe(1);
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("content:encoded");
+    });
+
+    it("truncates at the last whitespace before the limit when possible", () => {
+      const words = Array.from({ length: 200 }, (_, index) => `word${index}`);
+      const longText = words.join(" ");
+      const item = {
+        summaryCandidates: [],
+        contentCandidates: [{ field: "content:encoded", text: longText }],
+      };
+
+      const result = selectDisplayText(item);
+      expect(result.wasTruncated).toBe(true);
+      expect(result.text).toMatch(/…$/);
+      const withoutEllipsis = result.text.slice(0, -1);
+      expect(withoutEllipsis.length).toBeLessThanOrEqual(500);
+      expect(longText.startsWith(withoutEllipsis.trimEnd())).toBe(true);
+      const nextChar = longText.charAt(withoutEllipsis.length);
+      expect(nextChar).toBe(" ");
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("content:encoded");
+    });
+
+    it("avoids splitting surrogate pairs when truncating multibyte characters", () => {
+      const longText = Array.from({ length: 260 }, () => "😀😀").join(" ");
+      const item = {
+        summaryCandidates: [],
+        contentCandidates: [{ field: "content:encoded", text: longText }],
+      };
+
+      const result = selectDisplayText(item);
+      expect(result.wasTruncated).toBe(true);
+      const withoutEllipsis = result.text.slice(0, -1);
+      const lastCodeUnit = withoutEllipsis.charCodeAt(withoutEllipsis.length - 1);
+      const isHighSurrogate = lastCodeUnit >= 0xd800 && lastCodeUnit <= 0xdbff;
+      expect(isHighSurrogate).toBe(false);
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("content:encoded");
     });
   });
 
@@ -188,6 +249,8 @@ describe("selectDisplayText", () => {
 
       const result = selectDisplayText(item);
       expect(result.text).toBe("Summary");
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("summary");
     });
 
     it("uses content only when all summaries missing", () => {
@@ -204,6 +267,8 @@ describe("selectDisplayText", () => {
       const result = selectDisplayText(item);
       expect(result.wasTruncated).toBe(true);
       expect(result.text).toHaveLength(501); // 500 chars + "…"
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("content:encoded");
     });
 
     it("falls back to content:encoded when summary is empty object", () => {
@@ -216,6 +281,8 @@ describe("selectDisplayText", () => {
 
       const result = selectDisplayText(item);
       expect(result.wasTruncated).toBe(true);
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("content:encoded");
     });
   });
 
@@ -229,6 +296,8 @@ describe("selectDisplayText", () => {
       const result = selectDisplayText(item);
       expect(result.text).toBeNull();
       expect(result.wasTruncated).toBe(false);
+      expect(result.format).toBeNull();
+      expect(result.sourceField).toBeNull();
     });
 
     it("returns null when candidates undefined", () => {
@@ -240,6 +309,8 @@ describe("selectDisplayText", () => {
       const result = selectDisplayText(item);
       expect(result.text).toBeNull();
       expect(result.wasTruncated).toBe(false);
+      expect(result.format).toBeNull();
+      expect(result.sourceField).toBeNull();
     });
 
     it("returns null when all candidates empty", () => {
@@ -257,6 +328,8 @@ describe("selectDisplayText", () => {
       const result = selectDisplayText(item);
       expect(result.text).toBeNull();
       expect(result.wasTruncated).toBe(false);
+      expect(result.format).toBeNull();
+      expect(result.sourceField).toBeNull();
     });
 
     it("does not create placeholder text", () => {
@@ -269,6 +342,8 @@ describe("selectDisplayText", () => {
       expect(result.text).not.toBe("(no content)");
       expect(result.text).not.toBe("N/A");
       expect(result.text).toBeNull();
+      expect(result.format).toBeNull();
+      expect(result.sourceField).toBeNull();
     });
   });
 
@@ -286,6 +361,8 @@ describe("selectDisplayText", () => {
       // Should use text version for truncation, not HTML
       expect(result.wasTruncated).toBe(true);
       expect(result.text).toHaveLength(501); // 500 chars + "…"
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("content:encoded");
     });
 
     it("prefers text content over HTML when both present", () => {
@@ -302,6 +379,8 @@ describe("selectDisplayText", () => {
 
       const result = selectDisplayText(item);
       expect(result.text).toBe("Text content");
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("content:encoded");
     });
   });
 
@@ -315,6 +394,8 @@ describe("selectDisplayText", () => {
       const result = selectDisplayText(item);
       expect(result).toHaveProperty("text");
       expect(result).toHaveProperty("wasTruncated");
+      expect(result).toHaveProperty("format");
+      expect(result).toHaveProperty("sourceField");
       expect(typeof result.wasTruncated).toBe("boolean");
     });
 
@@ -327,6 +408,7 @@ describe("selectDisplayText", () => {
       expect(typeof result1.text === "string" || result1.text === null).toBe(
         true,
       );
+      expect(result1.format === "text" || result1.format === "html").toBe(true);
 
       const item2 = {
         summaryCandidates: [],
@@ -334,6 +416,8 @@ describe("selectDisplayText", () => {
       };
       const result2 = selectDisplayText(item2);
       expect(result2.text).toBeNull();
+      expect(result2.format).toBeNull();
+      expect(result2.sourceField).toBeNull();
     });
   });
 });

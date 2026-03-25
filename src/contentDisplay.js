@@ -29,130 +29,204 @@ const MAX_CONTENT_LENGTH = 500;
 /**
  * Select display text from item candidates with priority and truncation.
  * @param {Object} item - Item with summaryCandidates and contentCandidates
- * @returns {Object} { text: string|null, wasTruncated: boolean }
+ * @returns {Object} { text: string|null, wasTruncated: boolean, format: "text"|"html"|null, sourceField: string|null }
  */
 export function selectDisplayText(item) {
-  // Try summary candidates first (preferred, untruncated)
-  if (Array.isArray(item.summaryCandidates)) {
-    for (const candidate of item.summaryCandidates) {
-      const text = getTextFromCandidate(candidate);
-      if (text) {
-        return { text, wasTruncated: false };
-      }
+  const summaryCandidates = Array.isArray(item?.summaryCandidates) ? item.summaryCandidates : [];
+  for (const candidate of summaryCandidates) {
+    const picked = readSummaryCandidate(candidate);
+    if (picked) {
+      return {
+        text: picked.value,
+        wasTruncated: false,
+        format: picked.format,
+        sourceField: picked.field,
+      };
     }
   }
 
-  // Fall back to content candidates (truncate if needed)
-  if (Array.isArray(item.contentCandidates)) {
-    for (const candidate of item.contentCandidates) {
-      const text = getTextFromCandidate(candidate);
-      if (text) {
-        if (text.length > MAX_CONTENT_LENGTH) {
-          return {
-            text: text.slice(0, MAX_CONTENT_LENGTH) + "…",
-            wasTruncated: true,
-          };
-        }
-        return { text, wasTruncated: false };
-      }
+  const contentCandidates = Array.isArray(item?.contentCandidates) ? item.contentCandidates : [];
+  for (const candidate of contentCandidates) {
+    const picked = readContentCandidate(candidate);
+    if (!picked) {
+      continue;
     }
+
+    const truncated = truncatePlainText(picked.value, MAX_CONTENT_LENGTH);
+    return {
+      text: truncated.text,
+      wasTruncated: truncated.wasTruncated,
+      format: "text",
+      sourceField: picked.field,
+    };
   }
 
-  return { text: null, wasTruncated: false };
+  return { text: null, wasTruncated: false, format: null, sourceField: null };
 }
 
-/**
- * Extract text from a candidate object (prefers text field).
- * @param {Object} candidate - Candidate with optional text and html fields
- * @returns {string|null} Text content or null if empty
- */
-function getTextFromCandidate(candidate) {
+function readSummaryCandidate(candidate) {
   if (!candidate || typeof candidate !== "object") {
     return null;
   }
 
-  // Prefer text field
-  if (candidate.text && typeof candidate.text === "string" && candidate.text.trim()) {
-    return candidate.text;
+  const field = typeof candidate.field === "string" ? candidate.field : null;
+  const html = cleanCandidateHtml(candidate.html);
+  const text = cleanCandidateText(candidate.text);
+
+  if (html) {
+    return { value: html, format: "html", field };
   }
 
-  // Fall back to HTML if no text
-  if (candidate.html && typeof candidate.html === "string" && candidate.html.trim()) {
-    return candidate.html;
+  if (text) {
+    return { value: text, format: "text", field };
   }
 
   return null;
 }
 
-export function buildDisplayContent(item) {
-  const attachments = normalizeDisplayAttachments(item.attachments);
-
-  // Prefer using candidates if available (provides truncation via selectDisplayText)
-  if (item.observed?.summaryCandidates || item.observed?.contentCandidates) {
-    const display = selectDisplayText({
-      summaryCandidates: item.observed.summaryCandidates,
-      contentCandidates: item.observed.contentCandidates,
-    });
-
-    if (display.text) {
-      // Determine render mode based on whether text looks like HTML
-      const isHtml = display.text && /<[^>]+>/.test(display.text);
-      const sanitized = isHtml ? sanitizeContentHtml(display.text) : undefined;
-
-      if (sanitized) {
-        return {
-          renderMode: "html",
-          html: sanitized,
-          attachments,
-        };
-      }
-
-      return {
-        renderMode: "text",
-        text: display.text,
-        attachments,
-      };
-    }
-
-    return {
-      renderMode: attachments.length > 0 ? "attachments" : "empty",
-      attachments,
-    };
+function readContentCandidate(candidate) {
+  if (!candidate || typeof candidate !== "object") {
+    return null;
   }
 
-  // Fallback to pre-selected fields for backward compatibility
-  const sanitizedHtml = sanitizeContentHtml(item.contentHtml || item.summaryHtml);
-
-  if (sanitizedHtml) {
-    return {
-      renderMode: "html",
-      html: sanitizedHtml,
-      attachments,
-    };
-  }
-
-  const text = normalizeText(item.contentText || item.summaryText || item.summary);
-
+  const field = typeof candidate.field === "string" ? candidate.field : null;
+  const text = cleanCandidateText(candidate.text);
   if (text) {
-    return {
-      renderMode: "text",
-      text,
-      attachments,
-    };
+    return { value: text, field };
   }
 
-  return {
-    renderMode: attachments.length > 0 ? "attachments" : "empty",
-    attachments,
-  };
+  const html = cleanCandidateHtml(candidate.html);
+  if (html) {
+    const plain = stripHtml(html);
+    if (plain) {
+      return { value: plain, field };
+    }
+  }
+
+  return null;
+}
+
+function cleanCandidateText(value) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  return trimmed ? trimmed : null;
+}
+
+function cleanCandidateHtml(value) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  return trimmed ? trimmed : null;
+}
+
+function truncatePlainText(value, limit) {
+  if (typeof value !== "string" || !value) {
+    return { text: "", wasTruncated: false };
+  }
+
+  if (value.length <= limit) {
+    return { text: value, wasTruncated: false };
+  }
+
+  let safeIndex = adjustIndexForSurrogates(value, limit);
+  let truncated = value.slice(0, safeIndex);
+
+  const whitespaceIndex = findLastWhitespace(truncated);
+  if (whitespaceIndex > 0) {
+    truncated = truncated.slice(0, whitespaceIndex);
+  }
+
+  truncated = truncated.replace(/\s+$/u, "");
+
+  if (truncated.length === 0) {
+    truncated = value.slice(0, safeIndex);
+  }
+
+  truncated = removeTrailingHighSurrogate(truncated);
+
+  return { text: truncated + "…", wasTruncated: true };
+}
+
+function adjustIndexForSurrogates(value, index) {
+  if (index <= 0 || index >= value.length) {
+    return index;
+  }
+
+  const prevCode = value.charCodeAt(index - 1);
+  const currentCode = value.charCodeAt(index);
+  if (isHighSurrogate(prevCode) && isLowSurrogate(currentCode)) {
+    return index - 1;
+  }
+
+  return index;
+}
+
+function removeTrailingHighSurrogate(value) {
+  if (!value) {
+    return value;
+  }
+
+  const lastCode = value.charCodeAt(value.length - 1);
+  if (isHighSurrogate(lastCode)) {
+    return value.slice(0, -1);
+  }
+  return value;
+}
+
+function findLastWhitespace(value) {
+  for (let index = value.length - 1; index >= 0; index -= 1) {
+    if (isWhitespace(value[index])) {
+      return index;
+    }
+  }
+  return -1;
+}
+
+function isWhitespace(char) {
+  return /\s/.test(char || "");
+}
+
+function isHighSurrogate(code) {
+  return code >= 0xd800 && code <= 0xdbff;
+}
+
+function isLowSurrogate(code) {
+  return code >= 0xdc00 && code <= 0xdfff;
+}
+
+function stripHtml(value) {
+  return value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 }
 
 export function renderDisplayContent(item) {
-  const display = buildDisplayContent(item);
+  const candidates = extractCandidateSources(item);
+  const display = selectDisplayText(candidates);
+  const attachments = normalizeDisplayAttachments(item.attachments);
   const body = renderDisplayBody(display);
-  const attachments = renderAttachments(display.attachments);
+  const attachmentsHtml = renderAttachments(attachments);
 
-  return [body, attachments].filter(Boolean).join("");
+  return [body, attachmentsHtml].filter(Boolean).join("");
+}
+
+function extractCandidateSources(item) {
+  const observed = item?.observed;
+  const summaryCandidates = Array.isArray(observed?.summaryCandidates)
+    ? observed.summaryCandidates
+    : Array.isArray(item?.summaryCandidates)
+      ? item.summaryCandidates
+      : [];
+  const contentCandidates = Array.isArray(observed?.contentCandidates)
+    ? observed.contentCandidates
+    : Array.isArray(item?.contentCandidates)
+      ? item.contentCandidates
+      : [];
+
+  return { summaryCandidates, contentCandidates };
 }
 
 export function sanitizeContentHtml(value) {
@@ -202,15 +276,25 @@ export function sanitizeContentHtml(value) {
 }
 
 function renderDisplayBody(display) {
-  if (display.renderMode === "html" && display.html) {
-    return `<div class="content-body rich-html">${display.html}</div>`;
+  if (!display?.text) {
+    return "";
   }
 
-  if (display.renderMode === "text" && display.text) {
-    return `<div class="content-body plain-text">${escapeHtml(display.text)}</div>`;
+  if (display.format === "html") {
+    const sanitized = sanitizeContentHtml(display.text);
+    if (sanitized) {
+      return `<div class="content-body rich-html">${sanitized}</div>`;
+    }
+
+    const plain = stripHtml(display.text);
+    if (plain) {
+      return `<div class="content-body plain-text">${escapeHtml(plain)}</div>`;
+    }
+
+    return "";
   }
 
-  return "";
+  return `<div class="content-body plain-text">${escapeHtml(display.text)}</div>`;
 }
 
 function renderAttachments(attachments) {
@@ -242,15 +326,6 @@ function normalizeDisplayAttachments(attachments) {
       type: attachment.type || undefined,
       label: attachment.title || attachment.label || getFileLabel(attachment.url),
     }));
-}
-
-function normalizeText(value) {
-  if (!value) {
-    return undefined;
-  }
-
-  const normalized = String(value).replace(/\r\n/g, "\n").trim();
-  return normalized || undefined;
 }
 
 function looksLikeHtml(value) {

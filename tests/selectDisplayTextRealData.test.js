@@ -98,8 +98,15 @@ describe("selectDisplayText with real data", () => {
           (c) => c.text || c.html,
         );
         if (firstNonEmpty) {
-          const expectedText = firstNonEmpty.text || firstNonEmpty.html;
-          expect(result.text).toBe(expectedText);
+          const expectedHtml = firstNonEmpty.html?.trim();
+          const expectedText = firstNonEmpty.text?.trim();
+          if (expectedHtml) {
+            expect(result.format).toBe("html");
+            expect(result.text).toBe(expectedHtml);
+          } else if (expectedText) {
+            expect(result.format).toBe("text");
+            expect(result.text).toBe(expectedText);
+          }
         }
       }
     });

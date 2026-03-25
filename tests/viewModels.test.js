@@ -35,7 +35,11 @@ const normalizedPayload = {
           authorSource: "author",
           publishedAt: "2025-01-02T10:00:00.000Z",
           displayDate: "2025-01-02T10:00:00.000Z",
-          summaryText: "Newest summary",
+          observed: {
+            summaryCandidates: [
+              { field: "summary", text: "Newest summary" },
+            ],
+          },
         },
         {
           id: "b-future",
