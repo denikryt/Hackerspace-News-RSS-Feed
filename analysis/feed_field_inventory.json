@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T17:08:19.813Z",
+  "generatedAt": "2026-03-25T11:43:25.903Z",
   "sourceCount": 60,
   "analyzedFeedCount": 44,
   "failedFeedCount": 16,
@@ -69,7 +69,7 @@
       "feedCount": 42,
       "sampleValues": [
         "Wed, 10 Dec 2025 11:27:06 +0000",
-        "2026-03-11T18:02:01Z",
+        "2026-03-24T23:44:00Z",
         "Mon, 19 Jan 2026 21:50:14 +0100"
       ],
       "sampleFeeds": [
@@ -158,7 +158,7 @@
       "count": 7,
       "feedCount": 7,
       "sampleValues": [
-        "2026-03-11T18:02:01Z",
+        "2026-03-24T23:44:00Z",
         "2026-02-09T00:00:00+01:00",
         "2026-01-27T19:41:10Z"
       ],
@@ -173,9 +173,9 @@
       "count": 5,
       "feedCount": 5,
       "sampleValues": [
-        "Sat, 21 Mar 2026 00:00:16 +0000",
-        "Wed, 11 Mar 2026 18:37:21 +0100",
-        "Sat, 21 Mar 2026 00:04:21 +0100"
+        "Wed, 25 Mar 2026 00:00:15 +0000",
+        "Sun, 22 Mar 2026 22:24:46 +0100",
+        "Wed, 25 Mar 2026 00:04:03 +0100"
       ],
       "sampleFeeds": [
         "CCC Salzburg",
@@ -358,6 +358,22 @@
       ]
     },
     {
+      "name": "author",
+      "count": 609,
+      "feedCount": 8,
+      "itemCount": 609,
+      "sampleValues": [
+        "sandro",
+        "Katzenmann",
+        "Anastasiia, Jonas, Mole, Simon, Stefan und Xyrill"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Chaos Computer Club Basel",
+        "Chaosdorf"
+      ]
+    },
+    {
       "name": "categories",
       "count": 444,
       "feedCount": 26,
@@ -387,6 +403,38 @@
         "BetaMachine",
         "Chaostreff Bern",
         "Codinglab"
+      ]
+    },
+    {
+      "name": "id",
+      "count": 254,
+      "feedCount": 7,
+      "itemCount": 254,
+      "sampleValues": [
+        "http://www.c3d2.de/news/event-20260428-home-automation.html",
+        "http://www.c3d2.de/news/linux-phone-hacking-0426.html",
+        "http://www.c3d2.de/news/projekteabend-0426.html"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Chaos Computer Club Basel",
+        "Chaosdorf"
+      ]
+    },
+    {
+      "name": "updated",
+      "count": 254,
+      "feedCount": 7,
+      "itemCount": 254,
+      "sampleValues": [
+        "2026-03-24T23:44:00Z",
+        "2026-03-22T19:13:40Z",
+        "2026-03-22T19:11:07Z"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Chaos Computer Club Basel",
+        "Chaosdorf"
       ]
     },
     {
@@ -435,54 +483,6 @@
         "BetaMachine",
         "Codinglab",
         "Coredump"
-      ]
-    },
-    {
-      "name": "author",
-      "count": 609,
-      "feedCount": 8,
-      "itemCount": 609,
-      "sampleValues": [
-        "Anastasiia, Jonas, Mole, Simon, Stefan und Xyrill",
-        "Mole, Simon und Xyrill",
-        "Katzenmann"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaos Computer Club Basel",
-        "Chaosdorf"
-      ]
-    },
-    {
-      "name": "id",
-      "count": 254,
-      "feedCount": 7,
-      "itemCount": 254,
-      "sampleValues": [
-        "http://www.c3d2.de/news/pentaradio24-20260224.html",
-        "http://www.c3d2.de/news/pentaradio24-20260302.html",
-        "http://www.c3d2.de/news/linux-phone-hacking-0326.html"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaos Computer Club Basel",
-        "Chaosdorf"
-      ]
-    },
-    {
-      "name": "updated",
-      "count": 254,
-      "feedCount": 7,
-      "itemCount": 254,
-      "sampleValues": [
-        "2026-03-11T18:02:01Z",
-        "2026-03-07T21:34:56Z",
-        "2026-03-03T09:00:00Z"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaos Computer Club Basel",
-        "Chaosdorf"
       ]
     },
     {
@@ -576,37 +576,37 @@
       ]
     },
     {
+      "name": "p",
+      "count": 1889,
+      "feedCount": 23,
+      "sampleValues": [
+        "p"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "C3D2",
+        "Chaosdorf"
+      ]
+    },
+    {
+      "name": "br",
+      "count": 1779,
+      "feedCount": 22,
+      "sampleValues": [
+        "br"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "C3D2",
+        "Chaosdorf"
+      ]
+    },
+    {
       "name": "description",
       "count": 1659,
       "feedCount": 37,
       "sampleValues": [
         "description"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "CCC Darmstadt",
-        "CCC Salzburg"
-      ]
-    },
-    {
-      "name": "channel",
-      "count": 37,
-      "feedCount": 37,
-      "sampleValues": [
-        "channel"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "CCC Darmstadt",
-        "CCC Salzburg"
-      ]
-    },
-    {
-      "name": "rss",
-      "count": 37,
-      "feedCount": 37,
-      "sampleValues": [
-        "rss"
       ],
       "sampleFeeds": [
         "BetaMachine",
@@ -654,34 +654,8 @@
       ]
     },
     {
-      "name": "lastBuildDate",
-      "count": 35,
-      "feedCount": 35,
-      "sampleValues": [
-        "lastBuildDate"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "CCC Darmstadt",
-        "CCC Salzburg"
-      ]
-    },
-    {
-      "name": "generator",
-      "count": 34,
-      "feedCount": 34,
-      "sampleValues": [
-        "generator"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "CCC Darmstadt",
-        "CCC Salzburg"
-      ]
-    },
-    {
       "name": "category",
-      "count": 1315,
+      "count": 1318,
       "feedCount": 31,
       "sampleValues": [
         "category"
@@ -693,24 +667,11 @@
       ]
     },
     {
-      "name": "language",
-      "count": 30,
-      "feedCount": 30,
-      "sampleValues": [
-        "language"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "CCC Darmstadt",
-        "Codinglab"
-      ]
-    },
-    {
-      "name": "p",
-      "count": 1886,
+      "name": "a",
+      "count": 783,
       "feedCount": 23,
       "sampleValues": [
-        "p"
+        "a"
       ],
       "sampleFeeds": [
         "BetaMachine",
@@ -719,15 +680,28 @@
       ]
     },
     {
-      "name": "a",
-      "count": 784,
-      "feedCount": 23,
+      "name": "li",
+      "count": 696,
+      "feedCount": 18,
       "sampleValues": [
-        "a"
+        "li"
       ],
       "sampleFeeds": [
         "BetaMachine",
         "C3D2",
+        "Chaosdorf"
+      ]
+    },
+    {
+      "name": "author",
+      "count": 612,
+      "feedCount": 10,
+      "sampleValues": [
+        "author"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Chaos Computer Club Basel",
         "Chaosdorf"
       ]
     },
@@ -745,16 +719,29 @@
       ]
     },
     {
-      "name": "br",
-      "count": 1775,
-      "feedCount": 22,
+      "name": "img",
+      "count": 393,
+      "feedCount": 20,
       "sampleValues": [
-        "br"
+        "img"
       ],
       "sampleFeeds": [
         "BetaMachine",
         "C3D2",
         "Chaosdorf"
+      ]
+    },
+    {
+      "name": "div",
+      "count": 332,
+      "feedCount": 19,
+      "sampleValues": [
+        "div"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "C3D2",
+        "Codinglab"
       ]
     },
     {
@@ -771,11 +758,12 @@
       ]
     },
     {
-      "name": "updateFrequency",
-      "count": 22,
-      "feedCount": 22,
+      "name": "comments",
+      "count": 308,
+      "feedCount": 13,
       "sampleValues": [
-        "sy:updateFrequency"
+        "comments",
+        "slash:comments"
       ],
       "sampleFeeds": [
         "BetaMachine",
@@ -784,50 +772,64 @@
       ]
     },
     {
-      "name": "updatePeriod",
-      "count": 22,
-      "feedCount": 22,
+      "name": "content",
+      "count": 264,
+      "feedCount": 8,
       "sampleValues": [
-        "sy:updatePeriod"
+        "content",
+        "media:content"
       ],
       "sampleFeeds": [
-        "BetaMachine",
-        "Codinglab",
-        "Coredump"
-      ]
-    },
-    {
-      "name": "img",
-      "count": 395,
-      "feedCount": 20,
-      "sampleValues": [
-        "img"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
         "C3D2",
+        "Chaos Computer Club Basel",
         "Chaosdorf"
       ]
     },
     {
-      "name": "div",
-      "count": 331,
-      "feedCount": 19,
+      "name": "id",
+      "count": 262,
+      "feedCount": 7,
       "sampleValues": [
-        "div"
+        "id"
       ],
       "sampleFeeds": [
-        "BetaMachine",
         "C3D2",
-        "Codinglab"
+        "Chaos Computer Club Basel",
+        "Chaosdorf"
       ]
     },
     {
-      "name": "li",
-      "count": 696,
-      "feedCount": 18,
+      "name": "updated",
+      "count": 261,
+      "feedCount": 7,
       "sampleValues": [
-        "li"
+        "updated"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Chaos Computer Club Basel",
+        "Chaosdorf"
+      ]
+    },
+    {
+      "name": "entry",
+      "count": 254,
+      "feedCount": 7,
+      "sampleValues": [
+        "entry"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Chaos Computer Club Basel",
+        "Chaosdorf"
+      ]
+    },
+    {
+      "name": "span",
+      "count": 192,
+      "feedCount": 14,
+      "sampleValues": [
+        "span"
       ],
       "sampleFeeds": [
         "BetaMachine",
@@ -859,6 +861,430 @@
         "BetaMachine",
         "C3D2",
         "Chaosdorf"
+      ]
+    },
+    {
+      "name": "name",
+      "count": 165,
+      "feedCount": 7,
+      "sampleValues": [
+        "name"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Chaos Computer Club Basel",
+        "Chaosdorf"
+      ]
+    },
+    {
+      "name": "figure",
+      "count": 158,
+      "feedCount": 17,
+      "sampleValues": [
+        "figure"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Chaosdorf",
+        "Codinglab"
+      ]
+    },
+    {
+      "name": "commentRss",
+      "count": 154,
+      "feedCount": 13,
+      "sampleValues": [
+        "wfw:commentRss"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Codinglab",
+        "Coredump"
+      ]
+    },
+    {
+      "name": "published",
+      "count": 139,
+      "feedCount": 4,
+      "sampleValues": [
+        "published"
+      ],
+      "sampleFeeds": [
+        "Chaos Computer Club Basel",
+        "Chaosdorf",
+        "GuayaHack"
+      ]
+    },
+    {
+      "name": "summary",
+      "count": 138,
+      "feedCount": 5,
+      "sampleValues": [
+        "summary"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Chaos Computer Club Basel",
+        "Chaosdorf"
+      ]
+    },
+    {
+      "name": "h2",
+      "count": 107,
+      "feedCount": 11,
+      "sampleValues": [
+        "h2"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Chaosdorf",
+        "Hackerspace Drenthe"
+      ]
+    },
+    {
+      "name": "input",
+      "count": 96,
+      "feedCount": 1,
+      "sampleValues": [
+        "input"
+      ],
+      "sampleFeeds": [
+        "Helsinki Hacklab"
+      ]
+    },
+    {
+      "name": "td",
+      "count": 90,
+      "feedCount": 5,
+      "sampleValues": [
+        "td"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Helsinki Hacklab",
+        "Milwaukee Makerspace"
+      ]
+    },
+    {
+      "name": "tr",
+      "count": 76,
+      "feedCount": 5,
+      "sampleValues": [
+        "tr"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Helsinki Hacklab",
+        "Milwaukee Makerspace"
+      ]
+    },
+    {
+      "name": "em",
+      "count": 70,
+      "feedCount": 11,
+      "sampleValues": [
+        "em"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "C3D2",
+        "Chaosdorf"
+      ]
+    },
+    {
+      "name": "h3",
+      "count": 59,
+      "feedCount": 9,
+      "sampleValues": [
+        "h3"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Hackerspace Drenthe",
+        "Helsinki Hacklab"
+      ]
+    },
+    {
+      "name": "label",
+      "count": 53,
+      "feedCount": 1,
+      "sampleValues": [
+        "label"
+      ],
+      "sampleFeeds": [
+        "Helsinki Hacklab"
+      ]
+    },
+    {
+      "name": "figcaption",
+      "count": 51,
+      "feedCount": 8,
+      "sampleValues": [
+        "figcaption"
+      ],
+      "sampleFeeds": [
+        "Edinburgh Hacklab",
+        "Hackerspace Drenthe",
+        "Hacksaar"
+      ]
+    },
+    {
+      "name": "channel",
+      "count": 37,
+      "feedCount": 37,
+      "sampleValues": [
+        "channel"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "CCC Darmstadt",
+        "CCC Salzburg"
+      ]
+    },
+    {
+      "name": "rss",
+      "count": 37,
+      "feedCount": 37,
+      "sampleValues": [
+        "rss"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "CCC Darmstadt",
+        "CCC Salzburg"
+      ]
+    },
+    {
+      "name": "lastBuildDate",
+      "count": 35,
+      "feedCount": 35,
+      "sampleValues": [
+        "lastBuildDate"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "CCC Darmstadt",
+        "CCC Salzburg"
+      ]
+    },
+    {
+      "name": "hr",
+      "count": 35,
+      "feedCount": 7,
+      "sampleValues": [
+        "hr"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Hackerspace Drenthe",
+        "Hacklab.Brussels"
+      ]
+    },
+    {
+      "name": "b",
+      "count": 35,
+      "feedCount": 2,
+      "sampleValues": [
+        "b"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Milwaukee Makerspace"
+      ]
+    },
+    {
+      "name": "generator",
+      "count": 34,
+      "feedCount": 34,
+      "sampleValues": [
+        "generator"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "CCC Darmstadt",
+        "CCC Salzburg"
+      ]
+    },
+    {
+      "name": "dd",
+      "count": 32,
+      "feedCount": 1,
+      "sampleValues": [
+        "dd"
+      ],
+      "sampleFeeds": [
+        "C3D2"
+      ]
+    },
+    {
+      "name": "dt",
+      "count": 32,
+      "feedCount": 1,
+      "sampleValues": [
+        "dt"
+      ],
+      "sampleFeeds": [
+        "C3D2"
+      ]
+    },
+    {
+      "name": "language",
+      "count": 30,
+      "feedCount": 30,
+      "sampleValues": [
+        "language"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "CCC Darmstadt",
+        "Codinglab"
+      ]
+    },
+    {
+      "name": "post-id",
+      "count": 30,
+      "feedCount": 3,
+      "sampleValues": [
+        "post-id"
+      ],
+      "sampleFeeds": [
+        "NYBI.CC",
+        "Swindon Makerspace",
+        "Technik.cafe"
+      ]
+    },
+    {
+      "name": "total",
+      "count": 30,
+      "feedCount": 2,
+      "sampleValues": [
+        "thr:total"
+      ],
+      "sampleFeeds": [
+        "Chaosdorf",
+        "Maschinenraum"
+      ]
+    },
+    {
+      "name": "h4",
+      "count": 27,
+      "feedCount": 3,
+      "sampleValues": [
+        "h4"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Helsinki Hacklab",
+        "TkkrLab"
+      ]
+    },
+    {
+      "name": "table",
+      "count": 26,
+      "feedCount": 5,
+      "sampleValues": [
+        "table"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Helsinki Hacklab",
+        "Milwaukee Makerspace"
+      ]
+    },
+    {
+      "name": "tbody",
+      "count": 26,
+      "feedCount": 5,
+      "sampleValues": [
+        "tbody"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Helsinki Hacklab",
+        "Milwaukee Makerspace"
+      ]
+    },
+    {
+      "name": "abbr",
+      "count": 26,
+      "feedCount": 1,
+      "sampleValues": [
+        "abbr"
+      ],
+      "sampleFeeds": [
+        "C3D2"
+      ]
+    },
+    {
+      "name": "code",
+      "count": 24,
+      "feedCount": 5,
+      "sampleValues": [
+        "code"
+      ],
+      "sampleFeeds": [
+        "Chaosdorf",
+        "Hacklab.Brussels",
+        "Laboratoire Ouvert Villeurbannais"
+      ]
+    },
+    {
+      "name": "object-type",
+      "count": 24,
+      "feedCount": 1,
+      "sampleValues": [
+        "activity:object-type"
+      ],
+      "sampleFeeds": [
+        "C3D2"
+      ]
+    },
+    {
+      "name": "scope",
+      "count": 24,
+      "feedCount": 1,
+      "sampleValues": [
+        "mastodon:scope"
+      ],
+      "sampleFeeds": [
+        "C3D2"
+      ]
+    },
+    {
+      "name": "verb",
+      "count": 23,
+      "feedCount": 1,
+      "sampleValues": [
+        "activity:verb"
+      ],
+      "sampleFeeds": [
+        "C3D2"
+      ]
+    },
+    {
+      "name": "updateFrequency",
+      "count": 22,
+      "feedCount": 22,
+      "sampleValues": [
+        "sy:updateFrequency"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Codinglab",
+        "Coredump"
+      ]
+    },
+    {
+      "name": "updatePeriod",
+      "count": 22,
+      "feedCount": 22,
+      "sampleValues": [
+        "sy:updatePeriod"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Codinglab",
+        "Coredump"
       ]
     },
     {
@@ -914,199 +1340,25 @@
       ]
     },
     {
-      "name": "figure",
-      "count": 157,
-      "feedCount": 17,
+      "name": "source",
+      "count": 17,
+      "feedCount": 2,
       "sampleValues": [
-        "figure"
+        "source"
       ],
       "sampleFeeds": [
-        "BetaMachine",
-        "Chaosdorf",
-        "Codinglab"
+        "Hacklab.Brussels",
+        "Maschinenraum"
       ]
     },
     {
-      "name": "span",
-      "count": 192,
-      "feedCount": 14,
+      "name": "small",
+      "count": 17,
+      "feedCount": 1,
       "sampleValues": [
-        "span"
+        "small"
       ],
       "sampleFeeds": [
-        "BetaMachine",
-        "C3D2",
-        "Chaosdorf"
-      ]
-    },
-    {
-      "name": "comments",
-      "count": 308,
-      "feedCount": 13,
-      "sampleValues": [
-        "comments",
-        "slash:comments"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Codinglab",
-        "Coredump"
-      ]
-    },
-    {
-      "name": "commentRss",
-      "count": 154,
-      "feedCount": 13,
-      "sampleValues": [
-        "wfw:commentRss"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Codinglab",
-        "Coredump"
-      ]
-    },
-    {
-      "name": "h2",
-      "count": 107,
-      "feedCount": 11,
-      "sampleValues": [
-        "h2"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Chaosdorf",
-        "Hackerspace Drenthe"
-      ]
-    },
-    {
-      "name": "em",
-      "count": 70,
-      "feedCount": 11,
-      "sampleValues": [
-        "em"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "C3D2",
-        "Chaosdorf"
-      ]
-    },
-    {
-      "name": "author",
-      "count": 612,
-      "feedCount": 10,
-      "sampleValues": [
-        "author"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaos Computer Club Basel",
-        "Chaosdorf"
-      ]
-    },
-    {
-      "name": "h3",
-      "count": 59,
-      "feedCount": 9,
-      "sampleValues": [
-        "h3"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Hackerspace Drenthe",
-        "Helsinki Hacklab"
-      ]
-    },
-    {
-      "name": "content",
-      "count": 264,
-      "feedCount": 8,
-      "sampleValues": [
-        "content",
-        "media:content"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaos Computer Club Basel",
-        "Chaosdorf"
-      ]
-    },
-    {
-      "name": "figcaption",
-      "count": 51,
-      "feedCount": 8,
-      "sampleValues": [
-        "figcaption"
-      ],
-      "sampleFeeds": [
-        "Edinburgh Hacklab",
-        "Hackerspace Drenthe",
-        "Hacksaar"
-      ]
-    },
-    {
-      "name": "id",
-      "count": 262,
-      "feedCount": 7,
-      "sampleValues": [
-        "id"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaos Computer Club Basel",
-        "Chaosdorf"
-      ]
-    },
-    {
-      "name": "updated",
-      "count": 261,
-      "feedCount": 7,
-      "sampleValues": [
-        "updated"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaos Computer Club Basel",
-        "Chaosdorf"
-      ]
-    },
-    {
-      "name": "entry",
-      "count": 254,
-      "feedCount": 7,
-      "sampleValues": [
-        "entry"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaos Computer Club Basel",
-        "Chaosdorf"
-      ]
-    },
-    {
-      "name": "name",
-      "count": 165,
-      "feedCount": 7,
-      "sampleValues": [
-        "name"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaos Computer Club Basel",
-        "Chaosdorf"
-      ]
-    },
-    {
-      "name": "hr",
-      "count": 35,
-      "feedCount": 7,
-      "sampleValues": [
-        "hr"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Hackerspace Drenthe",
         "Hacklab.Brussels"
       ]
     },
@@ -1124,201 +1376,6 @@
       ]
     },
     {
-      "name": "iframe",
-      "count": 11,
-      "feedCount": 7,
-      "sampleValues": [
-        "iframe"
-      ],
-      "sampleFeeds": [
-        "Codinglab",
-        "Edinburgh Hacklab",
-        "Hacksaar"
-      ]
-    },
-    {
-      "name": "feed",
-      "count": 7,
-      "feedCount": 7,
-      "sampleValues": [
-        "feed"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaos Computer Club Basel",
-        "Chaosdorf"
-      ]
-    },
-    {
-      "name": "summary",
-      "count": 138,
-      "feedCount": 5,
-      "sampleValues": [
-        "summary"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaos Computer Club Basel",
-        "Chaosdorf"
-      ]
-    },
-    {
-      "name": "td",
-      "count": 90,
-      "feedCount": 5,
-      "sampleValues": [
-        "td"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Helsinki Hacklab",
-        "Milwaukee Makerspace"
-      ]
-    },
-    {
-      "name": "tr",
-      "count": 76,
-      "feedCount": 5,
-      "sampleValues": [
-        "tr"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Helsinki Hacklab",
-        "Milwaukee Makerspace"
-      ]
-    },
-    {
-      "name": "table",
-      "count": 26,
-      "feedCount": 5,
-      "sampleValues": [
-        "table"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Helsinki Hacklab",
-        "Milwaukee Makerspace"
-      ]
-    },
-    {
-      "name": "tbody",
-      "count": 26,
-      "feedCount": 5,
-      "sampleValues": [
-        "tbody"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Helsinki Hacklab",
-        "Milwaukee Makerspace"
-      ]
-    },
-    {
-      "name": "code",
-      "count": 24,
-      "feedCount": 5,
-      "sampleValues": [
-        "code"
-      ],
-      "sampleFeeds": [
-        "Chaosdorf",
-        "Hacklab.Brussels",
-        "Laboratoire Ouvert Villeurbannais"
-      ]
-    },
-    {
-      "name": "h1",
-      "count": 13,
-      "feedCount": 5,
-      "sampleValues": [
-        "h1"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Hackerspace Drenthe",
-        "Laboratoire Ouvert Villeurbannais"
-      ]
-    },
-    {
-      "name": "published",
-      "count": 139,
-      "feedCount": 4,
-      "sampleValues": [
-        "published"
-      ],
-      "sampleFeeds": [
-        "Chaos Computer Club Basel",
-        "Chaosdorf",
-        "GuayaHack"
-      ]
-    },
-    {
-      "name": "pre",
-      "count": 14,
-      "feedCount": 4,
-      "sampleValues": [
-        "pre"
-      ],
-      "sampleFeeds": [
-        "Chaosdorf",
-        "Laboratoire Ouvert Villeurbannais",
-        "MakerSpace Minden"
-      ]
-    },
-    {
-      "name": "s",
-      "count": 9,
-      "feedCount": 4,
-      "sampleValues": [
-        "s"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaosdorf",
-        "Helsinki Hacklab"
-      ]
-    },
-    {
-      "name": "subtitle",
-      "count": 4,
-      "feedCount": 4,
-      "sampleValues": [
-        "subtitle"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaosdorf",
-        "GuayaHack"
-      ]
-    },
-    {
-      "name": "post-id",
-      "count": 30,
-      "feedCount": 3,
-      "sampleValues": [
-        "post-id"
-      ],
-      "sampleFeeds": [
-        "NYBI.CC",
-        "Swindon Makerspace",
-        "Technik.cafe"
-      ]
-    },
-    {
-      "name": "h4",
-      "count": 27,
-      "feedCount": 3,
-      "sampleValues": [
-        "h4"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Helsinki Hacklab",
-        "TkkrLab"
-      ]
-    },
-    {
       "name": "enclosure",
       "count": 16,
       "feedCount": 3,
@@ -1329,191 +1386,6 @@
         "Coredump",
         "Eugene Maker Space",
         "Helsinki Hacklab"
-      ]
-    },
-    {
-      "name": "ol",
-      "count": 7,
-      "feedCount": 3,
-      "sampleValues": [
-        "ol"
-      ],
-      "sampleFeeds": [
-        "Helsinki Hacklab",
-        "Laboratoire Ouvert Villeurbannais",
-        "init Lab"
-      ]
-    },
-    {
-      "name": "site",
-      "count": 3,
-      "feedCount": 3,
-      "sampleValues": [
-        "site"
-      ],
-      "sampleFeeds": [
-        "NYBI.CC",
-        "Swindon Makerspace",
-        "Technik.cafe"
-      ]
-    },
-    {
-      "name": "b",
-      "count": 35,
-      "feedCount": 2,
-      "sampleValues": [
-        "b"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Milwaukee Makerspace"
-      ]
-    },
-    {
-      "name": "total",
-      "count": 30,
-      "feedCount": 2,
-      "sampleValues": [
-        "thr:total"
-      ],
-      "sampleFeeds": [
-        "Chaosdorf",
-        "Maschinenraum"
-      ]
-    },
-    {
-      "name": "source",
-      "count": 17,
-      "feedCount": 2,
-      "sampleValues": [
-        "source"
-      ],
-      "sampleFeeds": [
-        "Hacklab.Brussels",
-        "Maschinenraum"
-      ]
-    },
-    {
-      "name": "uri",
-      "count": 5,
-      "feedCount": 2,
-      "sampleValues": [
-        "uri"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaosdorf"
-      ]
-    },
-    {
-      "name": "email",
-      "count": 2,
-      "feedCount": 2,
-      "sampleValues": [
-        "email"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Pixelbar"
-      ]
-    },
-    {
-      "name": "input",
-      "count": 96,
-      "feedCount": 1,
-      "sampleValues": [
-        "input"
-      ],
-      "sampleFeeds": [
-        "Helsinki Hacklab"
-      ]
-    },
-    {
-      "name": "label",
-      "count": 53,
-      "feedCount": 1,
-      "sampleValues": [
-        "label"
-      ],
-      "sampleFeeds": [
-        "Helsinki Hacklab"
-      ]
-    },
-    {
-      "name": "dd",
-      "count": 32,
-      "feedCount": 1,
-      "sampleValues": [
-        "dd"
-      ],
-      "sampleFeeds": [
-        "C3D2"
-      ]
-    },
-    {
-      "name": "dt",
-      "count": 32,
-      "feedCount": 1,
-      "sampleValues": [
-        "dt"
-      ],
-      "sampleFeeds": [
-        "C3D2"
-      ]
-    },
-    {
-      "name": "abbr",
-      "count": 25,
-      "feedCount": 1,
-      "sampleValues": [
-        "abbr"
-      ],
-      "sampleFeeds": [
-        "C3D2"
-      ]
-    },
-    {
-      "name": "object-type",
-      "count": 24,
-      "feedCount": 1,
-      "sampleValues": [
-        "activity:object-type"
-      ],
-      "sampleFeeds": [
-        "C3D2"
-      ]
-    },
-    {
-      "name": "scope",
-      "count": 24,
-      "feedCount": 1,
-      "sampleValues": [
-        "mastodon:scope"
-      ],
-      "sampleFeeds": [
-        "C3D2"
-      ]
-    },
-    {
-      "name": "verb",
-      "count": 23,
-      "feedCount": 1,
-      "sampleValues": [
-        "activity:verb"
-      ],
-      "sampleFeeds": [
-        "C3D2"
-      ]
-    },
-    {
-      "name": "small",
-      "count": 17,
-      "feedCount": 1,
-      "sampleValues": [
-        "small"
-      ],
-      "sampleFeeds": [
-        "Hacklab.Brussels"
       ]
     },
     {
@@ -1558,6 +1430,96 @@
       ],
       "sampleFeeds": [
         "Hacklab.Brussels"
+      ]
+    },
+    {
+      "name": "pre",
+      "count": 14,
+      "feedCount": 4,
+      "sampleValues": [
+        "pre"
+      ],
+      "sampleFeeds": [
+        "Chaosdorf",
+        "Laboratoire Ouvert Villeurbannais",
+        "MakerSpace Minden"
+      ]
+    },
+    {
+      "name": "h1",
+      "count": 13,
+      "feedCount": 5,
+      "sampleValues": [
+        "h1"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Hackerspace Drenthe",
+        "Laboratoire Ouvert Villeurbannais"
+      ]
+    },
+    {
+      "name": "iframe",
+      "count": 11,
+      "feedCount": 7,
+      "sampleValues": [
+        "iframe"
+      ],
+      "sampleFeeds": [
+        "Codinglab",
+        "Edinburgh Hacklab",
+        "Hacksaar"
+      ]
+    },
+    {
+      "name": "s",
+      "count": 9,
+      "feedCount": 4,
+      "sampleValues": [
+        "s"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Chaosdorf",
+        "Helsinki Hacklab"
+      ]
+    },
+    {
+      "name": "feed",
+      "count": 7,
+      "feedCount": 7,
+      "sampleValues": [
+        "feed"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Chaos Computer Club Basel",
+        "Chaosdorf"
+      ]
+    },
+    {
+      "name": "ol",
+      "count": 7,
+      "feedCount": 3,
+      "sampleValues": [
+        "ol"
+      ],
+      "sampleFeeds": [
+        "Helsinki Hacklab",
+        "Laboratoire Ouvert Villeurbannais",
+        "init Lab"
+      ]
+    },
+    {
+      "name": "uri",
+      "count": 5,
+      "feedCount": 2,
+      "sampleValues": [
+        "uri"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Chaosdorf"
       ]
     },
     {
@@ -1616,6 +1578,19 @@
       ]
     },
     {
+      "name": "subtitle",
+      "count": 4,
+      "feedCount": 4,
+      "sampleValues": [
+        "subtitle"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Chaosdorf",
+        "GuayaHack"
+      ]
+    },
+    {
       "name": "cite",
       "count": 4,
       "feedCount": 1,
@@ -1646,6 +1621,31 @@
       ],
       "sampleFeeds": [
         "Helsinki Hacklab"
+      ]
+    },
+    {
+      "name": "site",
+      "count": 3,
+      "feedCount": 3,
+      "sampleValues": [
+        "site"
+      ],
+      "sampleFeeds": [
+        "NYBI.CC",
+        "Swindon Makerspace",
+        "Technik.cafe"
+      ]
+    },
+    {
+      "name": "email",
+      "count": 2,
+      "feedCount": 2,
+      "sampleValues": [
+        "email"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Pixelbar"
       ]
     },
     {
@@ -1893,19 +1893,6 @@
   ],
   "rawXmlNamespacedTags": [
     {
-      "name": "atom:link",
-      "count": 35,
-      "feedCount": 35,
-      "sampleValues": [
-        "atom:link"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "CCC Darmstadt",
-        "CCC Salzburg"
-      ]
-    },
-    {
       "name": "dc:creator",
       "count": 419,
       "feedCount": 23,
@@ -1916,32 +1903,6 @@
         "BetaMachine",
         "Chaostreff Bern",
         "Codinglab"
-      ]
-    },
-    {
-      "name": "sy:updateFrequency",
-      "count": 22,
-      "feedCount": 22,
-      "sampleValues": [
-        "sy:updateFrequency"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Codinglab",
-        "Coredump"
-      ]
-    },
-    {
-      "name": "sy:updatePeriod",
-      "count": 22,
-      "feedCount": 22,
-      "sampleValues": [
-        "sy:updatePeriod"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Codinglab",
-        "Coredump"
       ]
     },
     {
@@ -1981,6 +1942,19 @@
         "BetaMachine",
         "Codinglab",
         "Coredump"
+      ]
+    },
+    {
+      "name": "atom:link",
+      "count": 35,
+      "feedCount": 35,
+      "sampleValues": [
+        "atom:link"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "CCC Darmstadt",
+        "CCC Salzburg"
       ]
     },
     {
@@ -2026,6 +2000,32 @@
       ],
       "sampleFeeds": [
         "C3D2"
+      ]
+    },
+    {
+      "name": "sy:updateFrequency",
+      "count": 22,
+      "feedCount": 22,
+      "sampleValues": [
+        "sy:updateFrequency"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Codinglab",
+        "Coredump"
+      ]
+    },
+    {
+      "name": "sy:updatePeriod",
+      "count": 22,
+      "feedCount": 22,
+      "sampleValues": [
+        "sy:updatePeriod"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Codinglab",
+        "Coredump"
       ]
     },
     {
@@ -2113,6 +2113,22 @@
       ]
     },
     {
+      "name": "author",
+      "count": 609,
+      "feedCount": 8,
+      "itemCount": 609,
+      "sampleValues": [
+        "sandro",
+        "Katzenmann",
+        "Anastasiia, Jonas, Mole, Simon, Stefan und Xyrill"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Chaos Computer Club Basel",
+        "Chaosdorf"
+      ]
+    },
+    {
       "name": "dc:creator",
       "count": 419,
       "feedCount": 23,
@@ -2126,22 +2142,6 @@
         "BetaMachine",
         "Chaostreff Bern",
         "Codinglab"
-      ]
-    },
-    {
-      "name": "author",
-      "count": 609,
-      "feedCount": 8,
-      "itemCount": 609,
-      "sampleValues": [
-        "Anastasiia, Jonas, Mole, Simon, Stefan und Xyrill",
-        "Mole, Simon und Xyrill",
-        "Katzenmann"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaos Computer Club Basel",
-        "Chaosdorf"
       ]
     }
   ],
@@ -2202,9 +2202,9 @@
       "feedCount": 7,
       "itemCount": 254,
       "sampleValues": [
-        "2026-03-11T18:02:01Z",
-        "2026-03-07T21:34:56Z",
-        "2026-03-03T09:00:00Z"
+        "2026-03-24T23:44:00Z",
+        "2026-03-22T19:13:40Z",
+        "2026-03-22T19:11:07Z"
       ],
       "sampleFeeds": [
         "C3D2",
@@ -2331,28 +2331,14 @@
       ]
     },
     {
-      "name": "_detectedFormat",
-      "count": 44,
-      "feedCount": 44,
-      "sampleValues": [
-        "rss",
-        "atom"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "C3D2",
-        "CCC Darmstadt"
-      ]
-    },
-    {
       "name": "pubDate",
       "count": 1889,
       "feedCount": 42,
       "itemCount": 1884,
       "sampleValues": [
-        "Sat, 21 Mar 2026 00:00:16 +0000",
-        "Wed, 11 Mar 2026 18:37:21 +0100",
-        "Sat, 21 Mar 2026 00:04:21 +0100"
+        "Wed, 25 Mar 2026 00:00:15 +0000",
+        "Sun, 22 Mar 2026 22:24:46 +0100",
+        "Wed, 25 Mar 2026 00:04:03 +0100"
       ],
       "sampleFeeds": [
         "CCC Salzburg",
@@ -2369,36 +2355,6 @@
         "2025-12-10T11:18:59.000Z",
         "2025-11-20T17:01:28.000Z",
         "2025-05-14T14:38:00.000Z"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "C3D2",
-        "CCC Darmstadt"
-      ]
-    },
-    {
-      "name": "feedUrl",
-      "count": 42,
-      "feedCount": 42,
-      "sampleValues": [
-        "https://www.betamachine.fr/feed/",
-        "https://c3d2.de/news-atom.xml",
-        "/feed.xml"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "C3D2",
-        "CCC Darmstadt"
-      ]
-    },
-    {
-      "name": "lastBuildDate",
-      "count": 42,
-      "feedCount": 42,
-      "sampleValues": [
-        "Wed, 10 Dec 2025 11:27:06 +0000",
-        "2026-03-11T18:02:01Z",
-        "Mon, 19 Jan 2026 21:50:14 +0100"
       ],
       "sampleFeeds": [
         "BetaMachine",
@@ -2439,21 +2395,6 @@
       ]
     },
     {
-      "name": "description",
-      "count": 37,
-      "feedCount": 37,
-      "sampleValues": [
-        "Apprendre, expérimenter, faire ensemble.",
-        "Recent content on CCC Darmstadt e.V.",
-        "Das ist die Website des CCC Salzburg – Der Verein zur Förderung der prosperitiven Koexistenz von Mensch und Maschine."
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "CCC Darmstadt",
-        "CCC Salzburg"
-      ]
-    },
-    {
       "name": "guid",
       "count": 1630,
       "feedCount": 35,
@@ -2462,6 +2403,241 @@
         "https://www.betamachine.fr/?p=5841",
         "https://www.betamachine.fr/?p=5812",
         "https://www.betamachine.fr/?p=5819"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "CCC Darmstadt",
+        "CCC Salzburg"
+      ]
+    },
+    {
+      "name": "creator",
+      "count": 866,
+      "feedCount": 26,
+      "itemCount": 866,
+      "sampleValues": [
+        "Lucille DEWITTE",
+        "adminbeta",
+        "membre_v1"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Chaostreff Bern",
+        "Codinglab"
+      ]
+    },
+    {
+      "name": "author",
+      "count": 609,
+      "feedCount": 8,
+      "itemCount": 609,
+      "sampleValues": [
+        "sandro",
+        "Katzenmann",
+        "Anastasiia, Jonas, Mole, Simon, Stefan und Xyrill"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Chaos Computer Club Basel",
+        "Chaosdorf"
+      ]
+    },
+    {
+      "name": "categories",
+      "count": 444,
+      "feedCount": 26,
+      "itemCount": 444,
+      "sampleValues": [
+        "Uncategorized",
+        "Evénements",
+        "Fonctionnement, Vie du Lab, job, offre d&#039;emploi, recrutement"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "CCC Salzburg",
+        "Chaostreff Bern"
+      ]
+    },
+    {
+      "name": "dc:creator",
+      "count": 419,
+      "feedCount": 23,
+      "itemCount": 419,
+      "sampleValues": [
+        "Lucille DEWITTE",
+        "adminbeta",
+        "membre_v1"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Chaostreff Bern",
+        "Codinglab"
+      ]
+    },
+    {
+      "name": "updated",
+      "count": 261,
+      "feedCount": 7,
+      "itemCount": 254,
+      "sampleValues": [
+        "2026-03-24T23:44:00Z",
+        "2026-02-09T00:00:00+01:00",
+        "2026-01-27T19:41:10Z"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Chaos Computer Club Basel",
+        "Chaosdorf"
+      ]
+    },
+    {
+      "name": "id",
+      "count": 254,
+      "feedCount": 7,
+      "itemCount": 254,
+      "sampleValues": [
+        "http://www.c3d2.de/news/event-20260428-home-automation.html",
+        "http://www.c3d2.de/news/linux-phone-hacking-0426.html",
+        "http://www.c3d2.de/news/projekteabend-0426.html"
+      ],
+      "sampleFeeds": [
+        "C3D2",
+        "Chaos Computer Club Basel",
+        "Chaosdorf"
+      ]
+    },
+    {
+      "name": "content:encoded",
+      "count": 174,
+      "feedCount": 18,
+      "itemCount": 174,
+      "sampleValues": [
+        "\n<p><strong>Ateliers/Bureaux à destination des créateurs, artistes et makers</strong><br>Lieu : Betamachine, 8 rue de la Taye, 28110 Lucé<br>Durée : 1 an (reconductible)<br>Candidature : avant le 19 janvier 2026<br>Emménagement : à partir du 1er février 2026<br><strong><br></strong>Une visite de Betamachine sera organisée le samedi 10 janvier à 11h pour présenter l’association et les locaux aux créateurs souhaitant occuper un espace.<br></p>\n\n\n\n<div style=\"height:18px\" aria-hidden=\"true\" class=\"wp-block-spacer\"></div>\n\n\n\n<p><strong>Dossier de candidature</strong><br>Les dossiers doivent être envoyés avant le 19 janvier 2026 par mail à l’adresse suivante: <strong>postuler@betamachine.fr</strong><br><br>Le dossier doit comprendre :<br>&#8211; Des visuels (dans la limite de 10)<br>&#8211; Un texte de présentation de votre pratique<br>&#8211; Un texte présentant vos motivation à rejoindre Betamachine<br>&#8211; Un CV<br>&#8211; Merci de préciser le ou les locaux pour lesquels vous êtes intéressés, ainsi que la date souhaitée de votre emménagement.</p>\n\n\n\n<div style=\"height:18px\" aria-hidden=\"true\" class=\"wp-block-spacer\"></div>\n\n\n\n<p><strong>Profil des candidats</strong><br>La résidence s’adresse aux créateurs et créatrices de toutes disciplines : artisanat, design, arts plastiques, création sonore, ingénierie, informatique, littérature, recherche, etc..<br>Les créateurs en début d’activités sont les bienvenus, ainsi que les particuliers portant un projet de création.</p>\n\n\n\n<div style=\"height:18px\" aria-hidden=\"true\" class=\"wp-block-spacer\"></div>\n\n\n\n<p><strong>La résidence</strong><br>La résidence accueille actuellement 19 créateurs et créatrices et c’est 3 places qui se libèrent.<br>Un résident de Betamachine est un membre de l’association, professionnel ou non, qui y occupe un espace de travail privatif. Au même titre que les autres membres, le résident participe à la vie de l’association, peut en utiliser le matériel et participer à ses activités.<br>La résidence fait l’objet d’une convention d’une année, renouvelable, signée par Betamachine et le résident qui y occupe un espace.<br>L&rsquo;adhésion professionnelle pour les résidents coûte 30 euros* par mois. Pour les personnes, en activité depuis moins de 3 ans ou bénéficiaires de minimas sociaux, l’adhésion est de 15 euros* par mois. La participation locative est ensuite de 6,5 euros du m² par mois.</p>\n\n\n\n<p><em>*Attention ces tarifs pourront être amenés à augmenter au 1er janvier 2027.</em><br></p>\n\n\n\n<div style=\"height:18px\" aria-hidden=\"true\" class=\"wp-block-spacer\"></div>\n\n\n\n<p><strong>Fiche Technique</strong><br>Betamachine dispose d’une salle numérique (informatique, l’électronique, l’impression 3d, etc.); d’un hall technique avec du matériel de menuiserie et de métallurgie ; d’un atelier de couture ; de salles de réunion, d’une cuisine, d’espaces de convivialité, de sanitaires et d’une douche. L’ensemble du bâtiment est équipé de wifi.<br><br>Les espaces sont proposés vides et en l’état. Les nouveaux résidents pourront s’ils le souhaitent adapter les espaces à leurs pratique, repeindre et meubler à leur guise avec leurs mobilier ou celui de l’association. <br></p>\n\n\n\n<figure class=\"wp-block-gallery has-nested-images columns-default is-cropped wp-block-gallery-1 is-layout-flex wp-block-gallery-is-layout-flex\">\n<figure class=\"wp-block-image size-large is-resized\"><img fetchpriority=\"high\" decoding=\"async\" width=\"1024\" height=\"1024\" data-id=\"5844\" src=\"https://www.betamachine.fr/wp-content/uploads/2025/12/3-1024x1024.png\" alt=\"\" class=\"wp-image-5844\" style=\"width:428px;height:auto\" srcset=\"https://www.betamachine.fr/wp-content/uploads/2025/12/3-1024x1024.png 1024w, https://www.betamachine.fr/wp-content/uploads/2025/12/3-300x300.png 300w, https://www.betamachine.fr/wp-content/uploads/2025/12/3-150x150.png 150w, https://www.betamachine.fr/wp-content/uploads/2025/12/3-768x768.png 768w, https://www.betamachine.fr/wp-content/uploads/2025/12/3.png 1080w\" sizes=\"(max-width: 1024px) 100vw, 1024px\" /></figure>\n\n\n\n<figure class=\"wp-block-image size-large is-resized\"><img decoding=\"async\" width=\"1080\" height=\"1080\" data-id=\"5845\" src=\"https://www.betamachine.fr/wp-content/uploads/2025/12/4-1024x1024.png\" alt=\"\" class=\"wp-image-5845\" style=\"width:430px;height:auto\" srcset=\"https://www.betamachine.fr/wp-content/uploads/2025/12/4-1024x1024.png 1024w, https://www.betamachine.fr/wp-content/uploads/2025/12/4-300x300.png 300w, https://www.betamachine.fr/wp-content/uploads/2025/12/4-150x150.png 150w, https://www.betamachine.fr/wp-content/uploads/2025/12/4-768x768.png 768w, https://www.betamachine.fr/wp-content/uploads/2025/12/4.png 1080w\" sizes=\"(max-width: 1080px) 100vw, 1080px\" /></figure>\n\n\n\n<figure class=\"wp-block-image size-large is-resized\"><img decoding=\"async\" width=\"1024\" height=\"1024\" data-id=\"5846\" src=\"https://www.betamachine.fr/wp-content/uploads/2025/12/5-1024x1024.png\" alt=\"\" class=\"wp-image-5846\" style=\"width:430px;height:auto\" srcset=\"https://www.betamachine.fr/wp-content/uploads/2025/12/5-1024x1024.png 1024w, https://www.betamachine.fr/wp-content/uploads/2025/12/5-300x300.png 300w, https://www.betamachine.fr/wp-content/uploads/2025/12/5-150x150.png 150w, https://www.betamachine.fr/wp-content/uploads/2025/12/5-768x768.png 768w, https://www.betamachine.fr/wp-content/uploads/2025/12/5.png 1080w\" sizes=\"(max-width: 1024px) 100vw, 1024px\" /></figure>\n</figure>\n\n\n\n<p><strong>C&rsquo;est quoi Betamachine?</strong><br>Betamachine est un espace hybride de créativité implanté à Lucé. Fondée par des citoyens en 2014, l’association est dédiée aux sciences et techniques, aux savoir-faire et à la création sous toutes ses formes.<br>Betamachine, c’est un laboratoire de 2000m2, constitué d’ateliers techniques partagés et d’espaces de travail individuels, auxquels s’ajoutent 500m2 de jardins potagers, en périphérie. L’expérimentation, le faire ensemble et le partage de connaissances y sont portés comme vecteurs d’autonomie.<br>Betamachine, c’est une résidence permanente à destination de créateurs, qui bénéficient d’un espace de travail personnel et de l’ensemble des moyens techniques du lieu. La résidence accueille aujourd’hui 15 créateurs (artisans, artistes, musiciens, makeurs, etc.).<br>Betamachine, c’est un lieu de rencontre, de convivialité et de solidarité, pour une communauté basée sur l’ouverture et la diversité.<br>Betamachine, c’est un vaste calendrier d’activités collectives, allant du numérique à la low-tech, pour faire et apprendre ensemble. Les membres de l’association les animent en partageant leurs passions et leurs compétences.<br>De nombreux projets collectifs jalonnent l’histoire de Betamachine, comme par exemple l’organisation du Festival Faire Hacker, la réalisation d’un dôme géodésique ou encore la confection d’équipements de protection lors de la crise sanitaire.<br>Depuis le déménagement de l’association dans un ancien bâtiment industriel en 2022, les membres travaillent à son aménagement et poursuivent la construction de ce Commun.</p>\n\n\n\n<p></p>\n",
+        "\n<p>LA FÊTE DE LA RÉCUP&rsquo;</p>\n\n\n\n<p>Un rendez-vous gratuit, festif et familial.</p>\n\n\n\n<p><a></a><img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" alt=\"&#x1f4c6;\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/t9e/2/16/1f4c6.png\">Samedi 22 novembre 2025</p>\n\n\n\n<p><img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" alt=\"&#x1f55b;\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/t79/2/16/1f55b.png\">de 10h à 17h</p>\n\n\n\n<p><img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/tcc/2/16/1f4cd.png\" alt=\"&#x1f4cd;\">Betamachine, 8 rue de la Taye, Ville de Lucé</p>\n\n\n\n<p>Dans le cadre de la Semaine Européenne de la Réduction des Déchets, Effusion Lucé et Betamachine vous invitent à la 9ᵉ édition de la Fête de la Récup’.</p>\n\n\n\n<p>Venez à la rencontre des associations, entreprises et créateurs locaux engagés dans le réemploi, la réparation et la récup&rsquo;. Au programme:</p>\n\n\n\n<p><img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" alt=\"&#x26aa;\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/te/2/16/26aa.png\">Collecte de pain, d&rsquo;appareils électriques et électroniques, de piles et de batteries. <img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" alt=\"&#x26aa;\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/te/2/16/26aa.png\">Réparation de vélos et de vos objets cassés (petit électroménager, hifi, etc.).</p>\n\n\n\n<p><img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" alt=\"&#x26aa;\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/te/2/16/26aa.png\">Vente d&rsquo;objets et de vêtements de seconde main.</p>\n\n\n\n<p><img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" alt=\"&#x26aa;\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/te/2/16/26aa.png\">Ateliers de récup&rsquo; créative: gravure sur tétrapak, confection de décors de Noël en tissus, mosaïque, etc..</p>\n\n\n\n<p><img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" alt=\"&#x26aa;\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/te/2/16/26aa.png\">Animations: partage de recettes anti-gaspi, énigmes de Merlin autour de la Récup&rsquo;, démonstrations d&rsquo;upcycling, etc..</p>\n\n\n\n<p><img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" alt=\"&#x1f354;\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/tc9/2/16/1f354.png\">Restauration sur place: La remorque de Gab (Burger), crêpes et bar associatif.</p>\n\n\n\n<p>Avec l&rsquo;Association les 3R, Reconstruire Ensemble &#8211; Régie de Quartiers / la Recyclerie Solidaire de Mainvilliers, La Dame à la Licorne, la Ligue de l&rsquo;enseignement d&rsquo;Eure-et-Loir, La Recyclette du DAME Fontaine Bouillant, Ressources&amp;Vous Gellainville, Solibread, CMA Centre-Val de Loire 28, La Boîte à Outils, HS Solution, l&rsquo;IDEE, Les ateliers de Christine Buzot, C&rsquo;Chartres Médiévale, l&rsquo;Atelier Nuancé, Sykadap Sykadap, Jardin Solibio, Galerie Ka, la Direction déchets-énergie-réseaux secs de Chartres métropole, atelier.noir.copo, ChartràVélo, le club réparation de l&rsquo;IUT de Chartres, HB Atelier Peinture naturelle sur bois, les Compagnons du partage, Préserv&rsquo;Action Terre &amp; Littoral et la web radio du collège Édouard Herriot.</p>\n\n\n\n<p>Un évènement soutenu par la MAIF.</p>\n\n\n\n<figure class=\"wp-block-gallery has-nested-images columns-default is-cropped wp-block-gallery-2 is-layout-flex wp-block-gallery-is-layout-flex\">\n<figure class=\"wp-block-image size-large\"><img loading=\"lazy\" decoding=\"async\" width=\"819\" height=\"1024\" data-id=\"5784\" src=\"https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel1-819x1024.png\" alt=\"\" class=\"wp-image-5784\" srcset=\"https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel1-819x1024.png 819w, https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel1-240x300.png 240w, https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel1-768x960.png 768w, https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel1.png 1080w\" sizes=\"auto, (max-width: 819px) 100vw, 819px\" /></figure>\n\n\n\n<figure class=\"wp-block-image size-large\"><img loading=\"lazy\" decoding=\"async\" width=\"819\" height=\"1024\" data-id=\"5813\" src=\"https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel2-819x1024.png\" alt=\"\" class=\"wp-image-5813\" srcset=\"https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel2-819x1024.png 819w, https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel2-240x300.png 240w, https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel2-768x960.png 768w, https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel2.png 1080w\" sizes=\"auto, (max-width: 819px) 100vw, 819px\" /></figure>\n</figure>\n\n\n\n<p></p>\n",
+        "\n<p><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f389.png\" alt=\"🎉\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Betamachine fête ses 10 ans ! <img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f389.png\" alt=\"🎉\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /><br>Et pour célébrer cette décennie d’aventure collective, l’association vous donne rendez-vous le samedi 14 juin 2025, pour une journée (et une soirée !) placée sous le signe de la fête, de la créativité et du partage.<br>Ce sera l’occasion de :<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f538.png\" alt=\"🔸\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Revenir sur 10 ans de projets, d’objets et d’idées<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f538.png\" alt=\"🔸\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> (Re)découvrir les lieux et rencontrer les membres<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f538.png\" alt=\"🔸\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Imaginer ensemble l’avenir de Betamachine<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f538.png\" alt=\"🔸\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Et surtout… fêter ça comme il se doit !</p>\n\n\n\n<hr class=\"wp-block-separator has-alpha-channel-opacity\"/>\n\n\n\n<p><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f3a8.png\" alt=\"🎨\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> AU PROGRAMME<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f6e0.png\" alt=\"🛠\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Ateliers participatifs – Pour créer, bidouiller, expérimenter<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f4ac.png\" alt=\"💬\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Conférences &amp; tables rondes – Pour échanger autour de l’histoire et des enjeux futurs<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f5bc.png\" alt=\"🖼\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Expositions – Rétrospective des 10 ans &amp; créations des membres<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f3ad.png\" alt=\"🎭\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Performance artistique – « Sonic billes », une installation visuelle et sonore d’Alexis Malbert<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f3b6.png\" alt=\"🎶\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Concerts &amp; DJ set – Avec Khaos Karma, Sororie, Days in Orbit et Control Room<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f381.png\" alt=\"🎁\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Tombola – Repartez avec un souvenir !<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f4da.png\" alt=\"📚\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Librairie L&rsquo;Esperluète – Stand thématique autour du Faire, des low-tech, des tiers-lieux et de la culture lab.<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f354.png\" alt=\"🍔\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Restauration &amp; bar associatif sur place<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f476.png\" alt=\"👶\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Espace enfants pour les plus jeunes<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f69a.png\" alt=\"🚚\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Foodtrucks pour tous les goûts</p>\n\n\n\n<hr class=\"wp-block-separator has-alpha-channel-opacity\"/>\n\n\n\n<p><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f4c5.png\" alt=\"📅\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Programme détaillé :<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f559.png\" alt=\"🕙\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> 10h00 – 18h00 (en continu)</p>\n\n\n\n<ul class=\"wp-block-list\">\n<li>Performance « Sonic billes » – Alexis Malbert Tapetronic</li>\n\n\n\n<li>Ateliers, expos, démonstrations – par les membres de Betamachine</li>\n\n\n\n<li>Expositions des créateurs résidents<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f565.png\" alt=\"🕥\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> 10h30 – 11h30</li>\n\n\n\n<li>Inauguration &amp; prises de parole officielles<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f551.png\" alt=\"🕑\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> 14h00 – 16h00</li>\n\n\n\n<li>Table ronde avec Camille Bosqué, Le Funlab &#8211; Fablab de Tours, l&rsquo;Electrolab et La Labomedia<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f3a4.png\" alt=\"🎤\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Soirée concerts :</li>\n\n\n\n<li>18h00 – Tremplin musical : orchestré par la Control Room</li>\n\n\n\n<li>19h00 – Sororie</li>\n\n\n\n<li>20h30 – Kháos Karma</li>\n\n\n\n<li>22h00 – DAYS IN ORBIT</li>\n\n\n\n<li>23h30 à 02h00 – DJ Set : la Control Room</li>\n</ul>\n\n\n\n<hr class=\"wp-block-separator has-alpha-channel-opacity\"/>\n\n\n\n<p><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f4cd.png\" alt=\"📍\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Lieu : Betamachine – 8 rue de la Taye, 28110 Lucé<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f4c6.png\" alt=\"📆\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Date : Samedi 14 juin 2025 – de 10h à 2h du matin<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f39f.png\" alt=\"🎟\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Entrée gratuite<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f4e7.png\" alt=\"📧\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Infos &amp; contact presse : info@betamachine.fr</p>\n\n\n\n<figure class=\"wp-block-image size-large\"><img loading=\"lazy\" decoding=\"async\" width=\"819\" height=\"1024\" src=\"https://www.betamachine.fr/wp-content/uploads/2025/11/betamachine10ans_poster-819x1024.jpg\" alt=\"\" class=\"wp-image-5822\" srcset=\"https://www.betamachine.fr/wp-content/uploads/2025/11/betamachine10ans_poster-819x1024.jpg 819w, https://www.betamachine.fr/wp-content/uploads/2025/11/betamachine10ans_poster-240x300.jpg 240w, https://www.betamachine.fr/wp-content/uploads/2025/11/betamachine10ans_poster-768x960.jpg 768w, https://www.betamachine.fr/wp-content/uploads/2025/11/betamachine10ans_poster.jpg 1080w\" sizes=\"auto, (max-width: 819px) 100vw, 819px\" /></figure>\n"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Codinglab",
+        "Edinburgh Hacklab"
+      ]
+    },
+    {
+      "name": "content:encodedSnippet",
+      "count": 174,
+      "feedCount": 18,
+      "itemCount": 174,
+      "sampleValues": [
+        "Ateliers/Bureaux à destination des créateurs, artistes et makers\nLieu : Betamachine, 8 rue de la Taye, 28110 Lucé\nDurée : 1 an (reconductible)\nCandidature : avant le 19 janvier 2026\nEmménagement : à partir du 1er février 2026\n\nUne visite de Betamachine sera organisée le samedi 10 janvier à 11h pour présenter l’association et les locaux aux créateurs souhaitant occuper un espace.\n\n\n\n\n\nDossier de candidature\nLes dossiers doivent être envoyés avant le 19 janvier 2026 par mail à l’adresse suivante: postuler@betamachine.fr\nLe dossier doit comprendre :\n– Des visuels (dans la limite de 10)\n– Un texte de présentation de votre pratique\n– Un texte présentant vos motivation à rejoindre Betamachine\n– Un CV\n– Merci de préciser le ou les locaux pour lesquels vous êtes intéressés, ainsi que la date souhaitée de votre emménagement.\n\n\n\n\nProfil des candidats\nLa résidence s’adresse aux créateurs et créatrices de toutes disciplines : artisanat, design, arts plastiques, création sonore, ingénierie, informatique, littérature, recherche, etc..\nLes créateurs en début d’activités sont les bienvenus, ainsi que les particuliers portant un projet de création.\n\n\n\n\nLa résidence\nLa résidence accueille actuellement 19 créateurs et créatrices et c’est 3 places qui se libèrent.\nUn résident de Betamachine est un membre de l’association, professionnel ou non, qui y occupe un espace de travail privatif. Au même titre que les autres membres, le résident participe à la vie de l’association, peut en utiliser le matériel et participer à ses activités.\nLa résidence fait l’objet d’une convention d’une année, renouvelable, signée par Betamachine et le résident qui y occupe un espace.\nL’adhésion professionnelle pour les résidents coûte 30 euros* par mois. Pour les personnes, en activité depuis moins de 3 ans ou bénéficiaires de minimas sociaux, l’adhésion est de 15 euros* par mois. La participation locative est ensuite de 6,5 euros du m² par mois.\n*Attention ces tarifs pourront être amenés à augmenter au 1er janvier 2027.\n\n\n\n\n\nFiche Technique\nBetamachine dispose d’une salle numérique (informatique, l’électronique, l’impression 3d, etc.); d’un hall technique avec du matériel de menuiserie et de métallurgie ; d’un atelier de couture ; de salles de réunion, d’une cuisine, d’espaces de convivialité, de sanitaires et d’une douche. L’ensemble du bâtiment est équipé de wifi.\nLes espaces sont proposés vides et en l’état. Les nouveaux résidents pourront s’ils le souhaitent adapter les espaces à leurs pratique, repeindre et meubler à leur guise avec leurs mobilier ou celui de l’association. \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nC’est quoi Betamachine?\nBetamachine est un espace hybride de créativité implanté à Lucé. Fondée par des citoyens en 2014, l’association est dédiée aux sciences et techniques, aux savoir-faire et à la création sous toutes ses formes.\nBetamachine, c’est un laboratoire de 2000m2, constitué d’ateliers techniques partagés et d’espaces de travail individuels, auxquels s’ajoutent 500m2 de jardins potagers, en périphérie. L’expérimentation, le faire ensemble et le partage de connaissances y sont portés comme vecteurs d’autonomie.\nBetamachine, c’est une résidence permanente à destination de créateurs, qui bénéficient d’un espace de travail personnel et de l’ensemble des moyens techniques du lieu. La résidence accueille aujourd’hui 15 créateurs (artisans, artistes, musiciens, makeurs, etc.).\nBetamachine, c’est un lieu de rencontre, de convivialité et de solidarité, pour une communauté basée sur l’ouverture et la diversité.\nBetamachine, c’est un vaste calendrier d’activités collectives, allant du numérique à la low-tech, pour faire et apprendre ensemble. Les membres de l’association les animent en partageant leurs passions et leurs compétences.\nDe nombreux projets collectifs jalonnent l’histoire de Betamachine, comme par exemple l’organisation du Festival Faire Hacker, la réalisation d’un dôme géodésique ou encore la confection d’équipements de protection lors de la crise sanitaire.\nDepuis le déménagement de l’association dans un ancien bâtiment industriel en 2022, les membres travaillent à son aménagement et poursuivent la construction de ce Commun.",
+        "LA FÊTE DE LA RÉCUP’\nUn rendez-vous gratuit, festif et familial.\nSamedi 22 novembre 2025\nde 10h à 17h\nBetamachine, 8 rue de la Taye, Ville de Lucé\nDans le cadre de la Semaine Européenne de la Réduction des Déchets, Effusion Lucé et Betamachine vous invitent à la 9ᵉ édition de la Fête de la Récup’.\nVenez à la rencontre des associations, entreprises et créateurs locaux engagés dans le réemploi, la réparation et la récup’. Au programme:\nCollecte de pain, d’appareils électriques et électroniques, de piles et de batteries. Réparation de vélos et de vos objets cassés (petit électroménager, hifi, etc.).\nVente d’objets et de vêtements de seconde main.\nAteliers de récup’ créative: gravure sur tétrapak, confection de décors de Noël en tissus, mosaïque, etc..\nAnimations: partage de recettes anti-gaspi, énigmes de Merlin autour de la Récup’, démonstrations d’upcycling, etc..\nRestauration sur place: La remorque de Gab (Burger), crêpes et bar associatif.\nAvec l’Association les 3R, Reconstruire Ensemble – Régie de Quartiers / la Recyclerie Solidaire de Mainvilliers, La Dame à la Licorne, la Ligue de l’enseignement d’Eure-et-Loir, La Recyclette du DAME Fontaine Bouillant, Ressources&Vous Gellainville, Solibread, CMA Centre-Val de Loire 28, La Boîte à Outils, HS Solution, l’IDEE, Les ateliers de Christine Buzot, C’Chartres Médiévale, l’Atelier Nuancé, Sykadap Sykadap, Jardin Solibio, Galerie Ka, la Direction déchets-énergie-réseaux secs de Chartres métropole, atelier.noir.copo, ChartràVélo, le club réparation de l’IUT de Chartres, HB Atelier Peinture naturelle sur bois, les Compagnons du partage, Préserv’Action Terre & Littoral et la web radio du collège Édouard Herriot.\nUn évènement soutenu par la MAIF.",
+        "Betamachine fête ses 10 ans ! \nEt pour célébrer cette décennie d’aventure collective, l’association vous donne rendez-vous le samedi 14 juin 2025, pour une journée (et une soirée !) placée sous le signe de la fête, de la créativité et du partage.\nCe sera l’occasion de :\n Revenir sur 10 ans de projets, d’objets et d’idées\n (Re)découvrir les lieux et rencontrer les membres\n Imaginer ensemble l’avenir de Betamachine\n Et surtout… fêter ça comme il se doit !\n AU PROGRAMME\n Ateliers participatifs – Pour créer, bidouiller, expérimenter\n Conférences & tables rondes – Pour échanger autour de l’histoire et des enjeux futurs\n Expositions – Rétrospective des 10 ans & créations des membres\n Performance artistique – « Sonic billes », une installation visuelle et sonore d’Alexis Malbert\n Concerts & DJ set – Avec Khaos Karma, Sororie, Days in Orbit et Control Room\n Tombola – Repartez avec un souvenir !\n Librairie L’Esperluète – Stand thématique autour du Faire, des low-tech, des tiers-lieux et de la culture lab.\n Restauration & bar associatif sur place\n Espace enfants pour les plus jeunes\n Foodtrucks pour tous les goûts\n Programme détaillé :\n 10h00 – 18h00 (en continu)\nPerformance « Sonic billes » – Alexis Malbert Tapetronic\nAteliers, expos, démonstrations – par les membres de Betamachine\nExpositions des créateurs résidents\n 10h30 – 11h30\nInauguration & prises de parole officielles\n 14h00 – 16h00\nTable ronde avec Camille Bosqué, Le Funlab – Fablab de Tours, l’Electrolab et La Labomedia\n Soirée concerts :\n18h00 – Tremplin musical : orchestré par la Control Room\n19h00 – Sororie\n20h30 – Kháos Karma\n22h00 – DAYS IN ORBIT\n23h30 à 02h00 – DJ Set : la Control Room\n Lieu : Betamachine – 8 rue de la Taye, 28110 Lucé\n Date : Samedi 14 juin 2025 – de 10h à 2h du matin\n Entrée gratuite\n Infos & contact presse : info@betamachine.fr"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Codinglab",
+        "Edinburgh Hacklab"
+      ]
+    },
+    {
+      "name": "comments",
+      "count": 154,
+      "feedCount": 13,
+      "itemCount": 154,
+      "sampleValues": [
+        "https://www.betamachine.fr/appel-a-candidatures-espace-de-travail/#respond",
+        "https://www.betamachine.fr/appel-a-resident-es/#respond",
+        "https://www.betamachine.fr/kinetic-landscapes/#respond"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "Codinglab",
+        "Coredump"
+      ]
+    },
+    {
+      "name": "published",
+      "count": 139,
+      "feedCount": 4,
+      "itemCount": 139,
+      "sampleValues": [
+        "2026-02-09T00:00:00+01:00",
+        "2025-12-09T00:00:00+01:00",
+        "2025-11-01T00:00:00+01:00"
+      ],
+      "sampleFeeds": [
+        "Chaos Computer Club Basel",
+        "Chaosdorf",
+        "GuayaHack"
+      ]
+    },
+    {
+      "name": "summary",
+      "count": 137,
+      "feedCount": 4,
+      "itemCount": 137,
+      "sampleValues": [
+        "<p>Am Samstag, 28. März 2026 findet der diesjährige Tag des offenen Hackspaces statt.  An diesem Tag öffnen die Hackspaces in vielen europäischen Städten ihre Türen.</p>\n<p>Der CCC Basel ist auch dieses Jahr wieder dabei und ist ab <time datetime=\"2026-03-28T13:00:00+01:00\">13:00</time> bis spätabends für alle Interessierten geöffnet.</p>\n<p>Egal, ob du komplizierte Hardware …</p>",
+        "<p>Am 21. November 2025 haben wir einen Vereinsausflug ans <a href=\"https://www.psi.ch/de/visit/grosser-rundgang\">Paul Scherrer Institut PSI</a> in Villigen AG unternommen und dort an einer ca. dreistündigen Führung durch die verschiedenen Grossforschungsanlagen, hauptsächlich verschiedene Arten von Teilchenbeschleunigern, teilgenommen.  Die Veranstaltung begann im PSI Visitor Center östlich der Aare mit einem halbstündigen Vortrag mit Informationen …</p>",
+        "<p>Zum dritten Jahr in Folge veranstalten wir <strong>vom 27. bis 30. Dezember täglich ab 13:00 im <a href=\"https://ccc-basel.ch/pages/kontakt.html#anfahrt\">Hackspace des CCC Basel</a></strong> das «Congress Everywhere»: Parallel zum 39. Chaos Communication Congress (39C3) in Hamburg treffen wir uns zum gemeinsam hacken, basteln, kochen, essen, und Vorträge vom 39C3 streamen.</p>\n<h2 id=\"anmeldung\">Anmeldung</h2>\n<p>Bitte melde …</p>"
+      ],
+      "sampleFeeds": [
+        "Chaos Computer Club Basel",
+        "Chaosdorf",
+        "GuayaHack"
+      ]
+    },
+    {
+      "name": "_detectedFormat",
+      "count": 44,
+      "feedCount": 44,
+      "sampleValues": [
+        "rss",
+        "atom"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "C3D2",
+        "CCC Darmstadt"
+      ]
+    },
+    {
+      "name": "feedUrl",
+      "count": 42,
+      "feedCount": 42,
+      "sampleValues": [
+        "https://www.betamachine.fr/feed/",
+        "https://c3d2.de/news-atom.xml",
+        "/feed.xml"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "C3D2",
+        "CCC Darmstadt"
+      ]
+    },
+    {
+      "name": "lastBuildDate",
+      "count": 42,
+      "feedCount": 42,
+      "sampleValues": [
+        "Wed, 10 Dec 2025 11:27:06 +0000",
+        "2026-03-24T23:44:00Z",
+        "Mon, 19 Jan 2026 21:50:14 +0100"
+      ],
+      "sampleFeeds": [
+        "BetaMachine",
+        "C3D2",
+        "CCC Darmstadt"
+      ]
+    },
+    {
+      "name": "description",
+      "count": 37,
+      "feedCount": 37,
+      "sampleValues": [
+        "Apprendre, expérimenter, faire ensemble.",
+        "Recent content on CCC Darmstadt e.V.",
+        "Das ist die Website des CCC Salzburg – Der Verein zur Förderung der prosperitiven Koexistenz von Mensch und Maschine."
       ],
       "sampleFeeds": [
         "BetaMachine",
@@ -2515,86 +2691,6 @@
       ]
     },
     {
-      "name": "creator",
-      "count": 866,
-      "feedCount": 26,
-      "itemCount": 866,
-      "sampleValues": [
-        "Lucille DEWITTE",
-        "adminbeta",
-        "membre_v1"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Chaostreff Bern",
-        "Codinglab"
-      ]
-    },
-    {
-      "name": "categories",
-      "count": 444,
-      "feedCount": 26,
-      "itemCount": 444,
-      "sampleValues": [
-        "Uncategorized",
-        "Evénements",
-        "Fonctionnement, Vie du Lab, job, offre d&#039;emploi, recrutement"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "CCC Salzburg",
-        "Chaostreff Bern"
-      ]
-    },
-    {
-      "name": "dc:creator",
-      "count": 419,
-      "feedCount": 23,
-      "itemCount": 419,
-      "sampleValues": [
-        "Lucille DEWITTE",
-        "adminbeta",
-        "membre_v1"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Chaostreff Bern",
-        "Codinglab"
-      ]
-    },
-    {
-      "name": "content:encoded",
-      "count": 174,
-      "feedCount": 18,
-      "itemCount": 174,
-      "sampleValues": [
-        "\n<p><strong>Ateliers/Bureaux à destination des créateurs, artistes et makers</strong><br>Lieu : Betamachine, 8 rue de la Taye, 28110 Lucé<br>Durée : 1 an (reconductible)<br>Candidature : avant le 19 janvier 2026<br>Emménagement : à partir du 1er février 2026<br><strong><br></strong>Une visite de Betamachine sera organisée le samedi 10 janvier à 11h pour présenter l’association et les locaux aux créateurs souhaitant occuper un espace.<br></p>\n\n\n\n<div style=\"height:18px\" aria-hidden=\"true\" class=\"wp-block-spacer\"></div>\n\n\n\n<p><strong>Dossier de candidature</strong><br>Les dossiers doivent être envoyés avant le 19 janvier 2026 par mail à l’adresse suivante: <strong>postuler@betamachine.fr</strong><br><br>Le dossier doit comprendre :<br>&#8211; Des visuels (dans la limite de 10)<br>&#8211; Un texte de présentation de votre pratique<br>&#8211; Un texte présentant vos motivation à rejoindre Betamachine<br>&#8211; Un CV<br>&#8211; Merci de préciser le ou les locaux pour lesquels vous êtes intéressés, ainsi que la date souhaitée de votre emménagement.</p>\n\n\n\n<div style=\"height:18px\" aria-hidden=\"true\" class=\"wp-block-spacer\"></div>\n\n\n\n<p><strong>Profil des candidats</strong><br>La résidence s’adresse aux créateurs et créatrices de toutes disciplines : artisanat, design, arts plastiques, création sonore, ingénierie, informatique, littérature, recherche, etc..<br>Les créateurs en début d’activités sont les bienvenus, ainsi que les particuliers portant un projet de création.</p>\n\n\n\n<div style=\"height:18px\" aria-hidden=\"true\" class=\"wp-block-spacer\"></div>\n\n\n\n<p><strong>La résidence</strong><br>La résidence accueille actuellement 19 créateurs et créatrices et c’est 3 places qui se libèrent.<br>Un résident de Betamachine est un membre de l’association, professionnel ou non, qui y occupe un espace de travail privatif. Au même titre que les autres membres, le résident participe à la vie de l’association, peut en utiliser le matériel et participer à ses activités.<br>La résidence fait l’objet d’une convention d’une année, renouvelable, signée par Betamachine et le résident qui y occupe un espace.<br>L&rsquo;adhésion professionnelle pour les résidents coûte 30 euros* par mois. Pour les personnes, en activité depuis moins de 3 ans ou bénéficiaires de minimas sociaux, l’adhésion est de 15 euros* par mois. La participation locative est ensuite de 6,5 euros du m² par mois.</p>\n\n\n\n<p><em>*Attention ces tarifs pourront être amenés à augmenter au 1er janvier 2027.</em><br></p>\n\n\n\n<div style=\"height:18px\" aria-hidden=\"true\" class=\"wp-block-spacer\"></div>\n\n\n\n<p><strong>Fiche Technique</strong><br>Betamachine dispose d’une salle numérique (informatique, l’électronique, l’impression 3d, etc.); d’un hall technique avec du matériel de menuiserie et de métallurgie ; d’un atelier de couture ; de salles de réunion, d’une cuisine, d’espaces de convivialité, de sanitaires et d’une douche. L’ensemble du bâtiment est équipé de wifi.<br><br>Les espaces sont proposés vides et en l’état. Les nouveaux résidents pourront s’ils le souhaitent adapter les espaces à leurs pratique, repeindre et meubler à leur guise avec leurs mobilier ou celui de l’association. <br></p>\n\n\n\n<figure class=\"wp-block-gallery has-nested-images columns-default is-cropped wp-block-gallery-1 is-layout-flex wp-block-gallery-is-layout-flex\">\n<figure class=\"wp-block-image size-large is-resized\"><img fetchpriority=\"high\" decoding=\"async\" width=\"1024\" height=\"1024\" data-id=\"5844\" src=\"https://www.betamachine.fr/wp-content/uploads/2025/12/3-1024x1024.png\" alt=\"\" class=\"wp-image-5844\" style=\"width:428px;height:auto\" srcset=\"https://www.betamachine.fr/wp-content/uploads/2025/12/3-1024x1024.png 1024w, https://www.betamachine.fr/wp-content/uploads/2025/12/3-300x300.png 300w, https://www.betamachine.fr/wp-content/uploads/2025/12/3-150x150.png 150w, https://www.betamachine.fr/wp-content/uploads/2025/12/3-768x768.png 768w, https://www.betamachine.fr/wp-content/uploads/2025/12/3.png 1080w\" sizes=\"(max-width: 1024px) 100vw, 1024px\" /></figure>\n\n\n\n<figure class=\"wp-block-image size-large is-resized\"><img decoding=\"async\" width=\"1080\" height=\"1080\" data-id=\"5845\" src=\"https://www.betamachine.fr/wp-content/uploads/2025/12/4-1024x1024.png\" alt=\"\" class=\"wp-image-5845\" style=\"width:430px;height:auto\" srcset=\"https://www.betamachine.fr/wp-content/uploads/2025/12/4-1024x1024.png 1024w, https://www.betamachine.fr/wp-content/uploads/2025/12/4-300x300.png 300w, https://www.betamachine.fr/wp-content/uploads/2025/12/4-150x150.png 150w, https://www.betamachine.fr/wp-content/uploads/2025/12/4-768x768.png 768w, https://www.betamachine.fr/wp-content/uploads/2025/12/4.png 1080w\" sizes=\"(max-width: 1080px) 100vw, 1080px\" /></figure>\n\n\n\n<figure class=\"wp-block-image size-large is-resized\"><img decoding=\"async\" width=\"1024\" height=\"1024\" data-id=\"5846\" src=\"https://www.betamachine.fr/wp-content/uploads/2025/12/5-1024x1024.png\" alt=\"\" class=\"wp-image-5846\" style=\"width:430px;height:auto\" srcset=\"https://www.betamachine.fr/wp-content/uploads/2025/12/5-1024x1024.png 1024w, https://www.betamachine.fr/wp-content/uploads/2025/12/5-300x300.png 300w, https://www.betamachine.fr/wp-content/uploads/2025/12/5-150x150.png 150w, https://www.betamachine.fr/wp-content/uploads/2025/12/5-768x768.png 768w, https://www.betamachine.fr/wp-content/uploads/2025/12/5.png 1080w\" sizes=\"(max-width: 1024px) 100vw, 1024px\" /></figure>\n</figure>\n\n\n\n<p><strong>C&rsquo;est quoi Betamachine?</strong><br>Betamachine est un espace hybride de créativité implanté à Lucé. Fondée par des citoyens en 2014, l’association est dédiée aux sciences et techniques, aux savoir-faire et à la création sous toutes ses formes.<br>Betamachine, c’est un laboratoire de 2000m2, constitué d’ateliers techniques partagés et d’espaces de travail individuels, auxquels s’ajoutent 500m2 de jardins potagers, en périphérie. L’expérimentation, le faire ensemble et le partage de connaissances y sont portés comme vecteurs d’autonomie.<br>Betamachine, c’est une résidence permanente à destination de créateurs, qui bénéficient d’un espace de travail personnel et de l’ensemble des moyens techniques du lieu. La résidence accueille aujourd’hui 15 créateurs (artisans, artistes, musiciens, makeurs, etc.).<br>Betamachine, c’est un lieu de rencontre, de convivialité et de solidarité, pour une communauté basée sur l’ouverture et la diversité.<br>Betamachine, c’est un vaste calendrier d’activités collectives, allant du numérique à la low-tech, pour faire et apprendre ensemble. Les membres de l’association les animent en partageant leurs passions et leurs compétences.<br>De nombreux projets collectifs jalonnent l’histoire de Betamachine, comme par exemple l’organisation du Festival Faire Hacker, la réalisation d’un dôme géodésique ou encore la confection d’équipements de protection lors de la crise sanitaire.<br>Depuis le déménagement de l’association dans un ancien bâtiment industriel en 2022, les membres travaillent à son aménagement et poursuivent la construction de ce Commun.</p>\n\n\n\n<p></p>\n",
-        "\n<p>LA FÊTE DE LA RÉCUP&rsquo;</p>\n\n\n\n<p>Un rendez-vous gratuit, festif et familial.</p>\n\n\n\n<p><a></a><img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" alt=\"&#x1f4c6;\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/t9e/2/16/1f4c6.png\">Samedi 22 novembre 2025</p>\n\n\n\n<p><img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" alt=\"&#x1f55b;\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/t79/2/16/1f55b.png\">de 10h à 17h</p>\n\n\n\n<p><img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/tcc/2/16/1f4cd.png\" alt=\"&#x1f4cd;\">Betamachine, 8 rue de la Taye, Ville de Lucé</p>\n\n\n\n<p>Dans le cadre de la Semaine Européenne de la Réduction des Déchets, Effusion Lucé et Betamachine vous invitent à la 9ᵉ édition de la Fête de la Récup’.</p>\n\n\n\n<p>Venez à la rencontre des associations, entreprises et créateurs locaux engagés dans le réemploi, la réparation et la récup&rsquo;. Au programme:</p>\n\n\n\n<p><img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" alt=\"&#x26aa;\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/te/2/16/26aa.png\">Collecte de pain, d&rsquo;appareils électriques et électroniques, de piles et de batteries. <img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" alt=\"&#x26aa;\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/te/2/16/26aa.png\">Réparation de vélos et de vos objets cassés (petit électroménager, hifi, etc.).</p>\n\n\n\n<p><img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" alt=\"&#x26aa;\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/te/2/16/26aa.png\">Vente d&rsquo;objets et de vêtements de seconde main.</p>\n\n\n\n<p><img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" alt=\"&#x26aa;\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/te/2/16/26aa.png\">Ateliers de récup&rsquo; créative: gravure sur tétrapak, confection de décors de Noël en tissus, mosaïque, etc..</p>\n\n\n\n<p><img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" alt=\"&#x26aa;\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/te/2/16/26aa.png\">Animations: partage de recettes anti-gaspi, énigmes de Merlin autour de la Récup&rsquo;, démonstrations d&rsquo;upcycling, etc..</p>\n\n\n\n<p><img loading=\"lazy\" decoding=\"async\" height=\"16\" width=\"16\" alt=\"&#x1f354;\" src=\"https://static.xx.fbcdn.net/images/emoji.php/v9/tc9/2/16/1f354.png\">Restauration sur place: La remorque de Gab (Burger), crêpes et bar associatif.</p>\n\n\n\n<p>Avec l&rsquo;Association les 3R, Reconstruire Ensemble &#8211; Régie de Quartiers / la Recyclerie Solidaire de Mainvilliers, La Dame à la Licorne, la Ligue de l&rsquo;enseignement d&rsquo;Eure-et-Loir, La Recyclette du DAME Fontaine Bouillant, Ressources&amp;Vous Gellainville, Solibread, CMA Centre-Val de Loire 28, La Boîte à Outils, HS Solution, l&rsquo;IDEE, Les ateliers de Christine Buzot, C&rsquo;Chartres Médiévale, l&rsquo;Atelier Nuancé, Sykadap Sykadap, Jardin Solibio, Galerie Ka, la Direction déchets-énergie-réseaux secs de Chartres métropole, atelier.noir.copo, ChartràVélo, le club réparation de l&rsquo;IUT de Chartres, HB Atelier Peinture naturelle sur bois, les Compagnons du partage, Préserv&rsquo;Action Terre &amp; Littoral et la web radio du collège Édouard Herriot.</p>\n\n\n\n<p>Un évènement soutenu par la MAIF.</p>\n\n\n\n<figure class=\"wp-block-gallery has-nested-images columns-default is-cropped wp-block-gallery-2 is-layout-flex wp-block-gallery-is-layout-flex\">\n<figure class=\"wp-block-image size-large\"><img loading=\"lazy\" decoding=\"async\" width=\"819\" height=\"1024\" data-id=\"5784\" src=\"https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel1-819x1024.png\" alt=\"\" class=\"wp-image-5784\" srcset=\"https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel1-819x1024.png 819w, https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel1-240x300.png 240w, https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel1-768x960.png 768w, https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel1.png 1080w\" sizes=\"auto, (max-width: 819px) 100vw, 819px\" /></figure>\n\n\n\n<figure class=\"wp-block-image size-large\"><img loading=\"lazy\" decoding=\"async\" width=\"819\" height=\"1024\" data-id=\"5813\" src=\"https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel2-819x1024.png\" alt=\"\" class=\"wp-image-5813\" srcset=\"https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel2-819x1024.png 819w, https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel2-240x300.png 240w, https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel2-768x960.png 768w, https://www.betamachine.fr/wp-content/uploads/2025/11/FeteDeLaRecup-Visuel2.png 1080w\" sizes=\"auto, (max-width: 819px) 100vw, 819px\" /></figure>\n</figure>\n\n\n\n<p></p>\n",
-        "\n<p><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f389.png\" alt=\"🎉\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Betamachine fête ses 10 ans ! <img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f389.png\" alt=\"🎉\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /><br>Et pour célébrer cette décennie d’aventure collective, l’association vous donne rendez-vous le samedi 14 juin 2025, pour une journée (et une soirée !) placée sous le signe de la fête, de la créativité et du partage.<br>Ce sera l’occasion de :<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f538.png\" alt=\"🔸\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Revenir sur 10 ans de projets, d’objets et d’idées<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f538.png\" alt=\"🔸\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> (Re)découvrir les lieux et rencontrer les membres<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f538.png\" alt=\"🔸\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Imaginer ensemble l’avenir de Betamachine<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f538.png\" alt=\"🔸\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Et surtout… fêter ça comme il se doit !</p>\n\n\n\n<hr class=\"wp-block-separator has-alpha-channel-opacity\"/>\n\n\n\n<p><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f3a8.png\" alt=\"🎨\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> AU PROGRAMME<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f6e0.png\" alt=\"🛠\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Ateliers participatifs – Pour créer, bidouiller, expérimenter<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f4ac.png\" alt=\"💬\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Conférences &amp; tables rondes – Pour échanger autour de l’histoire et des enjeux futurs<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f5bc.png\" alt=\"🖼\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Expositions – Rétrospective des 10 ans &amp; créations des membres<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f3ad.png\" alt=\"🎭\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Performance artistique – « Sonic billes », une installation visuelle et sonore d’Alexis Malbert<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f3b6.png\" alt=\"🎶\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Concerts &amp; DJ set – Avec Khaos Karma, Sororie, Days in Orbit et Control Room<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f381.png\" alt=\"🎁\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Tombola – Repartez avec un souvenir !<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f4da.png\" alt=\"📚\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Librairie L&rsquo;Esperluète – Stand thématique autour du Faire, des low-tech, des tiers-lieux et de la culture lab.<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f354.png\" alt=\"🍔\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Restauration &amp; bar associatif sur place<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f476.png\" alt=\"👶\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Espace enfants pour les plus jeunes<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f69a.png\" alt=\"🚚\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Foodtrucks pour tous les goûts</p>\n\n\n\n<hr class=\"wp-block-separator has-alpha-channel-opacity\"/>\n\n\n\n<p><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f4c5.png\" alt=\"📅\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Programme détaillé :<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f559.png\" alt=\"🕙\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> 10h00 – 18h00 (en continu)</p>\n\n\n\n<ul class=\"wp-block-list\">\n<li>Performance « Sonic billes » – Alexis Malbert Tapetronic</li>\n\n\n\n<li>Ateliers, expos, démonstrations – par les membres de Betamachine</li>\n\n\n\n<li>Expositions des créateurs résidents<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f565.png\" alt=\"🕥\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> 10h30 – 11h30</li>\n\n\n\n<li>Inauguration &amp; prises de parole officielles<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f551.png\" alt=\"🕑\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> 14h00 – 16h00</li>\n\n\n\n<li>Table ronde avec Camille Bosqué, Le Funlab &#8211; Fablab de Tours, l&rsquo;Electrolab et La Labomedia<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f3a4.png\" alt=\"🎤\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Soirée concerts :</li>\n\n\n\n<li>18h00 – Tremplin musical : orchestré par la Control Room</li>\n\n\n\n<li>19h00 – Sororie</li>\n\n\n\n<li>20h30 – Kháos Karma</li>\n\n\n\n<li>22h00 – DAYS IN ORBIT</li>\n\n\n\n<li>23h30 à 02h00 – DJ Set : la Control Room</li>\n</ul>\n\n\n\n<hr class=\"wp-block-separator has-alpha-channel-opacity\"/>\n\n\n\n<p><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f4cd.png\" alt=\"📍\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Lieu : Betamachine – 8 rue de la Taye, 28110 Lucé<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f4c6.png\" alt=\"📆\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Date : Samedi 14 juin 2025 – de 10h à 2h du matin<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f39f.png\" alt=\"🎟\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Entrée gratuite<br><img src=\"https://s.w.org/images/core/emoji/17.0.2/72x72/1f4e7.png\" alt=\"📧\" class=\"wp-smiley\" style=\"height: 1em; max-height: 1em;\" /> Infos &amp; contact presse : info@betamachine.fr</p>\n\n\n\n<figure class=\"wp-block-image size-large\"><img loading=\"lazy\" decoding=\"async\" width=\"819\" height=\"1024\" src=\"https://www.betamachine.fr/wp-content/uploads/2025/11/betamachine10ans_poster-819x1024.jpg\" alt=\"\" class=\"wp-image-5822\" srcset=\"https://www.betamachine.fr/wp-content/uploads/2025/11/betamachine10ans_poster-819x1024.jpg 819w, https://www.betamachine.fr/wp-content/uploads/2025/11/betamachine10ans_poster-240x300.jpg 240w, https://www.betamachine.fr/wp-content/uploads/2025/11/betamachine10ans_poster-768x960.jpg 768w, https://www.betamachine.fr/wp-content/uploads/2025/11/betamachine10ans_poster.jpg 1080w\" sizes=\"auto, (max-width: 819px) 100vw, 819px\" /></figure>\n"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Codinglab",
-        "Edinburgh Hacklab"
-      ]
-    },
-    {
-      "name": "content:encodedSnippet",
-      "count": 174,
-      "feedCount": 18,
-      "itemCount": 174,
-      "sampleValues": [
-        "Ateliers/Bureaux à destination des créateurs, artistes et makers\nLieu : Betamachine, 8 rue de la Taye, 28110 Lucé\nDurée : 1 an (reconductible)\nCandidature : avant le 19 janvier 2026\nEmménagement : à partir du 1er février 2026\n\nUne visite de Betamachine sera organisée le samedi 10 janvier à 11h pour présenter l’association et les locaux aux créateurs souhaitant occuper un espace.\n\n\n\n\n\nDossier de candidature\nLes dossiers doivent être envoyés avant le 19 janvier 2026 par mail à l’adresse suivante: postuler@betamachine.fr\nLe dossier doit comprendre :\n– Des visuels (dans la limite de 10)\n– Un texte de présentation de votre pratique\n– Un texte présentant vos motivation à rejoindre Betamachine\n– Un CV\n– Merci de préciser le ou les locaux pour lesquels vous êtes intéressés, ainsi que la date souhaitée de votre emménagement.\n\n\n\n\nProfil des candidats\nLa résidence s’adresse aux créateurs et créatrices de toutes disciplines : artisanat, design, arts plastiques, création sonore, ingénierie, informatique, littérature, recherche, etc..\nLes créateurs en début d’activités sont les bienvenus, ainsi que les particuliers portant un projet de création.\n\n\n\n\nLa résidence\nLa résidence accueille actuellement 19 créateurs et créatrices et c’est 3 places qui se libèrent.\nUn résident de Betamachine est un membre de l’association, professionnel ou non, qui y occupe un espace de travail privatif. Au même titre que les autres membres, le résident participe à la vie de l’association, peut en utiliser le matériel et participer à ses activités.\nLa résidence fait l’objet d’une convention d’une année, renouvelable, signée par Betamachine et le résident qui y occupe un espace.\nL’adhésion professionnelle pour les résidents coûte 30 euros* par mois. Pour les personnes, en activité depuis moins de 3 ans ou bénéficiaires de minimas sociaux, l’adhésion est de 15 euros* par mois. La participation locative est ensuite de 6,5 euros du m² par mois.\n*Attention ces tarifs pourront être amenés à augmenter au 1er janvier 2027.\n\n\n\n\n\nFiche Technique\nBetamachine dispose d’une salle numérique (informatique, l’électronique, l’impression 3d, etc.); d’un hall technique avec du matériel de menuiserie et de métallurgie ; d’un atelier de couture ; de salles de réunion, d’une cuisine, d’espaces de convivialité, de sanitaires et d’une douche. L’ensemble du bâtiment est équipé de wifi.\nLes espaces sont proposés vides et en l’état. Les nouveaux résidents pourront s’ils le souhaitent adapter les espaces à leurs pratique, repeindre et meubler à leur guise avec leurs mobilier ou celui de l’association. \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nC’est quoi Betamachine?\nBetamachine est un espace hybride de créativité implanté à Lucé. Fondée par des citoyens en 2014, l’association est dédiée aux sciences et techniques, aux savoir-faire et à la création sous toutes ses formes.\nBetamachine, c’est un laboratoire de 2000m2, constitué d’ateliers techniques partagés et d’espaces de travail individuels, auxquels s’ajoutent 500m2 de jardins potagers, en périphérie. L’expérimentation, le faire ensemble et le partage de connaissances y sont portés comme vecteurs d’autonomie.\nBetamachine, c’est une résidence permanente à destination de créateurs, qui bénéficient d’un espace de travail personnel et de l’ensemble des moyens techniques du lieu. La résidence accueille aujourd’hui 15 créateurs (artisans, artistes, musiciens, makeurs, etc.).\nBetamachine, c’est un lieu de rencontre, de convivialité et de solidarité, pour une communauté basée sur l’ouverture et la diversité.\nBetamachine, c’est un vaste calendrier d’activités collectives, allant du numérique à la low-tech, pour faire et apprendre ensemble. Les membres de l’association les animent en partageant leurs passions et leurs compétences.\nDe nombreux projets collectifs jalonnent l’histoire de Betamachine, comme par exemple l’organisation du Festival Faire Hacker, la réalisation d’un dôme géodésique ou encore la confection d’équipements de protection lors de la crise sanitaire.\nDepuis le déménagement de l’association dans un ancien bâtiment industriel en 2022, les membres travaillent à son aménagement et poursuivent la construction de ce Commun.",
-        "LA FÊTE DE LA RÉCUP’\nUn rendez-vous gratuit, festif et familial.\nSamedi 22 novembre 2025\nde 10h à 17h\nBetamachine, 8 rue de la Taye, Ville de Lucé\nDans le cadre de la Semaine Européenne de la Réduction des Déchets, Effusion Lucé et Betamachine vous invitent à la 9ᵉ édition de la Fête de la Récup’.\nVenez à la rencontre des associations, entreprises et créateurs locaux engagés dans le réemploi, la réparation et la récup’. Au programme:\nCollecte de pain, d’appareils électriques et électroniques, de piles et de batteries. Réparation de vélos et de vos objets cassés (petit électroménager, hifi, etc.).\nVente d’objets et de vêtements de seconde main.\nAteliers de récup’ créative: gravure sur tétrapak, confection de décors de Noël en tissus, mosaïque, etc..\nAnimations: partage de recettes anti-gaspi, énigmes de Merlin autour de la Récup’, démonstrations d’upcycling, etc..\nRestauration sur place: La remorque de Gab (Burger), crêpes et bar associatif.\nAvec l’Association les 3R, Reconstruire Ensemble – Régie de Quartiers / la Recyclerie Solidaire de Mainvilliers, La Dame à la Licorne, la Ligue de l’enseignement d’Eure-et-Loir, La Recyclette du DAME Fontaine Bouillant, Ressources&Vous Gellainville, Solibread, CMA Centre-Val de Loire 28, La Boîte à Outils, HS Solution, l’IDEE, Les ateliers de Christine Buzot, C’Chartres Médiévale, l’Atelier Nuancé, Sykadap Sykadap, Jardin Solibio, Galerie Ka, la Direction déchets-énergie-réseaux secs de Chartres métropole, atelier.noir.copo, ChartràVélo, le club réparation de l’IUT de Chartres, HB Atelier Peinture naturelle sur bois, les Compagnons du partage, Préserv’Action Terre & Littoral et la web radio du collège Édouard Herriot.\nUn évènement soutenu par la MAIF.",
-        "Betamachine fête ses 10 ans ! \nEt pour célébrer cette décennie d’aventure collective, l’association vous donne rendez-vous le samedi 14 juin 2025, pour une journée (et une soirée !) placée sous le signe de la fête, de la créativité et du partage.\nCe sera l’occasion de :\n Revenir sur 10 ans de projets, d’objets et d’idées\n (Re)découvrir les lieux et rencontrer les membres\n Imaginer ensemble l’avenir de Betamachine\n Et surtout… fêter ça comme il se doit !\n AU PROGRAMME\n Ateliers participatifs – Pour créer, bidouiller, expérimenter\n Conférences & tables rondes – Pour échanger autour de l’histoire et des enjeux futurs\n Expositions – Rétrospective des 10 ans & créations des membres\n Performance artistique – « Sonic billes », une installation visuelle et sonore d’Alexis Malbert\n Concerts & DJ set – Avec Khaos Karma, Sororie, Days in Orbit et Control Room\n Tombola – Repartez avec un souvenir !\n Librairie L’Esperluète – Stand thématique autour du Faire, des low-tech, des tiers-lieux et de la culture lab.\n Restauration & bar associatif sur place\n Espace enfants pour les plus jeunes\n Foodtrucks pour tous les goûts\n Programme détaillé :\n 10h00 – 18h00 (en continu)\nPerformance « Sonic billes » – Alexis Malbert Tapetronic\nAteliers, expos, démonstrations – par les membres de Betamachine\nExpositions des créateurs résidents\n 10h30 – 11h30\nInauguration & prises de parole officielles\n 14h00 – 16h00\nTable ronde avec Camille Bosqué, Le Funlab – Fablab de Tours, l’Electrolab et La Labomedia\n Soirée concerts :\n18h00 – Tremplin musical : orchestré par la Control Room\n19h00 – Sororie\n20h30 – Kháos Karma\n22h00 – DAYS IN ORBIT\n23h30 à 02h00 – DJ Set : la Control Room\n Lieu : Betamachine – 8 rue de la Taye, 28110 Lucé\n Date : Samedi 14 juin 2025 – de 10h à 2h du matin\n Entrée gratuite\n Infos & contact presse : info@betamachine.fr"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Codinglab",
-        "Edinburgh Hacklab"
-      ]
-    },
-    {
       "name": "image",
       "count": 18,
       "feedCount": 18,
@@ -2607,102 +2703,6 @@
         "BetaMachine",
         "Codinglab",
         "Coredump"
-      ]
-    },
-    {
-      "name": "comments",
-      "count": 154,
-      "feedCount": 13,
-      "itemCount": 154,
-      "sampleValues": [
-        "https://www.betamachine.fr/appel-a-candidatures-espace-de-travail/#respond",
-        "https://www.betamachine.fr/appel-a-resident-es/#respond",
-        "https://www.betamachine.fr/kinetic-landscapes/#respond"
-      ],
-      "sampleFeeds": [
-        "BetaMachine",
-        "Codinglab",
-        "Coredump"
-      ]
-    },
-    {
-      "name": "author",
-      "count": 609,
-      "feedCount": 8,
-      "itemCount": 609,
-      "sampleValues": [
-        "Anastasiia, Jonas, Mole, Simon, Stefan und Xyrill",
-        "Mole, Simon und Xyrill",
-        "Katzenmann"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaos Computer Club Basel",
-        "Chaosdorf"
-      ]
-    },
-    {
-      "name": "updated",
-      "count": 261,
-      "feedCount": 7,
-      "itemCount": 254,
-      "sampleValues": [
-        "2026-03-11T18:02:01Z",
-        "2026-02-09T00:00:00+01:00",
-        "2026-01-27T19:41:10Z"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaos Computer Club Basel",
-        "Chaosdorf"
-      ]
-    },
-    {
-      "name": "id",
-      "count": 254,
-      "feedCount": 7,
-      "itemCount": 254,
-      "sampleValues": [
-        "http://www.c3d2.de/news/pentaradio24-20260224.html",
-        "http://www.c3d2.de/news/pentaradio24-20260302.html",
-        "http://www.c3d2.de/news/linux-phone-hacking-0326.html"
-      ],
-      "sampleFeeds": [
-        "C3D2",
-        "Chaos Computer Club Basel",
-        "Chaosdorf"
-      ]
-    },
-    {
-      "name": "published",
-      "count": 139,
-      "feedCount": 4,
-      "itemCount": 139,
-      "sampleValues": [
-        "2026-02-09T00:00:00+01:00",
-        "2025-12-09T00:00:00+01:00",
-        "2025-11-01T00:00:00+01:00"
-      ],
-      "sampleFeeds": [
-        "Chaos Computer Club Basel",
-        "Chaosdorf",
-        "GuayaHack"
-      ]
-    },
-    {
-      "name": "summary",
-      "count": 137,
-      "feedCount": 4,
-      "itemCount": 137,
-      "sampleValues": [
-        "<p>Am Samstag, 28. März 2026 findet der diesjährige Tag des offenen Hackspaces statt.  An diesem Tag öffnen die Hackspaces in vielen europäischen Städten ihre Türen.</p>\n<p>Der CCC Basel ist auch dieses Jahr wieder dabei und ist ab <time datetime=\"2026-03-28T13:00:00+01:00\">13:00</time> bis spätabends für alle Interessierten geöffnet.</p>\n<p>Egal, ob du komplizierte Hardware …</p>",
-        "<p>Am 21. November 2025 haben wir einen Vereinsausflug ans <a href=\"https://www.psi.ch/de/visit/grosser-rundgang\">Paul Scherrer Institut PSI</a> in Villigen AG unternommen und dort an einer ca. dreistündigen Führung durch die verschiedenen Grossforschungsanlagen, hauptsächlich verschiedene Arten von Teilchenbeschleunigern, teilgenommen.  Die Veranstaltung begann im PSI Visitor Center östlich der Aare mit einem halbstündigen Vortrag mit Informationen …</p>",
-        "<p>Zum dritten Jahr in Folge veranstalten wir <strong>vom 27. bis 30. Dezember täglich ab 13:00 im <a href=\"https://ccc-basel.ch/pages/kontakt.html#anfahrt\">Hackspace des CCC Basel</a></strong> das «Congress Everywhere»: Parallel zum 39. Chaos Communication Congress (39C3) in Hamburg treffen wir uns zum gemeinsam hacken, basteln, kochen, essen, und Vorträge vom 39C3 streamen.</p>\n<h2 id=\"anmeldung\">Anmeldung</h2>\n<p>Bitte melde …</p>"
-      ],
-      "sampleFeeds": [
-        "Chaos Computer Club Basel",
-        "Chaosdorf",
-        "GuayaHack"
       ]
     },
     {
@@ -2921,13 +2921,6 @@
       ]
     },
     {
-      "value": "matsta",
-      "count": 14,
-      "sampleFeeds": [
-        "Hacksaar"
-      ]
-    },
-    {
       "value": "Mattia Corti",
       "count": 14,
       "sampleFeeds": [
@@ -2995,6 +2988,13 @@
       "count": 12,
       "sampleFeeds": [
         "Chaostreff Bern"
+      ]
+    },
+    {
+      "value": "matsta",
+      "count": 12,
+      "sampleFeeds": [
+        "Hacksaar"
       ]
     },
     {
@@ -3096,6 +3096,13 @@
       ]
     },
     {
+      "value": "Katzenmann",
+      "count": 7,
+      "sampleFeeds": [
+        "C3D2"
+      ]
+    },
+    {
       "value": "Arnold, David",
       "count": 6,
       "sampleFeeds": [
@@ -3139,10 +3146,10 @@
       ]
     },
     {
-      "value": "Katzenmann",
+      "value": "jsc",
       "count": 6,
       "sampleFeeds": [
-        "C3D2"
+        "Hacksaar"
       ]
     },
     {
@@ -3248,13 +3255,6 @@
       "count": 4,
       "sampleFeeds": [
         "Swindon Makerspace"
-      ]
-    },
-    {
-      "value": "jsc",
-      "count": 4,
-      "sampleFeeds": [
-        "Hacksaar"
       ]
     },
     {
@@ -3364,6 +3364,13 @@
     },
     {
       "value": "Mole, Simon und Xyrill",
+      "count": 3,
+      "sampleFeeds": [
+        "C3D2"
+      ]
+    },
+    {
+      "value": "sandro",
       "count": 3,
       "sampleFeeds": [
         "C3D2"
@@ -3556,13 +3563,6 @@
       "count": 2,
       "sampleFeeds": [
         "Tampere Hacklab"
-      ]
-    },
-    {
-      "value": "sandro",
-      "count": 2,
-      "sampleFeeds": [
-        "C3D2"
       ]
     },
     {
@@ -3902,20 +3902,6 @@
       ]
     },
     {
-      "value": "t3sserakt",
-      "count": 1,
-      "sampleFeeds": [
-        "C3D2"
-      ]
-    },
-    {
-      "value": "tropf",
-      "count": 1,
-      "sampleFeeds": [
-        "C3D2"
-      ]
-    },
-    {
       "value": "Voyager Meshcore",
       "count": 1,
       "sampleFeeds": [
@@ -3960,7 +3946,7 @@
     },
     {
       "value": "event",
-      "count": 22,
+      "count": 23,
       "sampleFeeds": [
         "Coredump",
         "Edinburgh Hacklab",
@@ -4012,15 +3998,6 @@
       ]
     },
     {
-      "value": "workshop",
-      "count": 12,
-      "sampleFeeds": [
-        "Coredump",
-        "Edinburgh Hacklab",
-        "Hacklabor"
-      ]
-    },
-    {
       "value": "3D Druck",
       "count": 11,
       "sampleFeeds": [
@@ -4060,6 +4037,15 @@
       ]
     },
     {
+      "value": "workshop",
+      "count": 11,
+      "sampleFeeds": [
+        "Coredump",
+        "Edinburgh Hacklab",
+        "Hacklabor"
+      ]
+    },
+    {
       "value": "Hardware",
       "count": 10,
       "sampleFeeds": [
@@ -4078,6 +4064,13 @@
       "count": 9,
       "sampleFeeds": [
         "Coredump"
+      ]
+    },
+    {
+      "value": "public",
+      "count": 9,
+      "sampleFeeds": [
+        "Hacklabor"
       ]
     },
     {
@@ -4114,13 +4107,6 @@
       "count": 7,
       "sampleFeeds": [
         "NYBI.CC"
-      ]
-    },
-    {
-      "value": "public",
-      "count": 7,
-      "sampleFeeds": [
-        "Hacklabor"
       ]
     },
     {
@@ -4280,6 +4266,13 @@
       "count": 4,
       "sampleFeeds": [
         "NYBI.CC"
+      ]
+    },
+    {
+      "value": "openhouse",
+      "count": 4,
+      "sampleFeeds": [
+        "Hacklabor"
       ]
     },
     {
@@ -4458,13 +4451,6 @@
       ]
     },
     {
-      "value": "openhouse",
-      "count": 3,
-      "sampleFeeds": [
-        "Hacklabor"
-      ]
-    },
-    {
       "value": "Press Releases",
       "count": 3,
       "sampleFeeds": [
@@ -4558,7 +4544,7 @@
       ]
     },
     {
-      "value": "basteln",
+      "value": "Bit&Bastel",
       "count": 2,
       "sampleFeeds": [
         "Hacklabor"
@@ -4650,20 +4636,6 @@
       ]
     },
     {
-      "value": "jugendhackt",
-      "count": 2,
-      "sampleFeeds": [
-        "Hacklabor"
-      ]
-    },
-    {
-      "value": "jugendhacktlab",
-      "count": 2,
-      "sampleFeeds": [
-        "Hacklabor"
-      ]
-    },
-    {
       "value": "knowmore",
       "count": 2,
       "sampleFeeds": [
@@ -4697,6 +4669,13 @@
       "count": 2,
       "sampleFeeds": [
         "Coredump"
+      ]
+    },
+    {
+      "value": "Mittwoch",
+      "count": 2,
+      "sampleFeeds": [
+        "Hacklabor"
       ]
     },
     {
@@ -4835,13 +4814,6 @@
       ]
     },
     {
-      "value": "Werkstatt",
-      "count": 2,
-      "sampleFeeds": [
-        "Hacklabor"
-      ]
-    },
-    {
       "value": "wood",
       "count": 2,
       "sampleFeeds": [
@@ -4875,13 +4847,6 @@
       "count": 1,
       "sampleFeeds": [
         "Edinburgh Hacklab"
-      ]
-    },
-    {
-      "value": "Advent",
-      "count": 1,
-      "sampleFeeds": [
-        "Hacklabor"
       ]
     },
     {
@@ -4934,7 +4899,7 @@
       ]
     },
     {
-      "value": "basteln,",
+      "value": "basteln",
       "count": 1,
       "sampleFeeds": [
         "Hacklabor"
@@ -4952,13 +4917,6 @@
       "count": 1,
       "sampleFeeds": [
         "Coredump"
-      ]
-    },
-    {
-      "value": "Bit&Bastel",
-      "count": 1,
-      "sampleFeeds": [
-        "Hacklabor"
       ]
     },
     {
@@ -5221,13 +5179,6 @@
       ]
     },
     {
-      "value": "events,",
-      "count": 1,
-      "sampleFeeds": [
-        "Hacklabor"
-      ]
-    },
-    {
       "value": "experimente",
       "count": 1,
       "sampleFeeds": [
@@ -5459,10 +5410,24 @@
       ]
     },
     {
+      "value": "häkeln",
+      "count": 1,
+      "sampleFeeds": [
+        "Hacklabor"
+      ]
+    },
+    {
       "value": "HAM",
       "count": 1,
       "sampleFeeds": [
         "Tampere Hacklab"
+      ]
+    },
+    {
+      "value": "handracfting",
+      "count": 1,
+      "sampleFeeds": [
+        "Hacklabor"
       ]
     },
     {
@@ -5561,6 +5526,20 @@
       "count": 1,
       "sampleFeeds": [
         "Coredump"
+      ]
+    },
+    {
+      "value": "jugendhackt",
+      "count": 1,
+      "sampleFeeds": [
+        "Hacklabor"
+      ]
+    },
+    {
+      "value": "jugendhacktlab",
+      "count": 1,
+      "sampleFeeds": [
+        "Hacklabor"
       ]
     },
     {
@@ -5774,13 +5753,6 @@
       ]
     },
     {
-      "value": "Mittwoch",
-      "count": 1,
-      "sampleFeeds": [
-        "Hacklabor"
-      ]
-    },
-    {
       "value": "mode 5w ry",
       "count": 1,
       "sampleFeeds": [
@@ -5844,13 +5816,6 @@
       ]
     },
     {
-      "value": "öffentlich,",
-      "count": 1,
-      "sampleFeeds": [
-        "Hacklabor"
-      ]
-    },
-    {
       "value": "offre d&#039;emploi",
       "count": 1,
       "sampleFeeds": [
@@ -5862,6 +5827,13 @@
       "count": 1,
       "sampleFeeds": [
         "TkkrLab"
+      ]
+    },
+    {
+      "value": "openhackspace",
+      "count": 1,
+      "sampleFeeds": [
+        "Hacklabor"
       ]
     },
     {
@@ -5897,6 +5869,13 @@
       "count": 1,
       "sampleFeeds": [
         "Codinglab"
+      ]
+    },
+    {
+      "value": "penandpaper",
+      "count": 1,
+      "sampleFeeds": [
+        "Hacklabor"
       ]
     },
     {
@@ -6229,6 +6208,13 @@
       ]
     },
     {
+      "value": "stricken",
+      "count": 1,
+      "sampleFeeds": [
+        "Hacklabor"
+      ]
+    },
+    {
       "value": "summerhall",
       "count": 1,
       "sampleFeeds": [
@@ -6247,6 +6233,13 @@
       "count": 1,
       "sampleFeeds": [
         "MakerSpace Minden"
+      ]
+    },
+    {
+      "value": "tagdesoffenenhackspace",
+      "count": 1,
+      "sampleFeeds": [
+        "Hacklabor"
       ]
     },
     {
@@ -6352,6 +6345,13 @@
       "count": 1,
       "sampleFeeds": [
         "Coredump"
+      ]
+    },
+    {
+      "value": "Werkstatt",
+      "count": 1,
+      "sampleFeeds": [
+        "Hacklabor"
       ]
     },
     {
@@ -6764,7 +6764,7 @@
         {
           "value": "event",
           "localCount": 7,
-          "globalCount": 22,
+          "globalCount": 23,
           "otherHackerspaces": [
             "Edinburgh Hacklab",
             "Hacklabor"
@@ -7055,7 +7055,7 @@
         {
           "value": "workshop",
           "localCount": 2,
-          "globalCount": 12,
+          "globalCount": 11,
           "otherHackerspaces": [
             "Edinburgh Hacklab",
             "Hacklabor"
@@ -7725,7 +7725,7 @@
         {
           "value": "event",
           "localCount": 1,
-          "globalCount": 22,
+          "globalCount": 23,
           "otherHackerspaces": [
             "Coredump",
             "Hacklabor"
@@ -7758,7 +7758,7 @@
         {
           "value": "workshop",
           "localCount": 1,
-          "globalCount": 12,
+          "globalCount": 11,
           "otherHackerspaces": [
             "Coredump",
             "Hacklabor"
@@ -7960,12 +7960,12 @@
     },
     {
       "hackerspaceName": "Hacklabor",
-      "publicationCount": 51,
+      "publicationCount": 54,
       "categories": [
         {
           "value": "event",
-          "localCount": 9,
-          "globalCount": 22,
+          "localCount": 10,
+          "globalCount": 23,
           "otherHackerspaces": [
             "Coredump",
             "Edinburgh Hacklab"
@@ -7973,14 +7973,20 @@
         },
         {
           "value": "public",
-          "localCount": 7,
-          "globalCount": 7,
+          "localCount": 9,
+          "globalCount": 9,
+          "otherHackerspaces": []
+        },
+        {
+          "value": "openhouse",
+          "localCount": 4,
+          "globalCount": 4,
           "otherHackerspaces": []
         },
         {
           "value": "workshop",
-          "localCount": 5,
-          "globalCount": 12,
+          "localCount": 4,
+          "globalCount": 11,
           "otherHackerspaces": [
             "Coredump",
             "Edinburgh Hacklab"
@@ -7993,25 +7999,13 @@
           "otherHackerspaces": []
         },
         {
-          "value": "openhouse",
-          "localCount": 3,
-          "globalCount": 3,
-          "otherHackerspaces": []
-        },
-        {
-          "value": "basteln",
+          "value": "Bit&Bastel",
           "localCount": 2,
           "globalCount": 2,
           "otherHackerspaces": []
         },
         {
-          "value": "jugendhackt",
-          "localCount": 2,
-          "globalCount": 2,
-          "otherHackerspaces": []
-        },
-        {
-          "value": "jugendhacktlab",
+          "value": "Mittwoch",
           "localCount": 2,
           "globalCount": 2,
           "otherHackerspaces": []
@@ -8023,37 +8017,13 @@
           "otherHackerspaces": []
         },
         {
-          "value": "Werkstatt",
-          "localCount": 2,
-          "globalCount": 2,
-          "otherHackerspaces": []
-        },
-        {
-          "value": "Advent",
-          "localCount": 1,
-          "globalCount": 1,
-          "otherHackerspaces": []
-        },
-        {
-          "value": "basteln,",
-          "localCount": 1,
-          "globalCount": 1,
-          "otherHackerspaces": []
-        },
-        {
-          "value": "Bit&Bastel",
+          "value": "basteln",
           "localCount": 1,
           "globalCount": 1,
           "otherHackerspaces": []
         },
         {
           "value": "DUTgemacht",
-          "localCount": 1,
-          "globalCount": 1,
-          "otherHackerspaces": []
-        },
-        {
-          "value": "events,",
           "localCount": 1,
           "globalCount": 1,
           "otherHackerspaces": []
@@ -8071,7 +8041,31 @@
           "otherHackerspaces": []
         },
         {
+          "value": "häkeln",
+          "localCount": 1,
+          "globalCount": 1,
+          "otherHackerspaces": []
+        },
+        {
+          "value": "handracfting",
+          "localCount": 1,
+          "globalCount": 1,
+          "otherHackerspaces": []
+        },
+        {
           "value": "history",
+          "localCount": 1,
+          "globalCount": 1,
+          "otherHackerspaces": []
+        },
+        {
+          "value": "jugendhackt",
+          "localCount": 1,
+          "globalCount": 1,
+          "otherHackerspaces": []
+        },
+        {
+          "value": "jugendhacktlab",
           "localCount": 1,
           "globalCount": 1,
           "otherHackerspaces": []
@@ -8083,13 +8077,13 @@
           "otherHackerspaces": []
         },
         {
-          "value": "Mittwoch",
+          "value": "openhackspace",
           "localCount": 1,
           "globalCount": 1,
           "otherHackerspaces": []
         },
         {
-          "value": "öffentlich,",
+          "value": "penandpaper",
           "localCount": 1,
           "globalCount": 1,
           "otherHackerspaces": []
@@ -8108,6 +8102,24 @@
         },
         {
           "value": "spaß",
+          "localCount": 1,
+          "globalCount": 1,
+          "otherHackerspaces": []
+        },
+        {
+          "value": "stricken",
+          "localCount": 1,
+          "globalCount": 1,
+          "otherHackerspaces": []
+        },
+        {
+          "value": "tagdesoffenenhackspace",
+          "localCount": 1,
+          "globalCount": 1,
+          "otherHackerspaces": []
+        },
+        {
+          "value": "Werkstatt",
           "localCount": 1,
           "globalCount": 1,
           "otherHackerspaces": []
@@ -8487,7 +8499,7 @@
         {
           "value": "workshop",
           "localCount": 2,
-          "globalCount": 12,
+          "globalCount": 11,
           "otherHackerspaces": [
             "Coredump",
             "Edinburgh Hacklab",
@@ -8647,7 +8659,7 @@
         {
           "value": "event",
           "localCount": 5,
-          "globalCount": 22,
+          "globalCount": 23,
           "otherHackerspaces": [
             "Coredump",
             "Edinburgh Hacklab",
@@ -8795,7 +8807,7 @@
         {
           "value": "workshop",
           "localCount": 1,
-          "globalCount": 12,
+          "globalCount": 11,
           "otherHackerspaces": [
             "Coredump",
             "Edinburgh Hacklab",
@@ -9073,7 +9085,7 @@
         {
           "value": "workshop",
           "localCount": 1,
-          "globalCount": 12,
+          "globalCount": 11,
           "otherHackerspaces": [
             "Coredump",
             "Edinburgh Hacklab",
@@ -9143,7 +9155,7 @@
     {
       "value": "event",
       "hackerspaceCount": 3,
-      "totalCount": 22,
+      "totalCount": 23,
       "hackerspaces": [
         "Coredump",
         "Edinburgh Hacklab",
@@ -9153,7 +9165,7 @@
     {
       "value": "workshop",
       "hackerspaceCount": 3,
-      "totalCount": 12,
+      "totalCount": 11,
       "hackerspaces": [
         "Coredump",
         "Edinburgh Hacklab",
@@ -9404,6 +9416,14 @@
       ]
     },
     {
+      "value": "public",
+      "hackerspaceCount": 1,
+      "totalCount": 9,
+      "hackerspaces": [
+        "Hacklabor"
+      ]
+    },
+    {
       "value": "Новини",
       "hackerspaceCount": 1,
       "totalCount": 8,
@@ -9433,14 +9453,6 @@
       "totalCount": 7,
       "hackerspaces": [
         "NYBI.CC"
-      ]
-    },
-    {
-      "value": "public",
-      "hackerspaceCount": 1,
-      "totalCount": 7,
-      "hackerspaces": [
-        "Hacklabor"
       ]
     },
     {
@@ -9577,6 +9589,14 @@
       "totalCount": 4,
       "hackerspaces": [
         "NYBI.CC"
+      ]
+    },
+    {
+      "value": "openhouse",
+      "hackerspaceCount": 1,
+      "totalCount": 4,
+      "hackerspaces": [
+        "Hacklabor"
       ]
     },
     {
@@ -9780,14 +9800,6 @@
       ]
     },
     {
-      "value": "openhouse",
-      "hackerspaceCount": 1,
-      "totalCount": 3,
-      "hackerspaces": [
-        "Hacklabor"
-      ]
-    },
-    {
       "value": "Press Releases",
       "hackerspaceCount": 1,
       "totalCount": 3,
@@ -9876,7 +9888,7 @@
       ]
     },
     {
-      "value": "basteln",
+      "value": "Bit&Bastel",
       "hackerspaceCount": 1,
       "totalCount": 2,
       "hackerspaces": [
@@ -9972,22 +9984,6 @@
       ]
     },
     {
-      "value": "jugendhackt",
-      "hackerspaceCount": 1,
-      "totalCount": 2,
-      "hackerspaces": [
-        "Hacklabor"
-      ]
-    },
-    {
-      "value": "jugendhacktlab",
-      "hackerspaceCount": 1,
-      "totalCount": 2,
-      "hackerspaces": [
-        "Hacklabor"
-      ]
-    },
-    {
       "value": "lasercutter",
       "hackerspaceCount": 1,
       "totalCount": 2,
@@ -10017,6 +10013,14 @@
       "totalCount": 2,
       "hackerspaces": [
         "Coredump"
+      ]
+    },
+    {
+      "value": "Mittwoch",
+      "hackerspaceCount": 1,
+      "totalCount": 2,
+      "hackerspaces": [
+        "Hacklabor"
       ]
     },
     {
@@ -10156,14 +10160,6 @@
       ]
     },
     {
-      "value": "Werkstatt",
-      "hackerspaceCount": 1,
-      "totalCount": 2,
-      "hackerspaces": [
-        "Hacklabor"
-      ]
-    },
-    {
       "value": "Yhdistys",
       "hackerspaceCount": 1,
       "totalCount": 2,
@@ -10193,14 +10189,6 @@
       "totalCount": 1,
       "hackerspaces": [
         "Edinburgh Hacklab"
-      ]
-    },
-    {
-      "value": "Advent",
-      "hackerspaceCount": 1,
-      "totalCount": 1,
-      "hackerspaces": [
-        "Hacklabor"
       ]
     },
     {
@@ -10260,7 +10248,7 @@
       ]
     },
     {
-      "value": "basteln,",
+      "value": "basteln",
       "hackerspaceCount": 1,
       "totalCount": 1,
       "hackerspaces": [
@@ -10281,14 +10269,6 @@
       "totalCount": 1,
       "hackerspaces": [
         "Coredump"
-      ]
-    },
-    {
-      "value": "Bit&Bastel",
-      "hackerspaceCount": 1,
-      "totalCount": 1,
-      "hackerspaces": [
-        "Hacklabor"
       ]
     },
     {
@@ -10588,14 +10568,6 @@
       ]
     },
     {
-      "value": "events,",
-      "hackerspaceCount": 1,
-      "totalCount": 1,
-      "hackerspaces": [
-        "Hacklabor"
-      ]
-    },
-    {
       "value": "experimente",
       "hackerspaceCount": 1,
       "totalCount": 1,
@@ -10860,11 +10832,27 @@
       ]
     },
     {
+      "value": "häkeln",
+      "hackerspaceCount": 1,
+      "totalCount": 1,
+      "hackerspaces": [
+        "Hacklabor"
+      ]
+    },
+    {
       "value": "HAM",
       "hackerspaceCount": 1,
       "totalCount": 1,
       "hackerspaces": [
         "Tampere Hacklab"
+      ]
+    },
+    {
+      "value": "handracfting",
+      "hackerspaceCount": 1,
+      "totalCount": 1,
+      "hackerspaces": [
+        "Hacklabor"
       ]
     },
     {
@@ -10977,6 +10965,22 @@
       "totalCount": 1,
       "hackerspaces": [
         "Coredump"
+      ]
+    },
+    {
+      "value": "jugendhackt",
+      "hackerspaceCount": 1,
+      "totalCount": 1,
+      "hackerspaces": [
+        "Hacklabor"
+      ]
+    },
+    {
+      "value": "jugendhacktlab",
+      "hackerspaceCount": 1,
+      "totalCount": 1,
+      "hackerspaces": [
+        "Hacklabor"
       ]
     },
     {
@@ -11220,14 +11224,6 @@
       ]
     },
     {
-      "value": "Mittwoch",
-      "hackerspaceCount": 1,
-      "totalCount": 1,
-      "hackerspaces": [
-        "Hacklabor"
-      ]
-    },
-    {
       "value": "mode 5w ry",
       "hackerspaceCount": 1,
       "totalCount": 1,
@@ -11300,14 +11296,6 @@
       ]
     },
     {
-      "value": "öffentlich,",
-      "hackerspaceCount": 1,
-      "totalCount": 1,
-      "hackerspaces": [
-        "Hacklabor"
-      ]
-    },
-    {
       "value": "offre d&#039;emploi",
       "hackerspaceCount": 1,
       "totalCount": 1,
@@ -11321,6 +11309,14 @@
       "totalCount": 1,
       "hackerspaces": [
         "TkkrLab"
+      ]
+    },
+    {
+      "value": "openhackspace",
+      "hackerspaceCount": 1,
+      "totalCount": 1,
+      "hackerspaces": [
+        "Hacklabor"
       ]
     },
     {
@@ -11361,6 +11357,14 @@
       "totalCount": 1,
       "hackerspaces": [
         "Codinglab"
+      ]
+    },
+    {
+      "value": "penandpaper",
+      "hackerspaceCount": 1,
+      "totalCount": 1,
+      "hackerspaces": [
+        "Hacklabor"
       ]
     },
     {
@@ -11740,6 +11744,14 @@
       ]
     },
     {
+      "value": "stricken",
+      "hackerspaceCount": 1,
+      "totalCount": 1,
+      "hackerspaces": [
+        "Hacklabor"
+      ]
+    },
+    {
       "value": "summerhall",
       "hackerspaceCount": 1,
       "totalCount": 1,
@@ -11761,6 +11773,14 @@
       "totalCount": 1,
       "hackerspaces": [
         "MakerSpace Minden"
+      ]
+    },
+    {
+      "value": "tagdesoffenenhackspace",
+      "hackerspaceCount": 1,
+      "totalCount": 1,
+      "hackerspaces": [
+        "Hacklabor"
       ]
     },
     {
@@ -11881,6 +11901,14 @@
       "totalCount": 1,
       "hackerspaces": [
         "Coredump"
+      ]
+    },
+    {
+      "value": "Werkstatt",
+      "hackerspaceCount": 1,
+      "totalCount": 1,
+      "hackerspaces": [
+        "Hacklabor"
       ]
     },
     {

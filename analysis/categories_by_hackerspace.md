@@ -56,7 +56,7 @@
 - `Hardware` - 10/10
 - `Bildung` - 9/9
 - `einrichtung` - 9/9
-- `event` - 7/22 [Edinburgh Hacklab, Hacklabor]
+- `event` - 7/23 [Edinburgh Hacklab, Hacklabor]
 - `events` - 7/11 [Freies Labor]
 - `age of empires` - 6/6
 - `Gaming` - 5/5
@@ -103,7 +103,7 @@
 - `umzug` - 2/2
 - `vshsr` - 2/2
 - `vswr` - 2/2
-- `workshop` - 2/12 [Edinburgh Hacklab, Hacklabor]
+- `workshop` - 2/11 [Edinburgh Hacklab, Hacklabor]
 - `3d-druck` - 1/1
 - `andonstar` - 1/1
 - `aoe2` - 1/1
@@ -214,12 +214,12 @@
 - `canal` - 1/1
 - `dragon` - 1/1
 - `Electronics` - 1/1
-- `event` - 1/22 [Coredump, Hacklabor]
+- `event` - 1/23 [Coredump, Hacklabor]
 - `glass` - 1/1
 - `raft` - 1/1
 - `raft race` - 1/1
 - `summerhall` - 1/1
-- `workshop` - 1/12 [Coredump, Hacklabor]
+- `workshop` - 1/11 [Coredump, Hacklabor]
 - `Workshop` - 1/3 [Freies Labor]
 
 ## Eugene Maker Space - 19 publications
@@ -254,31 +254,33 @@
 ## Hacklab.Brussels - 16 publications
 - `Hacklab BXL` - 16/16
 
-## Hacklabor - 51 publications
-- `event` - 9/22 [Coredump, Edinburgh Hacklab]
-- `public` - 7/7
-- `workshop` - 5/12 [Coredump, Edinburgh Hacklab]
+## Hacklabor - 54 publications
+- `event` - 10/23 [Coredump, Edinburgh Hacklab]
+- `public` - 9/9
+- `openhouse` - 4/4
+- `workshop` - 4/11 [Coredump, Edinburgh Hacklab]
 - `DIDit` - 3/3
-- `openhouse` - 3/3
-- `basteln` - 2/2
-- `jugendhackt` - 2/2
-- `jugendhacktlab` - 2/2
+- `Bit&Bastel` - 2/2
+- `Mittwoch` - 2/2
 - `socialmedia` - 2/2
-- `Werkstatt` - 2/2
-- `Advent` - 1/1
-- `basteln,` - 1/1
-- `Bit&Bastel` - 1/1
+- `basteln` - 1/1
 - `DUTgemacht` - 1/1
-- `events,` - 1/1
 - `geburtstag` - 1/1
 - `hacklabor` - 1/1
+- `häkeln` - 1/1
+- `handracfting` - 1/1
 - `history` - 1/1
+- `jugendhackt` - 1/1
+- `jugendhacktlab` - 1/1
 - `lötkits` - 1/1
-- `Mittwoch` - 1/1
-- `öffentlich,` - 1/1
+- `openhackspace` - 1/1
+- `penandpaper` - 1/1
 - `savethedate` - 1/1
 - `signal` - 1/1
 - `spaß` - 1/1
+- `stricken` - 1/1
+- `tagdesoffenenhackspace` - 1/1
+- `Werkstatt` - 1/1
 
 ## Hacksaar - 11 publications
 - `Allgemein` - 10/44 [Freies Labor, MakerSpace Minden]
@@ -342,7 +344,7 @@
 - `Woodshop` - 3/3
 - `Event` - 2/8 [Segmentation Vault]
 - `neon` - 2/2
-- `workshop` - 2/12 [Coredump, Edinburgh Hacklab, Hacklabor]
+- `workshop` - 2/11 [Coredump, Edinburgh Hacklab, Hacklabor]
 - `casting` - 1/1
 - `community` - 1/1
 - `dro` - 1/1
@@ -369,7 +371,7 @@
 
 ## Segmentation Vault - 26 publications
 - `Event` - 6/8 [Milwaukee Makerspace]
-- `event` - 5/22 [Coredump, Edinburgh Hacklab, Hacklabor]
+- `event` - 5/23 [Coredump, Edinburgh Hacklab, Hacklabor]
 - `Info` - 4/4
 - `H.A.N.S.` - 3/3
 - `inventar` - 2/4 [Coredump]
@@ -391,7 +393,7 @@
 - `tools` - 1/1
 - `wood` - 1/2 [Milwaukee Makerspace]
 - `woodwork` - 1/1
-- `workshop` - 1/12 [Coredump, Edinburgh Hacklab, Hacklabor]
+- `workshop` - 1/11 [Coredump, Edinburgh Hacklab, Hacklabor]
 
 ## Tampere Hacklab - 31 publications
 - `Toimintaa` - 5/5
@@ -438,7 +440,7 @@
 - `Allgemein` - 10/44 [Freies Labor, Hacksaar, MakerSpace Minden]
 - `di-day` - 1/1
 - `vortrag` - 1/1
-- `workshop` - 1/12 [Coredump, Edinburgh Hacklab, Hacklabor]
+- `workshop` - 1/11 [Coredump, Edinburgh Hacklab, Hacklabor]
 
 ## Winona Creators Collective - 13 publications
 - `News` - 9/11 [Eugene Maker Space]
@@ -449,8 +451,8 @@
 - `Allgemein` - 3 (44) [Freies Labor, Hacksaar, MakerSpace Minden]
 - `Events` - 3 (35) [Coredump, Eugene Maker Space, Hacksaar]
 - `Uncategorized` - 3 (32) [BetaMachine, Edinburgh Hacklab, Milwaukee Makerspace]
-- `event` - 3 (22) [Coredump, Edinburgh Hacklab, Hacklabor]
-- `workshop` - 3 (12) [Coredump, Edinburgh Hacklab, Hacklabor]
+- `event` - 3 (23) [Coredump, Edinburgh Hacklab, Hacklabor]
+- `workshop` - 3 (11) [Coredump, Edinburgh Hacklab, Hacklabor]
 - `Hackerspace` - 2 (22) [Coredump, MakerSpace Minden]
 - `blog` - 2 (20) [CCC Salzburg, Chaostreff Salzburg]
 - `Blog` - 2 (11) [Eugene Maker Space, Hackerspace Drenthe]
@@ -479,11 +481,11 @@
 - `Hardware` - 1 (10) [Coredump]
 - `Bildung` - 1 (9) [Coredump]
 - `einrichtung` - 1 (9) [Coredump]
+- `public` - 1 (9) [Hacklabor]
 - `Новини` - 1 (8) [init Lab]
 - `Evénements` - 1 (7) [BetaMachine]
 - `Nieuws` - 1 (7) [Hackerspace Drenthe]
 - `Ouverture au public` - 1 (7) [NYBI.CC]
-- `public` - 1 (7) [Hacklabor]
 - `age of empires` - 1 (6) [Coredump]
 - `Evenement` - 1 (6) [Hackerspace Drenthe]
 - `Emmen` - 1 (5) [Hackerspace Drenthe]
@@ -501,6 +503,7 @@
 - `Info` - 1 (4) [Segmentation Vault]
 - `jäsentiedote` - 1 (4) [Helsinki Hacklab]
 - `Nybicc` - 1 (4) [NYBI.CC]
+- `openhouse` - 1 (4) [Hacklabor]
 - `projet réalisé` - 1 (4) [Laboratoire Ouvert Villeurbannais]
 - `raum` - 1 (4) [Coredump]
 - `reparatur` - 1 (4) [Coredump]
@@ -526,7 +529,6 @@
 - `meetup` - 1 (3) [Coredump]
 - `möbel` - 1 (3) [Coredump]
 - `New in the Lab` - 1 (3) [Tampere Hacklab]
-- `openhouse` - 1 (3) [Hacklabor]
 - `Press Releases` - 1 (3) [Winona Creators Collective]
 - `Projektit` - 1 (3) [Tampere Hacklab]
 - `repair cafe` - 1 (3) [Coredump]
@@ -538,7 +540,7 @@
 - `Ankündigung` - 1 (2) [Freies Labor]
 - `antennas` - 1 (2) [Coredump]
 - `App` - 1 (2) [Codinglab]
-- `basteln` - 1 (2) [Hacklabor]
+- `Bit&Bastel` - 1 (2) [Hacklabor]
 - `crowdfunding` - 1 (2) [Coredump]
 - `Digitalpolitik / Gesellschaft` - 1 (2) [Coredump]
 - `évènement` - 1 (2) [Laboratoire Ouvert Villeurbannais]
@@ -550,12 +552,11 @@
 - `howto` - 1 (2) [Swindon Makerspace]
 - `impression 3D` - 1 (2) [Laboratoire Ouvert Villeurbannais]
 - `Jäsenen projekti` - 1 (2) [Tampere Hacklab]
-- `jugendhackt` - 1 (2) [Hacklabor]
-- `jugendhacktlab` - 1 (2) [Hacklabor]
 - `lasercutter` - 1 (2) [Coredump]
 - `Made in Hacklab` - 1 (2) [Edinburgh Hacklab]
 - `makerspace` - 1 (2) [Coredump]
 - `Media` - 1 (2) [Coredump]
+- `Mittwoch` - 1 (2) [Hacklabor]
 - `neon` - 1 (2) [Milwaukee Makerspace]
 - `Projects @en` - 1 (2) [Tampere Hacklab]
 - `projekte` - 1 (2) [Coredump]
@@ -573,12 +574,10 @@
 - `vie du LOV` - 1 (2) [Laboratoire Ouvert Villeurbannais]
 - `vshsr` - 1 (2) [Coredump]
 - `vswr` - 1 (2) [Coredump]
-- `Werkstatt` - 1 (2) [Hacklabor]
 - `Yhdistys` - 1 (2) [Helsinki Hacklab]
 - `3D printing` - 1 (1) [Edinburgh Hacklab]
 - `3d-druck` - 1 (1) [Coredump]
 - `About the lab` - 1 (1) [Edinburgh Hacklab]
-- `Advent` - 1 (1) [Hacklabor]
 - `andonstar` - 1 (1) [Coredump]
 - `aoe2` - 1 (1) [Coredump]
 - `arduino` - 1 (1) [Coredump]
@@ -586,10 +585,9 @@
 - `atmel` - 1 (1) [Coredump]
 - `banana` - 1 (1) [Edinburgh Hacklab]
 - `bar` - 1 (1) [Coredump]
-- `basteln,` - 1 (1) [Hacklabor]
+- `basteln` - 1 (1) [Hacklabor]
 - `bernina` - 1 (1) [Coredump]
 - `bilder` - 1 (1) [Coredump]
-- `Bit&Bastel` - 1 (1) [Hacklabor]
 - `bleach` - 1 (1) [TkkrLab]
 - `bleekschilderen` - 1 (1) [TkkrLab]
 - `bob3` - 1 (1) [Coredump]
@@ -627,7 +625,6 @@
 - `eröffnungsfest` - 1 (1) [Coredump]
 - `eu` - 1 (1) [TkkrLab]
 - `europa` - 1 (1) [Coredump]
-- `events,` - 1 (1) [Hacklabor]
 - `experimente` - 1 (1) [Coredump]
 - `Fablab` - 1 (1) [Hackerspace Drenthe]
 - `FabMoment` - 1 (1) [NYBI.CC]
@@ -661,7 +658,9 @@
 - `hacklabor` - 1 (1) [Hacklabor]
 - `hacks` - 1 (1) [Coredump]
 - `Hacks` - 1 (1) [Coredump]
+- `häkeln` - 1 (1) [Hacklabor]
 - `HAM` - 1 (1) [Tampere Hacklab]
+- `handracfting` - 1 (1) [Hacklabor]
 - `Hankinnat` - 1 (1) [Helsinki Hacklab]
 - `Hannover` - 1 (1) [MakerSpace Minden]
 - `harrastukset` - 1 (1) [Tampere Hacklab]
@@ -676,6 +675,8 @@
 - `Jäsenkysely` - 1 (1) [Helsinki Hacklab]
 - `job` - 1 (1) [BetaMachine]
 - `jona` - 1 (1) [Coredump]
+- `jugendhackt` - 1 (1) [Hacklabor]
+- `jugendhacktlab` - 1 (1) [Hacklabor]
 - `Kevätkokous` - 1 (1) [Helsinki Hacklab]
 - `kinder` - 1 (1) [Coredump]
 - `kulturnacht` - 1 (1) [Coredump]
@@ -706,7 +707,6 @@
 - `mikroskop` - 1 (1) [Coredump]
 - `Minden` - 1 (1) [MakerSpace Minden]
 - `mint` - 1 (1) [TkkrLab]
-- `Mittwoch` - 1 (1) [Hacklabor]
 - `mode 5w ry` - 1 (1) [Tampere Hacklab]
 - `mozilla` - 1 (1) [Coredump]
 - `Musica` - 1 (1) [Codinglab]
@@ -716,14 +716,15 @@
 - `nähmaschine` - 1 (1) [Coredump]
 - `Occasione` - 1 (1) [Codinglab]
 - `Occasioni` - 1 (1) [Codinglab]
-- `öffentlich,` - 1 (1) [Hacklabor]
 - `offre d&#039;emploi` - 1 (1) [BetaMachine]
 - `open dag` - 1 (1) [TkkrLab]
+- `openhackspace` - 1 (1) [Hacklabor]
 - `openhsr` - 1 (1) [Coredump]
 - `openscad` - 1 (1) [Coredump]
 - `organisatie` - 1 (1) [Hackerspace Drenthe]
 - `PDF` - 1 (1) [Codinglab]
 - `PDFgear` - 1 (1) [Codinglab]
+- `penandpaper` - 1 (1) [Hacklabor]
 - `photogrammetrie` - 1 (1) [Coredump]
 - `photos` - 1 (1) [Coredump]
 - `pi` - 1 (1) [TkkrLab]
@@ -771,9 +772,11 @@
 - `stadtfest` - 1 (1) [Coredump]
 - `STEM` - 1 (1) [Eugene Maker Space]
 - `stickstoff` - 1 (1) [Coredump]
+- `stricken` - 1 (1) [Hacklabor]
 - `summerhall` - 1 (1) [Edinburgh Hacklab]
 - `Syyskokous` - 1 (1) [Helsinki Hacklab]
 - `Tag der offenen Tür` - 1 (1) [MakerSpace Minden]
+- `tagdesoffenenhackspace` - 1 (1) [Hacklabor]
 - `the things network` - 1 (1) [Coredump]
 - `Tila` - 1 (1) [Tampere Hacklab]
 - `tool` - 1 (1) [Milwaukee Makerspace]
@@ -789,6 +792,7 @@
 - `vortrag` - 1 (1) [UN-Hack-Bar]
 - `wallpapers` - 1 (1) [Coredump]
 - `wand` - 1 (1) [Coredump]
+- `Werkstatt` - 1 (1) [Hacklabor]
 - `Wiim` - 1 (1) [Codinglab]
 - `Wikipedia` - 1 (1) [Technik.cafe]
 - `win10` - 1 (1) [TkkrLab]

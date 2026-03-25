@@ -450,11 +450,11 @@ function valueToSample(value) {
 }
 
 function compareFieldStats(left, right) {
-  if (right.feedCount !== left.feedCount) {
-    return right.feedCount - left.feedCount;
-  }
   if (right.count !== left.count) {
     return right.count - left.count;
+  }
+  if (right.feedCount !== left.feedCount) {
+    return right.feedCount - left.feedCount;
   }
   return left.name.localeCompare(right.name);
 }
