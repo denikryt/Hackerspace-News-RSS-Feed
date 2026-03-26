@@ -49,4 +49,21 @@ describe("contentDisplay", () => {
     expect(html).toContain("audio.mp3");
     expect(html).toContain("audio/mpeg");
   });
+
+  it("renders from persisted display content without raw content candidates", () => {
+    const html = renderDisplayContent({
+      displayContent: {
+        text: "Persisted display text…",
+        wasTruncated: true,
+        format: "text",
+        sourceField: "content:encoded",
+      },
+      observed: {
+        summaryCandidates: [],
+      },
+    });
+
+    expect(html).toContain('class="content-body plain-text"');
+    expect(html).toContain("Persisted display text…");
+  });
 });

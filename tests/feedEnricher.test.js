@@ -60,6 +60,12 @@ describe("enrichFeedItem", () => {
       updatedAt: "2025-01-03T10:00:00.000Z",
       displayDate: "2025-01-01T10:00:00.000Z",
       dateSource: "pubDate",
+      displayContent: {
+        text: "Short summary words",
+        wasTruncated: false,
+        format: "text",
+        sourceField: "contentSnippet",
+      },
       wordCount: 3,
       hasFullContent: true,
       hasSummary: true,
@@ -76,15 +82,9 @@ describe("enrichFeedItem", () => {
         summaryCandidates: [
           { field: "contentSnippet", text: "Short summary words" },
         ],
-        contentCandidates: [
-          {
-            field: "content:encoded",
-            html: "<p>Full content words here</p>",
-            text: "Full content words here",
-          },
-        ],
       },
     });
+    expect(enriched.observed.contentCandidates).toBeUndefined();
     expect(enriched.summaryText).toBeUndefined();
     expect(enriched.summaryHtml).toBeUndefined();
     expect(enriched.summarySource).toBeUndefined();
@@ -107,6 +107,12 @@ describe("enrichFeedItem", () => {
     });
 
     expect(enriched).toMatchObject({
+      displayContent: {
+        text: "<p>Summary only text</p>",
+        wasTruncated: false,
+        format: "html",
+        sourceField: "summary",
+      },
       wordCount: 3,
       hasFullContent: false,
       hasSummary: true,
@@ -123,5 +129,28 @@ describe("enrichFeedItem", () => {
     expect(enriched.summaryText).toBeUndefined();
     expect(enriched.summaryHtml).toBeUndefined();
     expect(enriched.summarySource).toBeUndefined();
+  });
+
+  it("stores only trimmed display content when full content exists without summary", () => {
+    const enriched = enrichFeedItem({
+      id: "content-only",
+      title: "Content only",
+      contentCandidates: [
+        {
+          field: "content:encoded",
+          text: "x".repeat(700),
+          html: `<p>${"x".repeat(700)}</p>`,
+        },
+      ],
+    });
+
+    expect(enriched.displayContent).toMatchObject({
+      wasTruncated: true,
+      format: "text",
+      sourceField: "content:encoded",
+    });
+    expect(enriched.displayContent.text).toHaveLength(501);
+    expect(enriched.displayContent.text.endsWith("…")).toBe(true);
+    expect(enriched.observed.contentCandidates).toBeUndefined();
   });
 });

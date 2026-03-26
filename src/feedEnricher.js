@@ -1,4 +1,5 @@
 import { normalizeCategoriesWithDictionary } from "./categoryDictionary.js";
+import { selectDisplayText } from "./displayText.js";
 
 const AUTHOR_PRIORITY = ["author", "creator"];
 const DISPLAY_DATE_PRIORITY = ["pubDate", "published", "isoDate", "updated"];
@@ -19,6 +20,10 @@ export function enrichFeedItem(item) {
   const displayDate = pickFirstDateCandidate(item.dateCandidates, DISPLAY_DATE_PRIORITY);
   const content = pickTextCandidate(item.contentCandidates, CONTENT_PRIORITY);
   const summary = pickTextCandidate(item.summaryCandidates, SUMMARY_PRIORITY);
+  const displayContent = selectDisplayText({
+    summaryCandidates: item.summaryCandidates,
+    contentCandidates: item.contentCandidates,
+  });
   const categories = normalizeCategoriesWithDictionary(item.categoriesRaw);
   const primaryText = summary?.text ? { source: summary.field, text: summary.text } : content?.text
     ? { source: content.field, text: content.text }
@@ -36,6 +41,7 @@ export function enrichFeedItem(item) {
     updatedAt: updated?.value,
     displayDate: displayDate?.value,
     dateSource: displayDate?.field,
+    displayContent: displayContent.text ? displayContent : undefined,
     categoriesRaw: item.categoriesRaw,
     normalizedCategories: categories.normalizedCategories,
     unmappedCategories: categories.unmappedCategories,
@@ -54,7 +60,6 @@ function buildObservedTrace(item) {
     authorCandidates: item.authorCandidates,
     dateCandidates: item.dateCandidates,
     summaryCandidates: item.summaryCandidates,
-    contentCandidates: item.contentCandidates,
   });
 }
 
