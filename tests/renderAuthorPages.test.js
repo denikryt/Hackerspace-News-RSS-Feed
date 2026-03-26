@@ -6,6 +6,10 @@ import { renderAuthorsIndex } from "../src/renderers/renderAuthorsIndex.js";
 describe("author page rendering", () => {
   it("renders the authors index page", () => {
     const html = renderAuthorsIndex({
+      selectedHackerspace: "all",
+      authorQuery: "ali",
+      sortMode: "alphabetical",
+      availableHackerspaces: ["BetaMachine", "C3D2"],
       authors: [
         {
           displayName: "Alice",
@@ -17,8 +21,10 @@ describe("author page rendering", () => {
             { name: "BetaMachine", href: "/spaces/betamachine.html" },
             { name: "C3D2", href: "/spaces/c3d2.html" },
           ],
+          latestItemDate: "2025-01-02T10:00:00.000Z",
         },
       ],
+      visibleAuthors: [],
     });
 
     expect(html).toContain('<h1 class="home-hero-title">Authors</h1>');
@@ -36,6 +42,41 @@ describe("author page rendering", () => {
     expect(html).toContain('href="/feed/index.html"');
     expect(html).toContain(">Feed<");
     expect(html).toContain('href="/authors/index.html"');
+    expect(html).toContain('id="author-search-input"');
+    expect(html).toContain('aria-label="Search authors"');
+    expect(html).toContain('class="control-input"');
+    expect(html).toContain('value="ali"');
+    expect(html).toContain('class="authors-controls"');
+    expect(html).toContain('class="authors-control authors-control-search"');
+    expect(html).toContain('class="authors-control authors-control-hackerspace"');
+    expect(html).toContain('class="authors-control authors-control-sort"');
+    expect(html).toContain('id="author-hackerspace-filter-select"');
+    expect(html).toContain('aria-label="Filter authors by hackerspace"');
+    expect(html).toContain('id="author-sort-mode-select"');
+    expect(html).toContain('aria-label="Sort authors"');
+    expect(html).toContain("All hackerspaces");
+    expect(html).toContain("Publication count");
+    expect(html).toContain("Latest publication");
+    expect(html).toContain("localStorage");
+    expect(html).toContain("hackerspace-news-feed.authors.query");
+    expect(html).toContain("hackerspace-news-feed.authors.hackerspace");
+    expect(html).toContain("hackerspace-news-feed.authors.sortMode");
+    expect(html).toContain('data-hackerspaces="BetaMachine|C3D2"');
+    expect(html).toContain('data-publication-count="2"');
+    expect(html).toContain('data-latest-item-date="2025-01-02T10:00:00.000Z"');
+    expect(html).toContain("No authors match the selected hackerspace.");
+    expect(html).not.toContain(">Search authors<");
+    expect(html).not.toContain(">Hackerspace<");
+    expect(html).not.toContain(">Sort authors<");
+    expect(html).toContain(".control-input {");
+    expect(html).toContain("border: 1px solid var(--border-strong);");
+    expect(html).toContain("background-color: var(--panel);");
+    expect(html).toContain(".authors-controls{display:grid;");
+    expect(html).toContain("margin-bottom:18px;");
+    expect(html).toContain(".authors-control-search{grid-column:1/-1;}");
+    expect(html).toContain(".authors-control-hackerspace{grid-column:1;}");
+    expect(html).toContain(".authors-control-sort{grid-column:2;}");
+    expect(html).toContain("@media (min-width: 761px)");
     expect(html).toContain('class="panel page-header page-header--wide page-header--compact"');
     expect(html).toContain('class="page-nav page-nav--wide page-nav--compact"');
     expect(html).toContain('class="panel page-summary page-summary--home"');

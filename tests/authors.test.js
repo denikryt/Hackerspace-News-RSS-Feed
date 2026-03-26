@@ -88,18 +88,154 @@ const normalizedPayload = {
 };
 
 describe("author view models", () => {
-  it("builds an authors index and excludes names from the exclusion list", () => {
+  it("builds an authors index with default filter and sort contract", () => {
     const model = buildAuthorsIndexModel(normalizedPayload, {
       excludedAuthorNames: ["admin", "root", "unknown"],
     });
 
+    expect(model.selectedHackerspace).toBe("all");
+    expect(model.authorQuery).toBe("");
+    expect(model.sortMode).toBe("alphabetical");
+    expect(model.availableHackerspaces).toEqual(["BetaMachine", "C3D2"]);
     expect(model.authors.map((author) => author.displayName)).toEqual(["Alice", "John Doe", "John-Doe"]);
+    expect(model.visibleAuthors.map((author) => author.displayName)).toEqual([
+      "Alice",
+      "John Doe",
+      "John-Doe",
+    ]);
     expect(model.authors.map((author) => author.slug)).toEqual(["alice", "john-doe", "john-doe-2"]);
     expect(model.authors.find((author) => author.displayName === "Alice")).toMatchObject({
       itemCount: 3,
       detailHref: "/authors/alice.html",
       hackerspaces: [{ name: "BetaMachine", href: "/spaces/betamachine.html" }],
     });
+  });
+
+  it("filters authors by selected hackerspace", () => {
+    const model = buildAuthorsIndexModel(normalizedPayload, {
+      selectedHackerspace: "C3D2",
+      excludedAuthorNames: ["admin", "root", "unknown"],
+    });
+
+    expect(model.selectedHackerspace).toBe("C3D2");
+    expect(model.visibleAuthors.map((author) => author.displayName)).toEqual([
+      "John Doe",
+      "John-Doe",
+    ]);
+  });
+
+  it("filters authors by case-insensitive author name query together with hackerspace filter", () => {
+    const model = buildAuthorsIndexModel(normalizedPayload, {
+      selectedHackerspace: "BetaMachine",
+      authorQuery: "ali",
+      excludedAuthorNames: ["admin", "root", "unknown"],
+    });
+
+    expect(model.authorQuery).toBe("ali");
+    expect(model.visibleAuthors.map((author) => author.displayName)).toEqual(["Alice"]);
+  });
+
+  it("sorts authors by publication count descending with deterministic tie-breaks", () => {
+    const model = buildAuthorsIndexModel(
+      {
+        ...normalizedPayload,
+        feeds: [
+          normalizedPayload.feeds[0],
+          {
+            ...normalizedPayload.feeds[1],
+            items: [
+              {
+                id: "b-1",
+                title: "Bob one",
+                resolvedAuthor: "Bob",
+                authorSource: "author",
+                displayDate: "2025-01-05T10:00:00.000Z",
+              },
+              {
+                id: "b-2",
+                title: "Bob two",
+                resolvedAuthor: "Bob",
+                authorSource: "author",
+                displayDate: "2025-01-04T10:00:00.000Z",
+              },
+              {
+                id: "charlie-1",
+                title: "Charlie one",
+                resolvedAuthor: "Charlie",
+                authorSource: "author",
+                displayDate: "2025-01-04T10:00:00.000Z",
+              },
+              {
+                id: "charlie-2",
+                title: "Charlie two",
+                resolvedAuthor: "Charlie",
+                authorSource: "author",
+                displayDate: "2025-01-03T10:00:00.000Z",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        sortMode: "publication-count",
+        excludedAuthorNames: ["admin", "root", "unknown"],
+      },
+    );
+
+    expect(model.sortMode).toBe("publication-count");
+    expect(model.visibleAuthors.map((author) => author.displayName)).toEqual([
+      "Alice",
+      "Bob",
+      "Charlie",
+    ]);
+  });
+
+  it("sorts authors by latest publication descending and places undated authors last", () => {
+    const model = buildAuthorsIndexModel(
+      {
+        ...normalizedPayload,
+        feeds: [
+          normalizedPayload.feeds[0],
+          {
+            ...normalizedPayload.feeds[1],
+            items: [
+              {
+                id: "b-1",
+                title: "Bob one",
+                resolvedAuthor: "Bob",
+                authorSource: "author",
+                displayDate: "2025-01-06T10:00:00.000Z",
+              },
+              {
+                id: "charlie-1",
+                title: "Charlie one",
+                resolvedAuthor: "Charlie",
+                authorSource: "author",
+                displayDate: "2025-01-06T10:00:00.000Z",
+              },
+              {
+                id: "nodate-1",
+                title: "No date item",
+                resolvedAuthor: "No Date",
+                authorSource: "author",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        sortMode: "latest-publication",
+        excludedAuthorNames: ["admin", "root", "unknown"],
+      },
+    );
+
+    expect(model.sortMode).toBe("latest-publication");
+    expect(model.visibleAuthors.map((author) => author.displayName)).toEqual([
+      "Bob",
+      "Charlie",
+      "Alice",
+      "No Date",
+    ]);
   });
 
   it("builds a paginated author detail model sorted newest first", () => {
