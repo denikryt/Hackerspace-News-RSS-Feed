@@ -17,6 +17,23 @@ describe("selectDisplayText", () => {
       expect(result.sourceField).toBe("summary");
     });
 
+    it("truncates summary when it exceeds the max length", () => {
+      const longSummary = "x".repeat(700);
+      const item = {
+        summaryCandidates: [{ field: "summary", text: longSummary }],
+        contentCandidates: [],
+      };
+
+      const result = selectDisplayText(item);
+      const withoutEllipsis = result.text.slice(0, -1);
+
+      expect(result.wasTruncated).toBe(true);
+      expect(result.text).toMatch(/…$/);
+      expect(withoutEllipsis).toHaveLength(500);
+      expect(result.format).toBe("text");
+      expect(result.sourceField).toBe("summary");
+    });
+
     it("prefers summary over description when both present", () => {
       const item = {
         summaryCandidates: [

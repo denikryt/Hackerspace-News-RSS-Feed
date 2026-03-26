@@ -153,4 +153,25 @@ describe("enrichFeedItem", () => {
     expect(enriched.displayContent.text.endsWith("…")).toBe(true);
     expect(enriched.observed.contentCandidates).toBeUndefined();
   });
+
+  it("stores trimmed display content when summary exceeds the max length", () => {
+    const enriched = enrichFeedItem({
+      id: "summary-long",
+      title: "Summary long",
+      summaryCandidates: [
+        {
+          field: "summary",
+          text: "x".repeat(700),
+        },
+      ],
+    });
+
+    expect(enriched.displayContent).toMatchObject({
+      wasTruncated: true,
+      format: "text",
+      sourceField: "summary",
+    });
+    expect(enriched.displayContent.text).toHaveLength(501);
+    expect(enriched.displayContent.text.endsWith("…")).toBe(true);
+  });
 });

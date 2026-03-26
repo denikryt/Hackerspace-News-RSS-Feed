@@ -5,10 +5,11 @@ export function selectDisplayText(item) {
   for (const candidate of summaryCandidates) {
     const picked = readSummaryCandidate(candidate);
     if (picked) {
+      const truncated = truncateSelectedDisplayValue(picked.value, picked.format);
       return {
-        text: picked.value,
-        wasTruncated: false,
-        format: picked.format,
+        text: truncated.text,
+        wasTruncated: truncated.wasTruncated,
+        format: truncated.format,
         sourceField: picked.field,
       };
     }
@@ -100,6 +101,32 @@ function readSummaryCandidate(candidate) {
   }
 
   return null;
+}
+
+function truncateSelectedDisplayValue(value, format) {
+  if (format === "html") {
+    const plainText = stripHtml(value);
+    const truncated = truncatePlainText(plainText, MAX_CONTENT_LENGTH);
+
+    if (truncated.wasTruncated) {
+      return {
+        text: truncated.text,
+        wasTruncated: true,
+        format: "text",
+      };
+    }
+
+    return {
+      text: value,
+      wasTruncated: false,
+      format: "html",
+    };
+  }
+
+  return {
+    ...truncatePlainText(value, MAX_CONTENT_LENGTH),
+    format: "text",
+  };
 }
 
 function readContentCandidate(candidate) {
