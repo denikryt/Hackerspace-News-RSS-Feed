@@ -51,6 +51,7 @@ export function renderSpacesIndex(model) {
   return renderLayout({
     title: "Hackerspace News",
     body: `
+      <style>.spaces-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:18px;row-gap:10px;align-items:end;margin-bottom:18px;}.spaces-control{display:block;min-inline-size:0;}.spaces-control-country{grid-column:1;}.spaces-control-sort{grid-column:2;}.spaces-control-toggle{grid-column:1/-1;}.spaces-control .control-select{inline-size:100%;max-inline-size:100%;}.spaces-control-sort .control-select{margin-inline-start:auto;}@media (min-width: 761px){.spaces-controls{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;}.spaces-control-country{grid-column:auto;}.spaces-control-sort{grid-column:auto;}.spaces-control-toggle{grid-column:auto;align-self:center;}}</style>
       ${renderPageHeader({
         title: "Hackerspace News",
         titleClass: "home-hero-title",
@@ -68,21 +69,19 @@ export function renderSpacesIndex(model) {
           ${renderMetric("Total spaces", model.summary.sourceRows)}
           ${renderMetric("Readable feeds", model.summary.parsedFeeds)}
         </div>
-        <div class="meta">
-          <label>
-            Country
+        <div class="spaces-controls">
+          <label class="spaces-control spaces-control-country">
             <select id="country-filter-select" class="control-select control-select-country">
               ${countryOptions}
             </select>
           </label>
-          <label>
-            Sort cards
+          <label class="spaces-control spaces-control-sort">
             <select id="sort-mode-select" class="control-select">
               <option value="alphabetical"${model.sortMode === "alphabetical" ? " selected" : ""}>Alphabetical</option>
               <option value="latest-publication"${model.sortMode === "latest-publication" ? " selected" : ""}>Latest publication</option>
             </select>
           </label>
-          <label>
+          <label class="spaces-control spaces-control-toggle">
             <input id="show-failed-toggle" type="checkbox" />
             Show failed feeds
           </label>

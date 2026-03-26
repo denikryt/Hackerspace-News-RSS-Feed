@@ -47,10 +47,8 @@ describe("renderSpacesIndex", () => {
     });
 
     expect(html).toContain("Show failed feeds");
-    expect(html).toContain("Country");
     expect(html).toContain("All countries");
     expect(html).toContain("Russian Federation");
-    expect(html).toContain("Sort cards");
     expect(html).toContain("Latest publication");
     expect(html).toContain("localStorage");
     expect(html).toContain("hackerspace-news-feed.country");
@@ -66,6 +64,14 @@ describe("renderSpacesIndex", () => {
     expect(html).not.toContain("Source page:");
     expect(html).toContain('class="panel page-header page-header--wide page-header--compact"');
     expect(html).toContain('class="panel page-summary page-summary--home"');
+    expect(html).toContain('class="spaces-controls"');
+    expect(html).toContain('class="spaces-control spaces-control-country"');
+    expect(html).toContain('class="spaces-control spaces-control-sort"');
+    expect(html).toContain('class="spaces-control spaces-control-toggle"');
+    expect(html).toContain(".spaces-controls{display:grid;");
+    expect(html).toContain(".spaces-control-toggle{grid-column:1/-1;}");
+    expect(html).toContain("@media (min-width: 761px){.spaces-controls{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;}");
+    expect(html).toContain(".spaces-control-toggle{grid-column:auto;align-self:center;}");
     expect(html).toContain('class="page-nav page-nav--wide page-nav--compact"');
     expect(html).not.toContain(".page-nav--wide .section-nav { margin-bottom: 0; border-bottom: 0; }");
     expect(html).toContain("data-is-failure=\"true\"");
@@ -75,5 +81,6 @@ describe("renderSpacesIndex", () => {
     expect(html).toContain("12 publications");
     expect(html.indexOf("12 publications")).toBeLessThan(html.indexOf("Latest:"));
     expect(html).not.toContain("undefined publications");
+    expect(html).not.toContain(">Sort cards<");
   });
 });
