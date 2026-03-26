@@ -46,6 +46,10 @@ describe("author page rendering", () => {
     expect(html).toContain('aria-label="Search authors"');
     expect(html).toContain('class="control-input"');
     expect(html).toContain('value="ali"');
+    expect(html).toContain('class="authors-controls"');
+    expect(html).toContain('class="authors-control authors-control-search"');
+    expect(html).toContain('class="authors-control authors-control-hackerspace"');
+    expect(html).toContain('class="authors-control authors-control-sort"');
     expect(html).toContain('id="author-hackerspace-filter-select"');
     expect(html).toContain('aria-label="Filter authors by hackerspace"');
     expect(html).toContain('id="author-sort-mode-select"');
@@ -67,6 +71,12 @@ describe("author page rendering", () => {
     expect(html).toContain(".control-input {");
     expect(html).toContain("border: 1px solid var(--border-strong);");
     expect(html).toContain("background-color: var(--panel);");
+    expect(html).toContain(".authors-controls{display:grid;");
+    expect(html).toContain("margin-bottom:18px;");
+    expect(html).toContain(".authors-control-search{grid-column:1/-1;}");
+    expect(html).toContain(".authors-control-hackerspace{grid-column:1;}");
+    expect(html).toContain(".authors-control-sort{grid-column:2;}");
+    expect(html).toContain("@media (min-width: 761px)");
     expect(html).toContain('class="panel page-header page-header--wide page-header--compact"');
     expect(html).toContain('class="page-nav page-nav--wide page-nav--compact"');
     expect(html).toContain('class="panel page-summary page-summary--home"');
