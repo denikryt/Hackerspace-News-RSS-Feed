@@ -102,6 +102,7 @@ describe("multi-page view models", () => {
     expect(model.cards.find((card) => card.spaceName === "BetaMachine")).toMatchObject({
       spaceName: "BetaMachine",
       status: "parsed_ok",
+      publicationsCount: 2,
       latestItemTitle: "Newest post",
       latestItemDate: "2025-01-02T10:00:00.000Z",
     });

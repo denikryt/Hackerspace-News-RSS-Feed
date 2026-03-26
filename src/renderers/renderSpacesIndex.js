@@ -33,6 +33,7 @@ export function renderSpacesIndex(model) {
           ${card.sourceWikiUrl ? `<a href="${card.sourceWikiUrl}">Wiki</a>` : ""}
           ${card.siteUrl ? `<a href="${card.siteUrl}">Website</a>` : ""}
         </p>
+        ${typeof card.publicationsCount === "number" ? `<p class="muted space-card-publications">${escapeHtml(`${card.publicationsCount} publication${card.publicationsCount === 1 ? "" : "s"}`)}</p>` : ""}
         ${
           card.latestItemTitle
             ? `<p><span class="field-label">Latest:</span> ${
