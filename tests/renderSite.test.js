@@ -162,6 +162,11 @@ describe("renderSite", () => {
       expect(feedHtml).toContain("Feed");
       expect(feedHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
       expect(authorsHtml).toContain("Authors");
+      expect(authorsHtml).toContain("Search authors");
+      expect(authorsHtml).toContain("All hackerspaces");
+      expect(authorsHtml).toContain("Sort authors");
+      expect(authorsHtml).toContain("Publication count");
+      expect(authorsHtml).toContain("Latest publication");
       expect(detailHtml).toContain("BetaMachine");
       expect(detailHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
       expect(globalThis.fetch).not.toHaveBeenCalled();
