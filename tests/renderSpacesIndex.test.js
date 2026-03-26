@@ -37,6 +37,7 @@ describe("renderSpacesIndex", () => {
           status: "parsed_ok",
           isVisibleByDefault: true,
           isFailure: false,
+          publicationsCount: 12,
           latestItemTitle: "Newest post",
           latestItemDate: "2025-01-02T10:00:00.000Z",
           detailHref: "/spaces/betamachine.html",
@@ -70,5 +71,9 @@ describe("renderSpacesIndex", () => {
     expect(html).toContain("data-is-failure=\"true\"");
     expect(html).toContain("data-country=\"France\"");
     expect(html).toContain("data-latest-item-date=\"2025-01-02T10:00:00.000Z\"");
+    expect(html).toContain(".space-card-publications { margin: 0 0 0.35rem; }");
+    expect(html).toContain("12 publications");
+    expect(html.indexOf("12 publications")).toBeLessThan(html.indexOf("Latest:"));
+    expect(html).not.toContain("undefined publications");
   });
 });

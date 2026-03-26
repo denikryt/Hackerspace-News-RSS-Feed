@@ -59,6 +59,7 @@ export function renderLayout({ title, body }) {
       .space-card-title { color: var(--text); }
       .space-card-links { display: flex; flex-wrap: wrap; gap: 0.9rem; margin: 0.55rem 0 1rem; font-size: 0.95rem; }
       .space-card-links a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.16rem; }
+      .space-card-publications { margin: 0 0 0.35rem; }
       .space-card-latest-link { color: var(--text); }
       .space-card-date { font-size: 0.82rem; letter-spacing: 0.05em; text-transform: uppercase; margin-top: auto; padding-top: 1rem; }
       .muted { color: var(--muted); }

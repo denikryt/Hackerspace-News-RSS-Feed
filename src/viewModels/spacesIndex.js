@@ -36,6 +36,7 @@ export function buildSpacesIndexModel(
       status: feed.status,
       isFailure: false,
       isVisibleByDefault: true,
+      publicationsCount: Array.isArray(feed.items) ? feed.items.length : 0,
       latestItemTitle: latestItem?.title,
       latestItemLink: latestItem?.link,
       latestItemDate: getEffectiveItemDate(latestItem),
