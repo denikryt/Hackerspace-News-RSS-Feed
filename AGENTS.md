@@ -260,3 +260,7 @@ Do not turn a note into a full plan unless the user explicitly asks for a plan.
 ## Plan Analysis Agent
 
 If the user asks to run an agent for plan analysis, first read `.codex/agents/plan-analyzer.toml` and use its instructions for that agent run.
+
+## Plan Implementation Analysis Agent
+
+If the user asks to run an agent for analysis of the implementation of a plan, first read `.codex/agents/plan-implementation-analyzer.toml` and use its instructions for that agent run.
