@@ -50,6 +50,7 @@ describe("renderSpacesIndex", () => {
     expect(html).toContain("All countries");
     expect(html).toContain("Russian Federation");
     expect(html).toContain("Latest publication");
+    expect(html).toContain("Publication count");
     expect(html).toContain("localStorage");
     expect(html).toContain("hackerspace-news-feed.country");
     expect(html).toContain('href="/about/index.html"');
@@ -77,10 +78,13 @@ describe("renderSpacesIndex", () => {
     expect(html).toContain("data-is-failure=\"true\"");
     expect(html).toContain("data-country=\"France\"");
     expect(html).toContain("data-latest-item-date=\"2025-01-02T10:00:00.000Z\"");
+    expect(html).toContain("data-publication-count=\"12\"");
     expect(html).toContain(".space-card-publications { margin: 0 0 0.35rem; }");
     expect(html).toContain("12 publications");
     expect(html.indexOf("12 publications")).toBeLessThan(html.indexOf("Latest:"));
     expect(html).not.toContain("undefined publications");
     expect(html).not.toContain(">Sort cards<");
+    expect(html).toContain("function comparePublicationCount(left, right)");
+    expect(html).toContain('sortMode === "publication-count"');
   });
 });

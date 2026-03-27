@@ -24,7 +24,8 @@ export function renderSpacesIndex(model) {
         data-country="${escapeHtml(card.country || "")}"
         data-is-failure="${card.isFailure ? "true" : "false"}"
         data-default-visible="${card.isVisibleByDefault ? "true" : "false"}"
-        data-latest-item-date="${escapeHtml(card.latestItemDate || "")}">
+        data-latest-item-date="${escapeHtml(card.latestItemDate || "")}"
+        data-publication-count="${card.publicationsCount || 0}">
         <h3><a class="space-card-title" href="${card.detailHref}">${card.spaceName}</a></h3>
         <div class="meta">
           ${renderField("Country", card.country)}
@@ -78,6 +79,7 @@ export function renderSpacesIndex(model) {
           <label class="spaces-control spaces-control-sort">
             <select id="sort-mode-select" class="control-select">
               <option value="alphabetical"${model.sortMode === "alphabetical" ? " selected" : ""}>Alphabetical</option>
+              <option value="publication-count"${model.sortMode === "publication-count" ? " selected" : ""}>Publication count</option>
               <option value="latest-publication"${model.sortMode === "latest-publication" ? " selected" : ""}>Latest publication</option>
             </select>
           </label>
@@ -122,7 +124,17 @@ export function renderSpacesIndex(model) {
           const leftValue = Date.parse(left.dataset.latestItemDate || "") || Number.NEGATIVE_INFINITY;
           const rightValue = Date.parse(right.dataset.latestItemDate || "") || Number.NEGATIVE_INFINITY;
           if (rightValue !== leftValue) return rightValue - leftValue;
+          const leftCount = Number(left.dataset.publicationCount || "0");
+          const rightCount = Number(right.dataset.publicationCount || "0");
+          if (rightCount !== leftCount) return rightCount - leftCount;
           return compareAlphabetical(left, right);
+        }
+
+        function comparePublicationCount(left, right) {
+          const leftCount = Number(left.dataset.publicationCount || "0");
+          const rightCount = Number(right.dataset.publicationCount || "0");
+          if (rightCount !== leftCount) return rightCount - leftCount;
+          return compareLatest(left, right);
         }
 
         function formatLocalUpdatedAt(label) {
@@ -163,7 +175,11 @@ export function renderSpacesIndex(model) {
             }
           });
 
-          const comparator = sortMode === "latest-publication" ? compareLatest : compareAlphabetical;
+          const comparator = sortMode === "publication-count"
+            ? comparePublicationCount
+            : sortMode === "latest-publication"
+              ? compareLatest
+              : compareAlphabetical;
           cards.sort(comparator).forEach((card) => cardsContainer.appendChild(card));
           emptyState.hidden = visibleCount !== 0;
         }
