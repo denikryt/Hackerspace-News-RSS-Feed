@@ -8,11 +8,11 @@ export function selectDisplayText(item) {
       continue;
     }
 
-    const truncated = truncatePlainText(picked.value, MAX_CONTENT_LENGTH);
+    const truncated = truncateSelectedDisplayValue(picked.value, picked.format);
     return {
       text: truncated.text,
       wasTruncated: truncated.wasTruncated,
-      format: "text",
+      format: truncated.format,
       sourceField: picked.field,
     };
   }
@@ -135,17 +135,14 @@ function readContentCandidate(candidate) {
   }
 
   const field = typeof candidate.field === "string" ? candidate.field : null;
-  const text = cleanCandidateText(candidate.text);
-  if (text) {
-    return { value: text, field };
-  }
-
   const html = cleanCandidateHtml(candidate.html);
   if (html) {
-    const plain = stripHtml(html);
-    if (plain) {
-      return { value: plain, field };
-    }
+    return { value: html, format: "html", field };
+  }
+
+  const text = cleanCandidateText(candidate.text);
+  if (text) {
+    return { value: text, format: "text", field };
   }
 
   return null;
