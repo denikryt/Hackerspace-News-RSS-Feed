@@ -42,6 +42,4 @@ EOF
 
 sudo systemctl daemon-reload
 sudo systemctl enable --now "${SERVICE_NAME}.timer"
-sudo systemctl start "${SERVICE_NAME}.service"
-sudo systemctl status "${SERVICE_NAME}.service" --no-pager
 sudo systemctl status "${SERVICE_NAME}.timer" --no-pager

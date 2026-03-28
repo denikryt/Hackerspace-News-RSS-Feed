@@ -252,6 +252,21 @@ Default note structure:
 - `# Title`
 - `## Problem`
 - `## Possible Directions`
+- `## Draft Result`
+
+`## Draft Result` should be short and simple.
+
+Use it to describe, in draft form:
+
+- what the final behavior or result would look like if this idea is implemented;
+- by what high-level mechanism it would work, in plain words;
+- only the minimum needed to make the idea concrete.
+
+Do not turn `## Draft Result` into:
+
+- a full implementation plan;
+- detailed architecture staging;
+- long lists of repeated consequences or restatements.
 
 Notes should describe tension and options, not implementation stages.
 

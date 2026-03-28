@@ -24,7 +24,8 @@ export function renderSpacesIndex(model) {
         data-country="${escapeHtml(card.country || "")}"
         data-is-failure="${card.isFailure ? "true" : "false"}"
         data-default-visible="${card.isVisibleByDefault ? "true" : "false"}"
-        data-latest-item-date="${escapeHtml(card.latestItemDate || "")}">
+        data-latest-item-date="${escapeHtml(card.latestItemDate || "")}"
+        data-publication-count="${card.publicationsCount || 0}">
         <h3><a class="space-card-title" href="${card.detailHref}">${card.spaceName}</a></h3>
         <div class="meta">
           ${renderField("Country", card.country)}
@@ -51,6 +52,7 @@ export function renderSpacesIndex(model) {
   return renderLayout({
     title: "Hackerspace News",
     body: `
+      <style>.spaces-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:18px;row-gap:10px;align-items:end;margin-bottom:18px;}.spaces-control{display:block;min-inline-size:0;}.spaces-control-country{grid-column:1;}.spaces-control-sort{grid-column:2;}.spaces-control-toggle{grid-column:1/-1;}.spaces-control .control-select{inline-size:100%;max-inline-size:100%;}.spaces-control-sort .control-select{margin-inline-start:auto;}@media (min-width: 761px){.spaces-controls{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;}.spaces-control-country{grid-column:auto;}.spaces-control-sort{grid-column:auto;}.spaces-control-toggle{grid-column:auto;align-self:center;}}</style>
       ${renderPageHeader({
         title: "Hackerspace News",
         titleClass: "home-hero-title",
@@ -68,21 +70,20 @@ export function renderSpacesIndex(model) {
           ${renderMetric("Total spaces", model.summary.sourceRows)}
           ${renderMetric("Readable feeds", model.summary.parsedFeeds)}
         </div>
-        <div class="meta">
-          <label>
-            Country
+        <div class="spaces-controls">
+          <label class="spaces-control spaces-control-country">
             <select id="country-filter-select" class="control-select control-select-country">
               ${countryOptions}
             </select>
           </label>
-          <label>
-            Sort cards
+          <label class="spaces-control spaces-control-sort">
             <select id="sort-mode-select" class="control-select">
               <option value="alphabetical"${model.sortMode === "alphabetical" ? " selected" : ""}>Alphabetical</option>
+              <option value="publication-count"${model.sortMode === "publication-count" ? " selected" : ""}>Publication count</option>
               <option value="latest-publication"${model.sortMode === "latest-publication" ? " selected" : ""}>Latest publication</option>
             </select>
           </label>
-          <label>
+          <label class="spaces-control spaces-control-toggle">
             <input id="show-failed-toggle" type="checkbox" />
             Show failed feeds
           </label>
@@ -123,7 +124,17 @@ export function renderSpacesIndex(model) {
           const leftValue = Date.parse(left.dataset.latestItemDate || "") || Number.NEGATIVE_INFINITY;
           const rightValue = Date.parse(right.dataset.latestItemDate || "") || Number.NEGATIVE_INFINITY;
           if (rightValue !== leftValue) return rightValue - leftValue;
+          const leftCount = Number(left.dataset.publicationCount || "0");
+          const rightCount = Number(right.dataset.publicationCount || "0");
+          if (rightCount !== leftCount) return rightCount - leftCount;
           return compareAlphabetical(left, right);
+        }
+
+        function comparePublicationCount(left, right) {
+          const leftCount = Number(left.dataset.publicationCount || "0");
+          const rightCount = Number(right.dataset.publicationCount || "0");
+          if (rightCount !== leftCount) return rightCount - leftCount;
+          return compareLatest(left, right);
         }
 
         function formatLocalUpdatedAt(label) {
@@ -164,7 +175,11 @@ export function renderSpacesIndex(model) {
             }
           });
 
-          const comparator = sortMode === "latest-publication" ? compareLatest : compareAlphabetical;
+          const comparator = sortMode === "publication-count"
+            ? comparePublicationCount
+            : sortMode === "latest-publication"
+              ? compareLatest
+              : compareAlphabetical;
           cards.sort(comparator).forEach((card) => cardsContainer.appendChild(card));
           emptyState.hidden = visibleCount !== 0;
         }
