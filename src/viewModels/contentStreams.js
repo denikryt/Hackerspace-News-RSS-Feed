@@ -8,7 +8,7 @@ import {
 import { getAuthorsIndexHref } from "../authors.js";
 import { GLOBAL_FEED_PAGE_SIZE, buildPageLinks, paginateItems } from "../pagination.js";
 import { buildAuthorDirectory, withAuthorLinks } from "./authors.js";
-import { slugify } from "../utils/slugify.js";
+import { collectAggregatedPublicationItems } from "./publicationItems.js";
 import { getEffectiveItemDate } from "../visibleData.js";
 
 export function listContentStreams(normalizedPayload) {
@@ -74,6 +74,7 @@ export function buildContentStreamModel(
         label: stream.label,
         isCurrent: stream.id === streamId,
       })),
+      { href: "/curated/index.html", label: "Curated", isCurrent: false },
       { href: getAuthorsIndexHref(), label: "Authors", isCurrent: false },
     ],
     homeHref: "/index.html",
@@ -82,20 +83,9 @@ export function buildContentStreamModel(
 }
 
 function collectAllFeedItems(normalizedPayload, authorDirectory) {
-  return (normalizedPayload.feeds || [])
-    .flatMap((feed) =>
-      (feed.items || []).map((item) =>
-        withAuthorLinks(
-          {
-            ...item,
-            spaceName: feed.spaceName,
-            country: feed.country,
-            spaceHref: `/spaces/${slugify(feed.spaceName)}.html`,
-            sourceWikiUrl: feed.sourceWikiUrl,
-          },
-          authorDirectory,
-        ),
-      ),
+  return collectAggregatedPublicationItems(normalizedPayload)
+    .map((item) =>
+      withAuthorLinks(item, authorDirectory),
     )
     .sort(compareItemsByDateDesc);
 }

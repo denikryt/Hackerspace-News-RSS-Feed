@@ -24,5 +24,11 @@ export function filterNormalizedPayloadForDisplay(normalizedPayload, { now = Dat
       ...feed,
       items: (feed.items || []).filter((item) => !isFutureDatedItem(item, { now })),
     })),
+    curated: normalizedPayload.curated
+      ? {
+          ...normalizedPayload.curated,
+          items: (normalizedPayload.curated.items || []).filter((item) => !isFutureDatedItem(item, { now })),
+        }
+      : normalizedPayload.curated,
   };
 }

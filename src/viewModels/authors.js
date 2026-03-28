@@ -8,6 +8,7 @@ import {
   parseAuthorValue,
 } from "../authors.js";
 import { buildPageLinks, GLOBAL_FEED_PAGE_SIZE, paginateItems } from "../pagination.js";
+import { collectAggregatedPublicationItems } from "./publicationItems.js";
 import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
 
@@ -148,7 +149,7 @@ export function buildAuthorDirectory(
       if (item.authorSource) {
         existing.authorSources.add(item.authorSource);
       }
-      if (item.spaceName) {
+      if (item.spaceName && item.spaceHref) {
         existing.hackerspaces.set(item.spaceName, {
           name: item.spaceName,
           href: item.spaceHref,
@@ -304,17 +305,7 @@ function assignAuthorSlugs(authors) {
 }
 
 function collectAllFeedItems(normalizedPayload) {
-  return (normalizedPayload.feeds || [])
-    .flatMap((feed) =>
-      (feed.items || []).map((item) => ({
-        ...item,
-        spaceName: feed.spaceName,
-        country: feed.country,
-        spaceHref: `/spaces/${slugify(feed.spaceName)}.html`,
-        sourceWikiUrl: feed.sourceWikiUrl,
-      })),
-    )
-    .sort(compareItemsByDateDesc);
+  return collectAggregatedPublicationItems(normalizedPayload).sort(compareItemsByDateDesc);
 }
 
 function compareItemsByDateDesc(a, b) {

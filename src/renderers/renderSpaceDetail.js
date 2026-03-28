@@ -58,6 +58,7 @@ export function renderSpaceDetail(model) {
         navItems: [
           { href: model.homeHref, label: "Hackerspaces" },
           { href: model.feedHref, label: "Feed" },
+          { href: "/curated/index.html", label: "Curated" },
           { href: model.authorsIndexHref, label: "Authors" },
         ],
         navClass: "page-nav--narrow",

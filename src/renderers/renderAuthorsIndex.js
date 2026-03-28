@@ -55,6 +55,7 @@ export function renderAuthorsIndex(model) {
         navItems: [
           { href: homeHref, label: "Hackerspaces" },
           { href: feedHref, label: "Feed" },
+          { href: "/curated/index.html", label: "Curated" },
           { href: authorsIndexHref, label: "Authors", isCurrent: true },
         ],
         navClass: "page-nav--wide page-nav--compact",

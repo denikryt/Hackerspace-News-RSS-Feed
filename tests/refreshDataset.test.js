@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { readFileSync } from "node:fs";
@@ -174,6 +174,103 @@ describe("refreshDataset", () => {
     expect(logLines).toContain("[refresh] probing feed 3/3: https://trac.raumfahrtagentur.org/blog?format=rss&user=anonymous");
     expect(logLines).toContain("[refresh] failed feed 3/3: https://trac.raumfahrtagentur.org/blog?format=rss&user=anonymous (non_feed_html: 200)");
     expect(logLines).toContain("[refresh] refresh complete: feeds=1 failures=2");
+  });
+
+  it("resolves curated publications from a local yaml list without changing wiki source summary", async () => {
+    const outputDir = await mkdtemp(resolve(tmpdir(), "hnf-refresh-curated-"));
+    tempDirs.push(outputDir);
+
+    const paths = {
+      sourceRows: resolve(outputDir, "data/source_urls.json"),
+      validations: resolve(outputDir, "data/feed_validation.json"),
+      normalizedFeeds: resolve(outputDir, "data/feeds_normalized.json"),
+      curatedPublications: resolve(outputDir, "content/curated_publications.yml"),
+    };
+
+    await mkdir(resolve(outputDir, "content"), { recursive: true });
+    await writeFile(
+      paths.curatedPublications,
+      `- feedUrl: https://blog.nachitima.com/feed/\n  guid: https://blog.nachitima.com/interview-with-sasha-hackerspace-stories\n`,
+      "utf8",
+    );
+
+    const fetchImpl = vi.fn(async (url) => {
+      if (url === sourcePageUrl) {
+        return response({
+          url,
+          contentType: "text/html; charset=utf-8",
+          body: sourceHtml,
+        });
+      }
+
+      if (url === "https://www.betamachine.fr/feed/") {
+        return response({
+          url,
+          contentType: "application/rss+xml",
+          body: `<?xml version="1.0"?>
+            <rss version="2.0">
+              <channel>
+                <title>BetaMachine Feed</title>
+                <link>https://www.betamachine.fr</link>
+                <description>Latest posts</description>
+                <item>
+                  <title>Post one</title>
+                  <guid>beta-1</guid>
+                  <link>https://www.betamachine.fr/post-1</link>
+                  <author>Alice</author>
+                  <pubDate>Wed, 01 Jan 2025 10:00:00 GMT</pubDate>
+                  <description>Hello</description>
+                </item>
+              </channel>
+            </rss>`,
+        });
+      }
+
+      if (url === "https://blog.nachitima.com/feed/") {
+        return response({
+          url,
+          contentType: "application/rss+xml",
+          body: `<?xml version="1.0"?>
+            <rss version="2.0">
+              <channel>
+                <title>Nachitima Blog</title>
+                <link>https://blog.nachitima.com</link>
+                <description>Independent writing</description>
+                <item>
+                  <title>Interview with Sasha</title>
+                  <guid>https://blog.nachitima.com/interview-with-sasha-hackerspace-stories</guid>
+                  <link>https://blog.nachitima.com/interview-with-sasha-hackerspace-stories</link>
+                  <author>Nachitima</author>
+                  <pubDate>Thu, 02 Jan 2025 10:00:00 GMT</pubDate>
+                  <description>Curated hello</description>
+                </item>
+              </channel>
+            </rss>`,
+        });
+      }
+
+      return response({
+        url,
+        contentType: "text/html; charset=utf-8",
+        body: "<html><body>not a feed</body></html>",
+      });
+    });
+
+    const result = await refreshDataset({ sourcePageUrl, fetchImpl, paths });
+
+    expect(result.normalizedPayload.summary).toMatchObject({
+      sourceRows: 3,
+      parsedFeeds: 1,
+      failedFeeds: 2,
+    });
+    expect(result.normalizedPayload.curated.items).toHaveLength(1);
+    expect(result.normalizedPayload.curated.items[0]).toMatchObject({
+      title: "Interview with Sasha",
+      guid: "https://blog.nachitima.com/interview-with-sasha-hackerspace-stories",
+      resolvedAuthor: "Nachitima",
+      feedUrl: "https://blog.nachitima.com/feed/",
+    });
+    expect(result.normalizedPayload.curated.unresolved).toEqual([]);
   });
 
   it("probes feeds with concurrency capped at 4", async () => {

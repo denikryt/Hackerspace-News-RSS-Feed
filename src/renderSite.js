@@ -16,6 +16,7 @@ import { slugify } from "./utils/slugify.js";
 import { filterNormalizedPayloadForDisplay } from "./visibleData.js";
 import { buildAuthorDetailModel, buildAuthorsIndexModel } from "./viewModels/authors.js";
 import { buildContentStreamModel, listContentStreams } from "./viewModels/contentStreams.js";
+import { buildCuratedIndexModel } from "./viewModels/curated.js";
 import { buildSpaceDetailModel } from "./viewModels/spaceDetail.js";
 import { buildSpacesIndexModel } from "./viewModels/spacesIndex.js";
 
@@ -52,6 +53,10 @@ export async function renderSite({
     "index.html": renderSpacesIndex(spacesIndexModel),
     "about/index.html": renderAboutPage(),
   };
+
+  if ((displayPayload.curated?.items || []).length > 0) {
+    pages["curated/index.html"] = renderGlobalFeed(buildCuratedIndexModel(displayPayload));
+  }
 
   const contentStreams = listContentStreams(displayPayload);
   const primaryStream = contentStreams.find((stream) => stream.id === FEED_CONTENT_STREAM_ID);
