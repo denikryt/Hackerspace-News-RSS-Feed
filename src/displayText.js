@@ -1,3 +1,5 @@
+import { load } from "cheerio";
+
 const MAX_CONTENT_LENGTH = 500;
 
 export function selectDisplayText(item) {
@@ -109,6 +111,15 @@ function truncateSelectedDisplayValue(value, format) {
     const truncated = truncatePlainText(plainText, MAX_CONTENT_LENGTH);
 
     if (truncated.wasTruncated) {
+      const html = truncateHtml(value, MAX_CONTENT_LENGTH);
+      if (html) {
+        return {
+          text: html,
+          wasTruncated: true,
+          format: "html",
+        };
+      }
+
       return {
         text: truncated.text,
         wasTruncated: true,
@@ -194,6 +205,89 @@ function truncatePlainText(value, limit) {
   return { text: truncated + "…", wasTruncated: true };
 }
 
+function truncateHtml(value, limit) {
+  if (typeof value !== "string" || !value) {
+    return undefined;
+  }
+
+  const $ = load(`<div id="root">${value}</div>`, null, false);
+  const root = $("#root");
+  const state = {
+    remaining: limit,
+    wasTruncated: false,
+  };
+
+  truncateHtmlNodes(root.contents().toArray(), state, $);
+  removeEmptyHtmlNodes(root, $);
+
+  const html = root.html()?.trim();
+  return html || undefined;
+}
+
+function truncateHtmlNodes(nodes, state, $) {
+  for (const node of nodes) {
+    if (state.remaining <= 0) {
+      $(node).remove();
+      state.wasTruncated = true;
+      continue;
+    }
+
+    truncateHtmlNode(node, state, $);
+  }
+}
+
+function truncateHtmlNode(node, state, $) {
+  if (!node) {
+    return;
+  }
+
+  if (node.type === "text") {
+    truncateHtmlTextNode(node, state);
+    return;
+  }
+
+  if (!Array.isArray(node.children) || node.children.length === 0) {
+    return;
+  }
+
+  truncateHtmlNodes([...node.children], state, $);
+}
+
+function truncateHtmlTextNode(node, state) {
+  const text = typeof node.data === "string" ? node.data : "";
+  if (!text) {
+    return;
+  }
+
+  if (text.length <= state.remaining) {
+    state.remaining -= text.length;
+    return;
+  }
+
+  const truncated = truncatePlainText(text, state.remaining);
+  node.data = truncated.text;
+  state.remaining = 0;
+  state.wasTruncated = true;
+}
+
+function removeEmptyHtmlNodes(root, $) {
+  root.find("*").each((_, element) => {
+    if (isVoidHtmlTag(element.tagName)) {
+      return;
+    }
+
+    const hasChildren = Array.isArray(element.children) && element.children.length > 0;
+    if (hasChildren) {
+      return;
+    }
+
+    const text = $(element).text();
+    if (!text.trim()) {
+      $(element).remove();
+    }
+  });
+}
+
 function adjustIndexForSurrogates(value, index) {
   if (index <= 0 || index >= value.length) {
     return index;
@@ -241,6 +335,10 @@ function isHighSurrogate(code) {
 
 function isLowSurrogate(code) {
   return code >= 0xdc00 && code <= 0xdfff;
+}
+
+function isVoidHtmlTag(tagName) {
+  return ["br", "hr", "img", "input", "meta", "link"].includes(String(tagName || "").toLowerCase());
 }
 
 function stripHtml(value) {

@@ -365,7 +365,7 @@ describe("selectDisplayText", () => {
   });
 
   describe("HTML Content Handling", () => {
-    it("falls back to truncated text when html content exceeds the limit", () => {
+    it("keeps html format when truncating long html content", () => {
       const longHtml = "<p>" + "x".repeat(600) + "</p>";
       const item = {
         summaryCandidates: [],
@@ -375,11 +375,12 @@ describe("selectDisplayText", () => {
       };
 
       const result = selectDisplayText(item);
-      // Should use text version for truncation, not HTML
       expect(result.wasTruncated).toBe(true);
-      expect(result.text).toHaveLength(501); // 500 chars + "…"
-      expect(result.format).toBe("text");
+      expect(result.format).toBe("html");
       expect(result.sourceField).toBe("content:encoded");
+      expect(result.text).toContain("<p>");
+      expect(result.text).toContain("…");
+      expect(result.text).toContain("</p>");
     });
 
     it("keeps short html content as html", () => {

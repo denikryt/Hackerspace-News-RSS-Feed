@@ -131,6 +131,42 @@ describe("content rendering", () => {
     expect(html).not.toContain(">Read more<");
   });
 
+  it("renders truncated long html content as rich html with read more", () => {
+    const longHtml = `<p>${"x".repeat(320)}</p><p>${"y".repeat(320)}</p>`;
+    const html = renderGlobalFeed({
+      items: [
+        {
+          title: "Long HTML post",
+          spaceName: "BetaMachine",
+          spaceHref: "/spaces/betamachine.html",
+          link: "https://example.com/long-html-post",
+          displayDate: "2025-01-01T10:00:00.000Z",
+          observed: {
+            summaryCandidates: [],
+            contentCandidates: [
+              {
+                field: "content:encoded",
+                html: longHtml,
+                text: `${"x".repeat(320)} ${"y".repeat(320)}`,
+              },
+            ],
+          },
+        },
+      ],
+      homeHref: "/index.html",
+      pageTitle: "Feed",
+      pageIntro: "All publications sorted from new to old.",
+      streamNavItems: [{ href: "/feed/index.html", label: "Feed", isCurrent: true }],
+      publicationCountLabel: "1 of 1 publications",
+    });
+
+    expect(html).toContain('class="content-body rich-html"');
+    expect(html).toContain(">Read more<");
+    expect(html).toContain('href="https://example.com/long-html-post"');
+    expect(html).toContain("…");
+    expect(html).not.toContain(`${"y".repeat(320)}</p>`);
+  });
+
   it("renders truncated fallback content consistently across renderers", () => {
     const longText = Array.from({ length: 160 }, (_, index) => `content-${index}`).join(" ");
     const feedHtml = renderGlobalFeed({
