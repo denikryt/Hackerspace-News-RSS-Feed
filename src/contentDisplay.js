@@ -31,9 +31,10 @@ export function renderDisplayContent(item) {
   const display = selectItemDisplayContent(item);
   const attachments = normalizeDisplayAttachments(item.attachments);
   const body = renderDisplayBody(display);
+  const readMore = renderReadMoreLink(item.link, display);
   const attachmentsHtml = renderAttachments(attachments);
 
-  return [body, attachmentsHtml].filter(Boolean).join("");
+  return [body, readMore, attachmentsHtml].filter(Boolean).join("");
 }
 
 export function sanitizeContentHtml(value) {
@@ -119,6 +120,14 @@ function renderAttachments(attachments) {
     .join("");
 
   return `<div class="attachments"><p class="field-label">Attachments</p><ul>${items}</ul></div>`;
+}
+
+function renderReadMoreLink(url, display) {
+  if (!display?.wasTruncated || !url || !isSafeUrl(url)) {
+    return "";
+  }
+
+  return `<p class="content-read-more"><a href="${escapeHtml(url)}">Read more</a></p>`;
 }
 
 function normalizeDisplayAttachments(attachments) {

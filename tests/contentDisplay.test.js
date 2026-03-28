@@ -67,6 +67,41 @@ describe("contentDisplay", () => {
     expect(html).toContain("Persisted display text…");
   });
 
+  it("renders read more link when truncated display text has original link", () => {
+    const html = renderDisplayContent({
+      link: "https://example.com/original-post",
+      displayContent: {
+        text: "Persisted display text…",
+        wasTruncated: true,
+        format: "text",
+        sourceField: "content:encoded",
+      },
+      observed: {
+        summaryCandidates: [],
+      },
+    });
+
+    expect(html).toContain(">Read more<");
+    expect(html).toContain('href="https://example.com/original-post"');
+  });
+
+  it("does not render read more link when display text is not truncated", () => {
+    const html = renderDisplayContent({
+      link: "https://example.com/original-post",
+      displayContent: {
+        text: "Persisted display text",
+        wasTruncated: false,
+        format: "text",
+        sourceField: "content:encoded",
+      },
+      observed: {
+        summaryCandidates: [],
+      },
+    });
+
+    expect(html).not.toContain(">Read more<");
+  });
+
   it("does not throw when html display falls back after sanitization removes everything", () => {
     expect(() =>
       renderDisplayContent({

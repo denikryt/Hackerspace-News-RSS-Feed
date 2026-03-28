@@ -4,17 +4,17 @@ import { selectDisplayText } from "../src/contentDisplay.js";
 
 describe("selectDisplayText", () => {
   describe("Summary Handling", () => {
-    it("returns summary without truncation when available", () => {
+    it("prefers content over summary when both are available", () => {
       const item = {
         summaryCandidates: [{ field: "summary", text: "Brief post summary" }],
-        contentCandidates: [{ field: "content:encoded", text: "x".repeat(1000) }],
+        contentCandidates: [{ field: "content:encoded", text: "Primary content body" }],
       };
 
       const result = selectDisplayText(item);
-      expect(result.text).toBe("Brief post summary");
+      expect(result.text).toBe("Primary content body");
       expect(result.wasTruncated).toBe(false);
       expect(result.format).toBe("text");
-      expect(result.sourceField).toBe("summary");
+      expect(result.sourceField).toBe("content:encoded");
     });
 
     it("truncates summary when it exceeds the max length", () => {
@@ -252,7 +252,7 @@ describe("selectDisplayText", () => {
   });
 
   describe("Priority Ordering", () => {
-    it("respects summary > description > contentSnippet priority", () => {
+    it("uses content before summary candidates when content is present", () => {
       const item = {
         summaryCandidates: [
           { field: "summary", text: "Summary" },
@@ -265,9 +265,9 @@ describe("selectDisplayText", () => {
       };
 
       const result = selectDisplayText(item);
-      expect(result.text).toBe("Summary");
+      expect(result.wasTruncated).toBe(true);
       expect(result.format).toBe("text");
-      expect(result.sourceField).toBe("summary");
+      expect(result.sourceField).toBe("content:encoded");
     });
 
     it("uses content only when all summaries missing", () => {

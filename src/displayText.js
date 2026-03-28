@@ -1,20 +1,6 @@
 const MAX_CONTENT_LENGTH = 500;
 
 export function selectDisplayText(item) {
-  const summaryCandidates = Array.isArray(item?.summaryCandidates) ? item.summaryCandidates : [];
-  for (const candidate of summaryCandidates) {
-    const picked = readSummaryCandidate(candidate);
-    if (picked) {
-      const truncated = truncateSelectedDisplayValue(picked.value, picked.format);
-      return {
-        text: truncated.text,
-        wasTruncated: truncated.wasTruncated,
-        format: truncated.format,
-        sourceField: picked.field,
-      };
-    }
-  }
-
   const contentCandidates = Array.isArray(item?.contentCandidates) ? item.contentCandidates : [];
   for (const candidate of contentCandidates) {
     const picked = readContentCandidate(candidate);
@@ -29,6 +15,20 @@ export function selectDisplayText(item) {
       format: "text",
       sourceField: picked.field,
     };
+  }
+
+  const summaryCandidates = Array.isArray(item?.summaryCandidates) ? item.summaryCandidates : [];
+  for (const candidate of summaryCandidates) {
+    const picked = readSummaryCandidate(candidate);
+    if (picked) {
+      const truncated = truncateSelectedDisplayValue(picked.value, picked.format);
+      return {
+        text: truncated.text,
+        wasTruncated: truncated.wasTruncated,
+        format: truncated.format,
+        sourceField: picked.field,
+      };
+    }
   }
 
   return {
