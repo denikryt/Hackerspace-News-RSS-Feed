@@ -66,4 +66,20 @@ describe("contentDisplay", () => {
     expect(html).toContain('class="content-body plain-text"');
     expect(html).toContain("Persisted display text…");
   });
+
+  it("does not throw when html display falls back after sanitization removes everything", () => {
+    expect(() =>
+      renderDisplayContent({
+        displayContent: {
+          text: '<iframe src="https://example.com/embed"></iframe>',
+          wasTruncated: false,
+          format: "html",
+          sourceField: "summary",
+        },
+        observed: {
+          summaryCandidates: [],
+        },
+      }),
+    ).not.toThrow();
+  });
 });

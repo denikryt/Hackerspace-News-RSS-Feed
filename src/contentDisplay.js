@@ -139,6 +139,15 @@ function looksLikeHtml(value) {
   return /<[^>]+>/.test(String(value));
 }
 
+function stripHtml(value) {
+  const text = load(`<div id="root">${String(value ?? "")}</div>`, null, false)
+    .text()
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return text || undefined;
+}
+
 function isSafeUrl(value) {
   if (!value) {
     return false;
