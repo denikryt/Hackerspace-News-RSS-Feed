@@ -98,6 +98,39 @@ describe("content rendering", () => {
     expect(html).toContain('img[src*="emoji"]');
   });
 
+  it("keeps short html content as rich html in the global feed", () => {
+    const html = renderGlobalFeed({
+      items: [
+        {
+          title: "HTML post",
+          spaceName: "BetaMachine",
+          spaceHref: "/spaces/betamachine.html",
+          link: "https://example.com/post",
+          displayDate: "2025-01-01T10:00:00.000Z",
+          observed: {
+            summaryCandidates: [{ field: "summary", text: "Fallback summary" }],
+            contentCandidates: [
+              {
+                field: "content:encoded",
+                html: '<p>Hello <a href="https://example.com/post">link</a></p>',
+                text: "Hello link",
+              },
+            ],
+          },
+        },
+      ],
+      homeHref: "/index.html",
+      pageTitle: "Feed",
+      pageIntro: "All publications sorted from new to old.",
+      streamNavItems: [{ href: "/feed/index.html", label: "Feed", isCurrent: true }],
+      publicationCountLabel: "1 of 1 publications",
+    });
+
+    expect(html).toContain('class="content-body rich-html"');
+    expect(html).toContain('<a href="https://example.com/post">link</a>');
+    expect(html).not.toContain(">Read more<");
+  });
+
   it("renders truncated fallback content consistently across renderers", () => {
     const longText = Array.from({ length: 160 }, (_, index) => `content-${index}`).join(" ");
     const feedHtml = renderGlobalFeed({
@@ -106,6 +139,7 @@ describe("content rendering", () => {
           title: "Long post",
           spaceName: "BetaMachine",
           spaceHref: "/spaces/betamachine.html",
+          link: "https://example.com/long-post",
           displayDate: "2025-01-01T10:00:00.000Z",
           observed: {
             summaryCandidates: [],
@@ -131,6 +165,7 @@ describe("content rendering", () => {
       items: [
         {
           title: "Long post",
+          link: "https://example.com/long-post",
           displayDate: "2025-01-01T10:00:00.000Z",
           observed: {
             summaryCandidates: [],
@@ -151,6 +186,8 @@ describe("content rendering", () => {
     expect(feedMatch?.[1]?.length).toBeLessThanOrEqual(505); // escaped text may add entities
     expect(feedHtml).not.toContain(longText);
     expect(detailHtml).not.toContain(longText);
+    expect(feedHtml).toContain(">Read more<");
+    expect(detailHtml).toContain(">Read more<");
   });
 
   it("renders pagination controls for global feed", () => {

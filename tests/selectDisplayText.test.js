@@ -365,7 +365,7 @@ describe("selectDisplayText", () => {
   });
 
   describe("HTML Content Handling", () => {
-    it("returns HTML from content candidates when truncated", () => {
+    it("falls back to truncated text when html content exceeds the limit", () => {
       const longHtml = "<p>" + "x".repeat(600) + "</p>";
       const item = {
         summaryCandidates: [],
@@ -382,7 +382,7 @@ describe("selectDisplayText", () => {
       expect(result.sourceField).toBe("content:encoded");
     });
 
-    it("prefers text content over HTML when both present", () => {
+    it("keeps short html content as html", () => {
       const item = {
         summaryCandidates: [],
         contentCandidates: [
@@ -395,8 +395,9 @@ describe("selectDisplayText", () => {
       };
 
       const result = selectDisplayText(item);
-      expect(result.text).toBe("Text content");
-      expect(result.format).toBe("text");
+      expect(result.text).toBe("<p>HTML content</p>");
+      expect(result.wasTruncated).toBe(false);
+      expect(result.format).toBe("html");
       expect(result.sourceField).toBe("content:encoded");
     });
   });
