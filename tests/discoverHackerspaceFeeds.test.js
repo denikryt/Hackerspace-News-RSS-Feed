@@ -115,7 +115,7 @@ describe("discoverFeedForSite", () => {
     });
   });
 
-  it("waits 1s between candidate endpoints and probes each candidate only once", async () => {
+  it("retries each discovery candidate endpoint twice and still waits 1s between different candidates", async () => {
     const waitImpl = vi.fn().mockResolvedValue(undefined);
     const fetchImpl = vi.fn(async (url) => {
       if (url === "https://theta.example/") {
@@ -148,8 +148,9 @@ describe("discoverFeedForSite", () => {
       status: "confirmed",
       validationStatus: "valid",
     });
-    expect(fetchImpl.mock.calls.filter(([url]) => url === "https://theta.example/feed")).toHaveLength(1);
+    expect(fetchImpl.mock.calls.filter(([url]) => url === "https://theta.example/feed")).toHaveLength(2);
     expect(fetchImpl.mock.calls.filter(([url]) => url === "https://theta.example/feed/")).toHaveLength(1);
+    expect(waitImpl).toHaveBeenCalledWith(2000);
     expect(waitImpl).toHaveBeenCalledWith(1000);
   });
 
@@ -481,4 +482,10 @@ function feedResponse(url, body, status = 200) {
 
 function notFoundResponse(url) {
   return htmlResponse(url, "<html><body>not found</body></html>", 404);
+}
+
+function fetchFailed({ code }) {
+  return Object.assign(new TypeError("fetch failed"), {
+    cause: Object.assign(new Error(code), { code }),
+  });
 }

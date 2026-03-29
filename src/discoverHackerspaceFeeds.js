@@ -44,6 +44,7 @@ const DEFAULT_FALLBACK_PATHS = [
 const DEFAULT_MIN_REQUEST_DELAY_MS = 250;
 const DEFAULT_REQUEST_CONCURRENCY = 6;
 const DEFAULT_CANDIDATE_ENDPOINT_DELAY_MS = 1000;
+const DEFAULT_DISCOVERY_CANDIDATE_RETRY_DELAYS_MS = [2000];
 const SKIPPED_SITE_HOST_PATTERNS = [
   "t.me",
   "telegram.me",
@@ -181,7 +182,7 @@ export async function discoverFeedForSite({
         sourceRow: { candidateFeedUrl: candidate.feedUrl },
         fetchImpl,
         waitImpl,
-        retryDelaysMs: [],
+        retryDelaysMs: DEFAULT_DISCOVERY_CANDIDATE_RETRY_DELAYS_MS,
         logger,
       });
       const candidateResult = await buildCandidateResult({ site, candidate, validation });
