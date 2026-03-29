@@ -70,13 +70,18 @@ describe("discoverFeedForSite", () => {
     });
 
     const result = await discoverFeedForSite({
-      site: { siteUrl: "https://alpha.example/", hackerspaceName: "Alpha" },
+      site: {
+        siteUrl: "https://alpha.example/",
+        hackerspaceName: "Alpha",
+        hackerspaceWikiUrl: "https://wiki.hackerspaces.org/Alpha",
+      },
       fetchImpl,
       waitImpl: vi.fn().mockResolvedValue(undefined),
     });
 
     expect(result).toMatchObject({
       siteUrl: "https://alpha.example/",
+      hackerspaceWikiUrl: "https://wiki.hackerspaces.org/Alpha",
       feedUrl: "https://alpha.example/feed.xml",
       discoveryMethod: "alternate_link",
       status: "confirmed",
@@ -320,7 +325,10 @@ describe("discoverHackerspaceFeeds", () => {
       failed: 2,
     });
     expect(grouped.groupedByValidationStatus.valid).toEqual([
-      expect.objectContaining({ siteUrl: "http://www.synergymill.com/" }),
+      expect.objectContaining({
+        siteUrl: "http://www.synergymill.com/",
+        hackerspaceWikiUrl: "https://wiki.hackerspaces.org/Synergy_Mill",
+      }),
     ]);
     expect(grouped.groupedByValidationStatus.empty).toEqual([
       expect.objectContaining({ siteUrl: "https://www.chaoschemnitz.de/" }),

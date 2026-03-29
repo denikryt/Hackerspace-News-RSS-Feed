@@ -155,6 +155,7 @@ export async function discoverFeedForSite({
   if (shouldSkipSiteDiscovery(site.siteUrl)) {
     return {
       hackerspaceName: site.hackerspaceName,
+      hackerspaceWikiUrl: site.hackerspaceWikiUrl || null,
       siteUrl: site.siteUrl,
       discoveryMethod: null,
       status: "skipped",
@@ -206,6 +207,7 @@ export async function discoverFeedForSite({
 
     return {
       hackerspaceName: site.hackerspaceName,
+      hackerspaceWikiUrl: site.hackerspaceWikiUrl || null,
       siteUrl: site.siteUrl,
       discoveryMethod: null,
       status: "not_found",
@@ -214,6 +216,7 @@ export async function discoverFeedForSite({
   } catch (error) {
     return {
       hackerspaceName: site.hackerspaceName,
+      hackerspaceWikiUrl: site.hackerspaceWikiUrl || null,
       siteUrl: site.siteUrl,
       discoveryMethod: null,
       status: "failed",
@@ -226,11 +229,12 @@ export async function discoverFeedForSite({
 async function buildCandidateResult({ site, candidate, validation }) {
   if (!validation.fetchOk) {
     if (candidate.discoveryMethod === "alternate_link") {
-      return {
-        hackerspaceName: site.hackerspaceName,
-        siteUrl: site.siteUrl,
-        feedUrl: validation.finalUrl || candidate.feedUrl,
-        discoveryMethod: candidate.discoveryMethod,
+    return {
+      hackerspaceName: site.hackerspaceName,
+      hackerspaceWikiUrl: site.hackerspaceWikiUrl || null,
+      siteUrl: site.siteUrl,
+      feedUrl: validation.finalUrl || candidate.feedUrl,
+      discoveryMethod: candidate.discoveryMethod,
         status: "confirmed",
         validationStatus: "unreachable",
         validationNote: validation.errorMessage || validation.errorCode || "Candidate endpoint could not be reached",
@@ -260,6 +264,7 @@ async function buildCandidateResult({ site, candidate, validation }) {
 
   return {
     hackerspaceName: site.hackerspaceName,
+    hackerspaceWikiUrl: site.hackerspaceWikiUrl || null,
     siteUrl: site.siteUrl,
     discoveryMethod: candidate.discoveryMethod,
     status: "confirmed",
