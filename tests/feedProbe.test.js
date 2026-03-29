@@ -1,6 +1,10 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { probeFeedUrl } from "../src/feedProbe.js";
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe("probeFeedUrl", () => {
   it("marks XML feed responses as parsable feeds", async () => {
@@ -108,10 +112,69 @@ describe("probeFeedUrl", () => {
     expect(fetchImpl).toHaveBeenCalledTimes(1);
     expect(waitImpl).not.toHaveBeenCalled();
   });
+
+  it("uses 1s, 2s, and 3s attempt timeouts for transient feed hangs", async () => {
+    vi.useFakeTimers();
+
+    const waitImpl = vi.fn().mockResolvedValue(undefined);
+    const fetchImpl = vi.fn((url, options = {}) => (
+      createAbortableFetch({ signal: options.signal })
+    ));
+
+    const probePromise = probeFeedUrl({
+      sourceRow: { candidateFeedUrl: "https://example.com/feed.xml" },
+      fetchImpl,
+      waitImpl,
+    });
+
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(waitImpl).toHaveBeenNthCalledWith(1, 1000);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(waitImpl).toHaveBeenNthCalledWith(2, 2000);
+    expect(fetchImpl).toHaveBeenCalledTimes(3);
+
+    await vi.advanceTimersByTimeAsync(3000);
+    expect(waitImpl).toHaveBeenNthCalledWith(3, 3000);
+    expect(fetchImpl).toHaveBeenCalledTimes(4);
+
+    await vi.advanceTimersByTimeAsync(3000);
+
+    await expect(probePromise).resolves.toMatchObject({
+      fetchOk: false,
+      errorCode: "timeout",
+    });
+  });
 });
 
 function fetchFailed({ code }) {
   return Object.assign(new TypeError("fetch failed"), {
     cause: Object.assign(new Error(code), { code }),
   });
+}
+
+function createAbortableFetch({ signal }) {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(abortError());
+      return;
+    }
+
+    signal?.addEventListener(
+      "abort",
+      () => {
+        queueMicrotask(() => {
+          reject(abortError());
+        });
+      },
+      { once: true },
+    );
+  });
+}
+
+function abortError() {
+  return new DOMException("The operation was aborted", "AbortError");
 }

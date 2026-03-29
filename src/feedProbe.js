@@ -1,4 +1,5 @@
 import { runWithNetworkRetry } from "./networkRetry.js";
+import { getAttemptTimeoutMs } from "./networkAttemptTimeout.js";
 
 export async function probeFeedUrl({
   sourceRow,
@@ -11,7 +12,11 @@ export async function probeFeedUrl({
 
   try {
     const response = await runWithNetworkRetry({
-      run: () => fetchFeedWithTimeout({ candidateUrl, fetchImpl }),
+      run: ({ attemptNumber }) => fetchFeedWithTimeout({
+        candidateUrl,
+        fetchImpl,
+        timeoutMs: getAttemptTimeoutMs({ attemptNumber }),
+      }),
       waitImpl,
       retryDelaysMs,
       onRetry: ({ attemptNumber, maxAttempts, delayMs, errorCode }) => {
@@ -60,9 +65,9 @@ export async function probeFeedUrl({
   }
 }
 
-async function fetchFeedWithTimeout({ candidateUrl, fetchImpl }) {
+async function fetchFeedWithTimeout({ candidateUrl, fetchImpl, timeoutMs }) {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30_000);
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   return fetchImpl(candidateUrl, {
     redirect: "follow",

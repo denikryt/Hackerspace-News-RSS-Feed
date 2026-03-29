@@ -1,4 +1,5 @@
 import { runWithNetworkRetry } from "./networkRetry.js";
+import { getAttemptTimeoutMs } from "./networkAttemptTimeout.js";
 
 export async function fetchPageHtml({
   sourcePageUrl,
@@ -8,7 +9,11 @@ export async function fetchPageHtml({
   logger,
 }) {
   const response = await runWithNetworkRetry({
-    run: () => fetchWithTimeout({ sourcePageUrl, fetchImpl }),
+    run: ({ attemptNumber }) => fetchWithTimeout({
+      sourcePageUrl,
+      fetchImpl,
+      timeoutMs: getAttemptTimeoutMs({ attemptNumber }),
+    }),
     waitImpl,
     retryDelaysMs,
     onRetry: ({ attemptNumber, maxAttempts, delayMs, errorCode }) => {
@@ -27,9 +32,9 @@ export async function fetchPageHtml({
   return response.text();
 }
 
-async function fetchWithTimeout({ sourcePageUrl, fetchImpl }) {
+async function fetchWithTimeout({ sourcePageUrl, fetchImpl, timeoutMs }) {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30_000);
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   return fetchImpl(sourcePageUrl, {
     redirect: "follow",
