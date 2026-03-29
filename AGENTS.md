@@ -76,6 +76,20 @@ Readable code in this project means:
 
 Do not stop after “the test passes” if the resulting code is still awkward, overly compressed, or harder to read than necessary.
 
+### 1.1. Comments For Readability
+
+Write comments to make the code easier for a human to read.
+
+By default:
+
+- add a short comment to each non-trivial module, function, class, and complex logic block;
+- explain what the code is doing, why it exists, and what rule or invariant it is enforcing;
+- be especially explicit around parsing, fallback chains, grouping, skipping, truncation, and real-data assumptions.
+
+Do not restate syntax.
+
+Good comments explain intent, not mechanics.
+
 ### 2. Rendering
 
 UI must render only data that is actually present.
