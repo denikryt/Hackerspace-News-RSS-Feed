@@ -14,6 +14,6 @@ export const PATHS = {
   validations: resolve(DATA_DIR, "feed_validation.json"),
   normalizedFeeds: resolve(DATA_DIR, "feeds_normalized.json"),
   discoveredHackerspaceSourceSnapshot: resolve(DATA_DIR, "discovery/list_of_hacker_spaces.html"),
-  discoveredHackerspaceFeeds: resolve(DATA_DIR, "discovery/discovered_hackerspace_feeds.yml"),
+  discoveredHackerspaceFeeds: resolve(DATA_DIR, "discovery/discovered_hackerspace_feeds.json"),
   htmlOutput: resolve(DIST_DIR, "index.html"),
 };

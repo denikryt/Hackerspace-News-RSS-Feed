@@ -113,8 +113,5 @@ function buildErrorCode({ responseOk, contentType, isParsable }) {
   if (isParsable) {
     return null;
   }
-  if (String(contentType).includes("html")) {
-    return "non_feed_html";
-  }
-  return "non_feed_content";
+  return "non_xml_response";
 }

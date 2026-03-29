@@ -32,7 +32,7 @@ describe("probeFeedUrl", () => {
     });
   });
 
-  it("marks Telegram-like HTML pages as non_feed_html", async () => {
+  it("marks Telegram-like HTML pages as non_xml_response", async () => {
     const fetchImpl = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
@@ -50,7 +50,7 @@ describe("probeFeedUrl", () => {
       fetchOk: true,
       isFeedLike: false,
       isParsable: false,
-      errorCode: "non_feed_html",
+      errorCode: "non_xml_response",
     });
   });
 

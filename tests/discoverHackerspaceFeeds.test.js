@@ -174,11 +174,12 @@ describe("discoverFeedForSite", () => {
 
     expect(result).toMatchObject({
       siteUrl: "https://gamma.example/",
-      feedUrl: "https://gamma.example/feed",
       discoveryMethod: "fallback_path",
       status: "confirmed",
       validationStatus: "invalid",
+      validationNote: "non_xml_response",
     });
+    expect(result).not.toHaveProperty("feedUrl");
   });
 
   it("marks unreachable alternate-link endpoints separately from not_found", async () => {
@@ -242,13 +243,13 @@ describe("discoverFeedForSite", () => {
 });
 
 describe("discoverHackerspaceFeeds", () => {
-  it("writes an auditable yaml registry with valid and invalid results separated", async () => {
+  it("writes a grouped json registry with valid and invalid results separated", async () => {
     const outputDir = await mkdtemp(resolve(tmpdir(), "hnf-discovery-"));
     tempDirs.push(outputDir);
 
     const paths = {
       discoveredHackerspaceSourceSnapshot: resolve(outputDir, "data/discovery/list_of_hacker_spaces.html"),
-      discoveredHackerspaceFeeds: resolve(outputDir, "data/discovery/discovered_hackerspace_feeds.yml"),
+      discoveredHackerspaceFeeds: resolve(outputDir, "data/discovery/discovered_hackerspace_feeds.json"),
     };
     const logger = vi.fn();
 
@@ -303,18 +304,32 @@ describe("discoverHackerspaceFeeds", () => {
       failed: 2,
     });
 
-    const [snapshotHtml, yaml] = await Promise.all([
+    const [snapshotHtml, discoveryJson] = await Promise.all([
       readFile(paths.discoveredHackerspaceSourceSnapshot, "utf8"),
       readFile(paths.discoveredHackerspaceFeeds, "utf8"),
     ]);
+    const grouped = JSON.parse(discoveryJson);
 
     expect(snapshotHtml).toBe(sourceHtml);
-    expect(yaml).toContain('siteUrl: "http://www.synergymill.com/"');
-    expect(yaml).toContain('validationStatus: "valid"');
-    expect(yaml).toContain('siteUrl: "https://www.chaoschemnitz.de/"');
-    expect(yaml).toContain('validationStatus: "empty"');
-    expect(yaml).toContain('siteUrl: "http://ilmspace.de/"');
-    expect(yaml).toContain('status: "failed"');
+    expect(grouped.summary).toMatchObject({
+      sites: 4,
+      confirmed: 2,
+      valid: 1,
+      empty: 1,
+      failed: 2,
+    });
+    expect(grouped.groupedByValidationStatus.valid).toEqual([
+      expect.objectContaining({ siteUrl: "http://www.synergymill.com/" }),
+    ]);
+    expect(grouped.groupedByValidationStatus.empty).toEqual([
+      expect.objectContaining({ siteUrl: "https://www.chaoschemnitz.de/" }),
+    ]);
+    expect(grouped.groupedByValidationStatus.not_checked).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ siteUrl: "http://ilmspace.de/", status: "failed" }),
+        expect.objectContaining({ siteUrl: "https://c3d2.de/", status: "failed" }),
+      ]),
+    );
 
     const logLines = logger.mock.calls.map(([line]) => line);
     expect(logLines).toContain(`[discover] fetching source page: ${sourcePageUrl}`);
@@ -389,7 +404,7 @@ describe("discoverHackerspaceFeeds", () => {
 
     const paths = {
       discoveredHackerspaceSourceSnapshot: resolve(outputDir, "data/discovery/list_of_hacker_spaces.html"),
-      discoveredHackerspaceFeeds: resolve(outputDir, "data/discovery/discovered_hackerspace_feeds.yml"),
+      discoveredHackerspaceFeeds: resolve(outputDir, "data/discovery/discovered_hackerspace_feeds.json"),
     };
     const socialOnlyHtml = `
       <table>
@@ -430,10 +445,17 @@ describe("discoverHackerspaceFeeds", () => {
 
     const discoveryWrites = writes.filter(({ filePath }) => filePath === paths.discoveredHackerspaceFeeds);
     expect(discoveryWrites).toHaveLength(2);
-    expect(discoveryWrites[0].value).toContain('siteUrl: "https://t.me/sandbox_events"');
-    expect(discoveryWrites[0].value).not.toContain('siteUrl: "http://www.twitter.com/sugarshack"');
-    expect(discoveryWrites[1].value).toContain('siteUrl: "https://t.me/sandbox_events"');
-    expect(discoveryWrites[1].value).toContain('siteUrl: "http://www.twitter.com/sugarshack"');
+    const firstWrite = JSON.parse(discoveryWrites[0].value);
+    const secondWrite = JSON.parse(discoveryWrites[1].value);
+    expect(firstWrite.groupedByValidationStatus.not_checked).toEqual([
+      expect.objectContaining({ siteUrl: "https://t.me/sandbox_events" }),
+    ]);
+    expect(secondWrite.groupedByValidationStatus.not_checked).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ siteUrl: "https://t.me/sandbox_events" }),
+        expect.objectContaining({ siteUrl: "http://www.twitter.com/sugarshack" }),
+      ]),
+    );
   });
 });
 

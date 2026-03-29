@@ -105,7 +105,11 @@ export async function discoverHackerspaceFeeds({
         progressWriteChain = progressWriteChain.then(() => (
           writeTextImpl(
             paths.discoveredHackerspaceFeeds,
-            renderDiscoveredFeedsYaml(entries.filter(Boolean)),
+            renderDiscoveryPayloadJson({
+              generatedAt: new Date().toISOString(),
+              sourcePageUrl,
+              entries: entries.filter(Boolean),
+            }),
           )
         ));
         await progressWriteChain;
@@ -121,10 +125,14 @@ export async function discoverHackerspaceFeeds({
     sourcePageUrl,
     entries,
     summary: buildSummary(entries),
+    groupedByValidationStatus: groupEntriesByValidationStatus(entries),
   };
 
   if (writeOutput && entries.length === 0) {
-    await writeTextImpl(paths.discoveredHackerspaceFeeds, renderDiscoveredFeedsYaml(entries));
+    await writeTextImpl(
+      paths.discoveredHackerspaceFeeds,
+      renderDiscoveryPayloadJson({ generatedAt, sourcePageUrl, entries }),
+    );
   }
 
   return {
@@ -252,11 +260,13 @@ async function buildCandidateResult({ site, candidate, validation }) {
   return {
     hackerspaceName: site.hackerspaceName,
     siteUrl: site.siteUrl,
-    feedUrl: validation.finalUrl || candidate.feedUrl,
     discoveryMethod: candidate.discoveryMethod,
     status: "confirmed",
     validationStatus,
     validationNote,
+    ...(validationStatus === "valid" || validationStatus === "empty"
+      ? { feedUrl: validation.finalUrl || candidate.feedUrl }
+      : {}),
   };
 }
 
@@ -374,43 +384,40 @@ function buildSummary(entries) {
   };
 }
 
-function renderDiscoveredFeedsYaml(entries) {
-  if (!entries.length) {
-    return "[]\n";
-  }
-
-  return `${entries.map(renderYamlEntry).join("\n")}\n`;
-}
-
-function renderYamlEntry(entry) {
-  const lines = [
-    `- siteUrl: ${yamlString(entry.siteUrl)}`,
-    `  hackerspaceName: ${yamlString(entry.hackerspaceName || "")}`,
-  ];
-
-  if (entry.feedUrl) {
-    lines.push(`  feedUrl: ${yamlString(entry.feedUrl)}`);
-  }
-  if (entry.discoveryMethod) {
-    lines.push(`  discoveryMethod: ${yamlString(entry.discoveryMethod)}`);
-  }
-
-  lines.push(`  status: ${yamlString(entry.status)}`);
-  lines.push(`  validationStatus: ${yamlString(entry.validationStatus)}`);
-
-  if (entry.validationNote) {
-    lines.push(`  validationNote: ${yamlString(entry.validationNote)}`);
-  }
-
-  return lines.join("\n");
-}
-
-function yamlString(value) {
-  return JSON.stringify(String(value));
+function renderDiscoveryPayloadJson({ generatedAt, sourcePageUrl, entries }) {
+  return `${JSON.stringify({
+    generatedAt,
+    sourcePageUrl,
+    summary: buildSummary(entries),
+    groupedByValidationStatus: groupEntriesByValidationStatus(entries),
+  }, null, 2)}\n`;
 }
 
 function buildScheduledFetch(fetchImpl, scheduler) {
   return async (...args) => scheduler.schedule(() => fetchImpl(...args));
+}
+
+function groupEntriesByValidationStatus(entries) {
+  const grouped = {
+    valid: [],
+    empty: [],
+    invalid: [],
+    unreachable: [],
+    not_checked: [],
+  };
+
+  for (const entry of entries) {
+    if (!entry) {
+      continue;
+    }
+
+    const groupKey = entry.validationStatus in grouped
+      ? entry.validationStatus
+      : "not_checked";
+    grouped[groupKey].push(entry);
+  }
+
+  return grouped;
 }
 
 async function waitBetweenCandidateEndpoints(waitImpl = wait) {

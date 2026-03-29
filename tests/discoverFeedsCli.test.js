@@ -18,7 +18,7 @@ describe("runDiscoverFeedsCli", () => {
     tempDirs.push(outputDir);
 
     const discoveredHackerspaceSourceSnapshot = resolve(outputDir, "data/discovery/list_of_hacker_spaces.html");
-    const discoveredHackerspaceFeeds = resolve(outputDir, "data/discovery/discovered_hackerspace_feeds.yml");
+    const discoveredHackerspaceFeeds = resolve(outputDir, "data/discovery/discovered_hackerspace_feeds.json");
     const stdout = [];
     const logger = vi.fn((line) => stdout.push(line));
 
