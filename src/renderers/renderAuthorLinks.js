@@ -13,5 +13,5 @@ export function renderAuthorLinks(authorLinks, { linkClass = "", labelClass = "f
     )
     .join(", ");
 
-  return `<span><span class="${escapeHtml(labelClass)}">${label}:</span> ${links}</span>`;
+  return `<span><span class="${escapeHtml(labelClass)}">${label}:&nbsp;</span>${links}</span>`;
 }
