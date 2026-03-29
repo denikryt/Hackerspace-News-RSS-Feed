@@ -74,6 +74,7 @@ describe("discoverFeedForSite", () => {
         siteUrl: "https://alpha.example/",
         hackerspaceName: "Alpha",
         hackerspaceWikiUrl: "https://wiki.hackerspaces.org/Alpha",
+        country: "Wonderland",
       },
       fetchImpl,
       waitImpl: vi.fn().mockResolvedValue(undefined),
@@ -82,6 +83,7 @@ describe("discoverFeedForSite", () => {
     expect(result).toMatchObject({
       siteUrl: "https://alpha.example/",
       hackerspaceWikiUrl: "https://wiki.hackerspaces.org/Alpha",
+      country: "Wonderland",
       feedUrl: "https://alpha.example/feed.xml",
       discoveryMethod: "alternate_link",
       status: "confirmed",
@@ -328,6 +330,7 @@ describe("discoverHackerspaceFeeds", () => {
       expect.objectContaining({
         siteUrl: "http://www.synergymill.com/",
         hackerspaceWikiUrl: "https://wiki.hackerspaces.org/Synergy_Mill",
+        country: "US",
       }),
     ]);
     expect(grouped.groupedByValidationStatus.empty).toEqual([
