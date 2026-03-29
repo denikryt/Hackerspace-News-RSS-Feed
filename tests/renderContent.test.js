@@ -11,6 +11,7 @@ describe("content rendering", () => {
           title: "Plain post",
           spaceName: "BetaMachine",
           spaceHref: "/spaces/betamachine.html",
+          link: "https://example.com/plain-post",
           displayDate: "2025-01-01T10:00:00.000Z",
           observed: {
             summaryCandidates: [
@@ -39,10 +40,16 @@ describe("content rendering", () => {
     expect(html).toContain('class="timeline-date-day">01');
     expect(html).toContain('class="timeline-date-year">2025');
     expect(html).toContain("First line\nSecond line");
+    expect(html).toContain('href="/spaces/betamachine.html"');
+    expect(html).toContain(">Source<");
+    expect(html).toContain("•");
+    expect(html).toContain("Authors:");
+    expect(html).toContain('Authors:&nbsp;</span><a');
     expect(html).toContain('href="/authors/alice.html"');
     expect(html).toContain('href="/authors/bob.html"');
-    expect(html).toContain(">Alice<");
-    expect(html).toContain(">Bob<");
+    expect(html).toContain('class="global-feed-meta-line global-feed-meta-line-primary"');
+    expect(html).toContain('class="global-feed-meta-line global-feed-meta-line-authors"');
+    expect(html).toContain(".global-feed-meta { display: grid !important;");
     expect(html).toContain(".timeline-entry {");
     expect(html).toContain("grid-template-columns: 7rem 1rem minmax(0, 1fr)");
     expect(html).toContain("overflow-wrap: anywhere");
