@@ -17,9 +17,17 @@ export async function analyzeWikiDiscoveryUnmatchedResponses({
   fetchImpl = fetch,
   writeArtifact = false,
   logger,
+  attemptCount = 3,
+  attemptTimeoutsMs,
+  retryDelaysMs,
 } = {}) {
   const loadedComparisonPayload = comparisonPayload ?? await readJson(inputPath);
   const unmatchedEntries = loadedComparisonPayload.unmatched || [];
+  const attemptProfile = buildAnalysisAttemptProfile({
+    attemptCount,
+    attemptTimeoutsMs,
+    retryDelaysMs,
+  });
 
   const results = [];
 
@@ -31,10 +39,12 @@ export async function analyzeWikiDiscoveryUnmatchedResponses({
     const wikiProbe = await probeAsAnalysisInput({
       feedUrl: entry.wikiFeedUrl,
       fetchImpl,
+      ...attemptProfile,
     });
     const discoveryProbe = await probeAsAnalysisInput({
       feedUrl: entry.discoveryFeedUrl,
       fetchImpl,
+      ...attemptProfile,
     });
 
     const comparison = compareProbeResults({
@@ -82,11 +92,17 @@ export async function analyzeWikiDiscoveryUnmatchedResponses({
 // Probe one URL exactly once for this analysis. Discovery already told us which
 // URLs are worth comparing; here we only want the real response, not another
 // expensive retry cascade.
-async function probeAsAnalysisInput({ feedUrl, fetchImpl }) {
+async function probeAsAnalysisInput({
+  feedUrl,
+  fetchImpl,
+  retryDelaysMs,
+  attemptTimeoutsMs,
+}) {
   const validation = await probeFeedUrl({
     sourceRow: { candidateFeedUrl: feedUrl },
     fetchImpl,
-    retryDelaysMs: [],
+    retryDelaysMs,
+    attemptTimeoutsMs,
   });
 
   if (!validation.isParsable || !validation.body) {
@@ -116,6 +132,24 @@ async function probeAsAnalysisInput({ feedUrl, fetchImpl }) {
       signature: null,
     };
   }
+}
+
+// The unmatched-url analysis is slower and more targeted than discovery, so it
+// gets its own probe profile. By default it stays on a single 1s attempt, but
+// callers can opt into a small linear schedule such as 1s/2s/3s.
+export function buildAnalysisAttemptProfile({
+  attemptCount = 3,
+  attemptTimeoutsMs,
+  retryDelaysMs,
+} = {}) {
+  const normalizedAttemptCount = Number.isFinite(attemptCount) && attemptCount > 0
+    ? Math.floor(attemptCount)
+    : 1;
+
+  return {
+    attemptTimeoutsMs: attemptTimeoutsMs || buildLinearSchedule({ count: normalizedAttemptCount }),
+    retryDelaysMs: retryDelaysMs || buildLinearSchedule({ count: normalizedAttemptCount - 1 }),
+  };
 }
 
 // Collapse a feed into a small signature that is stable enough for
@@ -242,4 +276,8 @@ function normalizeUrl(value) {
 function countSharedValues(left, right) {
   const rightSet = new Set(right);
   return left.filter((value) => rightSet.has(value)).length;
+}
+
+function buildLinearSchedule({ count }) {
+  return Array.from({ length: Math.max(0, count) }, (_, index) => (index + 1) * 1000);
 }

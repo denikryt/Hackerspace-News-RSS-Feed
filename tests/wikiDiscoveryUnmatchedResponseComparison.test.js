@@ -1,8 +1,23 @@
 import { describe, expect, it } from "vitest";
 
-import { analyzeWikiDiscoveryUnmatchedResponses } from "../src/wikiDiscoveryUnmatchedResponseComparison.js";
+import {
+  analyzeWikiDiscoveryUnmatchedResponses,
+  buildAnalysisAttemptProfile,
+} from "../src/wikiDiscoveryUnmatchedResponseComparison.js";
 
 describe("analyzeWikiDiscoveryUnmatchedResponses", () => {
+  it("builds a three-attempt default profile with incrementing retry delays", () => {
+    expect(buildAnalysisAttemptProfile()).toEqual({
+      attemptTimeoutsMs: [1000, 2000, 3000],
+      retryDelaysMs: [1000, 2000],
+    });
+
+    expect(buildAnalysisAttemptProfile({ attemptCount: 3 })).toEqual({
+      attemptTimeoutsMs: [1000, 2000, 3000],
+      retryDelaysMs: [1000, 2000],
+    });
+  });
+
   it("fetches both urls for each unmatched item and classifies whether they return the same feed content", async () => {
     const logLines = [];
     const responseByUrl = new Map([

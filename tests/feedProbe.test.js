@@ -148,6 +148,39 @@ describe("probeFeedUrl", () => {
       errorCode: "timeout",
     });
   });
+
+  it("allows custom attempt timeout and retry delay schedules", async () => {
+    vi.useFakeTimers();
+
+    const waitImpl = vi.fn().mockResolvedValue(undefined);
+    const fetchImpl = vi.fn((url, options = {}) => (
+      createAbortableFetch({ signal: options.signal })
+    ));
+
+    const probePromise = probeFeedUrl({
+      sourceRow: { candidateFeedUrl: "https://example.com/feed.xml" },
+      fetchImpl,
+      waitImpl,
+      retryDelaysMs: [500],
+      attemptTimeoutsMs: [4000, 5000],
+    });
+
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(3999);
+    expect(waitImpl).not.toHaveBeenCalled();
+
+    await vi.advanceTimersByTimeAsync(1);
+    expect(waitImpl).toHaveBeenCalledWith(500);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+
+    await vi.advanceTimersByTimeAsync(5000);
+
+    await expect(probePromise).resolves.toMatchObject({
+      fetchOk: false,
+      errorCode: "timeout",
+    });
+  });
 });
 
 function fetchFailed({ code }) {

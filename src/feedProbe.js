@@ -6,6 +6,7 @@ export async function probeFeedUrl({
   fetchImpl = fetch,
   waitImpl,
   retryDelaysMs,
+  attemptTimeoutsMs,
   logger,
 }) {
   const candidateUrl = sourceRow.candidateFeedUrl;
@@ -15,7 +16,7 @@ export async function probeFeedUrl({
       run: ({ attemptNumber }) => fetchFeedWithTimeout({
         candidateUrl,
         fetchImpl,
-        timeoutMs: getAttemptTimeoutMs({ attemptNumber }),
+        timeoutMs: getAttemptTimeoutMs({ attemptNumber, timeoutsMs: attemptTimeoutsMs }),
       }),
       waitImpl,
       retryDelaysMs,

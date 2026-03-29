@@ -168,11 +168,11 @@ describe("refreshDataset", () => {
     const logLines = logger.mock.calls.map(([line]) => line);
     expect(logLines).toContain("[refresh] source rows extracted: 3");
     expect(logLines).toContain("[refresh] probing feed 1/3: https://t.me/akiba_space");
-    expect(logLines).toContain("[refresh] failed feed 1/3: https://t.me/akiba_space (non_feed_html: 200)");
+    expect(logLines).toContain("[refresh] failed feed 1/3: https://t.me/akiba_space (non_xml_response: 200)");
     expect(logLines).toContain("[refresh] probing feed 2/3: https://www.betamachine.fr/feed/");
     expect(logLines).toContain("[refresh] parsed feed 2/3: https://www.betamachine.fr/feed/ -> https://www.betamachine.fr/feed/ (items=1)");
     expect(logLines).toContain("[refresh] probing feed 3/3: https://trac.raumfahrtagentur.org/blog?format=rss&user=anonymous");
-    expect(logLines).toContain("[refresh] failed feed 3/3: https://trac.raumfahrtagentur.org/blog?format=rss&user=anonymous (non_feed_html: 200)");
+    expect(logLines).toContain("[refresh] failed feed 3/3: https://trac.raumfahrtagentur.org/blog?format=rss&user=anonymous (non_xml_response: 200)");
     expect(logLines).toContain("[refresh] refresh complete: feeds=1 failures=2");
   });
 
