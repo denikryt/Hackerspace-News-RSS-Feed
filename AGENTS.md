@@ -226,14 +226,14 @@ Any implementation plan should:
 
 ## Notes Writing Rules
 
-Use notes in `plans/notes/` for short idea capture, not for implementation planning.
+Use notes in `notes/` for short idea capture, not for implementation planning.
 
-Every new note file in `plans/notes/` must be numbered.
+Every new note file in `notes/` must be numbered.
 
 Note filename rule:
 
 - use a zero-padded ordinal prefix at the start of the filename;
-- choose the next available number relative to the existing note files in `plans/notes/`;
+- choose the next available number relative to the existing note files in `notes/`;
 - keep the descriptive uppercase name after the numeric prefix.
 
 Example:
@@ -251,8 +251,17 @@ Default note structure:
 
 - `# Title`
 - `## Problem`
-- `## Possible Directions`
+- `## Draft implementation`
 - `## Draft Result`
+
+`## Draft implementation` should describe one realistic implementation direction that follows from the current project context.
+
+For notes:
+
+- do not enumerate several alternative scenarios by default;
+- do not write broad option menus unless the user explicitly asks for alternatives;
+- choose the implementation direction that currently looks most realistic and coherent for this project;
+- describe that direction briefly and concretely.
 
 `## Draft Result` should be short and simple.
 
@@ -268,7 +277,7 @@ Do not turn `## Draft Result` into:
 - detailed architecture staging;
 - long lists of repeated consequences or restatements.
 
-Notes should describe tension and options, not implementation stages.
+Notes should describe the concrete problem, one plausible implementation direction, and the expected result.
 
 Do not turn a note into a full plan unless the user explicitly asks for a plan.
 

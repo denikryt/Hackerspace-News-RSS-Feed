@@ -176,6 +176,8 @@ describe("renderSite", () => {
       await access(resolve(distDir, "favicon.png"));
 
       expect(indexHtml).toContain("Hackerspace News");
+      expect(indexHtml).toContain("Search hackerspaces");
+      expect(indexHtml).toContain("Search by hackerspace name");
       expect(indexHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
       expect(aboutHtml).toContain("About");
       expect(aboutHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');

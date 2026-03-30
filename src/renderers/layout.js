@@ -187,8 +187,12 @@ export function renderLayout({ title, body }) {
       .detail-header-link { line-height: 1.2; padding-bottom: 0.14em; }
       .item-header-detail { min-block-size: 2.4rem; margin-bottom: 10px; padding-bottom: 10px; }
       .item-header-global { min-block-size: auto; }
-      .global-feed-meta { display: flex !important; flex-wrap: nowrap; gap: 0.9rem; align-items: flex-end; }
-      .global-feed-meta > span { display: inline-flex; align-items: flex-end; }
+      .global-feed-meta { display: grid !important; gap: 0.35rem; align-items: start; }
+      .global-feed-meta > span { min-inline-size: 0; }
+      .global-feed-meta-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.45rem; }
+      .global-feed-meta-line > span { display: inline-flex; align-items: baseline; min-inline-size: 0; }
+      .global-feed-meta-line-primary { gap: 0.55rem; }
+      .global-feed-meta-line-authors { gap: 0.4rem; }
       .detail-item-meta { align-items: baseline; }
       .detail-item-meta-link { padding-bottom: 0.14em; }
       .item-title { margin: 0 0 14px; text-transform: uppercase; }

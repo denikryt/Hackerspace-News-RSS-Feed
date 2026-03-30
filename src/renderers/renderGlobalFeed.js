@@ -16,19 +16,7 @@ export function renderGlobalFeed(model) {
           <div class="timeline-axis" aria-hidden="true"></div>
           <div class="timeline-content">
             <div class="item-header item-header-global">
-              <div class="meta global-feed-meta">
-                ${
-                  item.spaceHref
-                    ? `<span><a class="global-feed-meta-link global-feed-space-link" href="${item.spaceHref}">${escapeHtml(item.spaceName || "Hackerspace")}</a></span>`
-                    : ""
-                }
-                ${renderAuthorLinks(item.authorLinks, { linkClass: "global-feed-meta-link global-feed-original-link" })}
-                ${
-                  item.link
-                    ? `<span><a class="global-feed-meta-link global-feed-original-link" href="${item.link}">Original</a></span>`
-                    : ""
-                }
-              </div>
+              <div class="meta global-feed-meta">${renderGlobalFeedMeta(item)}</div>
             </div>
             <h3 class="item-title">${escapeHtml(item.title || "Untitled item")}</h3>
             ${renderDisplayContent(item)}
@@ -74,6 +62,40 @@ function buildPageSummaryLabel(model) {
   }
 
   return parts.join(" · ");
+}
+
+function renderGlobalFeedMeta(item) {
+  const topLineParts = [];
+
+  if (item.spaceHref) {
+    topLineParts.push(
+      `<span><a class="global-feed-meta-link global-feed-space-link" href="${item.spaceHref}">${escapeHtml(item.spaceName || "Hackerspace")}</a></span>`,
+    );
+  }
+
+  if (item.link) {
+    topLineParts.push(
+      `<span><a class="global-feed-meta-link global-feed-original-link" href="${item.link}">Source</a></span>`,
+    );
+  }
+
+  const lines = [];
+
+  if (topLineParts.length > 0) {
+    lines.push(
+      `<span class="global-feed-meta-line global-feed-meta-line-primary">${topLineParts.join('<span aria-hidden="true">•</span>')}</span>`,
+    );
+  }
+
+  if (item.authorLinks?.length) {
+    lines.push(
+      `<span class="global-feed-meta-line global-feed-meta-line-authors">${renderAuthorLinks(item.authorLinks, {
+        linkClass: "global-feed-meta-link global-feed-original-link",
+      })}</span>`,
+    );
+  }
+
+  return lines.join("");
 }
 
 function renderPagination(model) {
