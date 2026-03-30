@@ -93,6 +93,37 @@ describe("content rendering", () => {
     expect(html).toContain('img[src*="emoji"]');
   });
 
+  it("renders detail page source above author links and omits the author line when absent", () => {
+    const html = renderSpaceDetail({
+      spaceName: "BetaMachine",
+      items: [
+        {
+          title: "Post with author",
+          displayDate: "2025-01-01T10:00:00.000Z",
+          link: "https://example.com/post-with-author",
+          authorLinks: [{ label: "Alice", href: "/authors/alice.html" }],
+        },
+        {
+          title: "Post without author",
+          displayDate: "2025-01-02T10:00:00.000Z",
+          link: "https://example.com/post-without-author",
+          authorLinks: [],
+        },
+      ],
+      homeHref: "/index.html",
+      feedHref: "/feed/index.html",
+    });
+
+    expect(html).toContain('href="https://example.com/post-with-author">Source</a>');
+    expect(html).toContain('href="/authors/alice.html"');
+    expect(html).toContain('class="global-feed-meta-line global-feed-meta-line-primary"');
+    expect(html).toContain('class="global-feed-meta-line global-feed-meta-line-authors"');
+    expect(html).toContain("Source</a></span></span><span class=\"global-feed-meta-line global-feed-meta-line-authors\"");
+    expect(html).toContain('href="https://example.com/post-without-author">Source</a>');
+    expect(html).not.toContain("Original");
+    expect(html.match(/Author:/g) || []).toHaveLength(1);
+  });
+
   it("renders pagination controls for global feed", () => {
     const html = renderGlobalFeed({
       items: [
