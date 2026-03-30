@@ -294,8 +294,16 @@ describe("renderSite", () => {
     expect(logLines).toContain("[render] rendering primary stream: pages=1");
     expect(logLines).toContain("[render] primary stream progress: page 1/1");
     expect(logLines).toContain("[render] rendered primary stream");
+    expect(logLines).toContain("[render] rendering author pages: authors=1");
+    expect(logLines).toContain("[render] author pages progress: item 1/1");
+    expect(logLines).toContain("[render] rendered author pages");
     expect(logLines).toContain("[render] rendering secondary streams: count=1");
+    expect(logLines).toContain("[render] secondary stream other: pages=1");
+    expect(logLines).toContain("[render] secondary stream other progress: page 1/1");
     expect(logLines).toContain("[render] rendered secondary streams");
+    expect(logLines).toContain("[render] rendering space pages: spaces=1");
+    expect(logLines).toContain("[render] space pages progress: item 1/1");
+    expect(logLines).toContain("[render] rendered space pages");
     expect(logLines).toContain("[render] building author directory");
     expect(logLines).toContain("[render] built author directory");
     expect(logLines).toContain("[render] built authors index model: authors=1");

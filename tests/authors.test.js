@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildAuthorDirectory,
   buildAuthorDetailModel,
   buildAuthorsIndexModel,
 } from "../src/viewModels/authors.js";
@@ -431,5 +432,33 @@ describe("author view models", () => {
         ],
       }),
     ]);
+  });
+
+  it("reuses a precomputed author directory without changing author models", () => {
+    const authorDirectory = buildAuthorDirectory(normalizedPayload, {
+      excludedAuthorNames: ["admin", "root", "unknown"],
+    });
+
+    expect(
+      buildAuthorsIndexModel(normalizedPayload, {
+        excludedAuthorNames: ["admin", "root", "unknown"],
+        authorDirectory,
+      }),
+    ).toEqual(
+      buildAuthorsIndexModel(normalizedPayload, {
+        excludedAuthorNames: ["admin", "root", "unknown"],
+      }),
+    );
+
+    expect(
+      buildAuthorDetailModel(normalizedPayload, "alice", {
+        excludedAuthorNames: ["admin", "root", "unknown"],
+        authorDirectory,
+      }),
+    ).toEqual(
+      buildAuthorDetailModel(normalizedPayload, "alice", {
+        excludedAuthorNames: ["admin", "root", "unknown"],
+      }),
+    );
   });
 });

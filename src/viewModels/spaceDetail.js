@@ -13,7 +13,7 @@ import {
 export function buildSpaceDetailModel(
   normalizedPayload,
   spaceSlug,
-  { currentPage = 1, pageSize = GLOBAL_FEED_PAGE_SIZE } = {},
+  { currentPage = 1, pageSize = GLOBAL_FEED_PAGE_SIZE, authorDirectory } = {},
 ) {
   const feed = (normalizedPayload.feeds || []).find(
     (entry) => slugify(entry.spaceName) === spaceSlug,
@@ -54,9 +54,9 @@ export function buildSpaceDetailModel(
     };
   }
 
-  const authorDirectory = buildAuthorDirectory(normalizedPayload);
+  const resolvedAuthorDirectory = authorDirectory || buildAuthorDirectory(normalizedPayload);
   const allItems = (feed.items || [])
-    .map((item) => withAuthorLinks(item, authorDirectory))
+    .map((item) => withAuthorLinks(item, resolvedAuthorDirectory))
     .sort(compareItemsByDateDesc);
   const pagination = paginateItems(allItems, currentPage, pageSize);
   const hrefForPage = (pageNumber) => getSpaceDetailHref(spaceSlug, pageNumber);

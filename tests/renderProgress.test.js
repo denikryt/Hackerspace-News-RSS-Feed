@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { formatPrimaryStreamProgressLog } from "../src/renderProgress.js";
+import {
+  formatLoopProgressLog,
+  formatPrimaryStreamProgressLog,
+} from "../src/renderProgress.js";
 
 describe("formatPrimaryStreamProgressLog", () => {
   it("formats the first primary-stream checkpoint without elapsed time", () => {
@@ -28,6 +31,21 @@ describe("formatPrimaryStreamProgressLog", () => {
     ).toEqual({
       message: "[render] primary stream progress: page 100/1491 (+1500ms)",
       checkpointAt: 2500,
+    });
+  });
+
+  it("formats generic loop checkpoints with elapsed time", () => {
+    expect(
+      formatLoopProgressLog({
+        label: "author pages",
+        currentIndex: 100,
+        totalItems: 876,
+        lastCheckpointAt: 1000,
+        checkpointAt: 2400,
+      }),
+    ).toEqual({
+      message: "[render] author pages progress: item 100/876 (+1400ms)",
+      checkpointAt: 2400,
     });
   });
 });
