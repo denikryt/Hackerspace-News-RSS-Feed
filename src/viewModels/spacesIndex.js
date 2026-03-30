@@ -6,43 +6,12 @@ export function buildSpacesIndexModel(
   {
     sortMode = "alphabetical",
     showFailed = false,
+    searchQuery = "",
     selectedCountry = "all",
   } = {},
 ) {
-  const failureCards = (normalizedPayload.failures || []).map((failure) => ({
-    spaceName: failure.hackerspaceName,
-    country: failure.country,
-    sourceWikiUrl: failure.sourceWikiUrl,
-    feedUrl: failure.candidateUrl,
-    status: "error",
-    isFailure: true,
-    isVisibleByDefault: false,
-    latestItemTitle: undefined,
-    latestItemDate: undefined,
-    detailHref: `/spaces/${slugify(failure.hackerspaceName)}.html`,
-    errorCode: failure.errorCode,
-  }));
-
-  const feedCards = (normalizedPayload.feeds || []).map((feed) => {
-    const latestItem =
-      [...(feed.items || [])].sort(compareItemsByDateDesc)[0] || feed.items?.[0];
-
-    return {
-      spaceName: feed.spaceName,
-      country: feed.country,
-      sourceWikiUrl: feed.sourceWikiUrl,
-      feedUrl: feed.finalFeedUrl,
-      siteUrl: feed.siteUrl,
-      status: feed.status,
-      isFailure: false,
-      isVisibleByDefault: true,
-      publicationsCount: Array.isArray(feed.items) ? feed.items.length : 0,
-      latestItemTitle: latestItem?.title,
-      latestItemLink: latestItem?.link,
-      latestItemDate: getEffectiveItemDate(latestItem),
-      detailHref: `/spaces/${slugify(feed.spaceName)}.html`,
-    };
-  });
+  const failureCards = (normalizedPayload.failures || []).map(buildFailureCard);
+  const feedCards = (normalizedPayload.feeds || []).map(buildFeedCard);
 
   const cards = [...failureCards, ...feedCards].sort(createCardComparator(sortMode));
   const availableCountries = [...new Set(cards.map((card) => card.country).filter(Boolean))].sort((left, right) =>
@@ -56,10 +25,47 @@ export function buildSpacesIndexModel(
     summary: normalizedPayload.summary,
     sortMode,
     showFailed,
+    searchQuery,
     selectedCountry,
     availableCountries,
     cards,
     visibleCards,
+  };
+}
+
+function buildFailureCard(failure) {
+  return {
+    spaceName: failure.hackerspaceName,
+    country: failure.country,
+    sourceWikiUrl: failure.sourceWikiUrl,
+    feedUrl: failure.candidateUrl,
+    status: "error",
+    isFailure: true,
+    isVisibleByDefault: false,
+    latestItemTitle: undefined,
+    latestItemDate: undefined,
+    detailHref: `/spaces/${slugify(failure.hackerspaceName)}.html`,
+    errorCode: failure.errorCode,
+  };
+}
+
+function buildFeedCard(feed) {
+  const latestItem = [...(feed.items || [])].sort(compareItemsByDateDesc)[0] || feed.items?.[0];
+
+  return {
+    spaceName: feed.spaceName,
+    country: feed.country,
+    sourceWikiUrl: feed.sourceWikiUrl,
+    feedUrl: feed.finalFeedUrl,
+    siteUrl: feed.siteUrl,
+    status: feed.status,
+    isFailure: false,
+    isVisibleByDefault: true,
+    publicationsCount: Array.isArray(feed.items) ? feed.items.length : 0,
+    latestItemTitle: latestItem?.title,
+    latestItemLink: latestItem?.link,
+    latestItemDate: getEffectiveItemDate(latestItem),
+    detailHref: `/spaces/${slugify(feed.spaceName)}.html`,
   };
 }
 
