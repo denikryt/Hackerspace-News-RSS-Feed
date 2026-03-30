@@ -10,18 +10,68 @@ RUN_MODE="deploy"
 RUN_LABEL="deploy"
 SECONDS=0
 STAGING_DIR=""
+BUILD_ARGS=()
 
-if [[ "${1:-}" == "build" ]]; then
-  RUN_MODE="build"
-  RUN_LABEL="build deploy"
-elif [[ "${1:-}" == "render" ]]; then
-  RUN_MODE="render"
-  RUN_LABEL="render deploy"
-elif [[ $# -gt 0 ]]; then
-  echo "Unknown argument: $1"
-  echo "Usage: ./scripts/deploy-site.sh [build|render]"
-  exit 1
-fi
+print_usage() {
+  cat <<'EOF'
+Deploy the current dist or run build/render before deploy.
+
+Usage: ./scripts/deploy-site.sh [build|render] [--include-discovery-valid]
+
+Default behavior: deploy the existing `dist/` contents.
+
+Modes:
+  build   Run `npm run build` before deploy.
+  render  Run `npm run render` before deploy.
+
+Options:
+  --include-discovery-valid  Pass the discovery-valid flag through to build mode.
+  --help  Show this help and exit.
+
+Examples:
+  ./scripts/deploy-site.sh
+  ./scripts/deploy-site.sh build
+  ./scripts/deploy-site.sh build --include-discovery-valid
+  ./scripts/deploy-site.sh render
+EOF
+}
+
+# Parse deploy mode and supported build flags explicitly so deploy can forward
+# the same build contract as the npm CLI without guessing from position.
+for arg in "$@"; do
+  case "$arg" in
+    --help)
+      print_usage
+      exit 0
+      ;;
+    build)
+      if [[ "$RUN_MODE" != "deploy" ]]; then
+        echo "Only one run mode may be specified."
+        print_usage
+        exit 1
+      fi
+      RUN_MODE="build"
+      RUN_LABEL="build deploy"
+      ;;
+    render)
+      if [[ "$RUN_MODE" != "deploy" ]]; then
+        echo "Only one run mode may be specified."
+        print_usage
+        exit 1
+      fi
+      RUN_MODE="render"
+      RUN_LABEL="render deploy"
+      ;;
+    --include-discovery-valid)
+      BUILD_ARGS+=("$arg")
+      ;;
+    *)
+      echo "Unknown argument: $arg"
+      print_usage
+      exit 1
+      ;;
+  esac
+done
 
 cd "$ROOT_DIR"
 
@@ -80,7 +130,11 @@ count_files() {
 }
 
 if [[ "$RUN_MODE" == "build" ]]; then
-  npm run build
+  if [[ ${#BUILD_ARGS[@]} -gt 0 ]]; then
+    npm run build -- "${BUILD_ARGS[@]}"
+  else
+    npm run build
+  fi
 elif [[ "$RUN_MODE" == "render" ]]; then
   npm run render
 fi
