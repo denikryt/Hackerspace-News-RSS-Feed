@@ -52,7 +52,7 @@ export function renderSpacesIndex(model) {
   return renderLayout({
     title: "Hackerspace News",
     body: `
-      <style>.spaces-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:18px;row-gap:10px;align-items:end;margin-bottom:18px;}.spaces-control{display:block;min-inline-size:0;}.spaces-control-country{grid-column:1;}.spaces-control-sort{grid-column:2;}.spaces-control-toggle{grid-column:1/-1;}.spaces-control .control-select{inline-size:100%;max-inline-size:100%;}.spaces-control-sort .control-select{margin-inline-start:auto;}@media (min-width: 761px){.spaces-controls{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;}.spaces-control-country{grid-column:auto;}.spaces-control-sort{grid-column:auto;}.spaces-control-toggle{grid-column:auto;align-self:center;}}</style>
+      <style>.spaces-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:18px;row-gap:10px;align-items:end;margin-bottom:18px;}.spaces-control{display:block;min-inline-size:0;}.spaces-control-search{grid-column:1/-1;}.spaces-control-country{grid-column:1;}.spaces-control-sort{grid-column:2;}.spaces-control-toggle{grid-column:1/-1;}.spaces-control .control-input,.spaces-control .control-select{inline-size:100%;max-inline-size:100%;}.spaces-control-sort .control-select{margin-inline-start:auto;}@media (min-width: 761px){.spaces-controls{grid-template-columns:minmax(0,1.15fr) minmax(0,0.95fr) minmax(0,0.9fr) auto;}.spaces-control-search{grid-column:auto;}.spaces-control-country{grid-column:auto;}.spaces-control-sort{grid-column:auto;}.spaces-control-toggle{grid-column:auto;align-self:center;}}</style>
       ${renderPageHeader({
         title: "Hackerspace News",
         titleClass: "home-hero-title",
@@ -71,6 +71,15 @@ export function renderSpacesIndex(model) {
           ${renderMetric("Readable feeds", model.summary.parsedFeeds)}
         </div>
         <div class="spaces-controls">
+          <label class="spaces-control spaces-control-search">
+            <input
+              id="space-search-input"
+              class="control-input"
+              type="search"
+              aria-label="Search hackerspaces"
+              value="${escapeHtml(model.searchQuery || "")}"
+              placeholder="Search by hackerspace name" />
+          </label>
           <label class="spaces-control spaces-control-country">
             <select id="country-filter-select" class="control-select control-select-country">
               ${countryOptions}
@@ -92,6 +101,7 @@ export function renderSpacesIndex(model) {
         <p id="spaces-empty-state" class="muted" hidden>No hackerspaces match the selected country.</p>
       </section>
       <script>
+        const spaceSearchInput = document.getElementById("space-search-input");
         const countryFilterSelect = document.getElementById("country-filter-select");
         const failedToggle = document.getElementById("show-failed-toggle");
         const sortModeSelect = document.getElementById("sort-mode-select");
@@ -99,19 +109,23 @@ export function renderSpacesIndex(model) {
         const emptyState = document.getElementById("spaces-empty-state");
         const cards = Array.from(cardsContainer.querySelectorAll(".card"));
         const storageKeys = {
+          query: "hackerspace-news-feed.query",
           country: "hackerspace-news-feed.country",
           showFailed: "hackerspace-news-feed.showFailed",
           sortMode: "hackerspace-news-feed.sortMode",
         };
 
+        const storedQuery = localStorage.getItem(storageKeys.query);
         const storedCountry = localStorage.getItem(storageKeys.country);
         const storedShowFailed = localStorage.getItem(storageKeys.showFailed);
         const storedSortMode = localStorage.getItem(storageKeys.sortMode);
 
+        const defaultQuery = ${JSON.stringify(model.searchQuery || "")};
         const defaultCountry = ${JSON.stringify(model.selectedCountry)};
         const lastUpdatedLabel = document.getElementById("last-updated-label");
         const availableCountries = new Set(["all", ...Array.from(countryFilterSelect.options).map((option) => option.value)]);
 
+        spaceSearchInput.value = storedQuery === null ? defaultQuery : storedQuery;
         countryFilterSelect.value = availableCountries.has(storedCountry) ? storedCountry : defaultCountry;
         failedToggle.checked = storedShowFailed === null ? ${model.showFailed ? "true" : "false"} : storedShowFailed === "true";
         sortModeSelect.value = storedSortMode || ${JSON.stringify(model.sortMode)};
@@ -156,19 +170,25 @@ export function renderSpacesIndex(model) {
         }
 
         function applyUiState() {
+          const spaceQuery = spaceSearchInput.value;
           const selectedCountry = countryFilterSelect.value;
           const showFailed = failedToggle.checked;
           const sortMode = sortModeSelect.value;
 
+          localStorage.setItem(storageKeys.query, spaceQuery);
           localStorage.setItem(storageKeys.country, selectedCountry);
           localStorage.setItem(storageKeys.showFailed, String(showFailed));
           localStorage.setItem(storageKeys.sortMode, sortMode);
 
+          const normalizedQuery = spaceQuery.trim().toLocaleLowerCase();
           let visibleCount = 0;
           cards.forEach((card) => {
+            const matchesQuery = normalizedQuery
+              ? (card.dataset.spaceName || "").toLocaleLowerCase().includes(normalizedQuery)
+              : true;
             const matchesCountry = selectedCountry === "all" || card.dataset.country === selectedCountry;
             const isFailure = card.dataset.isFailure === "true";
-            const isVisible = matchesCountry && (showFailed || !isFailure);
+            const isVisible = matchesQuery && matchesCountry && (showFailed || !isFailure);
             card.style.display = isVisible ? "" : "none";
             if (isVisible) {
               visibleCount += 1;
@@ -184,6 +204,7 @@ export function renderSpacesIndex(model) {
           emptyState.hidden = visibleCount !== 0;
         }
 
+        spaceSearchInput.addEventListener("input", applyUiState);
         countryFilterSelect.addEventListener("change", applyUiState);
         failedToggle.addEventListener("change", applyUiState);
         sortModeSelect.addEventListener("change", applyUiState);
