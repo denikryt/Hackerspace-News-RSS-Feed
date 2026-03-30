@@ -3,7 +3,7 @@ import { renderSite } from "../renderSite.js";
 
 async function main() {
   const startedAt = Date.now();
-  const result = await renderSite({ writePages: true });
+  const result = await renderSite({ writePages: true, logger: console.log });
   const elapsedMs = Date.now() - startedAt;
 
   console.log(`Rendered ${Object.keys(result.pages).length} pages into ${DIST_DIR}`);

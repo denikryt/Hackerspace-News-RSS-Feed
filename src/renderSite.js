@@ -12,6 +12,7 @@ import { renderGlobalFeed } from "./renderers/renderGlobalFeed.js";
 import { renderSpaceDetail } from "./renderers/renderSpaceDetail.js";
 import { renderSpacesIndex } from "./renderers/renderSpacesIndex.js";
 import { readJson, writeText } from "./storage.js";
+import { formatPrimaryStreamProgressLog } from "./renderProgress.js";
 import { slugify } from "./utils/slugify.js";
 import { filterNormalizedPayloadForDisplay } from "./visibleData.js";
 import { buildAuthorDetailModel, buildAuthorsIndexModel } from "./viewModels/authors.js";
@@ -29,6 +30,7 @@ export async function renderSite({
   normalizedPayload,
   now = Date.now(),
   writePages = false,
+  logger = null,
 } = {}) {
   const data = await loadRenderInputs({
     paths,
@@ -38,7 +40,9 @@ export async function renderSite({
   });
 
   const displayPayload = filterNormalizedPayloadForDisplay(data.normalizedPayload, { now });
+  logInfo(logger, `[render] loaded inputs: feeds=${displayPayload.feeds.length} failures=${displayPayload.failures.length}`);
   const spacesIndexModel = buildSpacesIndexModel(displayPayload);
+  logInfo(logger, "[render] built spaces index model");
   const spaceSlugs = [
     ...new Set(
       [
@@ -54,22 +58,49 @@ export async function renderSite({
   };
 
   const contentStreams = listContentStreams(displayPayload);
+  logInfo(logger, `[render] built content streams: count=${contentStreams.length}`);
   const primaryStream = contentStreams.find((stream) => stream.id === FEED_CONTENT_STREAM_ID);
   const secondaryStreams = contentStreams.filter((stream) => stream.id !== FEED_CONTENT_STREAM_ID);
 
   if (primaryStream) {
     const totalPages = Math.max(1, Math.ceil(primaryStream.totalItems / GLOBAL_FEED_PAGE_SIZE));
+    logInfo(logger, `[render] rendering primary stream: pages=${totalPages}`);
+    let lastPrimaryProgressAt = Date.now();
 
     for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
+      if (
+        currentPage === 1 ||
+        currentPage === totalPages ||
+        currentPage % 100 === 0
+      ) {
+        const progressLog = formatPrimaryStreamProgressLog({
+          currentPage,
+          totalPages,
+          lastCheckpointAt: lastPrimaryProgressAt,
+          checkpointAt: Date.now(),
+        });
+        logInfo(logger, progressLog.message);
+        lastPrimaryProgressAt = progressLog.checkpointAt;
+      }
+
       const streamModel = buildContentStreamModel(displayPayload, {
         streamId: primaryStream.id,
         currentPage,
       });
       pages[getContentStreamOutputPath(primaryStream.id, currentPage)] = renderGlobalFeed(streamModel);
     }
+
+    logInfo(logger, "[render] rendered primary stream");
   }
 
+  logInfo(logger, "[render] building author directory");
   const authorsIndexModel = buildAuthorsIndexModel(displayPayload);
+  logInfo(logger, "[render] built author directory");
+  logInfo(logger, `[render] built authors index model: authors=${authorsIndexModel.authors.length}`);
+  logInfo(
+    logger,
+    `[render] built page models: spaces=${spaceSlugs.length} authors=${authorsIndexModel.authors.length} streams=${contentStreams.length}`,
+  );
   pages["authors/index.html"] = renderAuthorsIndex(authorsIndexModel);
 
   for (const author of authorsIndexModel.authors) {
@@ -82,6 +113,7 @@ export async function renderSite({
     }
   }
 
+  logInfo(logger, `[render] rendering secondary streams: count=${secondaryStreams.length}`);
   for (const stream of secondaryStreams) {
     const totalPages = Math.max(1, Math.ceil(stream.totalItems / GLOBAL_FEED_PAGE_SIZE));
 
@@ -93,6 +125,7 @@ export async function renderSite({
       pages[getContentStreamOutputPath(stream.id, currentPage)] = renderGlobalFeed(streamModel);
     }
   }
+  logInfo(logger, "[render] rendered secondary streams");
 
   for (const spaceSlug of spaceSlugs) {
     const detailModel = buildSpaceDetailModel(displayPayload, spaceSlug);
@@ -109,6 +142,7 @@ export async function renderSite({
   }
 
   if (writePages) {
+    logInfo(logger, `[render] writing pages: count=${Object.keys(pages).length}`);
     await rm(distDir, { recursive: true, force: true });
     await mkdir(distDir, { recursive: true });
     await Promise.all(
@@ -120,6 +154,8 @@ export async function renderSite({
       ],
     );
   }
+
+  logInfo(logger, `[render] render complete: pages=${Object.keys(pages).length}`);
 
   return {
     sourceRowsPayload: data.sourceRowsPayload,
@@ -149,4 +185,10 @@ async function loadRenderInputs({ paths, sourceRowsPayload, validationsPayload, 
     validationsPayload: loadedValidationsPayload,
     normalizedPayload: loadedNormalizedPayload,
   };
+}
+
+function logInfo(logger, message) {
+  if (typeof logger === "function") {
+    logger(message);
+  }
 }

@@ -10,6 +10,7 @@
     "analyze:wiki-discovery": "node src/cli/analyzeWikiDiscoveryComparison.js",
     "analyze:wiki-discovery-unmatched": "node src/cli/analyzeWikiDiscoveryUnmatchedResponses.js",
     "discover:feeds": "node src/cli/discoverFeeds.js",
+    "discover:valid-sources": "node src/cli/discoverValidSourceUrls.js",
     "refresh": "node src/cli/refresh.js",
     "render": "node src/cli/render.js",
     "build": "node src/cli/build.js",
