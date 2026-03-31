@@ -107,6 +107,7 @@ describe("country feed contracts", () => {
     const model = buildCountryFeedModel(normalizedPayload, "feed", "france");
 
     expect(model.pageTitle).toBe("Feed · France");
+    expect(model.pageIntro).toBe("All publications sorted from new to old.");
     expect(model.items.map((item) => item.title)).toEqual(["French newest", "French older"]);
     expect(model.streamNavItems[0]).toEqual({
       href: "/feed/index.html",
@@ -185,6 +186,7 @@ describe("country feed contracts", () => {
 
     const model = buildCountryFeedModel(payload, "event", "france", { context: countryContext });
     expect(model.pageTitle).toBe("Events · France");
+    expect(model.pageIntro).toBe("Items tagged as events.");
     expect(model.items.map((item) => item.title)).toEqual(["French event"]);
     expect(model.streamNavItems.find((item) => item.label === "Events")).toEqual({
       href: "/events/index.html",
