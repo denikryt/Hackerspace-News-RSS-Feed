@@ -39,6 +39,48 @@ describe("install-deploy-site-timer.sh", () => {
     expect(readFileSync(join(rootDir, "etc/systemd/system/hackerspace-news-feed-deploy.service"), "utf8")).toContain("ExecStart=");
     expect(readFileSync(join(rootDir, "etc/systemd/system/hackerspace-news-feed-deploy.timer"), "utf8")).toContain("OnCalendar=hourly");
   });
+
+  it("writes the deploy service with the discovery-valid build flag when explicitly enabled", () => {
+    const rootDir = createFixtureProject();
+    const logPath = join(rootDir, "commands.log");
+
+    runScript(rootDir, logPath, ["--include-discovery-valid"]);
+
+    expect(readFileSync(join(rootDir, "etc/systemd/system/hackerspace-news-feed-deploy.service"), "utf8")).toContain(
+      "ExecStart=" + join(rootDir, "scripts/deploy-site.sh").replace(/ /g, "\\ ") + " build --include-discovery-valid",
+    );
+  });
+
+  it("writes the deploy service without the discovery-valid build flag when explicitly disabled", () => {
+    const rootDir = createFixtureProject();
+    const logPath = join(rootDir, "commands.log");
+
+    runScript(rootDir, logPath, ["--no-include-discovery-valid"]);
+
+    expect(readFileSync(join(rootDir, "etc/systemd/system/hackerspace-news-feed-deploy.service"), "utf8")).toContain(
+      "ExecStart=" + join(rootDir, "scripts/deploy-site.sh").replace(/ /g, "\\ ") + " build",
+    );
+    expect(readFileSync(join(rootDir, "etc/systemd/system/hackerspace-news-feed-deploy.service"), "utf8")).not.toContain(
+      "--include-discovery-valid",
+    );
+  });
+
+  it("prints help and does not install anything", () => {
+    const rootDir = createFixtureProject();
+    const logPath = join(rootDir, "commands.log");
+
+    const stdout = runScript(rootDir, logPath, ["--help"]);
+
+    expect(stdout).toContain("Install a systemd timer for scheduled deploys.");
+    expect(stdout).toContain(
+      "Usage: ./scripts/install-deploy-site-timer.sh [--include-discovery-valid|--no-include-discovery-valid]",
+    );
+    expect(stdout).toContain("Default behavior: schedule `deploy-site.sh build` without discovery-valid rows.");
+    expect(stdout).toContain("--include-discovery-valid  Schedule builds with discovery-valid rows included.");
+    expect(stdout).toContain("--no-include-discovery-valid  Schedule builds without discovery-valid rows.");
+    expect(stdout).toContain("./scripts/install-deploy-site-timer.sh --include-discovery-valid");
+    expect(readLog(logPath)).toEqual([]);
+  });
 });
 
 function createFixtureProject() {
@@ -88,8 +130,8 @@ fi
   return rootDir;
 }
 
-function runScript(rootDir, logPath) {
-  return execFileSync(join(rootDir, "scripts/install-deploy-site-timer.sh"), {
+function runScript(rootDir, logPath, args = []) {
+  return execFileSync(join(rootDir, "scripts/install-deploy-site-timer.sh"), args, {
     cwd: rootDir,
     encoding: "utf8",
     env: {

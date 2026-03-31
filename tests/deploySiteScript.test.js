@@ -70,6 +70,15 @@ describe("deploy-site.sh", () => {
     expect(existsSync(join(rootDir, "target/stale.txt"))).toBe(true);
   });
 
+  it("passes the discovery-valid flag through to npm run build in build mode", () => {
+    const rootDir = createFixtureProject();
+    const logPath = join(rootDir, "commands.log");
+
+    runScript(rootDir, ["build", "--include-discovery-valid"], logPath);
+
+    expect(readLog(logPath)[0]).toBe("npm run build -- --include-discovery-valid");
+  });
+
   it("does not publish or reload when required build artifacts are missing", () => {
     const rootDir = createFixtureProject({
       distFiles: {
@@ -95,6 +104,31 @@ describe("deploy-site.sh", () => {
     expect(readLog(logPath)[0]).toBe("npm run render");
     expect(readFileSync(join(rootDir, "target/index.html"), "utf8")).toContain("fresh build");
     expect(stdout).toMatch(/Completed render deploy in \d+s/);
+  });
+
+  it("accepts the discovery-valid flag but does not pass it to render mode", () => {
+    const rootDir = createFixtureProject();
+    const logPath = join(rootDir, "commands.log");
+
+    runScript(rootDir, ["render", "--include-discovery-valid"], logPath);
+
+    expect(readLog(logPath)[0]).toBe("npm run render");
+  });
+
+  it("prints help and does not run deployment commands", () => {
+    const rootDir = createFixtureProject();
+    const logPath = join(rootDir, "commands.log");
+
+    const stdout = runScript(rootDir, ["--help"], logPath);
+
+    expect(stdout).toContain("Deploy the current dist or run build/render before deploy.");
+    expect(stdout).toContain("Usage: ./scripts/deploy-site.sh [build|render] [--include-discovery-valid]");
+    expect(stdout).toContain("Default behavior: deploy the existing `dist/` contents.");
+    expect(stdout).toContain("build   Run `npm run build` before deploy.");
+    expect(stdout).toContain("render  Run `npm run render` before deploy.");
+    expect(stdout).toContain("--include-discovery-valid  Pass the discovery-valid flag through to build mode.");
+    expect(stdout).toContain("./scripts/deploy-site.sh build --include-discovery-valid");
+    expect(readLog(logPath)).toEqual([]);
   });
 });
 

@@ -17,20 +17,7 @@ export function renderSpaceDetail(model) {
           <div class="timeline-axis" aria-hidden="true"></div>
           <div class="timeline-content">
             <div class="item-header item-header-detail item-header-global">
-              <div class="meta global-feed-meta detail-item-meta">
-                ${
-                  item.authorLinks?.length
-                    ? renderAuthorLinks(item.authorLinks, {
-                        linkClass: "global-feed-meta-link detail-item-meta-link",
-                      })
-                    : ""
-                }
-                ${
-                  item.link
-                    ? `<span><a class="global-feed-meta-link detail-item-meta-link" href="${item.link}">Original</a></span>`
-                    : ""
-                }
-              </div>
+              <div class="meta global-feed-meta detail-item-meta">${renderDetailItemMeta(item)}</div>
             </div>
             <h3 class="item-title">${escapeHtml(item.title || "Untitled item")}</h3>
             ${renderDisplayContent(item)}
@@ -89,6 +76,26 @@ function renderCategories(item) {
   }
 
   return `<p class="muted">${escapeHtml(categories.join(", "))}</p>`;
+}
+
+function renderDetailItemMeta(item) {
+  const lines = [];
+
+  if (item.link) {
+    lines.push(
+      `<span class="global-feed-meta-line global-feed-meta-line-primary"><span><a class="global-feed-meta-link global-feed-original-link detail-item-meta-link" href="${item.link}">Source</a></span></span>`,
+    );
+  }
+
+  if (item.authorLinks?.length) {
+    lines.push(
+      `<span class="global-feed-meta-line global-feed-meta-line-authors">${renderAuthorLinks(item.authorLinks, {
+        linkClass: "global-feed-meta-link global-feed-original-link detail-item-meta-link",
+      })}</span>`,
+    );
+  }
+
+  return lines.join("");
 }
 
 function renderPagination(model) {

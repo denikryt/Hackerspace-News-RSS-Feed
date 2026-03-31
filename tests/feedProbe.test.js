@@ -1,6 +1,10 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { probeFeedUrl } from "../src/feedProbe.js";
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe("probeFeedUrl", () => {
   it("marks XML feed responses as parsable feeds", async () => {
@@ -28,7 +32,7 @@ describe("probeFeedUrl", () => {
     });
   });
 
-  it("marks Telegram-like HTML pages as non_feed_html", async () => {
+  it("marks Telegram-like HTML pages as non_xml_response", async () => {
     const fetchImpl = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
@@ -46,7 +50,7 @@ describe("probeFeedUrl", () => {
       fetchOk: true,
       isFeedLike: false,
       isParsable: false,
-      errorCode: "non_feed_html",
+      errorCode: "non_xml_response",
     });
   });
 
@@ -108,10 +112,102 @@ describe("probeFeedUrl", () => {
     expect(fetchImpl).toHaveBeenCalledTimes(1);
     expect(waitImpl).not.toHaveBeenCalled();
   });
+
+  it("uses 1s, 2s, and 3s attempt timeouts for transient feed hangs", async () => {
+    vi.useFakeTimers();
+
+    const waitImpl = vi.fn().mockResolvedValue(undefined);
+    const fetchImpl = vi.fn((url, options = {}) => (
+      createAbortableFetch({ signal: options.signal })
+    ));
+
+    const probePromise = probeFeedUrl({
+      sourceRow: { candidateFeedUrl: "https://example.com/feed.xml" },
+      fetchImpl,
+      waitImpl,
+    });
+
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(waitImpl).toHaveBeenNthCalledWith(1, 1000);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(waitImpl).toHaveBeenNthCalledWith(2, 2000);
+    expect(fetchImpl).toHaveBeenCalledTimes(3);
+
+    await vi.advanceTimersByTimeAsync(3000);
+    expect(waitImpl).toHaveBeenNthCalledWith(3, 3000);
+    expect(fetchImpl).toHaveBeenCalledTimes(4);
+
+    await vi.advanceTimersByTimeAsync(3000);
+
+    await expect(probePromise).resolves.toMatchObject({
+      fetchOk: false,
+      errorCode: "timeout",
+    });
+  });
+
+  it("allows custom attempt timeout and retry delay schedules", async () => {
+    vi.useFakeTimers();
+
+    const waitImpl = vi.fn().mockResolvedValue(undefined);
+    const fetchImpl = vi.fn((url, options = {}) => (
+      createAbortableFetch({ signal: options.signal })
+    ));
+
+    const probePromise = probeFeedUrl({
+      sourceRow: { candidateFeedUrl: "https://example.com/feed.xml" },
+      fetchImpl,
+      waitImpl,
+      retryDelaysMs: [500],
+      attemptTimeoutsMs: [4000, 5000],
+    });
+
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(3999);
+    expect(waitImpl).not.toHaveBeenCalled();
+
+    await vi.advanceTimersByTimeAsync(1);
+    expect(waitImpl).toHaveBeenCalledWith(500);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+
+    await vi.advanceTimersByTimeAsync(5000);
+
+    await expect(probePromise).resolves.toMatchObject({
+      fetchOk: false,
+      errorCode: "timeout",
+    });
+  });
 });
 
 function fetchFailed({ code }) {
   return Object.assign(new TypeError("fetch failed"), {
     cause: Object.assign(new Error(code), { code }),
   });
+}
+
+function createAbortableFetch({ signal }) {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(abortError());
+      return;
+    }
+
+    signal?.addEventListener(
+      "abort",
+      () => {
+        queueMicrotask(() => {
+          reject(abortError());
+        });
+      },
+      { once: true },
+    );
+  });
+}
+
+function abortError() {
+  return new DOMException("The operation was aborted", "AbortError");
 }
