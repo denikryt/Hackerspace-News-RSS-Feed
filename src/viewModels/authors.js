@@ -27,9 +27,13 @@ export function buildAuthorsIndexModel(
     sortMode = DEFAULT_AUTHOR_SORT_MODE,
     excludedAuthorNames,
     authorOverrides,
+    authorDirectory,
   } = {},
 ) {
-  const { authors } = buildAuthorDirectory(normalizedPayload, { excludedAuthorNames, authorOverrides });
+  const { authors } = authorDirectory || buildAuthorDirectory(normalizedPayload, {
+    excludedAuthorNames,
+    authorOverrides,
+  });
   const availableHackerspaces = collectAvailableHackerspaces(authors);
   const normalizedSelectedHackerspace = availableHackerspaces.includes(selectedHackerspace)
     ? selectedHackerspace
@@ -80,9 +84,13 @@ export function buildAuthorDetailModel(
     pageSize = GLOBAL_FEED_PAGE_SIZE,
     excludedAuthorNames,
     authorOverrides,
+    authorDirectory,
   } = {},
 ) {
-  const { authors } = buildAuthorDirectory(normalizedPayload, { excludedAuthorNames, authorOverrides });
+  const { authors } = authorDirectory || buildAuthorDirectory(normalizedPayload, {
+    excludedAuthorNames,
+    authorOverrides,
+  });
   const author = authors.find((entry) => entry.slug === authorSlug);
 
   if (!author) {

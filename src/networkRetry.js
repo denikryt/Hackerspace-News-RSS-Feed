@@ -6,9 +6,14 @@ export async function runWithNetworkRetry({
   retryDelaysMs = DEFAULT_RETRY_DELAYS_MS,
   onRetry,
 }) {
+  const maxAttempts = retryDelaysMs.length + 1;
+
   for (let attemptIndex = 0; attemptIndex <= retryDelaysMs.length; attemptIndex += 1) {
     try {
-      return await run();
+      return await run({
+        attemptNumber: attemptIndex + 1,
+        maxAttempts,
+      });
     } catch (error) {
       if (!isRetryableNetworkError(error) || attemptIndex === retryDelaysMs.length) {
         throw error;
@@ -18,7 +23,7 @@ export async function runWithNetworkRetry({
       if (typeof onRetry === "function") {
         onRetry({
           attemptNumber: attemptIndex + 2,
-          maxAttempts: retryDelaysMs.length + 1,
+          maxAttempts,
           delayMs,
           errorCode: getPrimaryErrorCode(error),
           error,

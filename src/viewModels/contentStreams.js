@@ -11,37 +11,44 @@ import { buildAuthorDirectory, withAuthorLinks } from "./authors.js";
 import { collectAggregatedPublicationItems } from "./publicationItems.js";
 import { getEffectiveItemDate } from "../visibleData.js";
 
-export function listContentStreams(normalizedPayload) {
-  const allItems = collectAllFeedItems(normalizedPayload);
+/**
+ * Build the expensive shared inputs for content-stream view models once.
+ * Render loops can then reuse the same author directory, flattened items, and
+ * stream navigation metadata across many pages instead of recomputing them.
+ */
+export function buildContentStreamContext(normalizedPayload) {
+  const authorDirectory = buildAuthorDirectory(normalizedPayload);
+  const allItems = collectAllFeedItems(normalizedPayload, authorDirectory);
+  const availableStreams = buildAvailableStreams(allItems);
 
-  return getAvailableStreamIds(allItems).map((streamId) => {
-    const items = selectItemsForStream(allItems, streamId);
-    const definition = getContentStreamDefinition(streamId);
+  return {
+    authorDirectory,
+    allItems,
+    availableStreams,
+    availableStreamIds: availableStreams.map((stream) => stream.id),
+  };
+}
 
-    return {
-      id: streamId,
-      label: definition.label,
-      href: getContentStreamHref(streamId, 1),
-      totalItems: items.length,
-    };
-  });
+export function listContentStreams(normalizedPayload, { context } = {}) {
+  const contentStreamContext = context || buildContentStreamContext(normalizedPayload);
+
+  return contentStreamContext.availableStreams;
 }
 
 export function buildContentStreamModel(
   normalizedPayload,
-  { streamId = FEED_CONTENT_STREAM_ID, currentPage = 1, pageSize = GLOBAL_FEED_PAGE_SIZE } = {},
+  { streamId = FEED_CONTENT_STREAM_ID, currentPage = 1, pageSize = GLOBAL_FEED_PAGE_SIZE, context } = {},
 ) {
-  const authorDirectory = buildAuthorDirectory(normalizedPayload);
-  const allItems = collectAllFeedItems(normalizedPayload, authorDirectory);
-  const availableStreams = listContentStreams(normalizedPayload);
-  const availableStreamIds = availableStreams.map((stream) => stream.id);
+  const contentStreamContext = context || buildContentStreamContext(normalizedPayload);
+  const availableStreams = contentStreamContext.availableStreams;
+  const availableStreamIds = contentStreamContext.availableStreamIds;
 
   if (!availableStreamIds.includes(streamId)) {
     throw new Error(`Content stream is not available: ${streamId}`);
   }
 
   const definition = getContentStreamDefinition(streamId);
-  const streamItems = selectItemsForStream(allItems, streamId);
+  const streamItems = selectItemsForStream(contentStreamContext.allItems, streamId);
   const pagination = paginateItems(streamItems, currentPage, pageSize);
   const hrefForPage = (pageNumber) => getContentStreamHref(streamId, pageNumber);
 
@@ -80,6 +87,20 @@ export function buildContentStreamModel(
     homeHref: "/index.html",
     canonicalHref: hrefForPage(pagination.currentPage),
   };
+}
+
+function buildAvailableStreams(allItems) {
+  return getAvailableStreamIds(allItems).map((streamId) => {
+    const items = selectItemsForStream(allItems, streamId);
+    const definition = getContentStreamDefinition(streamId);
+
+    return {
+      id: streamId,
+      label: definition.label,
+      href: getContentStreamHref(streamId, 1),
+      totalItems: items.length,
+    };
+  });
 }
 
 function collectAllFeedItems(normalizedPayload, authorDirectory) {
