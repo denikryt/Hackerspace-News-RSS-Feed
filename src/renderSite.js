@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 
 import { DIST_DIR, PATHS } from "./config.js";
 import { FEED_CONTENT_STREAM_ID, getContentStreamOutputPath } from "./contentStreams.js";
+import { getCountryFeedOutputPath } from "./countryFeeds.js";
 import { GLOBAL_FEED_PAGE_SIZE } from "./pagination.js";
 import { getAuthorDetailOutputPath } from "./authors.js";
 import { renderAuthorDetail } from "./renderers/renderAuthorDetail.js";
@@ -15,7 +16,9 @@ import { readJson, writeText } from "./storage.js";
 import { slugify } from "./utils/slugify.js";
 import { filterNormalizedPayloadForDisplay } from "./visibleData.js";
 import { buildAuthorDetailModel, buildAuthorsIndexModel } from "./viewModels/authors.js";
+import { buildCountryFeedModel, listCountryFeeds } from "./viewModels/countryFeeds.js";
 import { buildContentStreamModel, listContentStreams } from "./viewModels/contentStreams.js";
+import { buildGlobalFeedModel } from "./viewModels/globalFeed.js";
 import { buildSpaceDetailModel } from "./viewModels/spaceDetail.js";
 import { buildSpacesIndexModel } from "./viewModels/spacesIndex.js";
 
@@ -61,11 +64,20 @@ export async function renderSite({
     const totalPages = Math.max(1, Math.ceil(primaryStream.totalItems / GLOBAL_FEED_PAGE_SIZE));
 
     for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
-      const streamModel = buildContentStreamModel(displayPayload, {
-        streamId: primaryStream.id,
+      const streamModel = buildGlobalFeedModel(displayPayload, {
         currentPage,
       });
       pages[getContentStreamOutputPath(primaryStream.id, currentPage)] = renderGlobalFeed(streamModel);
+    }
+  }
+
+  for (const countryFeed of listCountryFeeds(displayPayload)) {
+    const initialModel = buildCountryFeedModel(displayPayload, countryFeed.slug);
+    const totalPages = initialModel.totalPages || 1;
+
+    for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
+      const countryModel = buildCountryFeedModel(displayPayload, countryFeed.slug, { currentPage });
+      pages[getCountryFeedOutputPath(countryFeed.country, currentPage)] = renderGlobalFeed(countryModel);
     }
   }
 

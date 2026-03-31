@@ -85,9 +85,9 @@ describe("renderSite", () => {
       generatedAt: "2026-03-19T20:00:00.000Z",
       sourcePageUrl: sourceRowsPayload.sourcePageUrl,
       summary: {
-        sourceRows: 1,
-        validFeeds: 1,
-        parsedFeeds: 1,
+        sourceRows: 2,
+        validFeeds: 2,
+        parsedFeeds: 2,
         emptyFeeds: 0,
         failedFeeds: 0,
       },
@@ -111,6 +111,26 @@ describe("renderSite", () => {
               authorSource: "author",
               publishedAt: "2025-01-02T10:00:00.000Z",
               summary: "Newest summary",
+            },
+          ],
+        },
+        {
+          id: "row-3-c3d2",
+          rowNumber: 3,
+          sourceWikiUrl: "https://wiki.hackerspaces.org/C3D2",
+          finalFeedUrl: "https://c3d2.de/news-atom.xml",
+          siteUrl: "https://c3d2.de",
+          spaceName: "C3D2",
+          country: "Germany",
+          feedType: "atom",
+          status: "parsed_ok",
+          items: [
+            {
+              id: "c3d2-1",
+              title: "Workshop notes",
+              link: "https://c3d2.de/workshop-notes",
+              publishedAt: "2025-01-01T10:00:00.000Z",
+              summary: "Workshop summary",
             },
           ],
         },
@@ -139,17 +159,21 @@ describe("renderSite", () => {
         "index.html",
         "about/index.html",
         "feed/index.html",
+        "feed/countries/france/index.html",
+        "feed/countries/germany/index.html",
         "authors/index.html",
         "authors/alice.html",
         "other/index.html",
         "spaces/betamachine.html",
+        "spaces/c3d2.html",
       ]);
       expect(secondRun.pages).toEqual(firstRun.pages);
 
-      const [indexHtml, aboutHtml, feedHtml, authorsHtml, detailHtml] = await Promise.all([
+      const [indexHtml, aboutHtml, feedHtml, franceFeedHtml, authorsHtml, detailHtml] = await Promise.all([
         readFile(resolve(distDir, "index.html"), "utf8"),
         readFile(resolve(distDir, "about/index.html"), "utf8"),
         readFile(resolve(distDir, "feed/index.html"), "utf8"),
+        readFile(resolve(distDir, "feed/countries/france/index.html"), "utf8"),
         readFile(resolve(distDir, "authors/index.html"), "utf8"),
         readFile(resolve(distDir, "spaces/betamachine.html"), "utf8"),
       ]);
@@ -162,7 +186,12 @@ describe("renderSite", () => {
       expect(aboutHtml).toContain("About");
       expect(aboutHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
       expect(feedHtml).toContain("Feed");
+      expect(feedHtml).toContain("All countries");
+      expect(feedHtml).toContain("Germany");
+      expect(feedHtml).toContain("feed-country-select");
       expect(feedHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
+      expect(franceFeedHtml).toContain("Feed · France");
+      expect(franceFeedHtml).toContain('value="/feed/countries/france/index.html" selected');
       expect(authorsHtml).toContain("Authors");
       expect(authorsHtml).toContain("Search authors");
       expect(authorsHtml).toContain("All hackerspaces");
