@@ -1,12 +1,11 @@
 import { getAuthorsIndexHref } from "../authors.js";
 import { getCountryFeedHref, getCountryFeedSlug } from "../countryFeeds.js";
-import { listContentStreams } from "./contentStreams.js";
+import { buildContentStreamContext } from "./contentStreams.js";
 import { GLOBAL_FEED_PAGE_SIZE, buildPageLinks, paginateItems } from "../pagination.js";
-import { buildAuthorDirectory, withAuthorLinks } from "./authors.js";
-import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
 
-export function listCountryFeeds(normalizedPayload) {
+export function buildCountryFeedContext(normalizedPayload, { contentStreamContext } = {}) {
+  const sharedContentContext = contentStreamContext || buildContentStreamContext(normalizedPayload);
   const countries = new Set();
 
   for (const feed of normalizedPayload.feeds || []) {
@@ -17,46 +16,62 @@ export function listCountryFeeds(normalizedPayload) {
     countries.add(feed.country);
   }
 
-  return [...countries]
+  const availableCountries = [...countries]
     .sort((left, right) => left.localeCompare(right))
     .map((country) => ({
       country,
       slug: getCountryFeedSlug(country),
       href: getCountryFeedHref(country),
     }));
+
+  return {
+    contentStreamContext: sharedContentContext,
+    countries: availableCountries,
+    optionsBySelectedSlug: new Map(),
+  };
 }
 
-export function listCountryFeedOptions(normalizedPayload, selectedCountrySlug = null) {
-  const countries = listCountryFeeds(normalizedPayload);
+export function listCountryFeeds(normalizedPayload, { context } = {}) {
+  const countryContext = context || buildCountryFeedContext(normalizedPayload);
+  return countryContext.countries;
+}
 
-  return [
+export function listCountryFeedOptions(normalizedPayload, selectedCountrySlug = null, { context } = {}) {
+  const countryContext = context || buildCountryFeedContext(normalizedPayload);
+  if (countryContext.optionsBySelectedSlug.has(selectedCountrySlug || "")) {
+    return countryContext.optionsBySelectedSlug.get(selectedCountrySlug || "");
+  }
+
+  const options = [
     {
       label: "All countries",
       href: "/feed/index.html",
       isSelected: !selectedCountrySlug,
     },
-    ...countries.map((entry) => ({
+    ...countryContext.countries.map((entry) => ({
       label: entry.country,
       href: entry.href,
       isSelected: entry.slug === selectedCountrySlug,
     })),
   ];
+
+  countryContext.optionsBySelectedSlug.set(selectedCountrySlug || "", options);
+  return options;
 }
 
 export function buildCountryFeedModel(
   normalizedPayload,
   countrySlug,
-  { currentPage = 1, pageSize = GLOBAL_FEED_PAGE_SIZE } = {},
+  { currentPage = 1, pageSize = GLOBAL_FEED_PAGE_SIZE, context } = {},
 ) {
-  const countries = listCountryFeeds(normalizedPayload);
-  const selectedCountry = countries.find((entry) => entry.slug === countrySlug);
+  const countryContext = context || buildCountryFeedContext(normalizedPayload);
+  const selectedCountry = countryContext.countries.find((entry) => entry.slug === countrySlug);
 
   if (!selectedCountry) {
     throw new Error(`Country feed is not available: ${countrySlug}`);
   }
 
-  const authorDirectory = buildAuthorDirectory(normalizedPayload);
-  const items = collectCountryItems(normalizedPayload, selectedCountry.country, authorDirectory);
+  const items = collectCountryItems(countryContext.contentStreamContext.allItems, selectedCountry.country);
   const pagination = paginateItems(items, currentPage, pageSize);
   const hrefForPage = (pageNumber) => getCountryFeedHref(selectedCountry.country, pageNumber);
 
@@ -85,36 +100,24 @@ export function buildCountryFeedModel(
         : undefined,
     pageLinks: buildPageLinks(pagination.currentPage, pagination.totalPages, hrefForPage),
     streamNavItems: [
-      ...listContentStreams(normalizedPayload).map((stream) => ({
+      ...countryContext.contentStreamContext.availableStreams.map((stream) => ({
         href: stream.href,
         label: stream.label,
         isCurrent: stream.id === "feed",
       })),
       { href: getAuthorsIndexHref(), label: "Authors", isCurrent: false },
     ],
-    countryOptions: listCountryFeedOptions(normalizedPayload, selectedCountry.slug),
+    countryOptions: listCountryFeedOptions(normalizedPayload, selectedCountry.slug, {
+      context: countryContext,
+    }),
     homeHref: "/index.html",
     canonicalHref: hrefForPage(pagination.currentPage),
   };
 }
 
-function collectCountryItems(normalizedPayload, country, authorDirectory) {
-  return (normalizedPayload.feeds || [])
-    .filter((feed) => feed.country === country)
-    .flatMap((feed) =>
-      (feed.items || []).map((item) =>
-        withAuthorLinks(
-          {
-            ...item,
-            spaceName: feed.spaceName,
-            country: feed.country,
-            spaceHref: `/spaces/${slugify(feed.spaceName)}.html`,
-            sourceWikiUrl: feed.sourceWikiUrl,
-          },
-          authorDirectory,
-        ),
-      ),
-    )
+function collectCountryItems(allItems, country) {
+  return (allItems || [])
+    .filter((item) => item.country === country)
     .sort(compareItemsByDateDesc);
 }
 

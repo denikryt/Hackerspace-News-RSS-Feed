@@ -1,17 +1,23 @@
 import { runWithNetworkRetry } from "./networkRetry.js";
+import { getAttemptTimeoutMs } from "./networkAttemptTimeout.js";
 
 export async function probeFeedUrl({
   sourceRow,
   fetchImpl = fetch,
   waitImpl,
   retryDelaysMs,
+  attemptTimeoutsMs,
   logger,
 }) {
   const candidateUrl = sourceRow.candidateFeedUrl;
 
   try {
     const response = await runWithNetworkRetry({
-      run: () => fetchFeedWithTimeout({ candidateUrl, fetchImpl }),
+      run: ({ attemptNumber }) => fetchFeedWithTimeout({
+        candidateUrl,
+        fetchImpl,
+        timeoutMs: getAttemptTimeoutMs({ attemptNumber, timeoutsMs: attemptTimeoutsMs }),
+      }),
       waitImpl,
       retryDelaysMs,
       onRetry: ({ attemptNumber, maxAttempts, delayMs, errorCode }) => {
@@ -60,9 +66,9 @@ export async function probeFeedUrl({
   }
 }
 
-async function fetchFeedWithTimeout({ candidateUrl, fetchImpl }) {
+async function fetchFeedWithTimeout({ candidateUrl, fetchImpl, timeoutMs }) {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30_000);
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   return fetchImpl(candidateUrl, {
     redirect: "follow",
@@ -108,8 +114,5 @@ function buildErrorCode({ responseOk, contentType, isParsable }) {
   if (isParsable) {
     return null;
   }
-  if (String(contentType).includes("html")) {
-    return "non_feed_html";
-  }
-  return "non_feed_content";
+  return "non_xml_response";
 }

@@ -2,6 +2,9 @@ export function normalizeFeed({ sourceRow, validation, parsedFeed }) {
   const items = Array.isArray(parsedFeed.items)
     ? parsedFeed.items.map(normalizeItem).filter(Boolean)
     : [];
+  const parsedFeedLink = normalizeScalarText(parsedFeed.link);
+  const parsedFeedTitle = normalizeScalarText(parsedFeed.title);
+  const parsedFeedDescription = normalizeScalarText(parsedFeed.description);
 
   return {
     id: createFeedId(sourceRow, validation),
@@ -9,11 +12,11 @@ export function normalizeFeed({ sourceRow, validation, parsedFeed }) {
     sourceListUrl: sourceRow.candidateFeedUrl,
     sourceWikiUrl: sourceRow.hackerspaceWikiUrl,
     finalFeedUrl: validation.finalUrl || sourceRow.candidateFeedUrl,
-    siteUrl: parsedFeed.link || undefined,
-    spaceName: sourceRow.hackerspaceName || parsedFeed.title || null,
+    siteUrl: parsedFeedLink || undefined,
+    spaceName: sourceRow.hackerspaceName || parsedFeedTitle || null,
     country: sourceRow.country || undefined,
-    feedTitle: parsedFeed.title || undefined,
-    feedDescription: parsedFeed.description || undefined,
+    feedTitle: parsedFeedTitle || undefined,
+    feedDescription: parsedFeedDescription || undefined,
     feedType: validation.detectedFormat || undefined,
     language: parsedFeed.language || undefined,
     updatedAt: toIsoString(parsedFeed.lastBuildDate || parsedFeed.updated || parsedFeed.pubDate),
@@ -28,17 +31,22 @@ function normalizeItem(item) {
     return null;
   }
 
+  const guid = normalizeScalarText(item.guid);
+  const itemId = normalizeScalarText(item.id);
+  const link = normalizeScalarText(item.link);
+  const title = normalizeScalarText(item.title);
+
   const normalized = {
-    id: item.guid || item.id || item.link || item.title,
-    title: item.title || undefined,
-    link: item.link || undefined,
+    id: guid || itemId || link || title,
+    title: title || undefined,
+    link: link || undefined,
     categoriesRaw: normalizeCategories(item.categories),
     authorCandidates: normalizeAuthorCandidates(item),
     dateCandidates: normalizeDateCandidates(item),
     summaryCandidates: normalizeSummaryCandidates(item),
     contentCandidates: normalizeContentCandidates(item),
     attachments: normalizeAttachments(item),
-    guid: item.guid || undefined,
+    guid: guid || undefined,
   };
 
   return removeUndefined(normalized);
@@ -200,6 +208,24 @@ function stripHtml(value) {
   }
   const stripped = String(value).replace(/<[^>]*>/g, "").trim();
   return stripped || undefined;
+}
+
+function normalizeScalarText(value) {
+  if (typeof value === "string") {
+    const normalized = value.trim();
+    return normalized || undefined;
+  }
+
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+
+  if (value && typeof value === "object" && typeof value._ === "string") {
+    const normalized = value._.trim();
+    return normalized || undefined;
+  }
+
+  return undefined;
 }
 
 function toIsoString(value) {

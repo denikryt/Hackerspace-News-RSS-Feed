@@ -111,5 +111,13 @@ export const PATHS = {
     "utf8",
   );
 
+  writeFileSync(
+    join(rootDir, "src/storage.js"),
+    `export async function readJson() {
+  return { urls: [] };
+}\n`,
+    "utf8",
+  );
+
   return rootDir;
 }

@@ -1,8 +1,12 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, afterEach } from "vitest";
 
 import { fetchPageHtml } from "../src/pageFetcher.js";
 
 const sourcePageUrl = "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds";
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe("fetchPageHtml", () => {
   it("retries transient timeout errors with 1s, 2s, and 3s backoff before succeeding", async () => {
@@ -60,6 +64,49 @@ describe("fetchPageHtml", () => {
     expect(fetchImpl).toHaveBeenCalledTimes(1);
     expect(waitImpl).not.toHaveBeenCalled();
   });
+
+  it("uses 1s, 2s, and 3s attempt timeouts for transient fetch hangs", async () => {
+    vi.useFakeTimers();
+
+    const waitImpl = vi.fn().mockResolvedValue(undefined);
+    const fetchImpl = vi.fn((url, options = {}) => (
+      createAbortableFetch({ url, signal: options.signal })
+    ));
+
+    const htmlPromise = fetchPageHtml({
+      sourcePageUrl,
+      fetchImpl,
+      waitImpl,
+    });
+    void htmlPromise.catch(() => {});
+
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(999);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(1);
+    expect(waitImpl).toHaveBeenNthCalledWith(1, 1000);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+
+    await vi.advanceTimersByTimeAsync(1999);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+
+    await vi.advanceTimersByTimeAsync(1);
+    expect(waitImpl).toHaveBeenNthCalledWith(2, 2000);
+    expect(fetchImpl).toHaveBeenCalledTimes(3);
+
+    await vi.advanceTimersByTimeAsync(2999);
+    expect(fetchImpl).toHaveBeenCalledTimes(3);
+
+    await vi.advanceTimersByTimeAsync(1);
+    expect(waitImpl).toHaveBeenNthCalledWith(3, 3000);
+    expect(fetchImpl).toHaveBeenCalledTimes(4);
+
+    await vi.advanceTimersByTimeAsync(3000);
+
+    await expect(htmlPromise).rejects.toThrow("The operation was aborted");
+  });
 });
 
 function response({ url, body, status = 200 }) {
@@ -75,4 +122,27 @@ function fetchFailed({ code }) {
   return Object.assign(new TypeError("fetch failed"), {
     cause: Object.assign(new Error(code), { code }),
   });
+}
+
+function createAbortableFetch({ url, signal }) {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(abortError());
+      return;
+    }
+
+    signal?.addEventListener(
+      "abort",
+      () => {
+        queueMicrotask(() => {
+          reject(abortError());
+        });
+      },
+      { once: true },
+    );
+  });
+}
+
+function abortError() {
+  return new DOMException("The operation was aborted", "AbortError");
 }

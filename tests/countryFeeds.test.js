@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import { getCountryFeedHref, getCountryFeedOutputPath } from "../src/countryFeeds.js";
 import {
+  buildCountryFeedContext,
   buildCountryFeedModel,
   listCountryFeedOptions,
 } from "../src/viewModels/countryFeeds.js";
+import { buildContentStreamContext } from "../src/viewModels/contentStreams.js";
 
 const normalizedPayload = {
   generatedAt: "2026-03-19T20:00:00.000Z",
@@ -122,6 +124,25 @@ describe("country feed contracts", () => {
       { label: "Germany", href: "/feed/countries/germany/index.html", isSelected: false },
     ]);
     expect(model.previousPageHref).toBeUndefined();
+  });
+
+  it("reuses shared content stream context for country feeds when provided", () => {
+    const contentStreamContext = buildContentStreamContext(normalizedPayload);
+    const countryContext = buildCountryFeedContext(normalizedPayload, { contentStreamContext });
+
+    expect(listCountryFeedOptions(normalizedPayload, null, { context: countryContext })).toEqual([
+      { label: "All countries", href: "/feed/index.html", isSelected: true },
+      { label: "France", href: "/feed/countries/france/index.html", isSelected: false },
+      { label: "Germany", href: "/feed/countries/germany/index.html", isSelected: false },
+    ]);
+
+    const model = buildCountryFeedModel(normalizedPayload, "france", { context: countryContext });
+    expect(model.items.map((item) => item.title)).toEqual(["French newest", "French older"]);
+    expect(model.countryOptions[1]).toEqual({
+      label: "France",
+      href: "/feed/countries/france/index.html",
+      isSelected: true,
+    });
   });
 
   it("uses stable href and output path contracts for country pages", () => {

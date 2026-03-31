@@ -74,7 +74,7 @@ const normalizedPayload = {
       country: "Russian Federation",
       sourceWikiUrl: "https://wiki.hackerspaces.org/Akiba",
       candidateUrl: "https://t.me/akiba_space",
-      errorCode: "non_feed_html",
+      errorCode: "non_xml_response",
       errorMessage: "HTML page",
     },
   ],

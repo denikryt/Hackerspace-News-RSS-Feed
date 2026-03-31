@@ -178,4 +178,33 @@ describe("normalizeFeed", () => {
     expect(normalized.status).toBe("parsed_empty");
     expect(normalized.items).toEqual([]);
   });
+
+  it("drops non-scalar item titles instead of keeping raw parser objects", () => {
+    const normalized = normalizeFeed({
+      sourceRow: {
+        rowNumber: 7,
+        hackerspaceName: "MAKER's EDGe",
+        hackerspaceWikiUrl: "https://wiki.hackerspaces.org/MAKER%27s_EDGe",
+        candidateFeedUrl: "http://makersedge.blogspot.com/feeds/posts/default?alt=rss",
+        country: "US",
+      },
+      validation: {
+        candidateUrl: "http://makersedge.blogspot.com/feeds/posts/default?alt=rss",
+        finalUrl: "http://makersedge.blogspot.com/feeds/posts/default?alt=rss",
+        detectedFormat: "rss",
+      },
+      parsedFeed: {
+        title: "MAKER's EDGe Feed",
+        items: [
+          {
+            title: { $: { type: "text" } },
+            link: "http://makersedge.blogspot.com/2013/12/example.html",
+          },
+        ],
+      },
+    });
+
+    expect(normalized.items[0].title).toBeUndefined();
+    expect(normalized.items[0].link).toBe("http://makersedge.blogspot.com/2013/12/example.html");
+  });
 });

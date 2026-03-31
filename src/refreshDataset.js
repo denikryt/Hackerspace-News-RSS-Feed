@@ -13,9 +13,13 @@ export async function refreshDataset({
   paths = PATHS,
   writeSnapshots = false,
   logger = null,
+  additionalSourceRows = [],
 } = {}) {
   const html = await fetchPageHtml({ sourcePageUrl, fetchImpl, logger });
-  const sourceRows = extractSourceRows({ html, sourcePageUrl });
+  const sourceRows = mergeSourceRows({
+    wikiSourceRows: extractSourceRows({ html, sourcePageUrl }),
+    additionalSourceRows,
+  });
   logInfo(logger, `[refresh] source rows extracted: ${sourceRows.length}`);
   const results = await mapWithConcurrency(sourceRows, 4, async (sourceRow) => {
     const feedIndex = sourceRows.indexOf(sourceRow) + 1;
@@ -151,4 +155,36 @@ async function mapWithConcurrency(items, concurrency, mapper) {
   );
 
   return results;
+}
+
+/**
+ * Refresh keeps the wiki list authoritative. Additional rows are appended only
+ * when they do not overlap on the same wiki page, and synthetic row numbers are
+ * assigned only to the appended rows so downstream feed IDs remain stable.
+ */
+function mergeSourceRows({ wikiSourceRows, additionalSourceRows }) {
+  if (!Array.isArray(additionalSourceRows) || additionalSourceRows.length === 0) {
+    return wikiSourceRows;
+  }
+
+  const mergedRows = [...wikiSourceRows];
+  const seenWikiUrls = new Set(
+    wikiSourceRows.map((row) => row.hackerspaceWikiUrl).filter(Boolean),
+  );
+  let nextRowNumber = Math.max(0, ...wikiSourceRows.map((row) => Number(row.rowNumber) || 0)) + 1;
+
+  for (const row of additionalSourceRows) {
+    if (!row || typeof row !== "object" || seenWikiUrls.has(row.hackerspaceWikiUrl)) {
+      continue;
+    }
+
+    seenWikiUrls.add(row.hackerspaceWikiUrl);
+    mergedRows.push({
+      ...row,
+      rowNumber: nextRowNumber,
+    });
+    nextRowNumber += 1;
+  }
+
+  return mergedRows;
 }
