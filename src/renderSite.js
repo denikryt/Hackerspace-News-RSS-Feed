@@ -16,6 +16,7 @@ import { readJson, writeText } from "./storage.js";
 import { formatLoopProgressLog, formatPrimaryStreamProgressLog } from "./renderProgress.js";
 import { slugify } from "./utils/slugify.js";
 import { filterNormalizedPayloadForDisplay } from "./visibleData.js";
+import { buildCuratedIndexModel } from "./viewModels/curated.js";
 import {
   buildCountryFeedContext,
   buildCountryFeedModel,
@@ -72,6 +73,10 @@ export async function renderSite({
     "index.html": renderSpacesIndex(spacesIndexModel),
     "about/index.html": renderAboutPage(),
   };
+
+  if ((displayPayload.curated?.items || []).length > 0) {
+    pages["curated/index.html"] = renderGlobalFeed(buildCuratedIndexModel(displayPayload));
+  }
 
   const contentStreamContext = buildContentStreamContext(displayPayload);
   const contentStreams = listContentStreams(displayPayload, { context: contentStreamContext });

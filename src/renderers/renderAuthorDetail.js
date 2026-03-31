@@ -17,6 +17,7 @@ export function renderAuthorDetail(model) {
     pageIntro: `${model.publicationCountLabel || ""} ${sourceLabel}`.trim(),
     streamNavItems: [
       { href: model.feedHref, label: "Feed", isCurrent: false },
+      { href: "/curated/index.html", label: "Curated", isCurrent: false },
       { href: model.authorsIndexHref, label: "Authors", isCurrent: false },
       {
         href: model.canonicalHref || model.authorsIndexHref,
