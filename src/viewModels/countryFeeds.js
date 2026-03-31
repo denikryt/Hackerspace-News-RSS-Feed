@@ -2,21 +2,26 @@ import { getAuthorsIndexHref } from "../authors.js";
 import { getCountryFeedHref, getCountryFeedSlug } from "../countryFeeds.js";
 import { buildContentStreamContext } from "./contentStreams.js";
 import { GLOBAL_FEED_PAGE_SIZE, buildPageLinks, paginateItems } from "../pagination.js";
-import { getEffectiveItemDate } from "../visibleData.js";
 
 export function buildCountryFeedContext(normalizedPayload, { contentStreamContext } = {}) {
   const sharedContentContext = contentStreamContext || buildContentStreamContext(normalizedPayload);
-  const countries = new Set();
+  const itemsByCountry = new Map();
 
-  for (const feed of normalizedPayload.feeds || []) {
-    if (!feed.country || !Array.isArray(feed.items) || feed.items.length === 0) {
+  for (const item of sharedContentContext.allItems || []) {
+    if (!item.country) {
       continue;
     }
 
-    countries.add(feed.country);
+    const existingItems = itemsByCountry.get(item.country);
+    if (existingItems) {
+      existingItems.push(item);
+      continue;
+    }
+
+    itemsByCountry.set(item.country, [item]);
   }
 
-  const availableCountries = [...countries]
+  const availableCountries = [...itemsByCountry.keys()]
     .sort((left, right) => left.localeCompare(right))
     .map((country) => ({
       country,
@@ -27,6 +32,7 @@ export function buildCountryFeedContext(normalizedPayload, { contentStreamContex
   return {
     contentStreamContext: sharedContentContext,
     countries: availableCountries,
+    itemsByCountry,
     optionsBySelectedSlug: new Map(),
   };
 }
@@ -71,7 +77,7 @@ export function buildCountryFeedModel(
     throw new Error(`Country feed is not available: ${countrySlug}`);
   }
 
-  const items = collectCountryItems(countryContext.contentStreamContext.allItems, selectedCountry.country);
+  const items = countryContext.itemsByCountry.get(selectedCountry.country) || [];
   const pagination = paginateItems(items, currentPage, pageSize);
   const hrefForPage = (pageNumber) => getCountryFeedHref(selectedCountry.country, pageNumber);
 
@@ -113,26 +119,4 @@ export function buildCountryFeedModel(
     homeHref: "/index.html",
     canonicalHref: hrefForPage(pagination.currentPage),
   };
-}
-
-function collectCountryItems(allItems, country) {
-  return (allItems || [])
-    .filter((item) => item.country === country)
-    .sort(compareItemsByDateDesc);
-}
-
-function compareItemsByDateDesc(a, b) {
-  const aDate = getComparableTimestamp(a);
-  const bDate = getComparableTimestamp(b);
-  return bDate - aDate;
-}
-
-function getComparableTimestamp(item) {
-  const effectiveDate = getEffectiveItemDate(item);
-  if (!effectiveDate) {
-    return -Infinity;
-  }
-
-  const timestamp = Date.parse(effectiveDate);
-  return Number.isNaN(timestamp) ? -Infinity : timestamp;
 }

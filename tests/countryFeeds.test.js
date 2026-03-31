@@ -130,6 +130,14 @@ describe("country feed contracts", () => {
     const contentStreamContext = buildContentStreamContext(normalizedPayload);
     const countryContext = buildCountryFeedContext(normalizedPayload, { contentStreamContext });
 
+    expect(countryContext.itemsByCountry.get("France")?.map((item) => item.title)).toEqual([
+      "French newest",
+      "French older",
+    ]);
+    expect(countryContext.itemsByCountry.get("Germany")?.map((item) => item.title)).toEqual([
+      "German post",
+    ]);
+
     expect(listCountryFeedOptions(normalizedPayload, null, { context: countryContext })).toEqual([
       { label: "All countries", href: "/feed/index.html", isSelected: true },
       { label: "France", href: "/feed/countries/france/index.html", isSelected: false },

@@ -132,10 +132,8 @@ export async function renderSite({
       lastCountryProgressAt = progressLog.checkpointAt;
     }
 
-    const initialModel = buildCountryFeedModel(displayPayload, countryFeed.slug, {
-      context: countryFeedContext,
-    });
-    const totalPages = initialModel.totalPages || 1;
+    const countryItems = countryFeedContext.itemsByCountry.get(countryFeed.country) || [];
+    const totalPages = Math.max(1, Math.ceil(countryItems.length / GLOBAL_FEED_PAGE_SIZE));
 
     for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
       const countryModel = buildCountryFeedModel(displayPayload, countryFeed.slug, {
