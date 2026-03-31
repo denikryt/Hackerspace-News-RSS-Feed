@@ -75,17 +75,21 @@ export function buildContentStreamModel(
         ? hrefForPage(pagination.currentPage + 1)
         : undefined,
     pageLinks: buildPageLinks(pagination.currentPage, pagination.totalPages, hrefForPage),
-    streamNavItems: [
-      ...availableStreams.map((stream) => ({
-        href: stream.href,
-        label: stream.label,
-        isCurrent: stream.id === streamId,
-      })),
-      { href: getAuthorsIndexHref(), label: "Authors", isCurrent: false },
-    ],
+    streamNavItems: buildStreamNavItems(availableStreams, streamId),
     homeHref: "/index.html",
     canonicalHref: hrefForPage(pagination.currentPage),
   };
+}
+
+export function buildStreamNavItems(availableStreams, currentStreamId) {
+  return [
+    ...availableStreams.map((stream) => ({
+      href: stream.href,
+      label: stream.label,
+      isCurrent: stream.id === currentStreamId,
+    })),
+    { href: getAuthorsIndexHref(), label: "Authors", isCurrent: false },
+  ];
 }
 
 function buildAvailableStreams(allItems) {
