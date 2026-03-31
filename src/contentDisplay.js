@@ -1,6 +1,9 @@
 import { load } from "cheerio";
 
 import { escapeHtml } from "./renderers/layout.js";
+import { selectDisplayText, selectItemDisplayContent } from "./displayText.js";
+
+export { selectDisplayText } from "./displayText.js";
 
 const ALLOWED_TAGS = new Set([
   "p",
@@ -24,40 +27,14 @@ const ALLOWED_ATTRIBUTES = {
   img: new Set(["src", "alt", "title"]),
 };
 
-export function buildDisplayContent(item) {
-  const sanitizedHtml = sanitizeContentHtml(item.contentHtml || item.summaryHtml);
-  const attachments = normalizeDisplayAttachments(item.attachments);
-
-  if (sanitizedHtml) {
-    return {
-      renderMode: "html",
-      html: sanitizedHtml,
-      attachments,
-    };
-  }
-
-  const text = normalizeText(item.contentText || item.summaryText || item.summary);
-
-  if (text) {
-    return {
-      renderMode: "text",
-      text,
-      attachments,
-    };
-  }
-
-  return {
-    renderMode: attachments.length > 0 ? "attachments" : "empty",
-    attachments,
-  };
-}
-
 export function renderDisplayContent(item) {
-  const display = buildDisplayContent(item);
+  const display = selectItemDisplayContent(item);
+  const attachments = normalizeDisplayAttachments(item.attachments);
   const body = renderDisplayBody(display);
-  const attachments = renderAttachments(display.attachments);
+  const readMore = renderReadMoreLink(item.link, display);
+  const attachmentsHtml = renderAttachments(attachments);
 
-  return [body, attachments].filter(Boolean).join("");
+  return [body, readMore, attachmentsHtml].filter(Boolean).join("");
 }
 
 export function sanitizeContentHtml(value) {
@@ -107,15 +84,25 @@ export function sanitizeContentHtml(value) {
 }
 
 function renderDisplayBody(display) {
-  if (display.renderMode === "html" && display.html) {
-    return `<div class="content-body rich-html">${display.html}</div>`;
+  if (!display?.text) {
+    return "";
   }
 
-  if (display.renderMode === "text" && display.text) {
-    return `<div class="content-body plain-text">${escapeHtml(display.text)}</div>`;
+  if (display.format === "html") {
+    const sanitized = sanitizeContentHtml(display.text);
+    if (sanitized) {
+      return `<div class="content-body rich-html">${sanitized}</div>`;
+    }
+
+    const plain = stripHtml(display.text);
+    if (plain) {
+      return `<div class="content-body plain-text">${escapeHtml(plain)}</div>`;
+    }
+
+    return "";
   }
 
-  return "";
+  return `<div class="content-body plain-text">${escapeHtml(display.text)}</div>`;
 }
 
 function renderAttachments(attachments) {
@@ -135,6 +122,14 @@ function renderAttachments(attachments) {
   return `<div class="attachments"><p class="field-label">Attachments</p><ul>${items}</ul></div>`;
 }
 
+function renderReadMoreLink(url, display) {
+  if (!display?.wasTruncated || !url || !isSafeUrl(url)) {
+    return "";
+  }
+
+  return `<p class="content-read-more"><a href="${escapeHtml(url)}">Read more</a></p>`;
+}
+
 function normalizeDisplayAttachments(attachments) {
   if (!Array.isArray(attachments) || attachments.length === 0) {
     return [];
@@ -149,17 +144,17 @@ function normalizeDisplayAttachments(attachments) {
     }));
 }
 
-function normalizeText(value) {
-  if (!value) {
-    return undefined;
-  }
-
-  const normalized = String(value).replace(/\r\n/g, "\n").trim();
-  return normalized || undefined;
-}
-
 function looksLikeHtml(value) {
   return /<[^>]+>/.test(String(value));
+}
+
+function stripHtml(value) {
+  const text = load(`<div id="root">${String(value ?? "")}</div>`, null, false)
+    .text()
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return text || undefined;
 }
 
 function isSafeUrl(value) {

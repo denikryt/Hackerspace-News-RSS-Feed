@@ -97,8 +97,12 @@ describe("refreshDataset", () => {
       title: "Post one",
       displayDate: "2025-01-01T10:00:00.000Z",
       dateSource: "pubDate",
-      summaryText: "Hello",
-      summarySource: "contentSnippet",
+      displayContent: {
+        text: "Hello",
+        wasTruncated: false,
+        format: "text",
+        sourceField: "contentSnippet",
+      },
       observed: {
         dateCandidates: [
           {
@@ -118,6 +122,9 @@ describe("refreshDataset", () => {
         ],
       },
     });
+    expect(JSON.parse(normalizedJson).feeds[0].items[0].observed.contentCandidates).toBeUndefined();
+    expect(JSON.parse(normalizedJson).feeds[0].items[0].summaryText).toBeUndefined();
+    expect(JSON.parse(normalizedJson).feeds[0].items[0].summarySource).toBeUndefined();
   });
 
   it("logs feed fetch progress and outcomes when a logger is provided", async () => {

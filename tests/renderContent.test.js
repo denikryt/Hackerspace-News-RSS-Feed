@@ -13,7 +13,12 @@ describe("content rendering", () => {
           spaceHref: "/spaces/betamachine.html",
           link: "https://example.com/plain-post",
           displayDate: "2025-01-01T10:00:00.000Z",
-          summaryText: "First line\nSecond line",
+          observed: {
+            summaryCandidates: [
+              { field: "summary", text: "First line\nSecond line" },
+            ],
+            contentCandidates: [],
+          },
           authorLinks: [
             { label: "Alice", href: "/authors/alice.html" },
             { label: "Bob", href: "/authors/bob.html" },
@@ -64,12 +69,19 @@ describe("content rendering", () => {
         {
           title: "HTML post",
           displayDate: "2025-01-01T10:00:00.000Z",
+          observed: {
+            summaryCandidates: [
+              {
+                field: "description",
+                html: '<p>Hello <a href="https://example.com/post">link</a></p><script>alert(1)</script>',
+              },
+            ],
+            contentCandidates: [],
+          },
           authorLinks: [
             { label: "Alice", href: "/authors/alice.html" },
             { label: "Bob", href: "/authors/bob.html" },
           ],
-          contentHtml:
-            '<p>Hello <a href="https://example.com/post">link</a></p><script>alert(1)</script>',
           normalizedCategories: ["event", "news"],
           attachments: [
             {
@@ -91,6 +103,134 @@ describe("content rendering", () => {
     expect(html).not.toContain("<script");
     expect(html).toContain("max-inline-size: min(100%, 42rem)");
     expect(html).toContain('img[src*="emoji"]');
+  });
+
+  it("keeps short html content as rich html in the global feed", () => {
+    const html = renderGlobalFeed({
+      items: [
+        {
+          title: "HTML post",
+          spaceName: "BetaMachine",
+          spaceHref: "/spaces/betamachine.html",
+          link: "https://example.com/post",
+          displayDate: "2025-01-01T10:00:00.000Z",
+          observed: {
+            summaryCandidates: [{ field: "summary", text: "Fallback summary" }],
+            contentCandidates: [
+              {
+                field: "content:encoded",
+                html: '<p>Hello <a href="https://example.com/post">link</a></p>',
+                text: "Hello link",
+              },
+            ],
+          },
+        },
+      ],
+      homeHref: "/index.html",
+      pageTitle: "Feed",
+      pageIntro: "All publications sorted from new to old.",
+      streamNavItems: [{ href: "/feed/index.html", label: "Feed", isCurrent: true }],
+      publicationCountLabel: "1 of 1 publications",
+    });
+
+    expect(html).toContain('class="content-body rich-html"');
+    expect(html).toContain('<a href="https://example.com/post">link</a>');
+    expect(html).not.toContain(">Read more<");
+  });
+
+  it("renders truncated long html content as rich html with read more", () => {
+    const longHtml = `<p>${"x".repeat(320)}</p><p>${"y".repeat(320)}</p>`;
+    const html = renderGlobalFeed({
+      items: [
+        {
+          title: "Long HTML post",
+          spaceName: "BetaMachine",
+          spaceHref: "/spaces/betamachine.html",
+          link: "https://example.com/long-html-post",
+          displayDate: "2025-01-01T10:00:00.000Z",
+          observed: {
+            summaryCandidates: [],
+            contentCandidates: [
+              {
+                field: "content:encoded",
+                html: longHtml,
+                text: `${"x".repeat(320)} ${"y".repeat(320)}`,
+              },
+            ],
+          },
+        },
+      ],
+      homeHref: "/index.html",
+      pageTitle: "Feed",
+      pageIntro: "All publications sorted from new to old.",
+      streamNavItems: [{ href: "/feed/index.html", label: "Feed", isCurrent: true }],
+      publicationCountLabel: "1 of 1 publications",
+    });
+
+    expect(html).toContain('class="content-body rich-html"');
+    expect(html).toContain(">Read more<");
+    expect(html).toContain('href="https://example.com/long-html-post"');
+    expect(html).toContain("…");
+    expect(html).not.toContain(`${"y".repeat(320)}</p>`);
+  });
+
+  it("renders truncated fallback content consistently across renderers", () => {
+    const longText = Array.from({ length: 160 }, (_, index) => `content-${index}`).join(" ");
+    const feedHtml = renderGlobalFeed({
+      items: [
+        {
+          title: "Long post",
+          spaceName: "BetaMachine",
+          spaceHref: "/spaces/betamachine.html",
+          link: "https://example.com/long-post",
+          displayDate: "2025-01-01T10:00:00.000Z",
+          observed: {
+            summaryCandidates: [],
+            contentCandidates: [{ field: "content:encoded", text: longText }],
+          },
+        },
+      ],
+      homeHref: "/index.html",
+      pageTitle: "Feed",
+      pageIntro: "All publications sorted from new to old.",
+      streamNavItems: [{ href: "/feed/index.html", label: "Feed", isCurrent: true }],
+      publicationCountLabel: "1 of 1 publications",
+    });
+
+    const detailHtml = renderSpaceDetail({
+      spaceName: "BetaMachine",
+      country: "France",
+      sourceWikiUrl: "https://wiki.hackerspaces.org/BetaMachine",
+      feedUrl: "https://www.betamachine.fr/feed/",
+      siteUrl: "https://www.betamachine.fr",
+      feedType: "rss",
+      status: "parsed_ok",
+      items: [
+        {
+          title: "Long post",
+          link: "https://example.com/long-post",
+          displayDate: "2025-01-01T10:00:00.000Z",
+          observed: {
+            summaryCandidates: [],
+            contentCandidates: [{ field: "content:encoded", text: longText }],
+          },
+        },
+      ],
+      homeHref: "/index.html",
+      feedHref: "/feed/index.html",
+    });
+
+    const feedMatch = feedHtml.match(/<div class="content-body plain-text">([\s\S]*?)<\/div>/);
+    const detailMatch = detailHtml.match(/<div class="content-body plain-text">([\s\S]*?)<\/div>/);
+    expect(feedMatch?.[1]).toBeDefined();
+    expect(detailMatch?.[1]).toBeDefined();
+    expect(feedMatch?.[1]).toBe(detailMatch?.[1]);
+    expect(feedMatch?.[1]).toContain("…");
+    expect(feedMatch?.[1]?.length).toBeLessThanOrEqual(505); // escaped text may add entities
+    expect(feedHtml).not.toContain(longText);
+    expect(detailHtml).not.toContain(longText);
+    expect(feedHtml).toContain(">Read more<");
+    expect(detailHtml).toContain(">Read more<");
   });
 
   it("renders detail page source above author links and omits the author line when absent", () => {

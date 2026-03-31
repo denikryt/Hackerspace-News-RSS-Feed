@@ -1,9 +1,10 @@
 import { normalizeCategoriesWithDictionary } from "./categoryDictionary.js";
+import { selectDisplayText } from "./displayText.js";
 
 const AUTHOR_PRIORITY = ["author", "creator"];
 const DISPLAY_DATE_PRIORITY = ["pubDate", "published", "isoDate", "updated"];
 const CONTENT_PRIORITY = ["content:encoded", "content"];
-const SUMMARY_PRIORITY = ["contentSnippet", "summary", "description"];
+const SUMMARY_PRIORITY = ["summary", "description", "contentSnippet"];
 
 export function enrichFeed(feed) {
   return {
@@ -19,9 +20,13 @@ export function enrichFeedItem(item) {
   const displayDate = pickFirstDateCandidate(item.dateCandidates, DISPLAY_DATE_PRIORITY);
   const content = pickTextCandidate(item.contentCandidates, CONTENT_PRIORITY);
   const summary = pickTextCandidate(item.summaryCandidates, SUMMARY_PRIORITY);
+  const displayContent = selectDisplayText({
+    summaryCandidates: item.summaryCandidates,
+    contentCandidates: item.contentCandidates,
+  });
   const categories = normalizeCategoriesWithDictionary(item.categoriesRaw);
-  const primaryText = content?.text ? { source: content.field, text: content.text } : summary?.text
-    ? { source: summary.field, text: summary.text }
+  const primaryText = summary?.text ? { source: summary.field, text: summary.text } : content?.text
+    ? { source: content.field, text: content.text }
     : null;
 
   return removeUndefined({
@@ -36,17 +41,11 @@ export function enrichFeedItem(item) {
     updatedAt: updated?.value,
     displayDate: displayDate?.value,
     dateSource: displayDate?.field,
-    contentHtml: content?.html,
-    contentText: content?.text,
-    contentSource: content?.field,
-    summaryHtml: summary?.html,
-    summaryText: summary?.text,
-    summarySource: summary?.field,
+    displayContent: displayContent.text ? displayContent : undefined,
     categoriesRaw: item.categoriesRaw,
     normalizedCategories: categories.normalizedCategories,
     unmappedCategories: categories.unmappedCategories,
     observed: buildObservedTrace(item),
-    primaryTextSource: primaryText?.source,
     wordCount: countWords(primaryText?.text),
     hasFullContent: Boolean(content?.text || content?.html),
     hasSummary: Boolean(summary?.text || summary?.html),
@@ -61,7 +60,6 @@ function buildObservedTrace(item) {
     authorCandidates: item.authorCandidates,
     dateCandidates: item.dateCandidates,
     summaryCandidates: item.summaryCandidates,
-    contentCandidates: item.contentCandidates,
   });
 }
 
