@@ -1,7 +1,6 @@
-import { getAuthorsIndexHref } from "../authors.js";
 import { getCountryFeedHref, getCountryFeedSlug } from "../countryFeeds.js";
 import { FEED_CONTENT_STREAM_ID, getContentStreamDefinition, getContentStreamHref } from "../contentStreams.js";
-import { buildContentStreamContext, selectItemsForStream } from "./contentStreams.js";
+import { buildContentStreamContext, buildStreamNavItems, selectItemsForStream } from "./contentStreams.js";
 import { GLOBAL_FEED_PAGE_SIZE, buildPageLinks, paginateItems } from "../pagination.js";
 
 export function buildCountryFeedContext(normalizedPayload, { contentStreamContext } = {}) {
@@ -132,14 +131,7 @@ export function buildCountryFeedModel(
         ? hrefForPage(pagination.currentPage + 1)
         : undefined,
     pageLinks: buildPageLinks(pagination.currentPage, pagination.totalPages, hrefForPage),
-    streamNavItems: [
-      ...countryContext.contentStreamContext.availableStreams.map((stream) => ({
-        href: stream.href,
-        label: stream.label,
-        isCurrent: stream.id === streamId,
-      })),
-      { href: getAuthorsIndexHref(), label: "Authors", isCurrent: false },
-    ],
+    streamNavItems: buildStreamNavItems(countryContext.contentStreamContext.availableStreams, streamId),
     countryOptions: listCountryFeedOptions(normalizedPayload, streamId, selectedCountry.slug, {
       context: countryContext,
     }),

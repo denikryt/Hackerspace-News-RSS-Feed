@@ -7,7 +7,7 @@ import {
   listCountryFeeds,
   listCountryFeedOptions,
 } from "../src/viewModels/countryFeeds.js";
-import { buildContentStreamContext } from "../src/viewModels/contentStreams.js";
+import { buildContentStreamContext, buildStreamNavItems } from "../src/viewModels/contentStreams.js";
 
 const normalizedPayload = {
   generatedAt: "2026-03-19T20:00:00.000Z",
@@ -188,11 +188,9 @@ describe("country feed contracts", () => {
     expect(model.pageTitle).toBe("Events · France");
     expect(model.pageIntro).toBe("Items tagged as events.");
     expect(model.items.map((item) => item.title)).toEqual(["French event"]);
-    expect(model.streamNavItems.find((item) => item.label === "Events")).toEqual({
-      href: "/events/index.html",
-      label: "Events",
-      isCurrent: true,
-    });
+    expect(model.streamNavItems).toEqual(
+      buildStreamNavItems(countryContext.contentStreamContext.availableStreams, "event"),
+    );
     expect(model.countryOptions[0]).toEqual({
       label: "All countries",
       href: "/events/index.html",

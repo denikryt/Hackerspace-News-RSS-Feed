@@ -101,7 +101,7 @@ describe("refreshDataset", () => {
         text: "Hello",
         wasTruncated: false,
         format: "text",
-        sourceField: "contentSnippet",
+        sourceField: "content",
       },
       observed: {
         dateCandidates: [

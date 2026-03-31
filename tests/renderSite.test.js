@@ -185,15 +185,15 @@ describe("renderSite", () => {
         "events/countries/germany/index.html",
         "authors/index.html",
         "authors/alice.html",
-        "events/index.html",
         "authors/nachitima.html",
+        "events/index.html",
         "other/index.html",
         "spaces/betamachine.html",
         "spaces/c3d2.html",
       ]);
       expect(secondRun.pages).toEqual(firstRun.pages);
 
-      const [indexHtml, aboutHtml, feedHtml, franceFeedHtml, eventsHtml, franceEventsHtml, authorsHtml, detailHtml, curatedHtml] = await Promise.all([
+      const [indexHtml, aboutHtml, curatedHtml, feedHtml, franceFeedHtml, eventsHtml, franceEventsHtml, authorsHtml, detailHtml] = await Promise.all([
         readFile(resolve(distDir, "index.html"), "utf8"),
         readFile(resolve(distDir, "about/index.html"), "utf8"),
         readFile(resolve(distDir, "curated/index.html"), "utf8"),

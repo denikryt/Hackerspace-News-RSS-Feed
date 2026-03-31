@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildStreamNavItems,
   buildContentStreamContext,
   buildContentStreamModel,
   listContentStreams,
@@ -106,6 +107,21 @@ describe("content stream contracts", () => {
     expect(newsModel.items.map((item) => item.title)).toEqual(["Big launch"]);
     expect(otherModel.items.map((item) => item.title)).not.toContain("Big launch");
     expect(newsModel.streamNavItems).toEqual([
+      { href: "/feed/index.html", label: "Feed", isCurrent: false },
+      { href: "/events/index.html", label: "Events", isCurrent: false },
+      { href: "/news/index.html", label: "News", isCurrent: true },
+      { href: "/blogs/index.html", label: "Blogs", isCurrent: false },
+      { href: "/workshops/index.html", label: "Workshops", isCurrent: false },
+      { href: "/other/index.html", label: "Other", isCurrent: false },
+      { href: "/curated/index.html", label: "Curated", isCurrent: false },
+      { href: "/authors/index.html", label: "Authors", isCurrent: false },
+    ]);
+  });
+
+  it("builds shared stream navigation items from available streams", () => {
+    const context = buildContentStreamContext(normalizedPayload);
+
+    expect(buildStreamNavItems(context.availableStreams, "news")).toEqual([
       { href: "/feed/index.html", label: "Feed", isCurrent: false },
       { href: "/events/index.html", label: "Events", isCurrent: false },
       { href: "/news/index.html", label: "News", isCurrent: true },

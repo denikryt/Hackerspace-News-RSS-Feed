@@ -61,10 +61,10 @@ describe("enrichFeedItem", () => {
       displayDate: "2025-01-01T10:00:00.000Z",
       dateSource: "pubDate",
       displayContent: {
-        text: "Short summary words",
+        text: "<p>Full content words here</p>",
         wasTruncated: false,
-        format: "text",
-        sourceField: "contentSnippet",
+        format: "html",
+        sourceField: "content:encoded",
       },
       wordCount: 3,
       hasFullContent: true,
@@ -146,11 +146,11 @@ describe("enrichFeedItem", () => {
 
     expect(enriched.displayContent).toMatchObject({
       wasTruncated: true,
-      format: "text",
+      format: "html",
       sourceField: "content:encoded",
     });
-    expect(enriched.displayContent.text).toHaveLength(501);
-    expect(enriched.displayContent.text.endsWith("…")).toBe(true);
+    expect(enriched.displayContent.text).toHaveLength(508);
+    expect(enriched.displayContent.text.endsWith("…</p>")).toBe(true);
     expect(enriched.observed.contentCandidates).toBeUndefined();
   });
 
