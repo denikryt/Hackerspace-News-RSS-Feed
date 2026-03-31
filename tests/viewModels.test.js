@@ -249,7 +249,7 @@ describe("multi-page view models", () => {
   it("reuses shared country feed context when building the global feed model", () => {
     const contentStreamContext = buildContentStreamContext(filteredPayload);
     const countryFeedContext = buildCountryFeedContext(filteredPayload, { contentStreamContext });
-    const expectedOptions = listCountryFeedOptions(filteredPayload, null, {
+    const expectedOptions = listCountryFeedOptions(filteredPayload, "feed", null, {
       context: countryFeedContext,
     });
 

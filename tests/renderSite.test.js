@@ -111,6 +111,7 @@ describe("renderSite", () => {
               authorSource: "author",
               publishedAt: "2025-01-02T10:00:00.000Z",
               summary: "Newest summary",
+              normalizedCategories: ["event"],
             },
           ],
         },
@@ -131,6 +132,7 @@ describe("renderSite", () => {
               link: "https://c3d2.de/workshop-notes",
               publishedAt: "2025-01-01T10:00:00.000Z",
               summary: "Workshop summary",
+              normalizedCategories: ["event"],
             },
           ],
         },
@@ -161,19 +163,23 @@ describe("renderSite", () => {
         "feed/index.html",
         "feed/countries/france/index.html",
         "feed/countries/germany/index.html",
+        "events/countries/france/index.html",
+        "events/countries/germany/index.html",
         "authors/index.html",
         "authors/alice.html",
-        "other/index.html",
+        "events/index.html",
         "spaces/betamachine.html",
         "spaces/c3d2.html",
       ]);
       expect(secondRun.pages).toEqual(firstRun.pages);
 
-      const [indexHtml, aboutHtml, feedHtml, franceFeedHtml, authorsHtml, detailHtml] = await Promise.all([
+      const [indexHtml, aboutHtml, feedHtml, franceFeedHtml, eventsHtml, franceEventsHtml, authorsHtml, detailHtml] = await Promise.all([
         readFile(resolve(distDir, "index.html"), "utf8"),
         readFile(resolve(distDir, "about/index.html"), "utf8"),
         readFile(resolve(distDir, "feed/index.html"), "utf8"),
         readFile(resolve(distDir, "feed/countries/france/index.html"), "utf8"),
+        readFile(resolve(distDir, "events/index.html"), "utf8"),
+        readFile(resolve(distDir, "events/countries/france/index.html"), "utf8"),
         readFile(resolve(distDir, "authors/index.html"), "utf8"),
         readFile(resolve(distDir, "spaces/betamachine.html"), "utf8"),
       ]);
@@ -192,6 +198,11 @@ describe("renderSite", () => {
       expect(feedHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
       expect(franceFeedHtml).toContain("Feed · France");
       expect(franceFeedHtml).toContain('value="/feed/countries/france/index.html" selected');
+      expect(eventsHtml).toContain("Events");
+      expect(eventsHtml).toContain('value="/events/index.html"');
+      expect(eventsHtml).toContain('value="/events/countries/germany/index.html"');
+      expect(franceEventsHtml).toContain("Events · France");
+      expect(franceEventsHtml).toContain('value="/events/countries/france/index.html" selected');
       expect(authorsHtml).toContain("Authors");
       expect(authorsHtml).toContain("Search authors");
       expect(authorsHtml).toContain("All hackerspaces");
@@ -308,6 +319,7 @@ describe("renderSite", () => {
                 authorSource: "author",
                 publishedAt: "2025-01-02T10:00:00.000Z",
                 summary: "First summary",
+                normalizedCategories: ["event"],
               },
             ],
           },
@@ -325,15 +337,16 @@ describe("renderSite", () => {
     expect(logLines).toContain("[render] rendering primary stream: pages=1");
     expect(logLines).toContain("[render] primary stream progress: page 1/1");
     expect(logLines).toContain("[render] rendered primary stream");
-    expect(logLines).toContain("[render] rendering country feeds: count=1");
-    expect(logLines).toContain("[render] country feeds progress: item 1/1");
+    expect(logLines).toContain("[render] rendering country feeds: count=2");
+    expect(logLines).toContain("[render] country feeds progress: item 1/2");
+    expect(logLines.some((line) => line.startsWith("[render] country feeds progress: item 2/2"))).toBe(true);
     expect(logLines).toContain("[render] rendered country feeds");
     expect(logLines).toContain("[render] rendering author pages: authors=1");
     expect(logLines).toContain("[render] author pages progress: item 1/1");
     expect(logLines).toContain("[render] rendered author pages");
     expect(logLines).toContain("[render] rendering secondary streams: count=1");
-    expect(logLines).toContain("[render] secondary stream other: pages=1");
-    expect(logLines).toContain("[render] secondary stream other progress: page 1/1");
+    expect(logLines).toContain("[render] secondary stream event: pages=1");
+    expect(logLines).toContain("[render] secondary stream event progress: page 1/1");
     expect(logLines).toContain("[render] rendered secondary streams");
     expect(logLines).toContain("[render] rendering space pages: spaces=1");
     expect(logLines).toContain("[render] space pages progress: item 1/1");
@@ -342,7 +355,7 @@ describe("renderSite", () => {
     expect(logLines).toContain("[render] built author directory");
     expect(logLines).toContain("[render] built authors index model: authors=1");
     expect(logLines).toContain("[render] built page models: spaces=1 authors=1 streams=2");
-    expect(logLines).toContain("[render] render complete: pages=8");
+    expect(logLines).toContain("[render] render complete: pages=9");
   });
 
 });

@@ -1,19 +1,22 @@
+import { getContentStreamDefinition } from "./contentStreams.js";
 import { slugify } from "./utils/slugify.js";
 
 export function getCountryFeedSlug(country) {
   return slugify(country);
 }
 
-export function getCountryFeedHref(country, pageNumber = 1) {
+export function getCountryFeedHref(streamId, country, pageNumber = 1) {
+  const { segment } = getContentStreamDefinition(streamId);
   const countrySlug = getCountryFeedSlug(country);
   return pageNumber <= 1
-    ? `/feed/countries/${countrySlug}/index.html`
-    : `/feed/countries/${countrySlug}/page/${pageNumber}/`;
+    ? `/${segment}/countries/${countrySlug}/index.html`
+    : `/${segment}/countries/${countrySlug}/page/${pageNumber}/`;
 }
 
-export function getCountryFeedOutputPath(country, pageNumber = 1) {
+export function getCountryFeedOutputPath(streamId, country, pageNumber = 1) {
+  const { segment } = getContentStreamDefinition(streamId);
   const countrySlug = getCountryFeedSlug(country);
   return pageNumber <= 1
-    ? `feed/countries/${countrySlug}/index.html`
-    : `feed/countries/${countrySlug}/page/${pageNumber}/index.html`;
+    ? `${segment}/countries/${countrySlug}/index.html`
+    : `${segment}/countries/${countrySlug}/page/${pageNumber}/index.html`;
 }
