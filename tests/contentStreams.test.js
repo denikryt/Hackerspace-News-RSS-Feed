@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildContentStreamContext,
   buildContentStreamModel,
   listContentStreams,
 } from "../src/viewModels/contentStreams.js";
@@ -113,5 +114,18 @@ describe("content stream contracts", () => {
       { href: "/other/index.html", label: "Other", isCurrent: false },
       { href: "/authors/index.html", label: "Authors", isCurrent: false },
     ]);
+  });
+
+  it("reuses a precomputed content-stream context without changing the model output", () => {
+    const context = buildContentStreamContext(normalizedPayload);
+
+    expect(listContentStreams(normalizedPayload, { context })).toEqual(
+      listContentStreams(normalizedPayload),
+    );
+    expect(
+      buildContentStreamModel(normalizedPayload, { streamId: "feed", context }),
+    ).toEqual(
+      buildContentStreamModel(normalizedPayload, { streamId: "feed" }),
+    );
   });
 });
