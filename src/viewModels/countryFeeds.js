@@ -115,7 +115,7 @@ export function buildCountryFeedModel(
     country: selectedCountry.country,
     countrySlug: selectedCountry.slug,
     pageTitle: `${definition.pageTitle} · ${selectedCountry.country}`,
-    pageIntro: `${definition.pageIntro} Filtered to hackerspaces in ${selectedCountry.country}.`,
+    pageIntro: definition.pageIntro,
     items: pagination.items,
     totalItems: pagination.totalItems,
     pageSize: pagination.pageSize,
