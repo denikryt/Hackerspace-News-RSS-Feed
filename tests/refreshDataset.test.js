@@ -330,6 +330,8 @@ describe("refreshDataset", () => {
 
   it("adds discovery-valid rows only when explicitly provided and keeps wiki priority on overlap", async () => {
     vi.resetModules();
+    const outputDir = await mkdtemp(resolve(tmpdir(), "hnf-refresh-"));
+    tempDirs.push(outputDir);
 
     const feedProbe = vi.fn(async ({ sourceRow }) => ({
       candidateUrl: sourceRow.candidateFeedUrl,
@@ -366,6 +368,12 @@ describe("refreshDataset", () => {
     const { refreshDataset: isolatedRefreshDataset } = await import("../src/refreshDataset.js");
 
     const result = await isolatedRefreshDataset({
+      paths: {
+        sourceRows: resolve(outputDir, "data/source_urls.json"),
+        validations: resolve(outputDir, "data/feed_validation.json"),
+        normalizedFeeds: resolve(outputDir, "data/feeds_normalized.json"),
+        curatedPublications: resolve(outputDir, "content/missing-curated.yml"),
+      },
       additionalSourceRows: [
         {
           hackerspaceName: "Discovery Alpha",
