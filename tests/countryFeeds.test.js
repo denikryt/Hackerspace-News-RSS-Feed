@@ -4,6 +4,7 @@ import { getCountryFeedHref, getCountryFeedOutputPath } from "../src/countryFeed
 import {
   buildCountryFeedContext,
   buildCountryFeedModel,
+  listCountryFeeds,
   listCountryFeedOptions,
 } from "../src/viewModels/countryFeeds.js";
 import { buildContentStreamContext } from "../src/viewModels/contentStreams.js";
@@ -95,7 +96,7 @@ const normalizedPayload = {
 
 describe("country feed contracts", () => {
   it("lists stable country selector options from feeds with visible items", () => {
-    expect(listCountryFeedOptions(normalizedPayload)).toEqual([
+    expect(listCountryFeedOptions(normalizedPayload, "feed")).toEqual([
       { label: "All countries", href: "/feed/index.html", isSelected: true },
       { label: "France", href: "/feed/countries/france/index.html", isSelected: false },
       { label: "Germany", href: "/feed/countries/germany/index.html", isSelected: false },
@@ -103,7 +104,7 @@ describe("country feed contracts", () => {
   });
 
   it("builds a paginated country feed model without adding country pages to the stream nav", () => {
-    const model = buildCountryFeedModel(normalizedPayload, "france");
+    const model = buildCountryFeedModel(normalizedPayload, "feed", "france");
 
     expect(model.pageTitle).toBe("Feed · France");
     expect(model.items.map((item) => item.title)).toEqual(["French newest", "French older"]);
@@ -126,25 +127,96 @@ describe("country feed contracts", () => {
     expect(model.previousPageHref).toBeUndefined();
   });
 
+  it("builds per-stream country selector options and models for category pages", () => {
+    const payload = {
+      ...normalizedPayload,
+      feeds: [
+        {
+          ...normalizedPayload.feeds[0],
+          items: [
+            {
+              id: "fr-event",
+              title: "French event",
+              displayDate: "2025-01-03T10:00:00.000Z",
+              normalizedCategories: ["event"],
+            },
+            {
+              id: "fr-blog",
+              title: "French blog",
+              displayDate: "2025-01-01T10:00:00.000Z",
+              normalizedCategories: ["blog"],
+            },
+          ],
+        },
+        {
+          ...normalizedPayload.feeds[1],
+          items: [
+            {
+              id: "de-event",
+              title: "German event",
+              displayDate: "2025-01-02T10:00:00.000Z",
+              normalizedCategories: ["event"],
+            },
+          ],
+        },
+      ],
+    };
+    const contentStreamContext = buildContentStreamContext(payload);
+    const countryContext = buildCountryFeedContext(payload, { contentStreamContext });
+
+    expect(listCountryFeeds(payload, { context: countryContext, streamId: "event" })).toEqual([
+      {
+        country: "France",
+        slug: "france",
+        href: "/events/countries/france/index.html",
+      },
+      {
+        country: "Germany",
+        slug: "germany",
+        href: "/events/countries/germany/index.html",
+      },
+    ]);
+
+    expect(listCountryFeedOptions(payload, "event", "france", { context: countryContext })).toEqual([
+      { label: "All countries", href: "/events/index.html", isSelected: false },
+      { label: "France", href: "/events/countries/france/index.html", isSelected: true },
+      { label: "Germany", href: "/events/countries/germany/index.html", isSelected: false },
+    ]);
+
+    const model = buildCountryFeedModel(payload, "event", "france", { context: countryContext });
+    expect(model.pageTitle).toBe("Events · France");
+    expect(model.items.map((item) => item.title)).toEqual(["French event"]);
+    expect(model.streamNavItems.find((item) => item.label === "Events")).toEqual({
+      href: "/events/index.html",
+      label: "Events",
+      isCurrent: true,
+    });
+    expect(model.countryOptions[0]).toEqual({
+      label: "All countries",
+      href: "/events/index.html",
+      isSelected: false,
+    });
+  });
+
   it("reuses shared content stream context for country feeds when provided", () => {
     const contentStreamContext = buildContentStreamContext(normalizedPayload);
     const countryContext = buildCountryFeedContext(normalizedPayload, { contentStreamContext });
 
-    expect(countryContext.itemsByCountry.get("France")?.map((item) => item.title)).toEqual([
+    expect(countryContext.itemsByStreamIdByCountry.get("feed")?.get("France")?.map((item) => item.title)).toEqual([
       "French newest",
       "French older",
     ]);
-    expect(countryContext.itemsByCountry.get("Germany")?.map((item) => item.title)).toEqual([
+    expect(countryContext.itemsByStreamIdByCountry.get("feed")?.get("Germany")?.map((item) => item.title)).toEqual([
       "German post",
     ]);
 
-    expect(listCountryFeedOptions(normalizedPayload, null, { context: countryContext })).toEqual([
+    expect(listCountryFeedOptions(normalizedPayload, "feed", null, { context: countryContext })).toEqual([
       { label: "All countries", href: "/feed/index.html", isSelected: true },
       { label: "France", href: "/feed/countries/france/index.html", isSelected: false },
       { label: "Germany", href: "/feed/countries/germany/index.html", isSelected: false },
     ]);
 
-    const model = buildCountryFeedModel(normalizedPayload, "france", { context: countryContext });
+    const model = buildCountryFeedModel(normalizedPayload, "feed", "france", { context: countryContext });
     expect(model.items.map((item) => item.title)).toEqual(["French newest", "French older"]);
     expect(model.countryOptions[1]).toEqual({
       label: "France",
@@ -154,9 +226,10 @@ describe("country feed contracts", () => {
   });
 
   it("uses stable href and output path contracts for country pages", () => {
-    expect(getCountryFeedHref("France")).toBe("/feed/countries/france/index.html");
-    expect(getCountryFeedHref("France", 2)).toBe("/feed/countries/france/page/2/");
-    expect(getCountryFeedOutputPath("France")).toBe("feed/countries/france/index.html");
-    expect(getCountryFeedOutputPath("France", 2)).toBe("feed/countries/france/page/2/index.html");
+    expect(getCountryFeedHref("feed", "France")).toBe("/feed/countries/france/index.html");
+    expect(getCountryFeedHref("event", "France")).toBe("/events/countries/france/index.html");
+    expect(getCountryFeedHref("feed", "France", 2)).toBe("/feed/countries/france/page/2/");
+    expect(getCountryFeedOutputPath("feed", "France")).toBe("feed/countries/france/index.html");
+    expect(getCountryFeedOutputPath("event", "France", 2)).toBe("events/countries/france/page/2/index.html");
   });
 });

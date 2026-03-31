@@ -127,7 +127,7 @@ function getAvailableStreamIds(items) {
   return streamIds;
 }
 
-function selectItemsForStream(items, streamId) {
+export function selectItemsForStream(items, streamId) {
   if (streamId === FEED_CONTENT_STREAM_ID) {
     return items;
   }

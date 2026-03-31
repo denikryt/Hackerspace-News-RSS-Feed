@@ -21,6 +21,7 @@ import {
   buildCountryFeedContext,
   buildCountryFeedModel,
   listCountryFeeds,
+  listCountryFeedOptions,
 } from "./viewModels/countryFeeds.js";
 import { buildGlobalFeedModel } from "./viewModels/globalFeed.js";
 import {
@@ -115,21 +116,29 @@ export async function renderSite({
 
     logInfo(logger, "[render] rendered primary stream");
   }
-  const countryFeeds = listCountryFeeds(displayPayload, { context: countryFeedContext });
-  logInfo(logger, `[render] rendering country feeds: count=${countryFeeds.length}`);
+  const streamCountryFeeds = contentStreams.flatMap((stream) =>
+    listCountryFeeds(displayPayload, {
+      context: countryFeedContext,
+      streamId: stream.id,
+    }).map((countryFeed) => ({
+      ...countryFeed,
+      streamId: stream.id,
+    })),
+  );
+  logInfo(logger, `[render] rendering country feeds: count=${streamCountryFeeds.length}`);
   let lastCountryProgressAt = Date.now();
 
-  for (const [countryIndex, countryFeed] of countryFeeds.entries()) {
+  for (const [countryIndex, countryFeed] of streamCountryFeeds.entries()) {
     const currentCountry = countryIndex + 1;
     if (
       currentCountry === 1 ||
-      currentCountry === countryFeeds.length ||
+      currentCountry === streamCountryFeeds.length ||
       currentCountry % 100 === 0
     ) {
       const progressLog = formatLoopProgressLog({
         label: "country feeds",
         currentIndex: currentCountry,
-        totalItems: countryFeeds.length,
+        totalItems: streamCountryFeeds.length,
         lastCheckpointAt: lastCountryProgressAt,
         checkpointAt: Date.now(),
       });
@@ -137,15 +146,16 @@ export async function renderSite({
       lastCountryProgressAt = progressLog.checkpointAt;
     }
 
-    const countryItems = countryFeedContext.itemsByCountry.get(countryFeed.country) || [];
+    const streamCountryItems = countryFeedContext.itemsByStreamIdByCountry.get(countryFeed.streamId);
+    const countryItems = streamCountryItems?.get(countryFeed.country) || [];
     const totalPages = Math.max(1, Math.ceil(countryItems.length / GLOBAL_FEED_PAGE_SIZE));
 
     for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
-      const countryModel = buildCountryFeedModel(displayPayload, countryFeed.slug, {
+      const countryModel = buildCountryFeedModel(displayPayload, countryFeed.streamId, countryFeed.slug, {
         currentPage,
         context: countryFeedContext,
       });
-      pages[getCountryFeedOutputPath(countryFeed.country, currentPage)] = renderGlobalFeed(countryModel);
+      pages[getCountryFeedOutputPath(countryFeed.streamId, countryFeed.country, currentPage)] = renderGlobalFeed(countryModel);
     }
   }
   logInfo(logger, "[render] rendered country feeds");
@@ -227,7 +237,12 @@ export async function renderSite({
         currentPage,
         context: contentStreamContext,
       });
-      pages[getContentStreamOutputPath(stream.id, currentPage)] = renderGlobalFeed(streamModel);
+      pages[getContentStreamOutputPath(stream.id, currentPage)] = renderGlobalFeed({
+        ...streamModel,
+        countryOptions: listCountryFeedOptions(displayPayload, stream.id, null, {
+          context: countryFeedContext,
+        }),
+      });
     }
   }
   logInfo(logger, "[render] rendered secondary streams");

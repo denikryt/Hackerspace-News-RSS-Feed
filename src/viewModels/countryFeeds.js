@@ -1,94 +1,121 @@
 import { getAuthorsIndexHref } from "../authors.js";
 import { getCountryFeedHref, getCountryFeedSlug } from "../countryFeeds.js";
-import { buildContentStreamContext } from "./contentStreams.js";
+import { FEED_CONTENT_STREAM_ID, getContentStreamDefinition, getContentStreamHref } from "../contentStreams.js";
+import { buildContentStreamContext, selectItemsForStream } from "./contentStreams.js";
 import { GLOBAL_FEED_PAGE_SIZE, buildPageLinks, paginateItems } from "../pagination.js";
 
 export function buildCountryFeedContext(normalizedPayload, { contentStreamContext } = {}) {
   const sharedContentContext = contentStreamContext || buildContentStreamContext(normalizedPayload);
-  const itemsByCountry = new Map();
+  const countriesByStreamId = new Map();
+  const itemsByStreamIdByCountry = new Map();
 
-  for (const item of sharedContentContext.allItems || []) {
-    if (!item.country) {
-      continue;
+  for (const streamId of sharedContentContext.availableStreamIds || [FEED_CONTENT_STREAM_ID]) {
+    const itemsByCountry = new Map();
+
+    for (const item of selectItemsForStream(sharedContentContext.allItems || [], streamId)) {
+      if (!item.country) {
+        continue;
+      }
+
+      const existingItems = itemsByCountry.get(item.country);
+      if (existingItems) {
+        existingItems.push(item);
+        continue;
+      }
+
+      itemsByCountry.set(item.country, [item]);
     }
 
-    const existingItems = itemsByCountry.get(item.country);
-    if (existingItems) {
-      existingItems.push(item);
-      continue;
-    }
+    const countries = [...itemsByCountry.keys()]
+      .sort((left, right) => left.localeCompare(right))
+      .map((country) => ({
+        country,
+        slug: getCountryFeedSlug(country),
+        href: getCountryFeedHref(streamId, country),
+      }));
 
-    itemsByCountry.set(item.country, [item]);
+    countriesByStreamId.set(streamId, countries);
+    itemsByStreamIdByCountry.set(streamId, itemsByCountry);
   }
-
-  const availableCountries = [...itemsByCountry.keys()]
-    .sort((left, right) => left.localeCompare(right))
-    .map((country) => ({
-      country,
-      slug: getCountryFeedSlug(country),
-      href: getCountryFeedHref(country),
-    }));
 
   return {
     contentStreamContext: sharedContentContext,
-    countries: availableCountries,
-    itemsByCountry,
+    countriesByStreamId,
+    itemsByStreamIdByCountry,
     optionsBySelectedSlug: new Map(),
   };
 }
 
-export function listCountryFeeds(normalizedPayload, { context } = {}) {
+export function listCountryFeeds(normalizedPayload, { context, streamId = FEED_CONTENT_STREAM_ID } = {}) {
   const countryContext = context || buildCountryFeedContext(normalizedPayload);
-  return countryContext.countries;
+  return countryContext.countriesByStreamId.get(streamId) || [];
 }
 
-export function listCountryFeedOptions(normalizedPayload, selectedCountrySlug = null, { context } = {}) {
+export function listCountryFeedOptions(
+  normalizedPayload,
+  streamId = FEED_CONTENT_STREAM_ID,
+  selectedCountrySlug = null,
+  { context } = {},
+) {
   const countryContext = context || buildCountryFeedContext(normalizedPayload);
-  if (countryContext.optionsBySelectedSlug.has(selectedCountrySlug || "")) {
-    return countryContext.optionsBySelectedSlug.get(selectedCountrySlug || "");
+  const cacheKey = `${streamId}:${selectedCountrySlug || ""}`;
+
+  if (countryContext.optionsBySelectedSlug.has(cacheKey)) {
+    return countryContext.optionsBySelectedSlug.get(cacheKey);
+  }
+
+  const countries = listCountryFeeds(normalizedPayload, { context: countryContext, streamId });
+  if (countries.length === 0) {
+    countryContext.optionsBySelectedSlug.set(cacheKey, []);
+    return [];
   }
 
   const options = [
     {
       label: "All countries",
-      href: "/feed/index.html",
+      href: getContentStreamHref(streamId, 1),
       isSelected: !selectedCountrySlug,
     },
-    ...countryContext.countries.map((entry) => ({
+    ...countries.map((entry) => ({
       label: entry.country,
       href: entry.href,
       isSelected: entry.slug === selectedCountrySlug,
     })),
   ];
 
-  countryContext.optionsBySelectedSlug.set(selectedCountrySlug || "", options);
+  countryContext.optionsBySelectedSlug.set(cacheKey, options);
   return options;
 }
 
 export function buildCountryFeedModel(
   normalizedPayload,
+  streamId,
   countrySlug,
   { currentPage = 1, pageSize = GLOBAL_FEED_PAGE_SIZE, context } = {},
 ) {
   const countryContext = context || buildCountryFeedContext(normalizedPayload);
-  const selectedCountry = countryContext.countries.find((entry) => entry.slug === countrySlug);
+  const selectedCountry = listCountryFeeds(normalizedPayload, { context: countryContext, streamId })
+    .find((entry) => entry.slug === countrySlug);
 
   if (!selectedCountry) {
-    throw new Error(`Country feed is not available: ${countrySlug}`);
+    throw new Error(`Country feed is not available: ${streamId}/${countrySlug}`);
   }
 
-  const items = countryContext.itemsByCountry.get(selectedCountry.country) || [];
+  const definition = getContentStreamDefinition(streamId);
+  const itemsByCountry = countryContext.itemsByStreamIdByCountry.get(streamId) || new Map();
+  const items = itemsByCountry.get(selectedCountry.country) || [];
   const pagination = paginateItems(items, currentPage, pageSize);
-  const hrefForPage = (pageNumber) => getCountryFeedHref(selectedCountry.country, pageNumber);
+  const hrefForPage = (pageNumber) => getCountryFeedHref(streamId, selectedCountry.country, pageNumber);
 
   return {
     generatedAt: normalizedPayload.generatedAt,
     sourcePageUrl: normalizedPayload.sourcePageUrl,
     summary: normalizedPayload.summary,
+    streamId,
     country: selectedCountry.country,
     countrySlug: selectedCountry.slug,
-    pageTitle: `Feed · ${selectedCountry.country}`,
-    pageIntro: `Publications from hackerspaces in ${selectedCountry.country}.`,
+    pageTitle: `${definition.pageTitle} · ${selectedCountry.country}`,
+    pageIntro: `${definition.pageIntro} Filtered to hackerspaces in ${selectedCountry.country}.`,
     items: pagination.items,
     totalItems: pagination.totalItems,
     pageSize: pagination.pageSize,
@@ -109,11 +136,11 @@ export function buildCountryFeedModel(
       ...countryContext.contentStreamContext.availableStreams.map((stream) => ({
         href: stream.href,
         label: stream.label,
-        isCurrent: stream.id === "feed",
+        isCurrent: stream.id === streamId,
       })),
       { href: getAuthorsIndexHref(), label: "Authors", isCurrent: false },
     ],
-    countryOptions: listCountryFeedOptions(normalizedPayload, selectedCountry.slug, {
+    countryOptions: listCountryFeedOptions(normalizedPayload, streamId, selectedCountry.slug, {
       context: countryContext,
     }),
     homeHref: "/index.html",

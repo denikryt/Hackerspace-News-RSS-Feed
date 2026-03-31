@@ -68,6 +68,30 @@ describe("feed page headers", () => {
     );
   });
 
+  it("renders the country select on category pages with a category-specific redirect target", () => {
+    const html = renderGlobalFeed({
+      items: [],
+      homeHref: "/index.html",
+      pageTitle: "Events",
+      pageIntro: "Items tagged as events.",
+      currentPageLabel: "Page 1 of 1",
+      streamNavItems: [
+        { href: "/feed/index.html", label: "Feed", isCurrent: false },
+        { href: "/events/index.html", label: "Events", isCurrent: true },
+        { href: "/authors/index.html", label: "Authors", isCurrent: false },
+      ],
+      countryOptions: [
+        { label: "All countries", href: "/events/index.html", isSelected: false },
+        { label: "France", href: "/events/countries/france/index.html", isSelected: true },
+      ],
+    });
+
+    expect(html).toContain('value="/events/index.html"');
+    expect(html).toContain('value="/events/countries/france/index.html" selected');
+    expect(html).toContain('id="feed-country-select"');
+    expect(html).toContain("window.location.href");
+  });
+
   it("renders the space detail header shell and nav", () => {
     const html = renderSpaceDetail({
       spaceName: "Technik.cafe",

@@ -13,7 +13,7 @@ export function buildGlobalFeedModel(
       ...options,
       streamId: FEED_CONTENT_STREAM_ID,
     }),
-    countryOptions: listCountryFeedOptions(normalizedPayload, null, {
+    countryOptions: listCountryFeedOptions(normalizedPayload, FEED_CONTENT_STREAM_ID, null, {
       context: countryFeedContext,
     }),
   };
