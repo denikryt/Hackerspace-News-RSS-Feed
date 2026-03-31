@@ -325,6 +325,9 @@ describe("renderSite", () => {
     expect(logLines).toContain("[render] rendering primary stream: pages=1");
     expect(logLines).toContain("[render] primary stream progress: page 1/1");
     expect(logLines).toContain("[render] rendered primary stream");
+    expect(logLines).toContain("[render] rendering country feeds: count=1");
+    expect(logLines).toContain("[render] country feeds progress: item 1/1");
+    expect(logLines).toContain("[render] rendered country feeds");
     expect(logLines).toContain("[render] rendering author pages: authors=1");
     expect(logLines).toContain("[render] author pages progress: item 1/1");
     expect(logLines).toContain("[render] rendered author pages");

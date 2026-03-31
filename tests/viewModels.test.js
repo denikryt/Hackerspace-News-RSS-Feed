@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import { buildCountryFeedContext, listCountryFeedOptions } from "../src/viewModels/countryFeeds.js";
+import { buildContentStreamContext } from "../src/viewModels/contentStreams.js";
 import { buildGlobalFeedModel } from "../src/viewModels/globalFeed.js";
 import { buildSpaceDetailModel } from "../src/viewModels/spaceDetail.js";
 import { buildSpacesIndexModel } from "../src/viewModels/spacesIndex.js";
@@ -242,5 +244,20 @@ describe("multi-page view models", () => {
       { type: "page", page: 1, href: "/feed/index.html", isCurrent: false },
       { type: "page", page: 2, href: "/feed/page/2/", isCurrent: true },
     ]);
+  });
+
+  it("reuses shared country feed context when building the global feed model", () => {
+    const contentStreamContext = buildContentStreamContext(filteredPayload);
+    const countryFeedContext = buildCountryFeedContext(filteredPayload, { contentStreamContext });
+    const expectedOptions = listCountryFeedOptions(filteredPayload, null, {
+      context: countryFeedContext,
+    });
+
+    const model = buildGlobalFeedModel(filteredPayload, {
+      context: contentStreamContext,
+      countryFeedContext,
+    });
+
+    expect(model.countryOptions).toBe(expectedOptions);
   });
 });

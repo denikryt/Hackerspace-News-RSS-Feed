@@ -74,6 +74,7 @@ export async function renderSite({
 
   const contentStreamContext = buildContentStreamContext(displayPayload);
   const contentStreams = listContentStreams(displayPayload, { context: contentStreamContext });
+  const countryFeedContext = buildCountryFeedContext(displayPayload, { contentStreamContext });
   logInfo(logger, `[render] built content streams: count=${contentStreams.length}`);
   const primaryStream = contentStreams.find((stream) => stream.id === FEED_CONTENT_STREAM_ID);
   const secondaryStreams = contentStreams.filter((stream) => stream.id !== FEED_CONTENT_STREAM_ID);
@@ -102,15 +103,35 @@ export async function renderSite({
       const streamModel = buildGlobalFeedModel(displayPayload, {
         currentPage,
         context: contentStreamContext,
+        countryFeedContext,
       });
       pages[getContentStreamOutputPath(primaryStream.id, currentPage)] = renderGlobalFeed(streamModel);
     }
 
     logInfo(logger, "[render] rendered primary stream");
   }
+  const countryFeeds = listCountryFeeds(displayPayload, { context: countryFeedContext });
+  logInfo(logger, `[render] rendering country feeds: count=${countryFeeds.length}`);
+  let lastCountryProgressAt = Date.now();
 
-  const countryFeedContext = buildCountryFeedContext(displayPayload, { contentStreamContext });
-  for (const countryFeed of listCountryFeeds(displayPayload, { context: countryFeedContext })) {
+  for (const [countryIndex, countryFeed] of countryFeeds.entries()) {
+    const currentCountry = countryIndex + 1;
+    if (
+      currentCountry === 1 ||
+      currentCountry === countryFeeds.length ||
+      currentCountry % 100 === 0
+    ) {
+      const progressLog = formatLoopProgressLog({
+        label: "country feeds",
+        currentIndex: currentCountry,
+        totalItems: countryFeeds.length,
+        lastCheckpointAt: lastCountryProgressAt,
+        checkpointAt: Date.now(),
+      });
+      logInfo(logger, progressLog.message);
+      lastCountryProgressAt = progressLog.checkpointAt;
+    }
+
     const initialModel = buildCountryFeedModel(displayPayload, countryFeed.slug, {
       context: countryFeedContext,
     });
@@ -124,6 +145,7 @@ export async function renderSite({
       pages[getCountryFeedOutputPath(countryFeed.country, currentPage)] = renderGlobalFeed(countryModel);
     }
   }
+  logInfo(logger, "[render] rendered country feeds");
 
   logInfo(logger, "[render] building author directory");
   const authorDirectory = buildAuthorDirectory(displayPayload);

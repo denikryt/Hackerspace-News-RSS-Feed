@@ -6,11 +6,15 @@ export function buildGlobalFeedModel(
   normalizedPayload,
   options = {},
 ) {
+  const { countryFeedContext } = options;
+
   return {
     ...buildContentStreamModel(normalizedPayload, {
       ...options,
       streamId: FEED_CONTENT_STREAM_ID,
     }),
-    countryOptions: listCountryFeedOptions(normalizedPayload),
+    countryOptions: listCountryFeedOptions(normalizedPayload, null, {
+      context: countryFeedContext,
+    }),
   };
 }
