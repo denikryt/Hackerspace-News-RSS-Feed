@@ -193,11 +193,7 @@ describe("renderSite", () => {
       ]);
       expect(secondRun.pages).toEqual(firstRun.pages);
 
-<<<<<<< HEAD
-      const [indexHtml, aboutHtml, curatedHtml, feedHtml, franceFeedHtml, authorsHtml, detailHtml] = await Promise.all([
-=======
-      const [indexHtml, aboutHtml, feedHtml, franceFeedHtml, eventsHtml, franceEventsHtml, authorsHtml, detailHtml] = await Promise.all([
->>>>>>> country-pages-all-feeds
+      const [indexHtml, aboutHtml, curatedHtml, feedHtml, franceFeedHtml, authorsHtml, detailHtml, eventsHtml, franceEventsHtml] = await Promise.all([
         readFile(resolve(distDir, "index.html"), "utf8"),
         readFile(resolve(distDir, "about/index.html"), "utf8"),
         readFile(resolve(distDir, "curated/index.html"), "utf8"),
