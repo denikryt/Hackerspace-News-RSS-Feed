@@ -1,4 +1,9 @@
 import { SOURCE_PAGE_URL, PATHS } from "./config.js";
+import {
+  buildCuratedSourceRows,
+  readCuratedPublications,
+  resolveCuratedPublications,
+} from "./curated.js";
 import { enrichFeed } from "./feedEnricher.js";
 import { normalizeFeed } from "./feedNormalizer.js";
 import { parseFeedBody } from "./feedParser.js";
@@ -16,12 +21,73 @@ export async function refreshDataset({
   additionalSourceRows = [],
 } = {}) {
   const html = await fetchPageHtml({ sourcePageUrl, fetchImpl, logger });
+  const curatedSelections = await readCuratedPublications(paths.curatedPublications);
   const sourceRows = mergeSourceRows({
     wikiSourceRows: extractSourceRows({ html, sourcePageUrl }),
     additionalSourceRows,
   });
   logInfo(logger, `[refresh] source rows extracted: ${sourceRows.length}`);
-  const results = await mapWithConcurrency(sourceRows, 4, async (sourceRow) => {
+  const results = await processSourceRows(sourceRows, { fetchImpl, logger });
+  const curatedSourceRows = buildCuratedSourceRows(curatedSelections, sourceRows);
+  const curatedFeedResults = await processSourceRows(curatedSourceRows, { fetchImpl, logger });
+
+  const validations = results.map((entry) => entry.validation);
+  const feeds = results.map((entry) => entry.feed).filter(Boolean);
+  const failures = results.map((entry) => entry.failure).filter(Boolean);
+  const curatedFeeds = curatedFeedResults.map((entry) => entry.feed).filter(Boolean);
+  const curatedFeedFailures = curatedFeedResults.map((entry) => entry.failure).filter(Boolean);
+  const curated = resolveCuratedPublications(curatedSelections, [...feeds, ...curatedFeeds]);
+  const generatedAt = new Date().toISOString();
+
+  const result = {
+    sourceRowsPayload: {
+      sourcePageUrl,
+      sectionTitle: "Spaces with RSS feeds",
+      extractedAt: generatedAt,
+      urls: sourceRows,
+    },
+    validationsPayload: validations,
+    normalizedPayload: {
+      generatedAt,
+      sourcePageUrl,
+      feeds,
+      curated: {
+        items: curated.items,
+        unresolved: curated.unresolved,
+        summary: {
+          requested: curatedSelections.length,
+          resolved: curated.items.length,
+          unresolved: curated.unresolved.length,
+          extraFeedsParsed: curatedFeeds.length,
+          extraFeedFailures: curatedFeedFailures.length,
+        },
+      },
+      failures,
+      summary: {
+        sourceRows: sourceRows.length,
+        validFeeds: validations.filter((entry) => entry.isParsable).length,
+        parsedFeeds: feeds.filter((entry) => entry.status === "parsed_ok").length,
+        emptyFeeds: feeds.filter((entry) => entry.status === "parsed_empty").length,
+        failedFeeds: failures.length,
+      },
+    },
+  };
+
+  if (writeSnapshots) {
+    await Promise.all([
+      writeJson(paths.sourceRows, result.sourceRowsPayload),
+      writeJson(paths.validations, result.validationsPayload),
+      writeJson(paths.normalizedFeeds, result.normalizedPayload),
+    ]);
+  }
+
+  logInfo(logger, `[refresh] refresh complete: feeds=${feeds.length} failures=${failures.length}`);
+
+  return result;
+}
+
+async function processSourceRows(sourceRows, { fetchImpl, logger }) {
+  return mapWithConcurrency(sourceRows, 4, async (sourceRow) => {
     const feedIndex = sourceRows.indexOf(sourceRow) + 1;
     logInfo(logger, `[refresh] probing feed ${feedIndex}/${sourceRows.length}: ${sourceRow.candidateFeedUrl}`);
     const validation = await probeFeedUrl({ sourceRow, fetchImpl, logger });
@@ -85,46 +151,6 @@ export async function refreshDataset({
       };
     }
   });
-
-  const validations = results.map((entry) => entry.validation);
-  const feeds = results.map((entry) => entry.feed).filter(Boolean);
-  const failures = results.map((entry) => entry.failure).filter(Boolean);
-  const generatedAt = new Date().toISOString();
-
-  const result = {
-    sourceRowsPayload: {
-      sourcePageUrl,
-      sectionTitle: "Spaces with RSS feeds",
-      extractedAt: generatedAt,
-      urls: sourceRows,
-    },
-    validationsPayload: validations,
-    normalizedPayload: {
-      generatedAt,
-      sourcePageUrl,
-      feeds,
-      failures,
-      summary: {
-        sourceRows: sourceRows.length,
-        validFeeds: validations.filter((entry) => entry.isParsable).length,
-        parsedFeeds: feeds.filter((entry) => entry.status === "parsed_ok").length,
-        emptyFeeds: feeds.filter((entry) => entry.status === "parsed_empty").length,
-        failedFeeds: failures.length,
-      },
-    },
-  };
-
-  if (writeSnapshots) {
-    await Promise.all([
-      writeJson(paths.sourceRows, result.sourceRowsPayload),
-      writeJson(paths.validations, result.validationsPayload),
-      writeJson(paths.normalizedFeeds, result.normalizedPayload),
-    ]);
-  }
-
-  logInfo(logger, `[refresh] refresh complete: feeds=${feeds.length} failures=${failures.length}`);
-
-  return result;
 }
 
 function logInfo(logger, message) {

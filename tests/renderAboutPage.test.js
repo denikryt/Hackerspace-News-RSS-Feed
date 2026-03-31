@@ -20,6 +20,8 @@ describe("renderAboutPage", () => {
     expect(html).toContain('href="/index.html"');
     expect(html).toContain('href="/feed/index.html"');
     expect(html).toContain(">Feed<");
+    expect(html).toContain('href="/curated/index.html"');
+    expect(html).toContain(">Curated<");
     expect(html).toContain('href="/authors/index.html"');
     expect(html).toContain("This site aggregates publications");
     expect(html).toContain('class="page-copy page-copy--narrow about-copy"');
