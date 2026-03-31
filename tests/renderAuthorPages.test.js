@@ -33,8 +33,10 @@ describe("author page rendering", () => {
     expect(html).toContain('href="/spaces/betamachine.html"');
     expect(html).toContain('href="/spaces/c3d2.html"');
     expect(html).toContain('class="author-hackerspace-link" href="/spaces/betamachine.html"');
+    expect(html).toContain('class="space-card-links author-card-hackerspaces"');
     expect(html).toContain(".author-card-title{color:var(--text);display:inline-block;max-inline-size:100%;overflow-wrap:anywhere;word-break:break-word;}");
     expect(html).toContain(".space-card-links .author-hackerspace-link{color:#111;}");
+    expect(html).toContain(".author-card-hackerspaces{margin-top:auto;padding-top:1rem;}");
     expect(html).toContain(">BetaMachine<");
     expect(html).toContain(">C3D2<");
     expect(html).toContain('class="about-link-muted" href="/about/index.html"');
