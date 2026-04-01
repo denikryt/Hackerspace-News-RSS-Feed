@@ -18,7 +18,7 @@ describe("refresh/build discovery-valid flag", () => {
         sourceRows: "/tmp/data/source_urls.json",
         validations: "/tmp/data/feed_validation.json",
         normalizedFeeds: "/tmp/data/feeds_normalized.json",
-        discoveredValidSourceRows: "/tmp/data/discovered_valid_source_urls.json",
+        discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
       },
     });
 
@@ -48,7 +48,7 @@ describe("refresh/build discovery-valid flag", () => {
       sourceRows: "/tmp/data/source_urls.json",
       validations: "/tmp/data/feed_validation.json",
       normalizedFeeds: "/tmp/data/feeds_normalized.json",
-      discoveredValidSourceRows: "/tmp/data/discovered_valid_source_urls.json",
+      discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
     };
 
     await runRefreshCli({
@@ -95,7 +95,7 @@ describe("refresh/build discovery-valid flag", () => {
       sourceRows: "/tmp/data/source_urls.json",
       validations: "/tmp/data/feed_validation.json",
       normalizedFeeds: "/tmp/data/feeds_normalized.json",
-      discoveredValidSourceRows: "/tmp/data/discovered_valid_source_urls.json",
+      discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
     };
 
     await runBuildCli({
