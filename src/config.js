@@ -13,8 +13,12 @@ export const PATHS = {
   sourceRows: resolve(DATA_DIR, "source_urls.json"),
   validations: resolve(DATA_DIR, "feed_validation.json"),
   normalizedFeeds: resolve(DATA_DIR, "feeds_normalized.json"),
+<<<<<<< HEAD
   curatedPublications: resolve(CONTENT_DIR, "curated_publications.yml"),
   discoveredValidSourceRows: resolve(DATA_DIR, "discovered_valid_source_urls.json"),
+=======
+  discoveredValidSourceRows: resolve(CONTENT_DIR, "discovered_valid_source_urls.json"),
+>>>>>>> 4e0aded (discovery valid source added)
   discoveredHackerspaceSourceSnapshot: resolve(DATA_DIR, "discovery/list_of_hacker_spaces.html"),
   discoveredHackerspaceFeeds: resolve(DATA_DIR, "discovery/discovered_hackerspace_feeds.json"),
   htmlOutput: resolve(DIST_DIR, "index.html"),

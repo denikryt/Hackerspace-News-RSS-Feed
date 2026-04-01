@@ -1,0 +1,2617 @@
+{
+  "sourcePageUrl": "https://wiki.hackerspaces.org/List_of_Hacker_Spaces",
+  "extractedAt": "2026-03-29T19:51:43.980Z",
+  "urls": [
+    {
+      "hackerspaceName": "Tel Aviv Makers Intl.",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Tel_Aviv_Makers_Intl.",
+      "country": "Israel",
+      "candidateFeedUrl": "https://wiki.telavivmakers.org/feed.php",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Knyfyrtel Hackerspace Poznań",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Knyfyrtel_Hackerspace_Pozna%C5%84",
+      "country": "Poland",
+      "candidateFeedUrl": "https://hspoz.pl/rss.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Spark Studio Salem",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Spark_Studio_Salem",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://sparkstudiosalem.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "FamiLAB",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/FamiLAB",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.familab.org/blog?format=rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Node-K",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Node-K",
+      "country": "Austria",
+      "candidateFeedUrl": "https://node-k.at/feed/rss.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Tampa Hackerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Tampa_Hackerspace",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://tampahackerspace.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Bitlair",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Bitlair",
+      "country": "Netherlands",
+      "candidateFeedUrl": "https://bitlair.nl/api.php?hidebots=1&urlversion=1&days=7&limit=50&action=feedrecentchanges&feedformat=atom",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hacklab Kyiv",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hacklab_Kyiv",
+      "country": "Ukraine",
+      "candidateFeedUrl": "https://hacklab.kyiv.ua/en/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Grenoble Hackerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Grenoble_Hackerspace",
+      "country": "France",
+      "candidateFeedUrl": "https://ghspace.fr/rss.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "KwartzLab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/KwartzLab",
+      "country": "Canada",
+      "candidateFeedUrl": "https://www.kwartzlab.ca/news?format=rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "C3D2",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/C3D2",
+      "country": "Germany",
+      "candidateFeedUrl": "https://c3d2.de/news-rss.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Syn2cat",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Syn2cat",
+      "country": "Luxembourg",
+      "candidateFeedUrl": "https://www.syn2cat.lu/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Konya Hackerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Konya_Hackerspace",
+      "country": "Türkiye",
+      "candidateFeedUrl": "https://konyahackerspace.org/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "R00thouse",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/R00thouse",
+      "country": "Bolivia",
+      "candidateFeedUrl": "https://www.hacklab.org.bo/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hackerspace Lodz",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hackerspace_Lodz",
+      "country": "Poland",
+      "candidateFeedUrl": "https://lodz.hackerspace.pl/feed",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Realraum",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Realraum",
+      "country": "Austria",
+      "candidateFeedUrl": "https://wp.realraum.at/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hackerspace Pomerania",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hackerspace_Pomerania",
+      "country": "Poland",
+      "candidateFeedUrl": "https://hsp.sh/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "MakerSpaceLeiden",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/MakerSpaceLeiden",
+      "country": "Netherlands",
+      "candidateFeedUrl": "https://wiki.makerspaceleiden.nl/mediawiki/api.php?hidebots=1&urlversion=1&days=7&limit=50&action=feedrecentchanges&feedformat=atom",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "temporärhaus",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Tempor%C3%A4rhaus",
+      "country": "Germany",
+      "candidateFeedUrl": "https://temporaerhaus.de/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Q30space",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Q30space",
+      "country": "Switzerland",
+      "candidateFeedUrl": "https://q30.space/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Shackspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Shackspace",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.shackspace.de/atom.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Leeds Hackspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Leeds_Hackspace",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://leedshackspace.org.uk/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "HackInPovo",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/HackInPovo",
+      "country": "Italy",
+      "candidateFeedUrl": "https://hackinpovo.it/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "CCCFFM",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/CCCFFM",
+      "country": "Germany",
+      "candidateFeedUrl": "https://ccc-ffm.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "AlpSec",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/AlpSec",
+      "country": "Austria",
+      "candidateFeedUrl": "https://www.alpsec.at/rss.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Fablab Wuerzburg",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Fablab_Wuerzburg",
+      "country": "Germany",
+      "candidateFeedUrl": "https://fablab-wuerzburg.de/feed.php",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Nerd2Nerd",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Nerd2Nerd",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.nerd2nerd.org/RSS",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "ArtLab Pesaro - Coworking culturale",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/ArtLab_Pesaro_-_Coworking_culturale",
+      "country": "Italy",
+      "candidateFeedUrl": "https://www.iltavoloaps.it/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Dordtse Elektronica Club",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Dordtse_Elektronica_Club",
+      "country": "Netherlands",
+      "candidateFeedUrl": "https://www.pi4dec.nl/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hacklab in mama",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hacklab_in_mama",
+      "country": "Croatia",
+      "candidateFeedUrl": "https://www.razmjenavjestina.org/feeds/atom.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "CCCZH",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/CCCZH",
+      "country": "Switzerland",
+      "candidateFeedUrl": "https://www.ccczh.ch/rssfeed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Ko-Lab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Ko-Lab",
+      "country": "Belgium",
+      "candidateFeedUrl": "https://ko-lab.space/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hackerspace Brussels",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hackerspace_Brussels",
+      "country": "Belgium",
+      "candidateFeedUrl": "https://hsbxl.be/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Milton Keynes Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Milton_Keynes_Makerspace",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://mkmakerspace.co.uk/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Artifactory",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Artifactory",
+      "country": "Australia",
+      "candidateFeedUrl": "https://artifactory.org.au/rss.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Connected Community",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Connected_Community",
+      "country": "Australia",
+      "candidateFeedUrl": "https://www.hackmelbourne.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Toolbox Bodensee e.V.",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Toolbox_Bodensee_e.V.",
+      "country": "Germany",
+      "candidateFeedUrl": "https://toolbox-bodensee.de/feed_blog.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "UOttawa Richard L ’Abbé Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/UOttawa_Richard_L_%E2%80%99Abb%C3%A9_Makerspace",
+      "country": "CANADA",
+      "candidateFeedUrl": "https://www.uottawa.ca/en/rss.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Computer Club of Western Michigan University",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Computer_Club_of_Western_Michigan_University",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://cclub.cs.wmich.edu/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Kiberpipa",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Kiberpipa",
+      "country": "Slovenia",
+      "candidateFeedUrl": "https://kiberpipa.org/feeds/all.atom.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "CCCAC",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/CCCAC",
+      "country": "Germany",
+      "candidateFeedUrl": "https://aachen.ccc.de/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hackwerk Aalen",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hackwerk_Aalen",
+      "country": "Germany",
+      "candidateFeedUrl": "https://blog.aalen.space/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Pannonian Laboratories",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Pannonian_Laboratories",
+      "country": "Austria",
+      "candidateFeedUrl": "https://www.panlab.at/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Pixelbar",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Pixelbar",
+      "country": "Netherlands",
+      "candidateFeedUrl": "https://www.pixelbar.nl/atom.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Biotech Without Borders",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Biotech_Without_Borders",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://biotechwithoutborders.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "CCC Bremen",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/CCC_Bremen",
+      "country": "Germany",
+      "candidateFeedUrl": "https://ccchb.de/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "MuHack",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/MuHack",
+      "country": "Italy",
+      "candidateFeedUrl": "https://muhack.org//feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hackerspace Kraków",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hackerspace_Krak%C3%B3w",
+      "country": "Poland",
+      "candidateFeedUrl": "https://hackerspace-krk.pl/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "/dev/tal",
+      "hackerspaceWikiUrl": "https://dev/tal",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.devtal.de/blog/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Omega Verksted",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Omega_Verksted",
+      "country": "Norway",
+      "candidateFeedUrl": "https://www.omegav.no/newsrss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Mainframe",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Mainframe",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.mainframe.io/rss.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hackfun",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hackfun",
+      "country": "Argentina",
+      "candidateFeedUrl": "https://blog.hackfunrosario.com/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Eugene Maker Space",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Eugene_Maker_Space",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://eugenemakerspace.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hackerspace Bremen",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hackerspace_Bremen",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.hackerspace-bremen.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "VarnaLab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/VarnaLab",
+      "country": "Bulgaria",
+      "candidateFeedUrl": "https://www.varnalab.org/feed.php",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Vaasa Hacklab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Vaasa_Hacklab",
+      "country": "Finland",
+      "candidateFeedUrl": "https://vaasa.hacklab.fi/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "HackLab.TO",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/HackLab.TO",
+      "country": "Canada",
+      "candidateFeedUrl": "https://hacklab.to/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "KnoxMakers",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/KnoxMakers",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://knoxmakers.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "TkkrLab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/TkkrLab",
+      "country": "Netherlands",
+      "candidateFeedUrl": "https://www.tkkrlab.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Xinchejian",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Xinchejian",
+      "country": "China",
+      "candidateFeedUrl": "https://xinchejian.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Sheffield Hardware Hackers and Makers",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Sheffield_Hardware_Hackers_and_Makers",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://www.sheffieldhackspace.org.uk/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Bitraf",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Bitraf",
+      "country": "Norway",
+      "candidateFeedUrl": "https://bitraf.no/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Essembly",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Essembly",
+      "country": "Germany",
+      "candidateFeedUrl": "https://essembly.de/feeds/essembly.atom.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Laboratory B",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Laboratory_B",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.laboratoryb.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Quelab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Quelab",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://quelab.net/news/rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Chaostreff Bern",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Chaostreff_Bern",
+      "country": "Switzerland",
+      "candidateFeedUrl": "https://chaostreffbern.ch/de/feeds/chaosbern_atom.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "CCC Salzburg",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/CCC_Salzburg",
+      "country": "Austria",
+      "candidateFeedUrl": "https://cccsbg.at/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Crash Space",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Crash_Space",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://blog.crashspace.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "ENTS",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/ENTS",
+      "country": "Canada",
+      "candidateFeedUrl": "https://ents.ca/comments/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Datenburg",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Datenburg",
+      "country": "Germany",
+      "candidateFeedUrl": "https://datenburg.org/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hack42",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hack42",
+      "country": "Netherlands",
+      "candidateFeedUrl": "https://hack42.nl/blog/feed",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Nobreakspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Nobreakspace",
+      "country": "Germany",
+      "candidateFeedUrl": "https://chaotikum.org/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Pawprint Prototyping",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Pawprint_Prototyping",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://pawprintprototyping.org/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Segmentation Vault",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Segmentation_Vault",
+      "country": "Austria",
+      "candidateFeedUrl": "https://segvault.space/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "York Hackspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/York_Hackspace",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://york.hackspace.org.uk/blog/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "TOG",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/TOG",
+      "country": "Ireland",
+      "candidateFeedUrl": "https://www.tog.ie/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Fablabc",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Fablabc",
+      "country": "Germany",
+      "candidateFeedUrl": "https://stadtfabrikanten.org/rss.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "FOULAB",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/FOULAB",
+      "country": "Canada",
+      "candidateFeedUrl": "https://foulab.org/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Freies Labor",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Freies_Labor",
+      "country": "Germany",
+      "candidateFeedUrl": "https://blog.freieslabor.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Uppsala Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Uppsala_Makerspace",
+      "country": "Sweden",
+      "candidateFeedUrl": "https://www.uppsalamakerspace.se/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Flipdot",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Flipdot",
+      "country": "Germany",
+      "candidateFeedUrl": "https://flipdot.org/rss.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hacklab Jyväskylä",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hacklab_Jyv%C3%A4skyl%C3%A4",
+      "country": "Finland",
+      "candidateFeedUrl": "https://xn--jyvskyl-7wae.hacklab.fi/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Attraktor",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Attraktor",
+      "country": "Germany",
+      "candidateFeedUrl": "https://wiki.attraktor.org/api.php?hidebots=1&urlversion=1&days=7&limit=50&action=feedrecentchanges&feedformat=atom",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "C3RE",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/C3RE",
+      "country": "Germany",
+      "candidateFeedUrl": "https://c3re.de/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Codinglab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Codinglab",
+      "country": "Switzerland",
+      "candidateFeedUrl": "https://codinglab.ch/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "DimSumLabs",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/DimSumLabs",
+      "country": "Hong Kong",
+      "candidateFeedUrl": "https://www.dimsumlabs.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Coredump",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Coredump",
+      "country": "Switzerland",
+      "candidateFeedUrl": "https://www.coredump.ch/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Kaouenn-noz",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Kaouenn-noz",
+      "country": "France",
+      "candidateFeedUrl": "https://kaouenn-noz.fr/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "IT-Syndikat",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/IT-Syndikat",
+      "country": "Austria",
+      "candidateFeedUrl": "https://it-syndikat.org/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Leinelab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Leinelab",
+      "country": "Germany",
+      "candidateFeedUrl": "https://leinelab.org/feed.php",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "CCC Darmstadt",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/CCC_Darmstadt",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.chaos-darmstadt.de/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "MakerSpace Bonn",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/MakerSpace_Bonn",
+      "country": "Germany",
+      "candidateFeedUrl": "https://makerspacebonn.de/index.php?format=feed&type=rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Seattle Makers",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Seattle_Makers",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://seattlemakers.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "CCC Mainz",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/CCC_Mainz",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.cccwi.de/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Factory 3",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Factory_3",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://factory3.org/blog?format=rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Workshop 88",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Workshop_88",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://workshop88.com/oldblog/index.php/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Warsaw Hackerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Warsaw_Hackerspace",
+      "country": "Poland",
+      "candidateFeedUrl": "https://blog.hackerspace.pl/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Backspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Backspace",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.hackerspace-bamberg.de/api.php?hidebots=1&urlversion=1&days=7&limit=50&action=feedrecentchanges&feedformat=atom",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Laboratoire Ouvert Grenoblois",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Laboratoire_Ouvert_Grenoblois",
+      "country": "France",
+      "candidateFeedUrl": "https://www.logre.eu/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hackzogtum",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hackzogtum",
+      "country": "Germany",
+      "candidateFeedUrl": "https://hackzogtum-coburg.de/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Subraum",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Subraum",
+      "country": "Germany",
+      "candidateFeedUrl": "https://c3pb.de/feeds/all.atom.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Mobile MakerSpace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Mobile_MakerSpace",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://makerspacemobile.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "0x90.space",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/0x90.space",
+      "country": "Germany",
+      "candidateFeedUrl": "https://0x90.space/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Devbase",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Devbase",
+      "country": "Germany",
+      "candidateFeedUrl": "https://wiki.d.evba.se/feed.php?mode=list&ns=",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Bloominglabs",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Bloominglabs",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.bloominglabs.org/api.php?hidebots=1&urlversion=1&days=7&limit=50&action=feedrecentchanges&feedformat=atom",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "AFRA",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/AFRA",
+      "country": "Germany",
+      "candidateFeedUrl": "https://afra-berlin.de/dokuwiki/feed.php",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "The Space Leiden",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/The_Space_Leiden",
+      "country": "Netherlands",
+      "candidateFeedUrl": "https://spaceleiden.nl/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "SUMA",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/SUMA",
+      "country": "Germany",
+      "candidateFeedUrl": "https://suma-ev.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Niemandsland",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Niemandsland",
+      "country": "Germany",
+      "candidateFeedUrl": "https://niemandsland.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Starship Factory",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Starship_Factory",
+      "country": "Switzerland",
+      "candidateFeedUrl": "https://starship-factory.ch/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Labomedia",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Labomedia",
+      "country": "France",
+      "candidateFeedUrl": "https://labomedia.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hacklabor",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hacklabor",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.hacklabor.de/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Nottinghack",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Nottinghack",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://nottinghack.org.uk/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Codeforheilbronn",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Codeforheilbronn",
+      "country": "Germany",
+      "candidateFeedUrl": "https://codeforheilbronn.de/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Schaffenburg",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Schaffenburg",
+      "country": "Germany",
+      "candidateFeedUrl": "https://schaffenburg.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "NYC Resistor",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/NYC_Resistor",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.nycresistor.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hive13",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hive13",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://hive13.org/rss/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Haxko",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Haxko",
+      "country": "Germany",
+      "candidateFeedUrl": "https://haxko.space/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hackalot",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hackalot",
+      "country": "Netherlands",
+      "candidateFeedUrl": "https://hackalot.nl/api.php?hidebots=1&urlversion=1&days=7&limit=50&action=feedrecentchanges&feedformat=atom",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Edinburgh Hacklab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Edinburgh_Hacklab",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://edinburghhacklab.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Brisbane Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Brisbane_Makerspace",
+      "country": "Australia",
+      "candidateFeedUrl": "https://brisbanemaker.space/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "MAKERoanoke",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/MAKERoanoke",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.makeroanoke.org/blog-feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Leitstelle511-ccch",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Leitstelle511-ccch",
+      "country": "Germany",
+      "candidateFeedUrl": "https://hannover.ccc.de/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "GuayaHack",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/GuayaHack",
+      "country": "Colombia",
+      "candidateFeedUrl": "https://guayahack.co/posts/atom.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Z-Labor",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Z-Labor",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.z-labor.space/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "HAUM",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/HAUM",
+      "country": "France",
+      "candidateFeedUrl": "https://haum.org/feeds/all.atom.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "So Make It (Southampton, UK)",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/So_Make_It_(Southampton,_UK)",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://somakeit.org.uk/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Laboratoire Ouvert Villeurbannais",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Laboratoire_Ouvert_Villeurbannais",
+      "country": "France",
+      "candidateFeedUrl": "https://labovilleurbanne.fr/blog/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Forschung und Technik e.V.",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Forschung_und_Technik_e.V.",
+      "country": "Germany",
+      "candidateFeedUrl": "https://forschungundtechnikev.de/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hal9k",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hal9k",
+      "country": "Denmark",
+      "candidateFeedUrl": "https://www.hal9k.dk/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Chaosdorf",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Chaosdorf",
+      "country": "Germany",
+      "candidateFeedUrl": "https://chaosdorf.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hackeriet",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hackeriet",
+      "country": "Norway",
+      "candidateFeedUrl": "https://blog.hackeriet.no/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Decatur Makers",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Decatur_Makers",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.decaturmakers.org/blog-feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Dezentrale",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Dezentrale",
+      "country": "Germany",
+      "candidateFeedUrl": "https://dezentrale.space/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "RLab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/RLab",
+      "country": "Argentina",
+      "candidateFeedUrl": "https://rlab.be/atom.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "HacKNology",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/HacKNology",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.hacknology.de/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Clear Creek Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Clear_Creek_Makerspace",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://clearcreekmakerspace.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Unit",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Unit",
+      "country": "Italy",
+      "candidateFeedUrl": "https://unit.abbiamoundominio.org/feeds.atom.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Fort Collins Creator Hub",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Fort_Collins_Creator_Hub",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.fortcollinscreatorhub.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Technik.cafe",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Technik.cafe",
+      "country": "Germany",
+      "candidateFeedUrl": "https://technik.cafe/comments/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Makers Local 256",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Makers_Local_256",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://256.makerslocal.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Pumping Station: One",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Pumping_Station:_One",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://pumpingstationone.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Helsinki Hacklab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Helsinki_Hacklab",
+      "country": "Finland",
+      "candidateFeedUrl": "https://helsinki.hacklab.fi/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Bits'n'Bugs",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Bits%27n%27Bugs",
+      "country": "Germany",
+      "candidateFeedUrl": "https://erlangen.ccc.de/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Basingstoke Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Basingstoke_Makerspace",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://www.basingstokemakerspace.org.uk/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Netz39",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Netz39",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.netz39.de/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Chalmers Robotförening",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Chalmers_Robotf%C3%B6rening",
+      "country": "Sweden",
+      "candidateFeedUrl": "https://chalmersrobotics.se/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Makers im Zigerschlitz",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Makers_im_Zigerschlitz",
+      "country": "Switzerland",
+      "candidateFeedUrl": "https://zigerschlitzmakers.ch/comments/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hackerspace Drenthe",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hackerspace_Drenthe",
+      "country": "Netherlands",
+      "candidateFeedUrl": "https://www.hackerspace-drenthe.nl/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hacksaar",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hacksaar",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.hacksaar.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "CCC Freiburg",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/CCC_Freiburg",
+      "country": "Germany",
+      "candidateFeedUrl": "https://cccfr.de/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Swindon Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Swindon_Makerspace",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://www.swindon-makerspace.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Unallocated Space",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Unallocated_Space",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.unallocatedspace.org/comments/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "GarageLab eV",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/GarageLab_eV",
+      "country": "Germany",
+      "candidateFeedUrl": "https://garage-lab.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Twin Cities Maker",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Twin_Cities_Maker",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://tcmaker.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "WerkRaum",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/WerkRaum",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.werkraum.space/wiki/feed.php",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Ruum42",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Ruum42",
+      "country": "Switzerland",
+      "candidateFeedUrl": "https://ruum42.ch/feed.php",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "HackLab Almería",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/HackLab_Almer%C3%ADa",
+      "country": "Spain",
+      "candidateFeedUrl": "https://hacklabalmeria.net/atom.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "UN-Hack-Bar",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/UN-Hack-Bar",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.un-hack-bar.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Duisentrieb",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Duisentrieb",
+      "country": "Germany",
+      "candidateFeedUrl": "https://duisentrieb.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Leigh Hackspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Leigh_Hackspace",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://www.leighhack.org/blog/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Chaostreff Klaus",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Chaostreff_Klaus",
+      "country": "Austria",
+      "candidateFeedUrl": "https://open-lab.at/index.php?format=feed&type=rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "RaumZeitLabor",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/RaumZeitLabor",
+      "country": "Germany",
+      "candidateFeedUrl": "https://raumzeitlabor.de/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Bytespeicher",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Bytespeicher",
+      "country": "Germany",
+      "candidateFeedUrl": "https://technikkultur-erfurt.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "FIXME",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/FIXME",
+      "country": "Switzerland",
+      "candidateFeedUrl": "http://fixme.ch/rss.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "South London Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/South_London_Makerspace",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://southlondonmakerspace.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "CCC Berlin",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/CCC_Berlin",
+      "country": "Germany",
+      "candidateFeedUrl": "https://berlin.ccc.de/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Chaostreff Salzburg",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Chaostreff_Salzburg",
+      "country": "Austria",
+      "candidateFeedUrl": "https://cccsbg.at/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Ylab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Ylab",
+      "country": "Canada",
+      "candidateFeedUrl": "https://www.ylab.ca/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Brmlab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Brmlab",
+      "country": "Czech Republic",
+      "candidateFeedUrl": "https://brmlab.cz/feed.php",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Port39 - Hackerspace Stralsund",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Port39_-_Hackerspace_Stralsund",
+      "country": "Germany",
+      "candidateFeedUrl": "https://port39.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "MakerSpace Minden",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/MakerSpace_Minden",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.makerspace-minden.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Binary Kitchen",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Binary_Kitchen",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.binary-kitchen.de/wiki/feed.php",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "DingFabrik Köln",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/DingFabrik_K%C3%B6ln",
+      "country": "Germany",
+      "candidateFeedUrl": "https://dingfabrik.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Queer Computer Club",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Queer_Computer_Club",
+      "country": "Canada",
+      "candidateFeedUrl": "https://queercomputerclub.ca/events.rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "init Lab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Init_Lab",
+      "country": "Bulgaria",
+      "candidateFeedUrl": "https://initlab.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "C4",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/C4",
+      "country": "Germany",
+      "candidateFeedUrl": "https://koeln.ccc.de/backend/updates.rdf",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "OlyMEGA",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/OlyMEGA",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.olymega.org/page-8689/BlogPost/6886667/rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "LaBi: Laboratoire de Bidouille",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/LaBi:_Laboratoire_de_Bidouille",
+      "country": "France",
+      "candidateFeedUrl": "https://labi.aliens-lyon.fr/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Ventspils design studio RADE",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Ventspils_design_studio_RADE",
+      "country": "Latvia",
+      "candidateFeedUrl": "https://www.vatp.lv/feed/rss2",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "NSHkr",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/NSHkr",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://nshkr.com/feed",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "London Hackspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/London_Hackspace",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://blog.london.hackspace.org.uk/rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "SteamHead",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/SteamHead",
+      "country": "China",
+      "candidateFeedUrl": "https://steamhead.space/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Sunlab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Sunlab",
+      "country": "France",
+      "candidateFeedUrl": "https://www.mysunlab.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hackerspace Budapest",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hackerspace_Budapest",
+      "country": "Hungary",
+      "candidateFeedUrl": "https://hsbp.org/tiki-wiki_rss.php?ver=2",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Electrolab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Electrolab",
+      "country": "France",
+      "candidateFeedUrl": "https://www.electrolab.fr/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "HackEns",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/HackEns",
+      "country": "France",
+      "candidateFeedUrl": "https://hackens.org/feed.php",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Passable",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Passable",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://passable.art/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "DoESLiverpool",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/DoESLiverpool",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://doesliverpool.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Newport Makerspace Creudy Casnewydd",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Newport_Makerspace_Creudy_Casnewydd",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://newportmakerspace.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "EOF Hackspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/EOF_Hackspace",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://eof.org.uk/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Claremont Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Claremont_Makerspace",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://claremontmakerspace.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "TDvenlo",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/TDvenlo",
+      "country": "Netherlands",
+      "candidateFeedUrl": "https://tdvenlo.nl/?feed=rss2",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "DevLoL",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/DevLoL",
+      "country": "Austria",
+      "candidateFeedUrl": "https://devlol.org/wiki/DevLoL?action=rss_rc&unique=1&ddiffs=1",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Tampere Hacklab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Tampere_Hacklab",
+      "country": "Finland",
+      "candidateFeedUrl": "https://tampere.hacklab.fi/feeds/rss/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "OpenLandLAB",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/OpenLandLAB",
+      "country": "Austria",
+      "candidateFeedUrl": "http://www.openlandlab.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "FAU FabLab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/FAU_FabLab",
+      "country": "Germany",
+      "candidateFeedUrl": "https://fablab.fau.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "The Build Guild",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/The_Build_Guild",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://thebuildguild.org/comments/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Propeller",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Propeller",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://members.columbuspropeller.com/events/rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Red Mountain Makers",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Red_Mountain_Makers",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.redmountainmakers.org/blog/rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "C-Hack Calw",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/C-Hack_Calw",
+      "country": "Germany",
+      "candidateFeedUrl": "https://c-hack.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Robots and Dinosaurs",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Robots_and_Dinosaurs",
+      "country": "Australia",
+      "candidateFeedUrl": "https://robodino.org/rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Radiona",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Radiona",
+      "country": "Croatia",
+      "candidateFeedUrl": "https://radiona.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Einstein's Workshop",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Einstein%27s_Workshop",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.einsteinsworkshop.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "TIF-IT-Labor",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/TIF-IT-Labor",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.tif-it.org/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Queer feminist kompitreff",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Queer_feminist_kompitreff",
+      "country": "Switzerland",
+      "candidateFeedUrl": "https://spit.noblogs.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Spline",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Spline",
+      "country": "Germany",
+      "candidateFeedUrl": "https://spline.de/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "LUG Saar",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/LUG_Saar",
+      "country": "Germany",
+      "candidateFeedUrl": "https://blog.lugsaar.de/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Framingham Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Framingham_Makerspace",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.framinghammakerspace.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "MakeHaven",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/MakeHaven",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.makehaven.org/rss.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Triple Cities Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Triple_Cities_Makerspace",
+      "country": "United States of America",
+      "candidateFeedUrl": "http://www.tcmakerspace.com/index.php/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "PiSeC",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/PiSeC",
+      "country": "Czech Republic",
+      "candidateFeedUrl": "https://ok1kpi.cz/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "HappyLab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/HappyLab",
+      "country": "Austria",
+      "candidateFeedUrl": "https://www.happylab.at/de_vie/news.atom",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "MediaLab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/MediaLab",
+      "country": "Italy",
+      "candidateFeedUrl": "https://avana.forteprenestino.net/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Lowell Makes",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Lowell_Makes",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://lowellmakes.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "CcHUB (Co-creation Hub Nigeria)",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/CcHUB_(Co-creation_Hub_Nigeria)",
+      "country": "Nigeria",
+      "candidateFeedUrl": "https://cchub.africa/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "TekVenture",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/TekVenture",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.tekventure.org/home?format=rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Victoria Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Victoria_Makerspace",
+      "country": "Canada",
+      "candidateFeedUrl": "https://makerspace.ca/RSS",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hasi",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hasi",
+      "country": "Germany",
+      "candidateFeedUrl": "https://ha.si/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Sector67",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Sector67",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.sector67.org/blog/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "The Bodgery",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/The_Bodgery",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.thebodgery.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hack.rva",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hack.rva",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.hackrva.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Urban Workshop",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Urban_Workshop",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://urbanworkshop.net/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "MAKER's EDGe",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/MAKER%27s_EDGe",
+      "country": "United States of America",
+      "candidateFeedUrl": "http://makersedge.blogspot.com/feeds/posts/default",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "FizzPOP",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/FizzPOP",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://fizzpop.org.uk/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Cloyne",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Cloyne",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://cloyne.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Surrey and Hampshire Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Surrey_and_Hampshire_Makerspace",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://www.shmakerspace.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Omaha Maker Group",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Omaha_Maker_Group",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://omahamakergroup.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Berea Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Berea_Makerspace",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://bereamakerspace.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "House4Hack",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/House4Hack",
+      "country": "South Africa",
+      "candidateFeedUrl": "https://www.house4hack.co.za/feed",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "SpaceLab1",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/SpaceLab1",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://spacelab1.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Fablab Neckar-Alb",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Fablab_Neckar-Alb",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.fablab-neckar-alb.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Garoa Hacker Clube",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Garoa_Hacker_Clube",
+      "country": "Brazil",
+      "candidateFeedUrl": "https://garoa.net.br/mediawiki/api.php?hidebots=1&urlversion=1&days=7&limit=50&action=feedrecentchanges&feedformat=atom",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Makespace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Makespace",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://web.makespace.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Qeske Maastricht",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Qeske_Maastricht",
+      "country": "Netherlands",
+      "candidateFeedUrl": "https://qeske.nl/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "ZTL",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/ZTL",
+      "country": "Germany",
+      "candidateFeedUrl": "https://ztl.space/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Kuckucksmühle",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Kuckucksm%C3%BChle",
+      "country": "Germany",
+      "candidateFeedUrl": "https://wiki.ecohackerfarm.org/feed.php",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "AwesomeSpace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/AwesomeSpace",
+      "country": "Netherlands",
+      "candidateFeedUrl": "http://awesomespace.nl/comments/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Foothills Community Workshop",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Foothills_Community_Workshop",
+      "country": "United States of America",
+      "candidateFeedUrl": "http://fcwhack.com/?feed=rss2",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Chaos inKL.",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Chaos_inKL.",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.chaos-inkl.de/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "MacGyver",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/MacGyver",
+      "country": "Czech Republic",
+      "candidateFeedUrl": "http://feeds.feedburner.com/macgyver",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Inventor Forge Maker Space",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Inventor_Forge_Maker_Space",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.inventorforgemakerspace.org/blog-feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "CBI Maker Space",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/CBI_Maker_Space",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.cbimakerspace.com/feed",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Maketory",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Maketory",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.maketory.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Site 3 coLaboratory",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Site_3_coLaboratory",
+      "country": "Canada",
+      "candidateFeedUrl": "https://www.site3.ca/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "23b Shop",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/23b_Shop",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.23bshop.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "HackLab Terni",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/HackLab_Terni",
+      "country": "Italy",
+      "candidateFeedUrl": "https://hacklabterni.org/?feed=rss2",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hsmty",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hsmty",
+      "country": "Mexico",
+      "candidateFeedUrl": "https://hsmty.org/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Sarai",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Sarai",
+      "country": "India",
+      "candidateFeedUrl": "https://sarai.net/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "BFZ Berlin e.V.",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/BFZ_Berlin_e.V.",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.bfz-berlin.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Huntsville Alabama L5 Society (HAL5) - Project HALO",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Huntsville_Alabama_L5_Society_(HAL5)_-_Project_HALO",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://nss.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "BeLUG",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/BeLUG",
+      "country": "Germany",
+      "candidateFeedUrl": "https://belug.de/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Tricity Hackerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Tricity_Hackerspace",
+      "country": "Poland",
+      "candidateFeedUrl": "https://hs3.pl/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Skillhouse",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Skillhouse",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://gainesvillehackerspace.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "ComputerClub Itzehoe",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/ComputerClub_Itzehoe",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.cciz.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Richmond Makerlabs",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Richmond_Makerlabs",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://wiki.richmondmakerlabs.uk/api.php?hidebots=1&urlversion=1&days=7&limit=50&action=feedrecentchanges&feedformat=atom",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Creator Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Creator_Makerspace",
+      "country": "Norway",
+      "candidateFeedUrl": "https://creator.no/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Vigyan Ashram DIY Lab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Vigyan_Ashram_DIY_Lab",
+      "country": "India",
+      "candidateFeedUrl": "https://vigyanashram.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "ChattLab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/ChattLab",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://wiki.chattlab.org/feed.php",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Pica Pica HackLab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Pica_Pica_HackLab",
+      "country": "Spain",
+      "candidateFeedUrl": "https://www.picahack.org/rss.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Horten Folkeverksted",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Horten_Folkeverksted",
+      "country": "Norway",
+      "candidateFeedUrl": "https://folkeverkstedet.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Collab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Collab",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.collab-orators.com/blog-feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Fablab Lueneburg",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Fablab_Lueneburg",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.fablab-lueneburg.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Eigenbaukombinat Halle",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Eigenbaukombinat_Halle",
+      "country": "Germany",
+      "candidateFeedUrl": "https://eigenbaukombinat.de/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Sample Studios",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Sample_Studios",
+      "country": "Ireland",
+      "candidateFeedUrl": "https://sample-studios.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Maker Kids",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Maker_Kids",
+      "country": "Canada",
+      "candidateFeedUrl": "https://makerkids.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "/root",
+      "hackerspaceWikiUrl": "https://root/",
+      "country": "Italy",
+      "candidateFeedUrl": "https://www.rootclub.it/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Windsor Hackforge",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Windsor_Hackforge",
+      "country": "Canada",
+      "candidateFeedUrl": "https://www.hackf.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "LVL1",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/LVL1",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.lvl1.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "QC Co-Lab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/QC_Co-Lab",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://qccolab.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Lancaster And Morecambe Makers (LAMM)",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Lancaster_And_Morecambe_Makers_(LAMM)",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://lamm.space/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "TXRX Labs",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/TXRX_Labs",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://apps.txrxlabs.org/rss/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Baltimore's Under Ground Science Space (BUGSS)",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Baltimore%27s_Under_Ground_Science_Space_(BUGSS)",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://bugssonline.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Centre for Internet and Society",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Centre_for_Internet_and_Society",
+      "country": "India",
+      "candidateFeedUrl": "https://cis-india.org/news/rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Connected Community HackerSpace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Connected_Community_HackerSpace",
+      "country": "Australia",
+      "candidateFeedUrl": "https://www.hackmelbourne.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Jaaga: Bangalore Art & Technology Space",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Jaaga:_Bangalore_Art_%26_Technology_Space",
+      "country": "India",
+      "candidateFeedUrl": "https://www.jaaga.in/blog-feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hive 76",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hive_76",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.hive76.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "FoAM",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/FoAM",
+      "country": "Belgium",
+      "candidateFeedUrl": "https://fo.am/weblog/rss/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Build Brighton",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Build_Brighton",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://buildbrighton.com/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Sudo room",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Sudo_room",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://sudoroom.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "FredWorks",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/FredWorks",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.meetup.com/blog/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Woelab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Woelab",
+      "country": "Togo",
+      "candidateFeedUrl": "http://www.woelabo.com/sitemap.rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "TheMakerSpace - Durban",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/TheMakerSpace_-_Durban",
+      "country": "South Africa",
+      "candidateFeedUrl": "https://themakerspace.co.za/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "/tmp/lab",
+      "hackerspaceWikiUrl": "https://tmp/lab",
+      "country": "France",
+      "candidateFeedUrl": "https://www.tmplab.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Catalyze",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Catalyze",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.mhubchicago.com/blog/rss.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Diyode Guelph",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Diyode_Guelph",
+      "country": "Canada",
+      "candidateFeedUrl": "https://diyode.com/blog/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "FabLab Cottbus",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/FabLab_Cottbus",
+      "country": "Germany",
+      "candidateFeedUrl": "https://fablab-cottbus.de/feed",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Denhac",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Denhac",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://denhac.org/feed",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "RADIONA",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/RADIONA",
+      "country": "Croatia",
+      "candidateFeedUrl": "https://radiona.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Turku Hacklab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Turku_Hacklab",
+      "country": "Finland",
+      "candidateFeedUrl": "https://turku.hacklab.fi/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Maschinendeck",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Maschinendeck",
+      "country": "Germany",
+      "candidateFeedUrl": "https://maschinendeck.org/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "FNordeingang Neuss",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/FNordeingang_Neuss",
+      "country": "Germany",
+      "candidateFeedUrl": "https://fnordeingang.de/feed",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Saskatoon TechWorks",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Saskatoon_TechWorks",
+      "country": "Canada",
+      "candidateFeedUrl": "https://sktechworks.ca/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Warpzone",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Warpzone",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.warpzone.ms/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "HacroEvolution",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/HacroEvolution",
+      "country": "United States of America",
+      "candidateFeedUrl": "http://hacroevolution.blogspot.com/feeds/posts/default",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "HackPittsburgh",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/HackPittsburgh",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.hackpgh.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "091 Labs",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/091_Labs",
+      "country": "Ireland",
+      "candidateFeedUrl": "https://091labs.com/rss/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Motionlab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Motionlab",
+      "country": "Germany",
+      "candidateFeedUrl": "https://motionlab.berlin/comments/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Technistub",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Technistub",
+      "country": "France",
+      "candidateFeedUrl": "https://technistub.org/?feed=rss2",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "TinkerMill",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/TinkerMill",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://tinkermill.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hobart Hackerspace Inc.",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hobart_Hackerspace_Inc.",
+      "country": "Australia",
+      "candidateFeedUrl": "https://hobarthackerspace.org.au/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Chaostreff Dortmund",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Chaostreff_Dortmund",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.chaostreff-dortmund.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Fresno Ideaworks",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Fresno_Ideaworks",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.fresnoideaworks.org/RSS",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Politecnico Open unix Labs",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Politecnico_Open_unix_Labs",
+      "country": "Italy",
+      "candidateFeedUrl": "https://poul.org/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "CT Hackerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/CT_Hackerspace",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://cthacker.space/rss.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "HacDC",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/HacDC",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.hacdc.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Escape",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Escape",
+      "country": "Sweden",
+      "candidateFeedUrl": "https://arvikahackerspace.blogspot.com/feeds/posts/default",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "EigenLab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/EigenLab",
+      "country": "Italy",
+      "candidateFeedUrl": "https://eigenlab.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "South East Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/South_East_Makerspace",
+      "country": "Ireland",
+      "candidateFeedUrl": "https://www.southeastmakerspace.org/feed",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Midsouth Makers",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Midsouth_Makers",
+      "country": "United States of America",
+      "candidateFeedUrl": "http://www.midsouthmakers.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "The Inventor's House",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/The_Inventor%27s_House",
+      "country": "Mexico",
+      "candidateFeedUrl": "https://theinventorhouse.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Matehackers",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Matehackers",
+      "country": "Brazil",
+      "candidateFeedUrl": "https://matehackers.org/feed.php",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Namespace Gera",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Namespace_Gera",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.buergernetz-gera-greiz.de/namespace?format=feed&type=rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Chimera Arts and Maker Space",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Chimera_Arts_and_Maker_Space",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.chimeraarts.org/news?format=rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Openlab Vorarlberg",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Openlab_Vorarlberg",
+      "country": "Austria",
+      "candidateFeedUrl": "https://open-lab.at/index.php?format=feed&type=rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Bastelbude Dinslaken",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Bastelbude_Dinslaken",
+      "country": "Germany",
+      "candidateFeedUrl": "https://bastelbude.grade.de/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "TAP:lab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/TAP:lab",
+      "country": "New Zealand",
+      "candidateFeedUrl": "https://www.taplab.nz/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Nova Labs",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Nova_Labs",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.nova-labs.org/blog-feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hacker Lab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hacker_Lab",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://hackerlab.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Dijital Çağ Atölyesi",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Dijital_%C3%87a%C4%9F_At%C3%B6lyesi",
+      "country": "Türkiye",
+      "candidateFeedUrl": "https://dijitalcagatolyesi.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Logout",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Logout",
+      "country": "Catalonia",
+      "candidateFeedUrl": "https://sindominio.net/logout/web/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Karkhana",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Karkhana",
+      "country": "Nepal",
+      "candidateFeedUrl": "https://karkhana.asia/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Cape Fear Maker Space",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Cape_Fear_Maker_Space",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.capefearmakersguild.org/blog-feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Valmiera's Makerspace DARE",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Valmiera%27s_Makerspace_DARE",
+      "country": "Latvia",
+      "candidateFeedUrl": "https://darevalmiera.lv/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Revelation space",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Revelation_space",
+      "country": "Netherlands",
+      "candidateFeedUrl": "https://revspace.nl/wiki/api.php?hidebots=1&urlversion=1&days=7&limit=50&action=feedrecentchanges&feedformat=atom",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "ZwoNullEins",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/ZwoNullEins",
+      "country": "Germany",
+      "candidateFeedUrl": "https://wandelwerk.koeln/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hackreduce.org",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hackreduce.org",
+      "country": "United States of America",
+      "candidateFeedUrl": "http://www.hackreduce.org/blog?format=rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Spark Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Spark_Makerspace",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.sparkmakerspace.org/blog-feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "ICTP SciFabLab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/ICTP_SciFabLab",
+      "country": "Italy",
+      "candidateFeedUrl": "http://scifablab.ictp.it/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hammerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hammerspace",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://hammerspacehobby.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "MakerspaceCT",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/MakerspaceCT",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://makerspacect.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Mkmis",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Mkmis",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://meninshedsmk.org.uk/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Stockholm Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Stockholm_Makerspace",
+      "country": "Sweden",
+      "candidateFeedUrl": "https://www.makerspace.se/feed",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Chaostreff Flensburg e.V.",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Chaostreff_Flensburg_e.V.",
+      "country": "Germany",
+      "candidateFeedUrl": "https://chaostreff-flensburg.de/feed.rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hand.Werk.Stadt",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hand.Werk.Stadt",
+      "country": "Austria",
+      "candidateFeedUrl": "https://www.handwerkstadt.org/feed",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Queerious Labs",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Queerious_Labs",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://queeriouslabs.com/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "SnoCo Makerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/SnoCo_Makerspace",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.snocomakers.org/blog-feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Entität",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Entit%C3%A4t",
+      "country": "Germany",
+      "candidateFeedUrl": "https://entitaet.org/feed",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hacklab Lahti",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hacklab_Lahti",
+      "country": "Finland",
+      "candidateFeedUrl": "https://lahti.hacklab.fi/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "The Underground Studio MakerSpace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/The_Underground_Studio_MakerSpace",
+      "country": "Canada",
+      "candidateFeedUrl": "https://themuseum.ca/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "MakeICT",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/MakeICT",
+      "country": "United States of America",
+      "candidateFeedUrl": "http://makeict.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "CCC Hamburg",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/CCC_Hamburg",
+      "country": "Germany",
+      "candidateFeedUrl": "https://hamburg.ccc.de/blog/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Rippowam Labs",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Rippowam_Labs",
+      "country": "United States of America",
+      "candidateFeedUrl": "http://rippowamlabs.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Baltimore Hackerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Baltimore_Hackerspace",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://baltimorehackerspace.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Eyebeam",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Eyebeam",
+      "country": "United States of America",
+      "candidateFeedUrl": "http://eyebeam.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Cairo HackerSpace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Cairo_HackerSpace",
+      "country": "Egypt",
+      "candidateFeedUrl": "https://cairohackerspace.org/rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "VHS",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/VHS",
+      "country": "Canada",
+      "candidateFeedUrl": "https://vanhack.ca/feed.php",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Columbia Gadget Works",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Columbia_Gadget_Works",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://columbiagadgetworks.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Leicester Hackspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Leicester_Hackspace",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://leicesterhackspace.org.uk/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Toylab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Toylab",
+      "country": "Argentina",
+      "candidateFeedUrl": "https://toylab.wordpress.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Digitales Aachen e.V. (digitac)",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Digitales_Aachen_e.V._(digitac)",
+      "country": "Germany",
+      "candidateFeedUrl": "https://digitac.cc/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "NerdBridge",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/NerdBridge",
+      "country": "Germany",
+      "candidateFeedUrl": "https://nerdbridge.de/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "PlanZero",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/PlanZero",
+      "country": "Romania",
+      "candidateFeedUrl": "https://planzero.ro/index.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "ЦМИТ «Дружба»/Friendship FabLab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/%D0%A6%D0%9C%D0%98%D0%A2_%C2%AB%D0%94%D1%80%D1%83%D0%B6%D0%B1%D0%B0%C2%BB/Friendship_FabLab",
+      "country": "Russian Federation",
+      "candidateFeedUrl": "https://cmit.ru/tomsk/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Dock18",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Dock18",
+      "country": "Switzerland",
+      "candidateFeedUrl": "https://dock18.ch/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Vector Space",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Vector_Space",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://vector-space.org/rss.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Factor e Farm",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Factor_e_Farm",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.opensourceecology.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Synbyo Prototyping Guild",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Synbyo_Prototyping_Guild",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.synbyo.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Potteries",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Potteries",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "http://potterieshackspace.org.uk/atom.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Quantum Tech Club",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Quantum_Tech_Club",
+      "country": "United Kingdom",
+      "candidateFeedUrl": "https://quantumtech.club/feed/atom",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Chaos Computer Club",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Chaos_Computer_Club",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.ccc.de/de/rss/updates.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Wau Holland Stiftung",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Wau_Holland_Stiftung",
+      "country": "Germany",
+      "candidateFeedUrl": "https://www.wauland.de/feed.xml",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Startup Factory",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Startup_Factory",
+      "country": "Bulgaria",
+      "candidateFeedUrl": "https://startupfactory.bg/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Hackspb",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Hackspb",
+      "country": "Russian Federation",
+      "candidateFeedUrl": "https://hackspb.ru/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Kre8now",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Kre8now",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.kre8now.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "TheIMClab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/TheIMClab",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://www.theimclab.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Bureau.D",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Bureau.D",
+      "country": "Switzerland",
+      "candidateFeedUrl": "https://bureaud.ch/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "FabLab-Leuven",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/FabLab-Leuven",
+      "country": "Belgium",
+      "candidateFeedUrl": "https://fablab-leuven.be/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Danbury Hackerspace",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Danbury_Hackerspace",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://danburyhackerspace.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "NIMBY LLC",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/NIMBY_LLC",
+      "country": "United States of America",
+      "candidateFeedUrl": "http://nimbyspace.org/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Geekdom",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Geekdom",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://geekdom.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "TrepHub",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/TrepHub",
+      "country": "United States of America",
+      "candidateFeedUrl": "https://trephub.com/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "FrankensteinGarage FabLabMilano",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/FrankensteinGarage_FabLabMilano",
+      "country": "Italy",
+      "candidateFeedUrl": "http://frankensteingarage.it/feed/atom/",
+      "sourceType": "discovery"
+    }
+  ]
+}

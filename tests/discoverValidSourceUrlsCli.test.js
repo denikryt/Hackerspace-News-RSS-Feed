@@ -22,7 +22,7 @@ describe("runDiscoverValidSourceUrlsCli", () => {
     const writeJsonImpl = vi.fn().mockResolvedValue(undefined);
     const paths = {
       discoveredHackerspaceFeeds: "/tmp/data/discovery/discovered_hackerspace_feeds.json",
-      discoveredValidSourceRows: "/tmp/data/discovered_valid_source_urls.json",
+      discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
     };
 
     await runDiscoverValidSourceUrlsCli({
