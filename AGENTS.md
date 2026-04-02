@@ -299,6 +299,20 @@ Do not turn a note into a full plan unless the user explicitly asks for a plan.
 
 If the user asks to run an agent for plan analysis, first read `.codex/agents/plan-analyzer.toml` and use its instructions for that agent run.
 
+For this agent run, the required minimum is:
+
+- the path to the plan file;
+- the instructions defined for the agent in `.codex/agents/plan-analyzer.toml`.
+
+Do not treat re-reading the plan file in the main agent as a required ritual before spawning the plan-analysis agent unless it is needed for some separate reason.
+
 ## Plan Implementation Analysis Agent
 
 If the user asks to run an agent for analysis of the implementation of a plan, first read `.codex/agents/plan-implementation-analyzer.toml` and use its instructions for that agent run.
+
+For this agent run, the required minimum is:
+
+- the path to the relevant plan file;
+- the instructions defined for the agent in `.codex/agents/plan-implementation-analyzer.toml`.
+
+Do not treat re-reading the plan file in the main agent as a required ritual before spawning the plan-implementation-analysis agent unless it is needed for some separate reason.
