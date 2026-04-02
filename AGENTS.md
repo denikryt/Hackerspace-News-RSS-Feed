@@ -127,6 +127,12 @@ Use these rules:
 - put a new test in `tests/real-data/` when it needs repository data artifacts rather than invented fixtures;
 - put a new test in `tests/scripts/` when it executes shell entry points or system-facing install/deploy behavior.
 
+### Manual Config Rule
+
+`config/` is hand-maintained.
+Do not write tests that lock the exact contents of hand-maintained files in `config/`.
+Test only the behavior of code that reads and uses config.
+
 ## Real-Data Rule
 
 Any logic that is intended to work on real project data must be implemented based on real project data.
