@@ -9,6 +9,63 @@ const sourceHtml = readFixtureText("source-page", "user-jomat-oldid-94788-snippe
 const sourcePageUrl = "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds";
 
 describe("buildDataset", () => {
+  it("passes refresh artifacts into render and returns only rendered pages in site output", async () => {
+    vi.resetModules();
+    try {
+      const refreshResult = {
+        sourceRowsPayload: { urls: [{ rowNumber: 1, candidateFeedUrl: "https://alpha.example/feed.xml" }] },
+        validationsPayload: [{ candidateUrl: "https://alpha.example/feed.xml", isParsable: true }],
+        normalizedPayload: { feeds: [{ id: "alpha" }], failures: [] },
+      };
+      const refreshDataset = vi.fn().mockResolvedValue(refreshResult);
+      const renderSite = vi.fn().mockResolvedValue({
+        pages: {
+          "index.html": "<html>home</html>",
+          "feed/index.html": "<html>feed</html>",
+        },
+        debugOnly: "ignore-me",
+      });
+
+      vi.doMock("../../../src/refreshDataset.js", () => ({
+        refreshDataset,
+      }));
+      vi.doMock("../../../src/renderSite.js", () => ({
+        renderSite,
+      }));
+
+      const { buildDataset: isolatedBuildDataset } = await import("../../../src/buildDataset.js");
+
+      const fetchImpl = vi.fn();
+      const now = Date.parse("2026-04-02T12:00:00.000Z");
+      const result = await isolatedBuildDataset({
+        sourcePageUrl,
+        fetchImpl,
+        now,
+      });
+
+      expect(refreshDataset).toHaveBeenCalledWith({ sourcePageUrl, fetchImpl });
+      expect(renderSite).toHaveBeenCalledWith({
+        sourceRowsPayload: refreshResult.sourceRowsPayload,
+        validationsPayload: refreshResult.validationsPayload,
+        normalizedPayload: refreshResult.normalizedPayload,
+        now,
+      });
+      expect(result).toEqual({
+        ...refreshResult,
+        site: {
+          pages: {
+            "index.html": "<html>home</html>",
+            "feed/index.html": "<html>feed</html>",
+          },
+        },
+      });
+    } finally {
+      vi.doUnmock("../../../src/refreshDataset.js");
+      vi.doUnmock("../../../src/renderSite.js");
+      vi.resetModules();
+    }
+  });
+
   it("builds source rows, validations, normalized feeds, and html", async () => {
     const fetchImpl = vi.fn(async (url) => {
       if (url === sourcePageUrl) {

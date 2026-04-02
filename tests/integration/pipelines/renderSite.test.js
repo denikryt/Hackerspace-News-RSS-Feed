@@ -302,6 +302,132 @@ describe("renderSite", () => {
     expect(logLines).toContain("[render] render complete: pages=7");
   });
 
+  it("renders paginated author detail pages when an author has more than one page of items", async () => {
+    const result = await renderSite({
+      sourceRowsPayload: {
+        sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
+        sectionTitle: "Spaces with RSS feeds",
+        extractedAt: "2026-03-19T20:00:00.000Z",
+        urls: [],
+      },
+      validationsPayload: [],
+      normalizedPayload: {
+        generatedAt: "2026-03-19T20:00:00.000Z",
+        sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
+        summary: {
+          sourceRows: 1,
+          validFeeds: 1,
+          parsedFeeds: 1,
+          emptyFeeds: 0,
+          failedFeeds: 0,
+        },
+        feeds: [
+          {
+            id: "row-1-alpha",
+            rowNumber: 1,
+            sourceWikiUrl: "https://wiki.hackerspaces.org/Alpha",
+            finalFeedUrl: "https://alpha.example/feed.xml",
+            siteUrl: "https://alpha.example",
+            spaceName: "Alpha",
+            country: "Wonderland",
+            feedType: "rss",
+            status: "parsed_ok",
+            items: Array.from({ length: 11 }, (_, index) => ({
+              id: `alice-${index + 1}`,
+              title: `Alice post ${index + 1}`,
+              link: `https://alpha.example/post-${index + 1}`,
+              resolvedAuthor: "Alice",
+              authorSource: "author",
+              publishedAt: `2025-01-${String(index + 1).padStart(2, "0")}T10:00:00.000Z`,
+              summary: `Summary ${index + 1}`,
+            })),
+          },
+        ],
+        failures: [],
+      },
+    });
+
+    expect(Object.keys(result.pages).sort()).toEqual([
+      "about/index.html",
+      "authors/alice.html",
+      "authors/alice/page/2/index.html",
+      "authors/index.html",
+      "feed/index.html",
+      "feed/page/2/index.html",
+      "index.html",
+      "other/index.html",
+      "other/page/2/index.html",
+      "spaces/alpha.html",
+      "spaces/alpha/page/2/index.html",
+    ]);
+    expect(result.pages["authors/alice.html"]).toContain("Page 1 of 2");
+    expect(result.pages["authors/alice/page/2/index.html"]).toContain("Page 2 of 2");
+    expect(result.pages["authors/alice/page/3/index.html"]).toBeUndefined();
+  });
+
+  it("renders paginated secondary stream pages when a category stream spans multiple pages", async () => {
+    const result = await renderSite({
+      sourceRowsPayload: {
+        sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
+        sectionTitle: "Spaces with RSS feeds",
+        extractedAt: "2026-03-19T20:00:00.000Z",
+        urls: [],
+      },
+      validationsPayload: [],
+      normalizedPayload: {
+        generatedAt: "2026-03-19T20:00:00.000Z",
+        sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
+        summary: {
+          sourceRows: 1,
+          validFeeds: 1,
+          parsedFeeds: 1,
+          emptyFeeds: 0,
+          failedFeeds: 0,
+        },
+        feeds: [
+          {
+            id: "row-1-alpha",
+            rowNumber: 1,
+            sourceWikiUrl: "https://wiki.hackerspaces.org/Alpha",
+            finalFeedUrl: "https://alpha.example/feed.xml",
+            siteUrl: "https://alpha.example",
+            spaceName: "Alpha",
+            country: "Wonderland",
+            feedType: "rss",
+            status: "parsed_ok",
+            items: Array.from({ length: 11 }, (_, index) => ({
+              id: `event-${index + 1}`,
+              title: `Event ${index + 1}`,
+              link: `https://alpha.example/events/${index + 1}`,
+              resolvedAuthor: "Alice",
+              authorSource: "author",
+              publishedAt: `2025-01-${String(index + 1).padStart(2, "0")}T10:00:00.000Z`,
+              normalizedCategories: ["event"],
+            })),
+          },
+        ],
+        failures: [],
+      },
+    });
+
+    expect(Object.keys(result.pages).sort()).toEqual([
+      "about/index.html",
+      "authors/alice.html",
+      "authors/alice/page/2/index.html",
+      "authors/index.html",
+      "events/index.html",
+      "events/page/2/index.html",
+      "feed/index.html",
+      "feed/page/2/index.html",
+      "index.html",
+      "spaces/alpha.html",
+      "spaces/alpha/page/2/index.html",
+    ]);
+    expect(result.pages["events/index.html"]).toContain("Page 1 of 2");
+    expect(result.pages["events/page/2/index.html"]).toContain("Page 2 of 2");
+    expect(result.pages["events/page/3/index.html"]).toBeUndefined();
+  });
+
 });
 
 async function writeJson(filePath, value) {
