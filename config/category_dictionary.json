@@ -17,11 +17,21 @@
   "nieuws": "news",
   "nyheter": "news",
   "neuigkeit": "news",
+  "announcements": "news",
+  "announcement": "news",
+  "ankündigungen": "news",
+  "annoucements": "news",
+  "update": "news",
+  "webnews": "news",
+  "realraum news": "news",
+  "hackforge news": "news",
+  "bfz news": "news",
   "uutiset": "news",
   "новини": "news",
   "новости": "news",
 
   "blog": "blog",
+  "блог": "blog",
 
   "project": "project",
   "projects": "project",
@@ -41,10 +51,12 @@
   "nicht kategorisiert": "uncategorized",
   "ohne kategorie": "uncategorized",
   "sin categoría": "uncategorized",
-  
+
   "hackerspace": "hackerspace",
   "hackerspaces": "hackerspace",
   "hacklab": "hackerspace",
   "hackspace": "hackerspace",
-  "makerspace": "hackerspace"
+  "makerspace": "hackerspace",
+
+  "community": "community"
 }
