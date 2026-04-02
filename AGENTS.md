@@ -39,13 +39,15 @@ When working on this repository, prefer understanding changes in terms of:
 
 Every non-trivial change must follow this order:
 
-1. write a failing test first;
-2. implement the smallest possible change to make it pass;
-3. refactor without changing behavior;
-4. run the relevant tests again.
+1. first make the intended behavior or contract explicit;
+2. capture it with a failing test before implementation is finalized;
+3. implement the smallest possible change to make it pass;
+4. refactor without changing behavior;
+5. run the relevant tests again.
 
 What this means in practice:
 
+- do not write tests before you understand the rule they are supposed to fix;
 - do not start with UI implementation;
 - do not start with refactoring;
 - do not add behavior first and “cover it later”;
@@ -109,6 +111,19 @@ Before implementing a new behavior:
 2. write tests for that contract;
 3. implement the minimum code;
 4. verify with real data after tests pass.
+
+## Test Layer Placement Rule
+
+When adding a new test, place it in the narrowest `tests/` layer that directly owns the rule being checked.
+
+Use these rules:
+
+- put a new test in `tests/architecture/` when it guards a repository-wide invariant or module boundary that should stay true regardless of feature work;
+- put a new test in `tests/unit/` when it exercises one deterministic module or helper in isolation;
+- put a new test in `tests/contracts/` when it documents a stable public shape, CLI surface, or renderer output boundary;
+- put a new test in `tests/integration/` when the behavior only makes sense across multiple modules, temp directories, and fixtures together;
+- put a new test in `tests/real-data/` when it needs repository data artifacts rather than invented fixtures;
+- put a new test in `tests/scripts/` when it executes shell entry points or system-facing install/deploy behavior.
 
 ## Real-Data Rule
 
