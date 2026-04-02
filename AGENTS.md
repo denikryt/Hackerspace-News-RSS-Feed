@@ -80,6 +80,8 @@ Do not stop after “the test passes” if the resulting code is still awkward, 
 
 ### 1.1. Comments For Readability
 
+Writing comments for readability is mandatory.
+
 Write comments to make the code easier for a human to read.
 
 By default:
