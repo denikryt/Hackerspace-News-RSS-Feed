@@ -10,6 +10,7 @@ export const CONTENT_DIR = resolve(process.cwd(), "content");
 export const DIST_DIR = resolve(process.cwd(), "dist");
 
 export const PATHS = {
+  curatedPublications: resolve(CONTENT_DIR, "curated_publications.yml"),
   sourceRows: resolve(DATA_DIR, "source_urls.json"),
   validations: resolve(DATA_DIR, "feed_validation.json"),
   normalizedFeeds: resolve(DATA_DIR, "feeds_normalized.json"),
