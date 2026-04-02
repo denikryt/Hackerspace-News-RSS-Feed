@@ -41,6 +41,43 @@ describe("categoryDictionary", () => {
     });
   });
 
+  it("maps additional observed variants into existing canonical categories through explicit entries", () => {
+    expect(
+      normalizeCategoriesWithDictionary([
+        "Event",
+        "Veranstaltungen",
+        "Evenementen",
+        "Eventi",
+        "Veranstaltungshinweis",
+        "Nieuws",
+        "Nyheter",
+        "Новости",
+        "Neuigkeit",
+        "Projekter",
+        "Workshops",
+        "Uncategorised",
+        "Unkategorisiert",
+        "Nicht kategorisiert",
+        "Ohne Kategorie",
+        "Sin categoría",
+        "Hacklab",
+        "Hackspace",
+        "HackSpace",
+        "MakerSpace",
+      ]),
+    ).toEqual({
+      normalizedCategories: [
+        "event",
+        "news",
+        "project",
+        "workshop",
+        "uncategorized",
+        "hackerspace",
+      ],
+      unmappedCategories: undefined,
+    });
+  });
+
   it("keeps unmapped observed values visible when the dictionary has no explicit entry", () => {
     expect(
       normalizeCategoriesWithDictionary([
