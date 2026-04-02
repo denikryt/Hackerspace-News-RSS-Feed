@@ -6,6 +6,10 @@ The project fetches the source list from the `Spaces with RSS feeds` section on:
 
 - `https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds`
 
+The repository also contains additional already-confirmed valid source rows in:
+
+- `content/discovered_valid_source_urls.json`
+
 It validates candidate feed URLs, parses supported feeds, normalizes the data into local JSON snapshots, and renders a static multi-page site with:
 
 - spaces index
@@ -31,6 +35,14 @@ Fetch data and build the site:
 npm run build
 ```
 
+This is the simplest local run and is enough to build the site from the main wiki RSS source list.
+
+If you also want to include the checked-in additional valid sources from `content/discovered_valid_source_urls.json`, run:
+
+```bash
+npm run build -- --include-discovery-valid
+```
+
 Start the local HTTP server:
 
 ```bash
@@ -52,8 +64,36 @@ The project is split into three commands:
 - `npm run refresh` updates local data snapshots in `data/`
 - `npm run render` rebuilds `dist/` from existing local JSON
 - `npm run build` runs `refresh` and then `render`
+- `npm run refresh -- --include-discovery-valid` or `npm run build -- --include-discovery-valid` also merge in the checked-in additional valid sources from `content/discovered_valid_source_urls.json`
 
 Use `npm run render` when you changed only UI or rendering logic and do not need to refresh network data.
+
+## Discovery
+
+Discovery is a separate flow based on the broader hackerspace website directory.
+
+Main commands:
+
+```bash
+npm run discover:feeds
+npm run discover:valid-sources
+```
+
+The clean valid-source artifact written by this flow is:
+
+- `content/discovered_valid_source_urls.json`
+
+It can be merged into `refresh` or `build` with:
+
+```bash
+npm run build -- --include-discovery-valid
+npm run refresh -- --include-discovery-valid
+```
+
+Detailed discovery flow documentation:
+
+- [docs/DISCOVER_FEEDS.md](/home/denchik/projects/Hackerspace-news-rss-feed/docs/DISCOVER_FEEDS.md)
+- [docs/WIKI_DISCOVERY_ANALYSES.md](/home/denchik/projects/Hackerspace-news-rss-feed/docs/WIKI_DISCOVERY_ANALYSES.md)
 
 ## Production Deployment
 
@@ -141,6 +181,10 @@ The installer creates a `systemd` service and timer for the current project path
 Source of truth:
 
 - `https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds`
+
+Optional additional source rows:
+
+- `content/discovered_valid_source_urls.json`
 
 Behavioral notes:
 
