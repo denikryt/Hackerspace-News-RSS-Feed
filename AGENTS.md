@@ -94,6 +94,12 @@ Do not restate syntax.
 
 Good comments explain intent, not mechanics.
 
+### 1.2. Manual Config Rule
+
+`config/` is hand-maintained.
+Do not write tests that lock the exact contents of hand-maintained files in `config/`.
+Test only the behavior of code that reads and uses config.
+
 ### 2. Rendering
 
 UI must render only data that is actually present.
@@ -126,12 +132,6 @@ Use these rules:
 - put a new test in `tests/integration/` when the behavior only makes sense across multiple modules, temp directories, and fixtures together;
 - put a new test in `tests/real-data/` when it needs repository data artifacts rather than invented fixtures;
 - put a new test in `tests/scripts/` when it executes shell entry points or system-facing install/deploy behavior.
-
-### Manual Config Rule
-
-`config/` is hand-maintained.
-Do not write tests that lock the exact contents of hand-maintained files in `config/`.
-Test only the behavior of code that reads and uses config.
 
 ## Real-Data Rule
 

@@ -1,6 +1,6 @@
 export const FEED_CONTENT_STREAM_ID = "feed";
 export const FALLBACK_CONTENT_STREAM_ID = "other";
-export const PUBLIC_CATEGORY_STREAM_IDS = ["event", "news", "blog", "project", "workshop"];
+export const PUBLIC_CATEGORY_STREAM_IDS = ["community", "event", "news", "blog", "project", "hackerspace", "workshop"];
 
 const CONTENT_STREAM_DEFINITIONS = {
   feed: {
@@ -9,6 +9,13 @@ const CONTENT_STREAM_DEFINITIONS = {
     label: "Feed",
     pageTitle: "Feed",
     pageIntro: "All publications sorted from new to old.",
+  },
+  community: {
+    id: "community",
+    segment: "community",
+    label: "Community",
+    pageTitle: "Community",
+    pageIntro: "Items tagged as community updates and activities.",
   },
   event: {
     id: "event",
@@ -37,6 +44,13 @@ const CONTENT_STREAM_DEFINITIONS = {
     label: "Projects",
     pageTitle: "Projects",
     pageIntro: "Items tagged as projects.",
+  },
+  hackerspace: {
+    id: "hackerspace",
+    segment: "hackerspaces",
+    label: "Hackerspaces",
+    pageTitle: "Hackerspaces",
+    pageIntro: "Items tagged as hackerspace updates.",
   },
   workshop: {
     id: "workshop",

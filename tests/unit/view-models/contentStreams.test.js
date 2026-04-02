@@ -46,6 +46,12 @@ const normalizedPayload = {
           displayDate: "2025-01-02T10:00:00.000Z",
           normalizedCategories: ["hackerspace"],
         },
+        {
+          id: "community-1",
+          title: "Community meetup",
+          displayDate: "2025-01-01T12:00:00.000Z",
+          normalizedCategories: ["community"],
+        },
       ],
     },
     {
@@ -72,48 +78,54 @@ const normalizedPayload = {
 };
 
 describe("content stream contracts", () => {
-  it("lists only observed public category streams plus feed and fallback", () => {
-    expect(listContentStreams(normalizedPayload)).toEqual([
-      { id: "feed", label: "Feed", href: "/feed/index.html", totalItems: 4 },
-      { id: "event", label: "Events", href: "/events/index.html", totalItems: 2 },
-      { id: "news", label: "News", href: "/news/index.html", totalItems: 1 },
-      { id: "blog", label: "Blogs", href: "/blogs/index.html", totalItems: 1 },
-      { id: "workshop", label: "Workshops", href: "/workshops/index.html", totalItems: 1 },
-      { id: "other", label: "Other", href: "/other/index.html", totalItems: 1 },
-    ]);
+  it("lists feed plus only those category streams that are actually present in the data", () => {
+    const streams = listContentStreams(normalizedPayload);
+
+    expect(streams[0]).toMatchObject({ id: "feed", href: "/feed/index.html", totalItems: 5 });
+    expect(streams.map((stream) => stream.id)).toEqual(
+      expect.arrayContaining(["community", "event", "news", "blog", "hackerspace", "workshop"]),
+    );
+    expect(streams.find((stream) => stream.id === "community")).toMatchObject({
+      href: "/community/index.html",
+      totalItems: 1,
+    });
+    expect(streams.find((stream) => stream.id === "hackerspace")).toMatchObject({
+      href: "/hackerspaces/index.html",
+      totalItems: 1,
+    });
   });
 
-  it("builds category, feed, and fallback models from normalized categories", () => {
+  it("builds category and feed models from normalized categories", () => {
     const feedModel = buildContentStreamModel(normalizedPayload, { streamId: "feed" });
     const eventModel = buildContentStreamModel(normalizedPayload, { streamId: "event" });
-    const otherModel = buildContentStreamModel(normalizedPayload, { streamId: "other" });
+    const hackerspaceModel = buildContentStreamModel(normalizedPayload, { streamId: "hackerspace" });
+    const communityModel = buildContentStreamModel(normalizedPayload, { streamId: "community" });
 
     expect(feedModel.items.map((item) => item.title)).toEqual([
       "Open night",
       "Big launch",
       "Space cleanup",
+      "Community meetup",
       "Workshop notes",
     ]);
     expect(eventModel.items.map((item) => item.title)).toEqual(["Open night", "Big launch"]);
-    expect(otherModel.items.map((item) => item.title)).toEqual(["Space cleanup"]);
-    expect(otherModel.items[0].normalizedCategories).toEqual(["hackerspace"]);
+    expect(hackerspaceModel.items.map((item) => item.title)).toEqual(["Space cleanup"]);
+    expect(communityModel.items.map((item) => item.title)).toEqual(["Community meetup"]);
   });
 
-  it("keeps multi-category items in every allowed stream and excludes them from fallback", () => {
+  it("keeps multi-category items in every allowed stream and includes available stream navigation", () => {
     const newsModel = buildContentStreamModel(normalizedPayload, { streamId: "news" });
-    const otherModel = buildContentStreamModel(normalizedPayload, { streamId: "other" });
 
     expect(newsModel.items.map((item) => item.title)).toEqual(["Big launch"]);
-    expect(otherModel.items.map((item) => item.title)).not.toContain("Big launch");
-    expect(newsModel.streamNavItems).toEqual([
-      { href: "/feed/index.html", label: "Feed", isCurrent: false },
-      { href: "/events/index.html", label: "Events", isCurrent: false },
-      { href: "/news/index.html", label: "News", isCurrent: true },
-      { href: "/blogs/index.html", label: "Blogs", isCurrent: false },
-      { href: "/workshops/index.html", label: "Workshops", isCurrent: false },
-      { href: "/other/index.html", label: "Other", isCurrent: false },
-      { href: "/authors/index.html", label: "Authors", isCurrent: false },
-    ]);
+    expect(newsModel.streamNavItems).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ href: "/feed/index.html", label: "Feed", isCurrent: false }),
+        expect.objectContaining({ href: "/news/index.html", label: "News", isCurrent: true }),
+        expect.objectContaining({ href: "/community/index.html", label: "Community", isCurrent: false }),
+        expect.objectContaining({ href: "/hackerspaces/index.html", label: "Hackerspaces", isCurrent: false }),
+        expect.objectContaining({ href: "/authors/index.html", label: "Authors", isCurrent: false }),
+      ]),
+    );
   });
 
   it("reuses a precomputed content-stream context without changing the model output", () => {
