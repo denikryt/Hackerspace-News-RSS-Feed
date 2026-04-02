@@ -1,8 +1,18 @@
 import { describe, expect, it } from "vitest";
 
+import categoryDictionaryConfig from "../../config/category_dictionary.json" with { type: "json" };
 import { normalizeCategoriesWithDictionary } from "../../src/categoryDictionary.js";
 
 describe("categoryDictionary", () => {
+  it("keeps the explicit dictionary entries in config json", () => {
+    expect(categoryDictionaryConfig.events).toBe("event");
+    expect(categoryDictionaryConfig.nyheter).toBe("news");
+    expect(categoryDictionaryConfig.projekter).toBe("project");
+    expect(categoryDictionaryConfig.workshops).toBe("workshop");
+    expect(categoryDictionaryConfig["sin categoría"]).toBe("uncategorized");
+    expect(categoryDictionaryConfig.hackspace).toBe("hackerspace");
+  });
+
   it("maps observed multilingual event variants only through explicit entries", () => {
     expect(
       normalizeCategoriesWithDictionary([
