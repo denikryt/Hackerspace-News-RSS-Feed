@@ -3,5 +3,5 @@ dist/
 data/
 plans/
 tmp/
-analysis/
+/analysis/
 notes/
