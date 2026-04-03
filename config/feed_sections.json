@@ -1,0 +1,38 @@
+{
+  "feed": {
+    "label": "Feed",
+    "intro": "All publications sorted from new to old."
+  },
+  "community": {
+    "label": "Community",
+    "intro": "Items tagged as community updates and activities."
+  },
+  "events": {
+    "label": "Events",
+    "intro": "Items tagged as events."
+  },
+  "news": {
+    "label": "News",
+    "intro": "Items tagged as news."
+  },
+  "blogs": {
+    "label": "Blogs",
+    "intro": "Items tagged as blog posts."
+  },
+  "projects": {
+    "label": "Projects",
+    "intro": "Items tagged as projects."
+  },
+  "workshops": {
+    "label": "Workshops",
+    "intro": "Items tagged as workshops."
+  },
+  "uncategorized": {
+    "label": "Uncategorized",
+    "intro": "Items tagged as uncategorized."
+  },
+  "other": {
+    "label": "Other",
+    "intro": "Items outside the public category streams."
+  }
+}

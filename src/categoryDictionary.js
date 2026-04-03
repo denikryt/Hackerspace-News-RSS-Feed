@@ -1,31 +1,10 @@
-const CATEGORY_DICTIONARY = {
-  event: "event",
-  events: "event",
-  evenement: "event",
-  evénement: "event",
-  evénements: "event",
-  événements: "event",
-  évènement: "event",
-  veranstaltung: "event",
-  tapahtumat: "event",
-  news: "news",
-  nieuws: "news",
-  uutiset: "news",
-  новини: "news",
-  blog: "blog",
-  project: "project",
-  projects: "project",
-  "projects @en": "project",
-  projet: "project",
-  projets: "project",
-  projekte: "project",
-  projektit: "project",
-  workshop: "workshop",
-  uncategorized: "uncategorized",
-  hackerspace: "hackerspace",
-  hackerspaces: "hackerspace",
-  makerspace: "hackerspace",
-};
+import categoryDictionaryConfig from "../config/category_dictionary.json" with { type: "json" };
+
+/**
+ * Keep the explicit category mapping in config so editorial updates do not
+ * require editing code. The module remains responsible only for normalization.
+ */
+const CATEGORY_DICTIONARY = categoryDictionaryConfig;
 
 export function normalizeCategoriesWithDictionary(categoriesRaw) {
   if (!Array.isArray(categoriesRaw) || categoriesRaw.length === 0) {
