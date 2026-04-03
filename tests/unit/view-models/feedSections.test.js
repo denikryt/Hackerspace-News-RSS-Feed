@@ -112,6 +112,7 @@ describe("feed section contracts", () => {
     expect(newsModel.streamNavItems).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ href: "/feed/index.html", label: "Feed", isCurrent: false }),
+        expect.objectContaining({ href: "/curated/index.html", label: "Curated", isCurrent: false }),
         expect.objectContaining({ href: "/news/index.html", label: "News", isCurrent: true }),
         expect.objectContaining({ href: "/workshops/index.html", label: "Workshops", isCurrent: false }),
         expect.objectContaining({ href: "/authors/index.html", label: "Authors", isCurrent: false }),
@@ -151,6 +152,7 @@ describe("feed section contracts", () => {
       { href: "/events/index.html", label: "Events", isCurrent: false },
       { href: "/news/index.html", label: "News", isCurrent: true },
       { href: "/workshops/index.html", label: "Workshops", isCurrent: false },
+      { href: "/curated/index.html", label: "Curated", isCurrent: false },
       { href: "/authors/index.html", label: "Authors", isCurrent: false },
     ]);
   });

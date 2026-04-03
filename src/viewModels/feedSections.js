@@ -40,6 +40,7 @@ export function buildFeedSectionNavItems(availableSections, currentSectionId) {
       label: section.label,
       isCurrent: section.id === currentSectionId,
     })),
+    { href: "/curated/index.html", label: "Curated", isCurrent: false },
     { href: getAuthorsIndexHref(), label: "Authors", isCurrent: false },
   ];
 }
