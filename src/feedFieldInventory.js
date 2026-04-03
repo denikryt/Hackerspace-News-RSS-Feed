@@ -1,10 +1,8 @@
 import { resolve } from "node:path";
 
 import { SOURCE_PAGE_URL } from "./config.js";
-import { parseFeedBody } from "./feedParser.js";
-import { probeFeedUrl } from "./feedProbe.js";
-import { fetchPageHtml } from "./pageFetcher.js";
-import { extractSourceRows } from "./sourceTableExtractor.js";
+import { collectAnalysisFeeds } from "./analysisFeedCollection.js";
+import { loadAnalysisSourceRows } from "./analysisSourceRows.js";
 import { writeJson, writeText } from "./storage.js";
 
 const SAMPLE_LIMIT = 3;
@@ -12,6 +10,7 @@ const ANALYSIS_DIR = resolve(process.cwd(), "analysis");
 const DEFAULT_PATHS = {
   jsonReport: resolve(ANALYSIS_DIR, "feed_field_inventory.json"),
   markdownReport: resolve(ANALYSIS_DIR, "feed_field_inventory.md"),
+  categoryValuesReport: resolve(ANALYSIS_DIR, "observed_category_values.md"),
   categoriesBySpaceReport: resolve(ANALYSIS_DIR, "categories_by_hackerspace.md"),
 };
 
@@ -20,15 +19,53 @@ export async function analyzeFeedFields({
   fetchImpl = fetch,
   writeArtifacts = false,
   paths = DEFAULT_PATHS,
+  sourceRows,
+  collectedRecords,
+  includeDiscoveryValid = false,
+  readJsonImpl,
+  analysisPaths,
 } = {}) {
   const resolvedPaths = {
     jsonReport: paths?.jsonReport || DEFAULT_PATHS.jsonReport,
     markdownReport: paths?.markdownReport || DEFAULT_PATHS.markdownReport,
+    categoryValuesReport: paths?.categoryValuesReport || DEFAULT_PATHS.categoryValuesReport,
     categoriesBySpaceReport:
       paths?.categoriesBySpaceReport || DEFAULT_PATHS.categoriesBySpaceReport,
   };
-  const html = await fetchPageHtml({ sourcePageUrl, fetchImpl });
-  const sourceRows = extractSourceRows({ html, sourcePageUrl });
+  const selectedSourceRows = sourceRows || (await loadAnalysisSourceRows({
+    sourcePageUrl,
+    fetchImpl,
+    includeDiscoveryValid,
+    readJsonImpl,
+    paths: analysisPaths,
+  })).sourceRows;
+  const records = collectedRecords || (await collectAnalysisFeeds({
+    sourceRows: selectedSourceRows,
+    fetchImpl,
+  })).records;
+  const report = buildFeedFieldInventoryReport({
+    sourceRows: selectedSourceRows,
+    collectedRecords: records,
+  });
+
+  if (writeArtifacts) {
+    await writeFeedFieldInventoryArtifacts({ report, paths: resolvedPaths });
+  }
+
+  return report;
+}
+
+/**
+ * Inventory stays a pure consumer over the shared collected records so the
+ * report can be rebuilt locally without repeating network work.
+ */
+export function buildFeedFieldInventoryReport({
+  sourceRows,
+  collectedRecords,
+  generatedAt = new Date().toISOString(),
+}) {
+  const selectedSourceRows = Array.isArray(sourceRows) ? sourceRows : [];
+  const records = Array.isArray(collectedRecords) ? collectedRecords : [];
 
   const feedFieldStats = new Map();
   const itemFieldStats = new Map();
@@ -40,10 +77,10 @@ export async function analyzeFeedFields({
   const feeds = [];
   const errors = [];
 
-  for (const sourceRow of sourceRows) {
-    const validation = await probeFeedUrl({ sourceRow, fetchImpl });
+  for (const record of records) {
+    const { sourceRow, validation, parsedFeed, parseError, rawXmlBody, status } = record;
 
-    if (!validation.fetchOk || !validation.isParsable || !validation.body) {
+    if (status === "validation_error") {
       errors.push({
         hackerspaceName: sourceRow.hackerspaceName,
         candidateUrl: sourceRow.candidateFeedUrl,
@@ -54,34 +91,34 @@ export async function analyzeFeedFields({
       continue;
     }
 
-    try {
-      const parsedFeed = await parseFeedBody({ xml: validation.body, validation });
-      collectParsedFeedFields(feedFieldStats, parsedFeed, sourceRow.hackerspaceName);
-      collectParsedItemFields(
-        itemFieldStats,
-        authorValueStats,
-        categoryValueStats,
-        categoriesByHackerspaceStats,
-        parsedFeed.items || [],
-        sourceRow.hackerspaceName,
-      );
-      collectRawXmlTags(rawTagStats, rawNamespacedTagStats, validation.body, sourceRow.hackerspaceName);
-
-      feeds.push(buildFeedRecord({ sourceRow, validation, parsedFeed }));
-    } catch (error) {
+    if (status === "parse_error") {
       errors.push({
         hackerspaceName: sourceRow.hackerspaceName,
         candidateUrl: sourceRow.candidateFeedUrl,
         finalUrl: validation.finalUrl || sourceRow.candidateFeedUrl,
         errorCode: "parse_error",
-        errorMessage: error instanceof Error ? error.message : String(error),
+        errorMessage: parseError?.message || "Unknown parse error",
       });
+      continue;
     }
+
+    collectParsedFeedFields(feedFieldStats, parsedFeed, sourceRow.hackerspaceName);
+    collectParsedItemFields(
+      itemFieldStats,
+      authorValueStats,
+      categoryValueStats,
+      categoriesByHackerspaceStats,
+      parsedFeed.items || [],
+      sourceRow.hackerspaceName,
+    );
+    collectRawXmlTags(rawTagStats, rawNamespacedTagStats, rawXmlBody, sourceRow.hackerspaceName);
+
+    feeds.push(buildFeedRecord({ sourceRow, validation, parsedFeed, rawXmlBody }));
   }
 
-  const report = {
-    generatedAt: new Date().toISOString(),
-    sourceCount: sourceRows.length,
+  return {
+    generatedAt,
+    sourceCount: selectedSourceRows.length,
     analyzedFeedCount: feeds.length,
     failedFeedCount: errors.length,
     parsedFeedFields: serializeFieldStats(feedFieldStats),
@@ -115,18 +152,23 @@ export async function analyzeFeedFields({
     feeds,
     errors,
   };
+}
 
-  if (writeArtifacts) {
-    const markdown = renderMarkdownSummary(report);
-    const categoriesByHackerspaceMarkdown = renderCategoriesByHackerspaceMarkdown(report);
-    await Promise.all([
-      writeJson(resolvedPaths.jsonReport, report),
-      writeText(resolvedPaths.markdownReport, markdown),
-      writeText(resolvedPaths.categoriesBySpaceReport, categoriesByHackerspaceMarkdown),
-    ]);
-  }
+/**
+ * Artifact writing stays separate from report building so the shared collector
+ * can be reused by the top-level analyze CLI without hidden side effects.
+ */
+export async function writeFeedFieldInventoryArtifacts({ report, paths = DEFAULT_PATHS } = {}) {
+  const markdown = renderMarkdownSummary(report);
+  const categoryValuesMarkdown = renderObservedCategoryValuesMarkdown(report);
+  const categoriesByHackerspaceMarkdown = renderCategoriesByHackerspaceMarkdown(report);
 
-  return report;
+  await Promise.all([
+    writeJson(paths.jsonReport, report),
+    writeText(paths.markdownReport, markdown),
+    writeText(paths.categoryValuesReport, categoryValuesMarkdown),
+    writeText(paths.categoriesBySpaceReport, categoriesByHackerspaceMarkdown),
+  ]);
 }
 
 export function renderMarkdownSummary(report) {
@@ -136,14 +178,26 @@ export function renderMarkdownSummary(report) {
     "## Observed Author Values",
     ...renderValueLines(report.authorValues, { limit: Infinity, showFeeds: true }),
     "",
-    "## Observed Category Values",
-    ...renderValueLines(report.categoryValues, { limit: Infinity, showFeeds: true }),
-    "",
     "## All Observed Fields",
     ...renderFieldLines(report.allObservedFields, { limit: Infinity }),
     "",
     "## Semantic Field Mappings",
     ...renderSemanticMappingLines(report.semanticFieldMappings),
+    "",
+  ];
+
+  return `${sections.join("\n")}\n`;
+}
+
+/**
+ * Keep the raw observed category list in its own artifact so category review is
+ * easier to scan without the rest of the field inventory summary.
+ */
+export function renderObservedCategoryValuesMarkdown(report) {
+  const sections = [
+    "# Observed Category Values",
+    "",
+    ...renderValueLines(report.categoryValues, { limit: Infinity, showFeeds: true }),
     "",
   ];
 
@@ -193,7 +247,7 @@ export function renderCategoriesByHackerspaceMarkdown(report) {
   return `${sections.join("\n")}\n`;
 }
 
-function buildFeedRecord({ sourceRow, validation, parsedFeed }) {
+function buildFeedRecord({ sourceRow, validation, parsedFeed, rawXmlBody }) {
   const itemFieldNames = new Set();
   const itemFieldExamples = [];
 
@@ -204,7 +258,7 @@ function buildFeedRecord({ sourceRow, validation, parsedFeed }) {
     }
   }
 
-  const rawTagExamples = extractRawTagNames(validation.body).slice(0, SAMPLE_LIMIT);
+  const rawTagExamples = extractRawTagNames(rawXmlBody).slice(0, SAMPLE_LIMIT);
 
   return {
     hackerspaceName: sourceRow.hackerspaceName,
@@ -396,7 +450,7 @@ function recordValues(stats, value, feedName) {
   const values = Array.isArray(value) ? value : [value];
 
   for (const rawValue of values) {
-    const normalizedValue = String(rawValue || "").trim();
+    const normalizedValue = normalizeStatValue(rawValue);
 
     if (!normalizedValue) {
       continue;
@@ -426,7 +480,7 @@ function recordCategoriesByHackerspace(stats, value, feedName) {
   const byCategory = stats.get(feedName);
 
   for (const rawValue of values) {
-    const normalizedValue = String(rawValue || "").trim();
+    const normalizedValue = normalizeStatValue(rawValue);
 
     if (!normalizedValue) {
       continue;
@@ -437,16 +491,43 @@ function recordCategoriesByHackerspace(stats, value, feedName) {
 }
 
 function valueToSample(value) {
+  return normalizeStatValue(value, { joinArrays: true });
+}
+
+/**
+ * Real feed payloads contain strings, arrays, plain objects, and sometimes
+ * null-prototype objects from namespaced RSS/Atom fields. Inventory stats need
+ * one shared normalization path so all counters and samples stay resilient.
+ */
+function normalizeStatValue(value, { joinArrays = false } = {}) {
   if (typeof value === "string") {
-    return value;
+    return value.trim();
   }
+
   if (Array.isArray(value)) {
-    return value.join(", ");
+    const normalizedEntries = value
+      .map((entry) => valueToSample(entry))
+      .filter((entry) => entry != null && entry !== "");
+
+    return joinArrays ? normalizedEntries.join(", ") : null;
   }
   if (value == null) {
     return null;
   }
-  return JSON.stringify(value);
+
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+
+  return safeJsonStringify(value)?.trim() || null;
+}
+
+function safeJsonStringify(value) {
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(Object.prototype.toString.call(value));
+  }
 }
 
 function compareFieldStats(left, right) {
