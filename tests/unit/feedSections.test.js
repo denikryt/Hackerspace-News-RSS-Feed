@@ -50,9 +50,9 @@ describe("feedSections", () => {
   });
 
   it("builds hrefs and output paths directly from the feed section key", () => {
-    expect(getFeedSectionHref("community")).toBe("/community/index.html");
+    expect(getFeedSectionHref("feed")).toBe("/feed/index.html");
     expect(getFeedSectionHref("events", 2)).toBe("/events/page/2/");
-    expect(getFeedSectionOutputPath("community")).toBe("community/index.html");
+    expect(getFeedSectionOutputPath("feed")).toBe("feed/index.html");
     expect(getFeedSectionOutputPath("events", 2)).toBe("events/page/2/index.html");
   });
 

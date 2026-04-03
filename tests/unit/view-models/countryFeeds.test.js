@@ -7,7 +7,10 @@ import {
   listCountryFeeds,
   listCountryFeedOptions,
 } from "../../../src/viewModels/countryFeeds.js";
-import { buildFeedSectionContext, buildFeedSectionModel } from "../../../src/viewModels/feedSections.js";
+import {
+  buildFeedSectionContext,
+  buildFeedSectionNavItems,
+} from "../../../src/viewModels/feedSections.js";
 
 const normalizedPayload = {
   generatedAt: "2026-03-19T20:00:00.000Z",
@@ -189,10 +192,7 @@ describe("country feed contracts", () => {
     expect(model.pageIntro).toBe("Items tagged as events.");
     expect(model.items.map((item) => item.title)).toEqual(["French event"]);
     expect(model.streamNavItems).toEqual(
-      buildFeedSectionModel(payload, {
-        sectionId: "events",
-        context: countryContext.feedSectionContext,
-      }).streamNavItems,
+      buildFeedSectionNavItems(countryContext.feedSectionContext.availableSections, "events"),
     );
     expect(model.countryOptions[0]).toEqual({
       label: "All countries",

@@ -33,6 +33,17 @@ export function listFeedSections(normalizedPayload, { context } = {}) {
   return feedSectionContext.availableSections;
 }
 
+export function buildFeedSectionNavItems(availableSections, currentSectionId) {
+  return [
+    ...availableSections.map((section) => ({
+      href: section.href,
+      label: section.label,
+      isCurrent: section.id === currentSectionId,
+    })),
+    { href: getAuthorsIndexHref(), label: "Authors", isCurrent: false },
+  ];
+}
+
 /**
  * A feed section page always renders one selected slice of the shared feed
  * items plus the navigation between all currently available sections.
@@ -77,14 +88,7 @@ export function buildFeedSectionModel(
         ? hrefForPage(pagination.currentPage + 1)
         : undefined,
     pageLinks: buildPageLinks(pagination.currentPage, pagination.totalPages, hrefForPage),
-    streamNavItems: [
-      ...availableSections.map((section) => ({
-        href: section.href,
-        label: section.label,
-        isCurrent: section.id === sectionId,
-      })),
-      { href: getAuthorsIndexHref(), label: "Authors", isCurrent: false },
-    ],
+    streamNavItems: buildFeedSectionNavItems(availableSections, sectionId),
     homeHref: "/index.html",
     canonicalHref: hrefForPage(pagination.currentPage),
   };
@@ -143,7 +147,7 @@ function getAvailableSectionIds(items) {
   return sectionIds;
 }
 
-function selectItemsForSection(items, sectionId) {
+export function selectItemsForSection(items, sectionId) {
   if (sectionId === FEED_CONTENT_STREAM_ID) {
     return items;
   }

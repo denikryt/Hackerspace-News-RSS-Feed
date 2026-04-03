@@ -1,6 +1,11 @@
 import { getCountryFeedHref, getCountryFeedSlug } from "../countryFeeds.js";
 import { FEED_CONTENT_STREAM_ID, getFeedSectionDefinition, getFeedSectionHref } from "../feedSections.js";
-import { buildFeedSectionContext, buildFeedSectionModel, listFeedSections } from "./feedSections.js";
+import {
+  buildFeedSectionContext,
+  buildFeedSectionNavItems,
+  listFeedSections,
+  selectItemsForSection,
+} from "./feedSections.js";
 import { GLOBAL_FEED_PAGE_SIZE, buildPageLinks, paginateItems } from "../pagination.js";
 
 export function buildCountryFeedContext(normalizedPayload, { feedSectionContext } = {}) {
@@ -11,11 +16,7 @@ export function buildCountryFeedContext(normalizedPayload, { feedSectionContext 
   for (const section of listFeedSections(normalizedPayload, { context: sharedFeedSectionContext })) {
     const itemsByCountry = new Map();
 
-    for (const item of buildFeedSectionModel(normalizedPayload, {
-      sectionId: section.id,
-      pageSize: Number.MAX_SAFE_INTEGER,
-      context: sharedFeedSectionContext,
-    }).items) {
+    for (const item of selectItemsForSection(sharedFeedSectionContext.allItems || [], section.id)) {
       if (!item.country) {
         continue;
       }
@@ -135,10 +136,10 @@ export function buildCountryFeedModel(
         ? hrefForPage(pagination.currentPage + 1)
         : undefined,
     pageLinks: buildPageLinks(pagination.currentPage, pagination.totalPages, hrefForPage),
-    streamNavItems: buildFeedSectionModel(normalizedPayload, {
+    streamNavItems: buildFeedSectionNavItems(
+      countryContext.feedSectionContext.availableSections,
       sectionId,
-      context: countryContext.feedSectionContext,
-    }).streamNavItems,
+    ),
     countryOptions: listCountryFeedOptions(normalizedPayload, sectionId, selectedCountry.slug, {
       context: countryContext,
     }),

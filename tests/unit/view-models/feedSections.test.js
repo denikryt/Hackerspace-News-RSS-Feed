@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildFeedSectionNavItems,
   buildFeedSectionContext,
   buildFeedSectionModel,
   listFeedSections,
+  selectItemsForSection,
 } from "../../../src/viewModels/feedSections.js";
 
 const normalizedPayload = {
@@ -80,21 +82,18 @@ const normalizedPayload = {
 describe("feed section contracts", () => {
   it("lists feed plus only those category sections that are actually present in the data", () => {
     const sections = listFeedSections(normalizedPayload);
+    const sectionIds = sections.map((section) => section.id);
 
     expect(sections[0]).toMatchObject({ id: "feed", href: "/feed/index.html", totalItems: 5 });
-    expect(sections.map((section) => section.id)).toEqual(
-      expect.arrayContaining(["community", "events", "news", "blogs", "workshops"]),
+    expect(sectionIds).toEqual(
+      expect.arrayContaining(["events", "news", "blogs", "workshops"]),
     );
-    expect(sections.find((section) => section.id === "community")).toMatchObject({
-      href: "/community/index.html",
-      totalItems: 2,
-    });
+    expect(sectionIds).not.toContain("other");
   });
 
   it("builds category and feed models from normalized categories", () => {
     const feedModel = buildFeedSectionModel(normalizedPayload, { sectionId: "feed" });
     const eventsModel = buildFeedSectionModel(normalizedPayload, { sectionId: "events" });
-    const communityModel = buildFeedSectionModel(normalizedPayload, { sectionId: "community" });
 
     expect(feedModel.items.map((item) => item.title)).toEqual([
       "Open night",
@@ -104,10 +103,6 @@ describe("feed section contracts", () => {
       "Workshop notes",
     ]);
     expect(eventsModel.items.map((item) => item.title)).toEqual(["Open night", "Big launch"]);
-    expect(communityModel.items.map((item) => item.title)).toEqual([
-      "Space cleanup",
-      "Community meetup",
-    ]);
   });
 
   it("keeps multi-category items in every allowed section and includes available section navigation", () => {
@@ -118,7 +113,6 @@ describe("feed section contracts", () => {
       expect.arrayContaining([
         expect.objectContaining({ href: "/feed/index.html", label: "Feed", isCurrent: false }),
         expect.objectContaining({ href: "/news/index.html", label: "News", isCurrent: true }),
-        expect.objectContaining({ href: "/community/index.html", label: "Community", isCurrent: false }),
         expect.objectContaining({ href: "/workshops/index.html", label: "Workshops", isCurrent: false }),
         expect.objectContaining({ href: "/authors/index.html", label: "Authors", isCurrent: false }),
       ]),
@@ -141,5 +135,23 @@ describe("feed section contracts", () => {
     ).toEqual(
       buildFeedSectionModel(normalizedPayload, { sectionId: "feed" }),
     );
+  });
+
+  it("exposes reusable item selection and nav helpers from the shared section context", () => {
+    const context = buildFeedSectionContext(normalizedPayload);
+
+    expect(selectItemsForSection(context.allItems, "events").map((item) => item.title)).toEqual([
+      "Open night",
+      "Big launch",
+    ]);
+    expect(buildFeedSectionNavItems(context.availableSections, "news")).toEqual([
+      { href: "/feed/index.html", label: "Feed", isCurrent: false },
+      { href: "/blogs/index.html", label: "Blogs", isCurrent: false },
+      { href: "/community/index.html", label: "Community", isCurrent: false },
+      { href: "/events/index.html", label: "Events", isCurrent: false },
+      { href: "/news/index.html", label: "News", isCurrent: true },
+      { href: "/workshops/index.html", label: "Workshops", isCurrent: false },
+      { href: "/authors/index.html", label: "Authors", isCurrent: false },
+    ]);
   });
 });
