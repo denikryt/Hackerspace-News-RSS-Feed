@@ -1,5 +1,5 @@
 import { getAuthorsIndexHref } from "../authors.js";
-import { FEED_CONTENT_STREAM_ID, getContentStreamHref } from "../contentStreams.js";
+import { FEED_CONTENT_STREAM_ID, getFeedSectionHref } from "../feedSections.js";
 import { buildAuthorDirectory, withAuthorLinks } from "./authors.js";
 import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
@@ -49,7 +49,7 @@ export function buildSpaceDetailModel(
       nextPageHref: undefined,
       pageLinks: [],
       homeHref: "/index.html",
-      feedHref: getContentStreamHref(FEED_CONTENT_STREAM_ID, 1),
+      feedHref: getFeedSectionHref(FEED_CONTENT_STREAM_ID, 1),
       authorsIndexHref: getAuthorsIndexHref(),
     };
   }
@@ -88,7 +88,7 @@ export function buildSpaceDetailModel(
         : undefined,
     pageLinks: buildPageLinks(pagination.currentPage, pagination.totalPages, hrefForPage),
     homeHref: "/index.html",
-    feedHref: getContentStreamHref(FEED_CONTENT_STREAM_ID, 1),
+    feedHref: getFeedSectionHref(FEED_CONTENT_STREAM_ID, 1),
     authorsIndexHref: getAuthorsIndexHref(),
   };
 }

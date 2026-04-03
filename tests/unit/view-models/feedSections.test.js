@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  buildContentStreamContext,
-  buildContentStreamModel,
-  listContentStreams,
-} from "../../../src/viewModels/contentStreams.js";
+  buildFeedSectionContext,
+  buildFeedSectionModel,
+  listFeedSections,
+} from "../../../src/viewModels/feedSections.js";
 
 const normalizedPayload = {
   generatedAt: "2026-03-19T20:00:00.000Z",
@@ -32,19 +32,19 @@ const normalizedPayload = {
           id: "event-1",
           title: "Open night",
           displayDate: "2025-01-04T10:00:00.000Z",
-          normalizedCategories: ["event"],
+          normalizedCategories: ["events"],
         },
         {
           id: "multi-1",
           title: "Big launch",
           displayDate: "2025-01-03T10:00:00.000Z",
-          normalizedCategories: ["event", "news"],
+          normalizedCategories: ["events", "news"],
         },
         {
           id: "other-1",
           title: "Space cleanup",
           displayDate: "2025-01-02T10:00:00.000Z",
-          normalizedCategories: ["hackerspace"],
+          normalizedCategories: ["hackerspaces"],
         },
         {
           id: "community-1",
@@ -69,7 +69,7 @@ const normalizedPayload = {
           id: "blog-1",
           title: "Workshop notes",
           displayDate: "2025-01-01T10:00:00.000Z",
-          normalizedCategories: ["blog", "workshop"],
+          normalizedCategories: ["blogs", "workshops"],
         },
       ],
     },
@@ -77,29 +77,29 @@ const normalizedPayload = {
   failures: [],
 };
 
-describe("content stream contracts", () => {
-  it("lists feed plus only those category streams that are actually present in the data", () => {
-    const streams = listContentStreams(normalizedPayload);
+describe("feed section contracts", () => {
+  it("lists feed plus only those category sections that are actually present in the data", () => {
+    const sections = listFeedSections(normalizedPayload);
 
-    expect(streams[0]).toMatchObject({ id: "feed", href: "/feed/index.html", totalItems: 5 });
-    expect(streams.map((stream) => stream.id)).toEqual(
-      expect.arrayContaining(["community", "event", "news", "blog", "hackerspace", "workshop"]),
+    expect(sections[0]).toMatchObject({ id: "feed", href: "/feed/index.html", totalItems: 5 });
+    expect(sections.map((section) => section.id)).toEqual(
+      expect.arrayContaining(["community", "events", "news", "blogs", "hackerspaces", "workshops"]),
     );
-    expect(streams.find((stream) => stream.id === "community")).toMatchObject({
+    expect(sections.find((section) => section.id === "community")).toMatchObject({
       href: "/community/index.html",
       totalItems: 1,
     });
-    expect(streams.find((stream) => stream.id === "hackerspace")).toMatchObject({
+    expect(sections.find((section) => section.id === "hackerspaces")).toMatchObject({
       href: "/hackerspaces/index.html",
       totalItems: 1,
     });
   });
 
   it("builds category and feed models from normalized categories", () => {
-    const feedModel = buildContentStreamModel(normalizedPayload, { streamId: "feed" });
-    const eventModel = buildContentStreamModel(normalizedPayload, { streamId: "event" });
-    const hackerspaceModel = buildContentStreamModel(normalizedPayload, { streamId: "hackerspace" });
-    const communityModel = buildContentStreamModel(normalizedPayload, { streamId: "community" });
+    const feedModel = buildFeedSectionModel(normalizedPayload, { sectionId: "feed" });
+    const eventsModel = buildFeedSectionModel(normalizedPayload, { sectionId: "events" });
+    const hackerspacesModel = buildFeedSectionModel(normalizedPayload, { sectionId: "hackerspaces" });
+    const communityModel = buildFeedSectionModel(normalizedPayload, { sectionId: "community" });
 
     expect(feedModel.items.map((item) => item.title)).toEqual([
       "Open night",
@@ -108,13 +108,13 @@ describe("content stream contracts", () => {
       "Community meetup",
       "Workshop notes",
     ]);
-    expect(eventModel.items.map((item) => item.title)).toEqual(["Open night", "Big launch"]);
-    expect(hackerspaceModel.items.map((item) => item.title)).toEqual(["Space cleanup"]);
+    expect(eventsModel.items.map((item) => item.title)).toEqual(["Open night", "Big launch"]);
+    expect(hackerspacesModel.items.map((item) => item.title)).toEqual(["Space cleanup"]);
     expect(communityModel.items.map((item) => item.title)).toEqual(["Community meetup"]);
   });
 
-  it("keeps multi-category items in every allowed stream and includes available stream navigation", () => {
-    const newsModel = buildContentStreamModel(normalizedPayload, { streamId: "news" });
+  it("keeps multi-category items in every allowed section and includes available section navigation", () => {
+    const newsModel = buildFeedSectionModel(normalizedPayload, { sectionId: "news" });
 
     expect(newsModel.items.map((item) => item.title)).toEqual(["Big launch"]);
     expect(newsModel.streamNavItems).toEqual(
@@ -128,16 +128,16 @@ describe("content stream contracts", () => {
     );
   });
 
-  it("reuses a precomputed content-stream context without changing the model output", () => {
-    const context = buildContentStreamContext(normalizedPayload);
+  it("reuses a precomputed feed-section context without changing the model output", () => {
+    const context = buildFeedSectionContext(normalizedPayload);
 
-    expect(listContentStreams(normalizedPayload, { context })).toEqual(
-      listContentStreams(normalizedPayload),
+    expect(listFeedSections(normalizedPayload, { context })).toEqual(
+      listFeedSections(normalizedPayload),
     );
     expect(
-      buildContentStreamModel(normalizedPayload, { streamId: "feed", context }),
+      buildFeedSectionModel(normalizedPayload, { sectionId: "feed", context }),
     ).toEqual(
-      buildContentStreamModel(normalizedPayload, { streamId: "feed" }),
+      buildFeedSectionModel(normalizedPayload, { sectionId: "feed" }),
     );
   });
 });

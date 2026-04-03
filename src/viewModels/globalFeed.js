@@ -1,12 +1,12 @@
-import { FEED_CONTENT_STREAM_ID } from "../contentStreams.js";
-import { buildContentStreamModel } from "./contentStreams.js";
+import { FEED_CONTENT_STREAM_ID } from "../feedSections.js";
+import { buildFeedSectionModel } from "./feedSections.js";
 
 export function buildGlobalFeedModel(
   normalizedPayload,
   options = {},
 ) {
-  return buildContentStreamModel(normalizedPayload, {
+  return buildFeedSectionModel(normalizedPayload, {
     ...options,
-    streamId: FEED_CONTENT_STREAM_ID,
+    sectionId: FEED_CONTENT_STREAM_ID,
   });
 }

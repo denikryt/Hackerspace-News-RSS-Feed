@@ -71,7 +71,7 @@ describe("enrichFeedItem", () => {
       hasSummary: true,
       hasCategories: true,
       hasAuthor: true,
-      normalizedCategories: ["event", "news", "project"],
+      normalizedCategories: ["events", "news", "projects"],
       unmappedCategories: ["Unknown"],
       observed: {
         categoriesRaw: [" Event ", "Unknown", "Nieuws", "Projekte"],

@@ -18,7 +18,7 @@ describe("categoryDictionary", () => {
         "Workshop",
       ]),
     ).toMatchObject({
-      normalizedCategories: expect.arrayContaining(["event", "news", "project", "workshop"]),
+      normalizedCategories: expect.arrayContaining(["events", "news", "projects", "workshops"]),
       unmappedCategories: undefined,
     });
   });

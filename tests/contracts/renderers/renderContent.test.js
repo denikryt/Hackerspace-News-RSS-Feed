@@ -70,7 +70,7 @@ describe("content rendering", () => {
           ],
           contentHtml:
             '<p>Hello <a href="https://example.com/post">link</a></p><script>alert(1)</script>',
-          normalizedCategories: ["event", "news"],
+          normalizedCategories: ["events", "news"],
           attachments: [
             {
               url: "https://example.com/audio.mp3",
@@ -87,7 +87,7 @@ describe("content rendering", () => {
     expect(html).toContain("https://example.com/audio.mp3");
     expect(html).toContain('href="/authors/alice.html"');
     expect(html).toContain('href="/authors/bob.html"');
-    expect(html).toContain("event, news");
+    expect(html).toContain("events, news");
     expect(html).not.toContain("<script");
     expect(html).toContain("max-inline-size: min(100%, 42rem)");
     expect(html).toContain('img[src*="emoji"]');

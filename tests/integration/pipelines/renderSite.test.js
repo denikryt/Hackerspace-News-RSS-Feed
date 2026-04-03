@@ -281,24 +281,24 @@ describe("renderSite", () => {
     const logLines = logger.mock.calls.map(([line]) => line);
     expect(logLines).toContain("[render] loaded inputs: feeds=1 failures=0");
     expect(logLines).toContain("[render] built spaces index model");
-    expect(logLines).toContain("[render] built content streams: count=2");
-    expect(logLines).toContain("[render] rendering primary stream: pages=1");
-    expect(logLines).toContain("[render] primary stream progress: page 1/1");
-    expect(logLines).toContain("[render] rendered primary stream");
+    expect(logLines).toContain("[render] built feed sections: count=2");
+    expect(logLines).toContain("[render] rendering primary feed section: pages=1");
+    expect(logLines).toContain("[render] primary feed section progress: page 1/1");
+    expect(logLines).toContain("[render] rendered primary feed section");
     expect(logLines).toContain("[render] rendering author pages: authors=1");
     expect(logLines).toContain("[render] author pages progress: item 1/1");
     expect(logLines).toContain("[render] rendered author pages");
-    expect(logLines).toContain("[render] rendering secondary streams: count=1");
-    expect(logLines).toContain("[render] secondary stream other: pages=1");
-    expect(logLines).toContain("[render] secondary stream other progress: page 1/1");
-    expect(logLines).toContain("[render] rendered secondary streams");
+    expect(logLines).toContain("[render] rendering secondary feed sections: count=1");
+    expect(logLines).toContain("[render] secondary feed section other: pages=1");
+    expect(logLines).toContain("[render] secondary feed section other progress: page 1/1");
+    expect(logLines).toContain("[render] rendered secondary feed sections");
     expect(logLines).toContain("[render] rendering space pages: spaces=1");
     expect(logLines).toContain("[render] space pages progress: item 1/1");
     expect(logLines).toContain("[render] rendered space pages");
     expect(logLines).toContain("[render] building author directory");
     expect(logLines).toContain("[render] built author directory");
     expect(logLines).toContain("[render] built authors index model: authors=1");
-    expect(logLines).toContain("[render] built page models: spaces=1 authors=1 streams=2");
+    expect(logLines).toContain("[render] built page models: spaces=1 authors=1 sections=2");
     expect(logLines).toContain("[render] render complete: pages=7");
   });
 
@@ -402,7 +402,7 @@ describe("renderSite", () => {
               resolvedAuthor: "Alice",
               authorSource: "author",
               publishedAt: `2025-01-${String(index + 1).padStart(2, "0")}T10:00:00.000Z`,
-              normalizedCategories: ["event"],
+              normalizedCategories: ["events"],
             })),
           },
         ],
