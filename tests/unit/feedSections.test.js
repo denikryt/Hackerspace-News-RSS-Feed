@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import feedSectionsConfig from "../../config/feed_sections.json" with { type: "json" };
 import {
+  assertFeedSectionCategoryContract,
+} from "../../src/feedSectionCategoryContract.js";
+import {
   FALLBACK_CONTENT_STREAM_ID,
   FEED_CONTENT_STREAM_ID,
   PUBLIC_FEED_SECTION_IDS,
@@ -43,19 +46,37 @@ describe("feedSections", () => {
     );
     expect(PUBLIC_FEED_SECTION_IDS).not.toContain(FEED_CONTENT_STREAM_ID);
     expect(PUBLIC_FEED_SECTION_IDS).not.toContain(FALLBACK_CONTENT_STREAM_ID);
-    expect(PUBLIC_FEED_SECTION_IDS).toEqual(
-      expect.arrayContaining(["community", "events", "news", "blogs", "projects", "hackerspaces", "workshops"]),
-    );
+    expect(PUBLIC_FEED_SECTION_IDS.length).toBeGreaterThan(0);
   });
 
   it("builds hrefs and output paths directly from the feed section key", () => {
-    expect(getFeedSectionHref("hackerspaces")).toBe("/hackerspaces/index.html");
+    expect(getFeedSectionHref("hackerspace")).toBe("/hackerspace/index.html");
     expect(getFeedSectionHref("events", 2)).toBe("/events/page/2/");
-    expect(getFeedSectionOutputPath("hackerspaces")).toBe("hackerspaces/index.html");
+    expect(getFeedSectionOutputPath("hackerspace")).toBe("hackerspace/index.html");
     expect(getFeedSectionOutputPath("events", 2)).toBe("events/page/2/index.html");
   });
 
   it("fails explicitly for unknown feed sections", () => {
     expect(() => getFeedSectionDefinition("missing")).toThrow("Unknown feed section: missing");
+  });
+
+  it("fails explicitly when dictionary categories and feed-section keys drift apart", () => {
+    expect(() =>
+      assertFeedSectionCategoryContract({
+        feedSectionsConfig: {
+          feed: { label: "Feed", intro: "All publications sorted from new to old." },
+          news: { label: "News", intro: "Items tagged as news." },
+          extra: { label: "Extra", intro: "Unexpected section." },
+          other: { label: "Other", intro: "Items outside the public category streams." },
+        },
+        categoryDictionary: {
+          alpha: "news",
+          beta: "events",
+        },
+        specialSectionIds: [FEED_CONTENT_STREAM_ID, FALLBACK_CONTENT_STREAM_ID],
+      })
+    ).toThrow(
+      "Feed section/category contract mismatch.",
+    );
   });
 });

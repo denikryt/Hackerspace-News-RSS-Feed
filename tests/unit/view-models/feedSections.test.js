@@ -44,7 +44,7 @@ const normalizedPayload = {
           id: "other-1",
           title: "Space cleanup",
           displayDate: "2025-01-02T10:00:00.000Z",
-          normalizedCategories: ["hackerspaces"],
+          normalizedCategories: ["hackerspace"],
         },
         {
           id: "community-1",
@@ -83,14 +83,14 @@ describe("feed section contracts", () => {
 
     expect(sections[0]).toMatchObject({ id: "feed", href: "/feed/index.html", totalItems: 5 });
     expect(sections.map((section) => section.id)).toEqual(
-      expect.arrayContaining(["community", "events", "news", "blogs", "hackerspaces", "workshops"]),
+      expect.arrayContaining(["community", "events", "news", "blogs", "hackerspace", "workshops"]),
     );
     expect(sections.find((section) => section.id === "community")).toMatchObject({
       href: "/community/index.html",
       totalItems: 1,
     });
-    expect(sections.find((section) => section.id === "hackerspaces")).toMatchObject({
-      href: "/hackerspaces/index.html",
+    expect(sections.find((section) => section.id === "hackerspace")).toMatchObject({
+      href: "/hackerspace/index.html",
       totalItems: 1,
     });
   });
@@ -98,7 +98,7 @@ describe("feed section contracts", () => {
   it("builds category and feed models from normalized categories", () => {
     const feedModel = buildFeedSectionModel(normalizedPayload, { sectionId: "feed" });
     const eventsModel = buildFeedSectionModel(normalizedPayload, { sectionId: "events" });
-    const hackerspacesModel = buildFeedSectionModel(normalizedPayload, { sectionId: "hackerspaces" });
+    const hackerspacesModel = buildFeedSectionModel(normalizedPayload, { sectionId: "hackerspace" });
     const communityModel = buildFeedSectionModel(normalizedPayload, { sectionId: "community" });
 
     expect(feedModel.items.map((item) => item.title)).toEqual([
@@ -122,7 +122,7 @@ describe("feed section contracts", () => {
         expect.objectContaining({ href: "/feed/index.html", label: "Feed", isCurrent: false }),
         expect.objectContaining({ href: "/news/index.html", label: "News", isCurrent: true }),
         expect.objectContaining({ href: "/community/index.html", label: "Community", isCurrent: false }),
-        expect.objectContaining({ href: "/hackerspaces/index.html", label: "Hackerspaces", isCurrent: false }),
+        expect.objectContaining({ href: "/hackerspace/index.html", label: "Hackerspaces", isCurrent: false }),
         expect.objectContaining({ href: "/authors/index.html", label: "Authors", isCurrent: false }),
       ]),
     );

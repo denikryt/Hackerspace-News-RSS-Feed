@@ -52,11 +52,10 @@
   "ohne kategorie": "uncategorized",
   "sin categoría": "uncategorized",
 
-  "hackerspace": "hackerspace",
-  "hackerspaces": "hackerspace",
-  "hacklab": "hackerspace",
-  "hackspace": "hackerspace",
-  "makerspace": "hackerspace",
-
+  "hackerspace": "community",
+  "hackerspaces": "community",
+  "hacklab": "community",
+  "hackspace": "community",
+  "makerspace": "community",
   "community": "community"
 }

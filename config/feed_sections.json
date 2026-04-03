@@ -23,13 +23,13 @@
     "label": "Projects",
     "intro": "Items tagged as projects."
   },
-  "hackerspace": {
-    "label": "Hackerspaces",
-    "intro": "Items tagged as hackerspace updates."
-  },
   "workshops": {
     "label": "Workshops",
     "intro": "Items tagged as workshops."
+  },
+  "uncategorized": {
+    "label": "Uncategorized",
+    "intro": "Items tagged as uncategorized."
   },
   "other": {
     "label": "Other",
