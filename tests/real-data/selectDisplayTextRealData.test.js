@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { selectDisplayText } from "../src/contentDisplay.js";
+import { selectDisplayText } from "../../src/contentDisplay.js";
 
 const fixturePath = resolve(
   process.cwd(),

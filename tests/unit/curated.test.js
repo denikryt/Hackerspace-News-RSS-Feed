@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   parseCuratedPublicationsYaml,
   resolveCuratedPublications,
-} from "../src/curated.js";
+} from "../../src/curated.js";
 
 describe("curated yaml contract", () => {
   it("parses feedUrl and guid entries from yaml", () => {
