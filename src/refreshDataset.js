@@ -38,6 +38,12 @@ export async function refreshDataset({
   const curatedFeedFailures = curatedFeedResults.map((entry) => entry.failure).filter(Boolean);
   const curated = resolveCuratedPublications(curatedSelections, [...feeds, ...curatedFeeds]);
   const generatedAt = new Date().toISOString();
+  const curatedPayload = buildCuratedPayload({
+    curated,
+    curatedSelections,
+    curatedFeeds,
+    curatedFeedFailures,
+  });
 
   const result = {
     sourceRowsPayload: {
@@ -51,17 +57,6 @@ export async function refreshDataset({
       generatedAt,
       sourcePageUrl,
       feeds,
-      curated: {
-        items: curated.items,
-        unresolved: curated.unresolved,
-        summary: {
-          requested: curatedSelections.length,
-          resolved: curated.items.length,
-          unresolved: curated.unresolved.length,
-          extraFeedsParsed: curatedFeeds.length,
-          extraFeedFailures: curatedFeedFailures.length,
-        },
-      },
       failures,
       summary: {
         sourceRows: sourceRows.length,
@@ -71,6 +66,7 @@ export async function refreshDataset({
         failedFeeds: failures.length,
       },
     },
+    curatedPayload,
   };
 
   if (writeSnapshots) {
@@ -78,12 +74,31 @@ export async function refreshDataset({
       writeJson(paths.sourceRows, result.sourceRowsPayload),
       writeJson(paths.validations, result.validationsPayload),
       writeJson(paths.normalizedFeeds, result.normalizedPayload),
+      writeJson(paths.curatedNormalized, result.curatedPayload),
     ]);
   }
 
   logInfo(logger, `[refresh] refresh complete: feeds=${feeds.length} failures=${failures.length}`);
 
   return result;
+}
+
+/**
+ * Curated selections are stored outside the main feed snapshot so the regular
+ * normalized payload keeps only the wiki/discovery feed inventory.
+ */
+function buildCuratedPayload({ curated, curatedSelections, curatedFeeds, curatedFeedFailures }) {
+  return {
+    items: curated.items,
+    unresolved: curated.unresolved,
+    summary: {
+      requested: curatedSelections.length,
+      resolved: curated.items.length,
+      unresolved: curated.unresolved.length,
+      extraFeedsParsed: curatedFeeds.length,
+      extraFeedFailures: curatedFeedFailures.length,
+    },
+  };
 }
 
 async function processSourceRows(sourceRows, { fetchImpl, logger }) {

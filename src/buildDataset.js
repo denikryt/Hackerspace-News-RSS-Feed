@@ -11,6 +11,7 @@ export async function buildDataset({
     sourceRowsPayload: refreshResult.sourceRowsPayload,
     validationsPayload: refreshResult.validationsPayload,
     normalizedPayload: refreshResult.normalizedPayload,
+    curatedPayload: refreshResult.curatedPayload,
     now,
   });
 

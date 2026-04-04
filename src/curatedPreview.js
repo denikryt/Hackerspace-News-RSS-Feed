@@ -2,15 +2,11 @@ import { copyFile, mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { DIST_DIR, PATHS } from "./config.js";
-import {
-  buildCuratedSourceRows,
-  readCuratedPublications,
-  resolveCuratedPublications,
-} from "./curated.js";
 import { enrichFeed } from "./feedEnricher.js";
 import { normalizeFeed } from "./feedNormalizer.js";
 import { parseFeedBody } from "./feedParser.js";
 import { probeFeedUrl } from "./feedProbe.js";
+import { collectCuratedSnapshot } from "./curatedSnapshot.js";
 import { renderGlobalFeed } from "./renderers/renderGlobalFeed.js";
 import { writeText } from "./storage.js";
 import { filterNormalizedPayloadForDisplay } from "./visibleData.js";
@@ -23,50 +19,38 @@ const FAVICON_SOURCE_PATH = resolve(process.cwd(), "content/favicon.png");
  * in curated_publications.yml and renders only the curated page.
  */
 export async function renderCuratedPreview({
-  curatedPublicationsPath = PATHS.curatedPublications,
+  paths = PATHS,
+  curatedPublicationsPath = paths.curatedPublications,
   distDir = DIST_DIR,
   fetchImpl = fetch,
   now = Date.now(),
   writePages = false,
   logger = null,
-  readCuratedPublicationsImpl = readCuratedPublications,
-  processCuratedSourceRowsImpl = processCuratedSourceRows,
+  readCuratedPublicationsImpl,
+  processCuratedSourceRowsImpl,
 } = {}) {
-  logInfo(logger, "[preview] loading curated selections");
-  const curatedSelections = await readCuratedPublicationsImpl(curatedPublicationsPath);
-  const curatedSourceRows = buildCuratedSourceRows(curatedSelections, []);
-
-  logInfo(logger, "[preview] collecting curated feeds");
-  const curatedFeedResults = await processCuratedSourceRowsImpl(curatedSourceRows, {
+  const snapshot = await collectCuratedSnapshot({
+    paths: {
+      ...paths,
+      curatedPublications: curatedPublicationsPath,
+    },
     fetchImpl,
     logger,
+    readCuratedPublicationsImpl,
+    processCuratedSourceRowsImpl,
   });
-
-  logInfo(logger, "[preview] resolving curated publications");
-  const curatedFeeds = curatedFeedResults.map((entry) => entry.feed).filter(Boolean);
-  const curated = resolveCuratedPublications(curatedSelections, curatedFeeds);
   const normalizedPayload = {
     generatedAt: new Date(now).toISOString(),
     sourcePageUrl: null,
     feeds: [],
-    curated: {
-      items: curated.items,
-      unresolved: curated.unresolved,
-      summary: {
-        requested: curatedSelections.length,
-        resolved: curated.items.length,
-        unresolved: curated.unresolved.length,
-        extraFeedsParsed: curatedFeeds.length,
-        extraFeedFailures: curatedFeedResults.filter((entry) => entry.failure).length,
-      },
-    },
-    failures: curatedFeedResults.map((entry) => entry.failure).filter(Boolean),
+    curated: snapshot.curatedPayload,
+    failures: [],
     summary: {
-      sourceRows: curatedSourceRows.length,
-      validFeeds: curatedFeeds.length,
-      parsedFeeds: curatedFeeds.filter((feed) => feed.status === "parsed_ok").length,
-      emptyFeeds: curatedFeeds.filter((feed) => feed.status === "parsed_empty").length,
-      failedFeeds: curatedFeedResults.filter((entry) => entry.failure).length,
+      sourceRows: snapshot.curatedPayload.summary.requested,
+      validFeeds: snapshot.curatedPayload.summary.extraFeedsParsed,
+      parsedFeeds: snapshot.curatedPayload.summary.extraFeedsParsed,
+      emptyFeeds: 0,
+      failedFeeds: snapshot.curatedPayload.summary.extraFeedFailures,
     },
   };
   const displayPayload = filterNormalizedPayloadForDisplay(normalizedPayload, { now });
@@ -90,8 +74,8 @@ export async function renderCuratedPreview({
   return {
     normalizedPayload,
     pages,
-    resolvedCount: curated.items.length,
-    unresolvedCount: curated.unresolved.length,
+    resolvedCount: snapshot.resolvedCount,
+    unresolvedCount: snapshot.unresolvedCount,
     outputDir: distDir,
   };
 }

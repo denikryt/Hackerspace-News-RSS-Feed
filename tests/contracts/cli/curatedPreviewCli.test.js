@@ -14,7 +14,7 @@ describe("curated preview CLI", () => {
     });
 
     expect(previewImpl).not.toHaveBeenCalled();
-    expect(logger).toHaveBeenCalledWith("Usage: npm run preview:curated");
+    expect(logger).toHaveBeenCalledWith("Usage: npm run curated:preview");
   });
 
   it("runs curated preview and logs stage and summary lines", async () => {

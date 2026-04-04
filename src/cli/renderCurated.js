@@ -1,30 +1,32 @@
-import { renderCuratedPreview } from "../curatedPreview.js";
+import { renderCurated } from "../renderCurated.js";
 
-const HELP_LINE = "Usage: npm run curated:preview";
+const HELP_LINE = "Usage: npm run curated:render";
 
-export async function runCuratedPreviewCli({
+/**
+ * This CLI is the local-data counterpart to preview:curated: it never fetches
+ * feeds and only rebuilds the curated page from stored snapshots.
+ */
+export async function runRenderCuratedCli({
   argv = process.argv.slice(2),
   logger = console.log,
-  previewImpl = renderCuratedPreview,
+  renderImpl = renderCurated,
 } = {}) {
   if (argv.includes("--help") || argv.includes("-h")) {
     logger(HELP_LINE);
     return;
   }
 
-  logger("[preview] starting curated preview");
-  const result = await previewImpl({
+  logger("[render] starting curated-only render");
+  const result = await renderImpl({
     logger,
     writePages: true,
   });
 
-  logger(`Resolved curated publications ${result.resolvedCount}`);
-  logger(`Unresolved curated publications ${result.unresolvedCount}`);
   logger(`Rendered ${Object.keys(result.pages).length} pages into ${result.outputDir}`);
 }
 
 async function main() {
-  await runCuratedPreviewCli();
+  await runRenderCuratedCli();
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

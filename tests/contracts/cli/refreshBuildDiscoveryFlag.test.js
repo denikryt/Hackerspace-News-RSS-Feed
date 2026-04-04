@@ -18,6 +18,7 @@ describe("refresh/build discovery-valid flag", () => {
         sourceRows: "/tmp/data/source_urls.json",
         validations: "/tmp/data/feed_validation.json",
         normalizedFeeds: "/tmp/data/feeds_normalized.json",
+        curatedNormalized: "/tmp/data/curated_publications_normalized.json",
         discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
       },
     });
@@ -48,6 +49,7 @@ describe("refresh/build discovery-valid flag", () => {
       sourceRows: "/tmp/data/source_urls.json",
       validations: "/tmp/data/feed_validation.json",
       normalizedFeeds: "/tmp/data/feeds_normalized.json",
+      curatedNormalized: "/tmp/data/curated_publications_normalized.json",
       discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
     };
 
@@ -77,6 +79,7 @@ describe("refresh/build discovery-valid flag", () => {
       sourceRowsPayload: {},
       validationsPayload: {},
       normalizedPayload: {},
+      curatedPayload: {},
     });
     const renderImpl = vi.fn().mockResolvedValue({ pages: { "index.html": "<html></html>" } });
     const readJsonImpl = vi.fn().mockResolvedValue({
@@ -95,6 +98,7 @@ describe("refresh/build discovery-valid flag", () => {
       sourceRows: "/tmp/data/source_urls.json",
       validations: "/tmp/data/feed_validation.json",
       normalizedFeeds: "/tmp/data/feeds_normalized.json",
+      curatedNormalized: "/tmp/data/curated_publications_normalized.json",
       discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
     };
 
@@ -119,6 +123,10 @@ describe("refresh/build discovery-valid flag", () => {
         }),
       ],
     });
-    expect(renderImpl).toHaveBeenCalled();
+    expect(renderImpl).toHaveBeenCalledWith(
+      expect.objectContaining({
+        curatedPayload: {},
+      }),
+    );
   });
 });

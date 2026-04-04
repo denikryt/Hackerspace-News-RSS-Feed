@@ -44,6 +44,7 @@ export async function renderSite({
   sourceRowsPayload,
   validationsPayload,
   normalizedPayload,
+  curatedPayload,
   now = Date.now(),
   writePages = false,
   logger = null,
@@ -53,6 +54,7 @@ export async function renderSite({
     sourceRowsPayload,
     validationsPayload,
     normalizedPayload,
+    curatedPayload,
   });
 
   const displayPayload = filterNormalizedPayloadForDisplay(data.normalizedPayload, { now });
@@ -313,30 +315,71 @@ export async function renderSite({
     sourceRowsPayload: data.sourceRowsPayload,
     validationsPayload: data.validationsPayload,
     normalizedPayload: data.normalizedPayload,
+    curatedPayload: data.curatedPayload,
     pages,
   };
 }
 
-async function loadRenderInputs({ paths, sourceRowsPayload, validationsPayload, normalizedPayload }) {
+async function loadRenderInputs({
+  paths,
+  sourceRowsPayload,
+  validationsPayload,
+  normalizedPayload,
+  curatedPayload,
+}) {
   if (sourceRowsPayload && validationsPayload && normalizedPayload) {
     return {
       sourceRowsPayload,
       validationsPayload,
-      normalizedPayload,
+      normalizedPayload: mergeCuratedPayload(normalizedPayload, curatedPayload),
+      curatedPayload,
     };
   }
 
-  const [loadedSourceRowsPayload, loadedValidationsPayload, loadedNormalizedPayload] = await Promise.all([
+  const [loadedSourceRowsPayload, loadedValidationsPayload, loadedNormalizedPayload, loadedCuratedPayload] = await Promise.all([
     sourceRowsPayload ?? readJson(paths.sourceRows),
     validationsPayload ?? readJson(paths.validations),
     normalizedPayload ?? readJson(paths.normalizedFeeds),
+    curatedPayload ?? readOptionalCuratedPayload(paths),
   ]);
 
   return {
     sourceRowsPayload: loadedSourceRowsPayload,
     validationsPayload: loadedValidationsPayload,
-    normalizedPayload: loadedNormalizedPayload,
+    normalizedPayload: mergeCuratedPayload(loadedNormalizedPayload, loadedCuratedPayload),
+    curatedPayload: loadedCuratedPayload,
   };
+}
+
+/**
+ * Render keeps the existing page/view-model contract by reattaching the
+ * curated snapshot after reading it from its separate artifact.
+ */
+function mergeCuratedPayload(normalizedPayload, curatedPayload) {
+  return {
+    ...normalizedPayload,
+    curated: curatedPayload ?? normalizedPayload.curated,
+  };
+}
+
+/**
+ * Older snapshots may still carry curated data inline, so render falls back to
+ * that shape when the new dedicated curated artifact is absent.
+ */
+async function readOptionalCuratedPayload(paths) {
+  if (!paths?.curatedNormalized) {
+    return undefined;
+  }
+
+  try {
+    return await readJson(paths.curatedNormalized);
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+      return undefined;
+    }
+
+    throw error;
+  }
 }
 
 function logInfo(logger, message) {

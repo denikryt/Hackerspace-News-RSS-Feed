@@ -1,30 +1,33 @@
-import { renderCuratedPreview } from "../curatedPreview.js";
+import { refreshCurated } from "../refreshCurated.js";
 
-const HELP_LINE = "Usage: npm run curated:preview";
+const HELP_LINE = "Usage: npm run curated:refresh";
 
-export async function runCuratedPreviewCli({
+/**
+ * This command refreshes only the curated snapshot from the manual YAML list.
+ */
+export async function runRefreshCuratedCli({
   argv = process.argv.slice(2),
   logger = console.log,
-  previewImpl = renderCuratedPreview,
+  refreshImpl = refreshCurated,
 } = {}) {
   if (argv.includes("--help") || argv.includes("-h")) {
     logger(HELP_LINE);
     return;
   }
 
-  logger("[preview] starting curated preview");
-  const result = await previewImpl({
+  logger("[refresh] starting curated-only refresh");
+  const result = await refreshImpl({
     logger,
-    writePages: true,
+    writeSnapshot: true,
   });
 
   logger(`Resolved curated publications ${result.resolvedCount}`);
   logger(`Unresolved curated publications ${result.unresolvedCount}`);
-  logger(`Rendered ${Object.keys(result.pages).length} pages into ${result.outputDir}`);
+  logger(`Wrote ${result.outputPath}`);
 }
 
 async function main() {
-  await runCuratedPreviewCli();
+  await runRefreshCuratedCli();
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

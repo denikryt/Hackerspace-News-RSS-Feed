@@ -24,6 +24,7 @@ describe("render/build timing logs", () => {
 
     expect(stdout).toContain("Refresh completed. Reporting snapshot artifacts.");
     expect(stdout).toContain(`Wrote ${join(rootDir, "data/source_urls.json")}`);
+    expect(stdout).toContain(`Wrote ${join(rootDir, "data/curated_publications_normalized.json")}`);
   });
 
   it("logs render duration after writing pages", () => {
@@ -51,6 +52,7 @@ describe("render/build timing logs", () => {
 
     expect(stdout).toContain("Refresh completed. Starting site render.");
     expect(stdout).toContain(`Wrote ${join(rootDir, "data/source_urls.json")}`);
+    expect(stdout).toContain(`Wrote ${join(rootDir, "data/curated_publications_normalized.json")}`);
     expect(stdout).toContain(`Rendered 2 pages into ${join(rootDir, "dist")}`);
     expect(stdout).not.toContain(`Wrote ${join(rootDir, "dist")}/index.html`);
     expect(stdout).toMatch(/Rendered 2 pages in \d+ms/);
@@ -76,6 +78,7 @@ export const PATHS = {
   sourceRows: ${JSON.stringify(join(rootDir, "data/source_urls.json"))},
   validations: ${JSON.stringify(join(rootDir, "data/feed_validation.json"))},
   normalizedFeeds: ${JSON.stringify(join(rootDir, "data/feeds_normalized.json"))},
+  curatedNormalized: ${JSON.stringify(join(rootDir, "data/curated_publications_normalized.json"))},
 };\n`,
     "utf8",
   );
@@ -103,6 +106,7 @@ export const PATHS = {
     sourceRowsPayload: {},
     validationsPayload: {},
     normalizedPayload: {},
+    curatedPayload: {},
   };
 }\n`,
     "utf8",

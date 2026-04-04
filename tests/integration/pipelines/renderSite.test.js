@@ -61,6 +61,7 @@ describe("renderSite", () => {
       sourceRows: resolve(dataDir, "source_urls.json"),
       validations: resolve(dataDir, "feed_validation.json"),
       normalizedFeeds: resolve(dataDir, "feeds_normalized.json"),
+      curatedNormalized: resolve(dataDir, "curated_publications_normalized.json"),
     };
 
     const sourceRowsPayload = {
@@ -137,24 +138,31 @@ describe("renderSite", () => {
           ],
         },
       ],
-      curated: {
-        items: [
-          {
-            id: "curated-1",
-            guid: "https://blog.nachitima.com/interview-with-sasha-hackerspace-stories",
-            title: "Interview with Sasha",
-            link: "https://blog.nachitima.com/interview-with-sasha-hackerspace-stories",
-            resolvedAuthor: "Nachitima",
-            authorSource: "author",
-            publishedAt: "2025-01-03T10:00:00.000Z",
-            summaryText: "Curated summary",
-            feedUrl: "https://blog.nachitima.com/feed/",
-            siteUrl: "https://blog.nachitima.com",
-          },
-        ],
-        unresolved: [],
-      },
       failures: [],
+    };
+    const curatedPayload = {
+      items: [
+        {
+          id: "curated-1",
+          guid: "https://blog.nachitima.com/interview-with-sasha-hackerspace-stories",
+          title: "Interview with Sasha",
+          link: "https://blog.nachitima.com/interview-with-sasha-hackerspace-stories",
+          resolvedAuthor: "Nachitima",
+          authorSource: "author",
+          publishedAt: "2025-01-03T10:00:00.000Z",
+          summaryText: "Curated summary",
+          feedUrl: "https://blog.nachitima.com/feed/",
+          siteUrl: "https://blog.nachitima.com",
+        },
+      ],
+      unresolved: [],
+      summary: {
+        requested: 1,
+        resolved: 1,
+        unresolved: 0,
+        extraFeedsParsed: 1,
+        extraFeedFailures: 0,
+      },
     };
 
     await mkdir(resolve(distDir, "feed"), { recursive: true });
@@ -163,6 +171,7 @@ describe("renderSite", () => {
       writeJson(paths.sourceRows, sourceRowsPayload),
       writeJson(paths.validations, validationsPayload),
       writeJson(paths.normalizedFeeds, normalizedPayload),
+      writeJson(paths.curatedNormalized, curatedPayload),
     ]);
 
     const firstRun = await renderSite({ paths, distDir, now: Date.parse("2026-03-19T12:00:00.000Z"), writePages: true });
@@ -241,6 +250,7 @@ describe("renderSite", () => {
       sourceRows: resolve(dataDir, "source_urls.json"),
       validations: resolve(dataDir, "feed_validation.json"),
       normalizedFeeds: resolve(dataDir, "feeds_normalized.json"),
+      curatedNormalized: resolve(dataDir, "curated_publications_normalized.json"),
     };
 
     const sourceRowsPayload = {
@@ -274,6 +284,7 @@ describe("renderSite", () => {
       writeJson(paths.sourceRows, sourceRowsPayload),
       writeJson(paths.validations, validationsPayload),
       writeJson(paths.normalizedFeeds, normalizedPayload),
+      writeJson(paths.curatedNormalized, { items: [], unresolved: [], summary: { requested: 0, resolved: 0, unresolved: 0, extraFeedsParsed: 0, extraFeedFailures: 0 } }),
       writeFile(resolve(distDir, "feed/index.html"), "<html>stale</html>", "utf8"),
       writeFile(resolve(distDir, "obsolete.txt"), "stale", "utf8"),
       writeFile(resolve(distDir, "stale/nested/old.html"), "<html>old</html>", "utf8"),
