@@ -1,12 +1,22 @@
 import { analyzeWikiDiscoveryComparison } from "../wikiDiscoveryComparison.js";
 
-async function main() {
-  const result = await analyzeWikiDiscoveryComparison({ writeArtifact: true });
+export async function runAnalyzeWikiDiscoveryComparisonCli({
+  logger = console.log,
+  analyzeImpl = analyzeWikiDiscoveryComparison,
+} = {}) {
+  logger("[analyze] starting wiki/discovery feed URL comparison");
+  logger("[analyze] building wiki/discovery feed URL comparison");
+  const result = await analyzeImpl({ writeArtifact: true });
 
-  console.log(`Compared ${result.summary.wikiUrls} wiki feed URLs`);
-  console.log(`Matched ${result.summary.matched}`);
-  console.log(`Unmatched ${result.summary.unmatched}`);
-  console.log("Wrote analysis/wiki_discovery_feed_url_comparison.json");
+  logger("[analyze] writing wiki/discovery feed URL comparison artifact");
+  logger(`Compared ${result.summary.wikiUrls} wiki feed URLs`);
+  logger(`Matched ${result.summary.matched}`);
+  logger(`Unmatched ${result.summary.unmatched}`);
+  logger("Wrote analysis/wiki_discovery_feed_url_comparison.json");
+}
+
+async function main() {
+  await runAnalyzeWikiDiscoveryComparisonCli();
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
