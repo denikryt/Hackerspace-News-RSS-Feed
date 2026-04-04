@@ -13,6 +13,7 @@ describe("feed page headers", () => {
       currentPageLabel: "Page 1 of 1",
       streamNavItems: [
         { href: "/feed/index.html", label: "Feed", isCurrent: false },
+        { href: "/curated/index.html", label: "Curated", isCurrent: false },
         { href: "/authors/index.html", label: "Authors", isCurrent: false },
         { href: "/events/index.html", label: "Events", isCurrent: true },
         { href: "/other/index.html", label: "Other", isCurrent: false },
@@ -25,6 +26,7 @@ describe("feed page headers", () => {
     expect(html).toContain('class="about-link-muted" href="/about/index.html"');
     expect(html).toContain('href="/index.html"');
     expect(html).toContain('href="/feed/index.html"');
+    expect(html).toContain('href="/curated/index.html"');
     expect(html).toContain('href="/authors/index.html"');
     expect(html).toContain('href="/events/index.html"');
   });
@@ -111,6 +113,7 @@ describe("feed page headers", () => {
     expect(html).toContain(">Website<");
     expect(html).toContain('href="/index.html"');
     expect(html).toContain('href="/feed/index.html"');
+    expect(html).toContain('href="/curated/index.html"');
     expect(html).toContain('href="/authors/index.html"');
   });
 });

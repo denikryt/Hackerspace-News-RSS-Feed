@@ -118,6 +118,11 @@ describe("country feed contracts", () => {
       isCurrent: true,
     });
     expect(model.streamNavItems.some((item) => item.href.includes("/feed/countries/"))).toBe(false);
+    expect(model.streamNavItems).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ href: "/curated/index.html", label: "Curated", isCurrent: false }),
+      ]),
+    );
     expect(model.streamNavItems.at(-1)).toEqual({
       href: "/authors/index.html",
       label: "Authors",

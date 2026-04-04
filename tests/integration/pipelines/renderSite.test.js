@@ -137,6 +137,23 @@ describe("renderSite", () => {
           ],
         },
       ],
+      curated: {
+        items: [
+          {
+            id: "curated-1",
+            guid: "https://blog.nachitima.com/interview-with-sasha-hackerspace-stories",
+            title: "Interview with Sasha",
+            link: "https://blog.nachitima.com/interview-with-sasha-hackerspace-stories",
+            resolvedAuthor: "Nachitima",
+            authorSource: "author",
+            publishedAt: "2025-01-03T10:00:00.000Z",
+            summaryText: "Curated summary",
+            feedUrl: "https://blog.nachitima.com/feed/",
+            siteUrl: "https://blog.nachitima.com",
+          },
+        ],
+        unresolved: [],
+      },
       failures: [],
     };
 
@@ -154,6 +171,7 @@ describe("renderSite", () => {
     expect(Object.keys(firstRun.pages)).toEqual([
       "index.html",
       "about/index.html",
+      "curated/index.html",
       "feed/index.html",
       "feed/countries/france/index.html",
       "feed/countries/germany/index.html",
@@ -161,15 +179,18 @@ describe("renderSite", () => {
       "events/countries/germany/index.html",
       "authors/index.html",
       "authors/alice.html",
+      "authors/nachitima.html",
       "events/index.html",
+      "other/index.html",
       "spaces/betamachine.html",
       "spaces/c3d2.html",
     ]);
     expect(secondRun.pages).toEqual(firstRun.pages);
 
-    const [indexHtml, aboutHtml, feedHtml, authorsHtml, detailHtml] = await Promise.all([
+    const [indexHtml, aboutHtml, curatedHtml, feedHtml, authorsHtml, detailHtml] = await Promise.all([
       readFile(resolve(distDir, "index.html"), "utf8"),
       readFile(resolve(distDir, "about/index.html"), "utf8"),
+      readFile(resolve(distDir, "curated/index.html"), "utf8"),
       readFile(resolve(distDir, "feed/index.html"), "utf8"),
       readFile(resolve(distDir, "authors/index.html"), "utf8"),
       readFile(resolve(distDir, "spaces/betamachine.html"), "utf8"),
@@ -183,10 +204,13 @@ describe("renderSite", () => {
     expect(indexHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
     expect(aboutHtml).toContain("About");
     expect(aboutHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
+    expect(curatedHtml).toContain("Curated");
+    expect(curatedHtml).toContain("Interview with Sasha");
     expect(feedHtml).toContain("Feed");
     expect(feedHtml).toContain("All countries");
     expect(feedHtml).toContain("Germany");
     expect(feedHtml).toContain("feed-country-select");
+    expect(feedHtml).toContain("Interview with Sasha");
     expect(feedHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
     expect(franceFeedHtml).toContain("Feed · France");
     expect(franceFeedHtml).toContain('value="/feed/countries/france/index.html" selected');
@@ -198,6 +222,7 @@ describe("renderSite", () => {
     expect(franceEventsHtml).toContain("Events · France");
     expect(franceEventsHtml).toContain('value="/events/countries/france/index.html" selected');
     expect(authorsHtml).toContain("Authors");
+    expect(authorsHtml).toContain("Nachitima");
     expect(authorsHtml).toContain("Search authors");
     expect(authorsHtml).toContain("All hackerspaces");
     expect(authorsHtml).toContain("Sort authors");
