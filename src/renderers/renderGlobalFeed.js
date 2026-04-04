@@ -31,10 +31,12 @@ export function renderGlobalFeed(model) {
   const streamNavItems = model.streamNavItems || [
     { href: "/feed/index.html", label: "Feed", isCurrent: true },
   ];
+  const controls = renderCountryControls(model);
 
   return renderLayout({
     title: pageTitle,
     body: `
+      <style>.feed-controls-shell{margin:0 auto 18px;}.feed-controls{display:grid;grid-template-columns:minmax(0,1fr);column-gap:18px;row-gap:10px;align-items:end;}.feed-control{display:block;min-inline-size:0;}.feed-control .control-select{max-inline-size:100%;}.feed-control-country .control-select{inline-size:min(100%, 16rem);}@media (max-width: 720px){.feed-control-country .control-select{inline-size:100%;}}</style>
       ${renderPageHeader({
         title: pageTitle,
         headerClass: "page-header--narrow page-header--compact",
@@ -45,6 +47,7 @@ export function renderGlobalFeed(model) {
         ],
         navClass: "page-nav--narrow",
       })}
+      ${controls}
       <section class="feed-list-shell page-shell-narrow timeline-shell-narrow">
         <p class="muted">${escapeHtml(buildPageSummaryLabel(model))}</p>
         <div class="item-list">${items || `<p class="muted">No feed items available.</p>`}</div>
@@ -96,6 +99,42 @@ function renderGlobalFeedMeta(item) {
   }
 
   return lines.join("");
+}
+
+function renderCountryControls(model) {
+  if (!model.countryOptions?.length) {
+    return "";
+  }
+
+  const options = model.countryOptions
+    .map(
+      (option) =>
+        `<option value="${escapeHtml(option.href)}"${option.isSelected ? " selected" : ""}>${escapeHtml(option.label)}</option>`,
+    )
+    .join("");
+
+  return `<section class="feed-controls-shell page-shell-narrow">
+    <div class="feed-controls feed-controls-country">
+      <label class="feed-control feed-control-country">
+        <select
+          id="feed-country-select"
+          class="control-select control-select-country"
+          aria-label="Choose feed country">
+          ${options}
+        </select>
+      </label>
+    </div>
+  </section>
+  <script>
+    const feedCountrySelect = document.getElementById("feed-country-select");
+    if (feedCountrySelect) {
+      feedCountrySelect.addEventListener("change", () => {
+        if (feedCountrySelect.value) {
+          window.location.href = feedCountrySelect.value;
+        }
+      });
+    }
+  </script>`;
 }
 
 function renderPagination(model) {

@@ -31,7 +31,7 @@ export function renderAuthorsIndex(model) {
         </div>
         ${
           author.hackerspaces?.length
-            ? `<p class="space-card-links">${author.hackerspaces
+            ? `<p class="space-card-links author-card-hackerspaces">${author.hackerspaces
                 .map(
                   (hackerspace) =>
                     `<a class="author-hackerspace-link" href="${escapeHtml(hackerspace.href)}">${escapeHtml(hackerspace.name)}</a>`,
@@ -46,7 +46,7 @@ export function renderAuthorsIndex(model) {
   return renderLayout({
     title: "Authors",
     body: `
-      <style>.author-card-title{color:var(--text);display:inline-block;max-inline-size:100%;overflow-wrap:anywhere;word-break:break-word;}.space-card-links .author-hackerspace-link{color:#111;}.authors-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:18px;row-gap:10px;align-items:end;margin-bottom:18px;}.authors-control{display:block;min-inline-size:0;}.authors-control-search{grid-column:1/-1;}.authors-control-hackerspace{grid-column:1;}.authors-control-sort{grid-column:2;}.authors-control .control-input,.authors-control .control-select{inline-size:100%;max-inline-size:100%;}.authors-control-sort .control-select{margin-inline-start:auto;}@media (min-width: 761px){.authors-controls{grid-template-columns:minmax(0,1.15fr) minmax(0,0.95fr) minmax(0,0.9fr);}.authors-control-search{grid-column:auto;}.authors-control-hackerspace{grid-column:auto;}.authors-control-sort{grid-column:auto;}}</style>
+      <style>.author-card-title{color:var(--text);display:inline-block;max-inline-size:100%;overflow-wrap:anywhere;word-break:break-word;}.space-card-links .author-hackerspace-link{color:#111;}.author-card-hackerspaces{margin-top:auto;padding-top:1rem;}.authors-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:18px;row-gap:10px;align-items:end;margin-bottom:18px;}.authors-control{display:block;min-inline-size:0;}.authors-control-search{grid-column:1/-1;}.authors-control-hackerspace{grid-column:1;}.authors-control-sort{grid-column:2;}.authors-control .control-input,.authors-control .control-select{inline-size:100%;max-inline-size:100%;}.authors-control-sort .control-select{margin-inline-start:auto;}@media (min-width: 761px){.authors-controls{grid-template-columns:minmax(0,1.15fr) minmax(0,0.95fr) minmax(0,0.9fr);}.authors-control-search{grid-column:auto;}.authors-control-hackerspace{grid-column:auto;}.authors-control-sort{grid-column:auto;}}</style>
       ${renderPageHeader({
         title: "Authors",
         titleClass: "home-hero-title",

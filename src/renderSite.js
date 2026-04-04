@@ -2,7 +2,8 @@ import { copyFile, mkdir, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { DIST_DIR, PATHS } from "./config.js";
-import { FEED_CONTENT_STREAM_ID, getContentStreamOutputPath } from "./contentStreams.js";
+import { getCountryFeedOutputPath } from "./countryFeeds.js";
+import { FEED_CONTENT_STREAM_ID, getFeedSectionOutputPath } from "./feedSections.js";
 import { GLOBAL_FEED_PAGE_SIZE } from "./pagination.js";
 import { getAuthorDetailOutputPath } from "./authors.js";
 import { renderAuthorDetail } from "./renderers/renderAuthorDetail.js";
@@ -17,15 +18,21 @@ import { slugify } from "./utils/slugify.js";
 import { filterNormalizedPayloadForDisplay } from "./visibleData.js";
 import { buildCuratedIndexModel } from "./viewModels/curated.js";
 import {
+  buildCountryFeedContext,
+  buildCountryFeedModel,
+  listCountryFeeds,
+  listCountryFeedOptions,
+} from "./viewModels/countryFeeds.js";
+import {
   buildAuthorDetailModel,
   buildAuthorDirectory,
   buildAuthorsIndexModel,
 } from "./viewModels/authors.js";
 import {
-  buildContentStreamContext,
-  buildContentStreamModel,
-  listContentStreams,
-} from "./viewModels/contentStreams.js";
+  buildFeedSectionContext,
+  buildFeedSectionModel,
+  listFeedSections,
+} from "./viewModels/feedSections.js";
 import { buildSpaceDetailModel } from "./viewModels/spaceDetail.js";
 import { buildSpacesIndexModel } from "./viewModels/spacesIndex.js";
 
@@ -69,16 +76,16 @@ export async function renderSite({
   if ((displayPayload.curated?.items || []).length > 0) {
     pages["curated/index.html"] = renderGlobalFeed(buildCuratedIndexModel(displayPayload));
   }
+  const feedSectionContext = buildFeedSectionContext(displayPayload);
+  const feedSections = listFeedSections(displayPayload, { context: feedSectionContext });
+  const countryFeedContext = buildCountryFeedContext(displayPayload, { feedSectionContext });
+  logInfo(logger, `[render] built feed sections: count=${feedSections.length}`);
+  const primarySection = feedSections.find((section) => section.id === FEED_CONTENT_STREAM_ID);
+  const secondarySections = feedSections.filter((section) => section.id !== FEED_CONTENT_STREAM_ID);
 
-  const contentStreamContext = buildContentStreamContext(displayPayload);
-  const contentStreams = listContentStreams(displayPayload, { context: contentStreamContext });
-  logInfo(logger, `[render] built content streams: count=${contentStreams.length}`);
-  const primaryStream = contentStreams.find((stream) => stream.id === FEED_CONTENT_STREAM_ID);
-  const secondaryStreams = contentStreams.filter((stream) => stream.id !== FEED_CONTENT_STREAM_ID);
-
-  if (primaryStream) {
-    const totalPages = Math.max(1, Math.ceil(primaryStream.totalItems / GLOBAL_FEED_PAGE_SIZE));
-    logInfo(logger, `[render] rendering primary stream: pages=${totalPages}`);
+  if (primarySection) {
+    const totalPages = Math.max(1, Math.ceil(primarySection.totalItems / GLOBAL_FEED_PAGE_SIZE));
+    logInfo(logger, `[render] rendering primary feed section: pages=${totalPages}`);
     let lastPrimaryProgressAt = Date.now();
 
     for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
@@ -93,20 +100,74 @@ export async function renderSite({
           lastCheckpointAt: lastPrimaryProgressAt,
           checkpointAt: Date.now(),
         });
-        logInfo(logger, progressLog.message);
+        logInfo(
+          logger,
+          progressLog.message.replace(
+            "[render] primary stream progress",
+            "[render] primary feed section progress",
+          ),
+        );
         lastPrimaryProgressAt = progressLog.checkpointAt;
       }
 
-      const streamModel = buildContentStreamModel(displayPayload, {
-        streamId: primaryStream.id,
+      const streamModel = buildFeedSectionModel(displayPayload, {
+        sectionId: primarySection.id,
         currentPage,
-        context: contentStreamContext,
+        context: feedSectionContext,
       });
-      pages[getContentStreamOutputPath(primaryStream.id, currentPage)] = renderGlobalFeed(streamModel);
+      pages[getFeedSectionOutputPath(primarySection.id, currentPage)] = renderGlobalFeed({
+        ...streamModel,
+        countryOptions: listCountryFeedOptions(displayPayload, primarySection.id, null, {
+          context: countryFeedContext,
+        }),
+      });
     }
 
-    logInfo(logger, "[render] rendered primary stream");
+    logInfo(logger, "[render] rendered primary feed section");
   }
+  const streamCountryFeeds = feedSections.flatMap((stream) =>
+    listCountryFeeds(displayPayload, {
+      context: countryFeedContext,
+      sectionId: stream.id,
+    }).map((countryFeed) => ({
+      ...countryFeed,
+      sectionId: stream.id,
+    })),
+  );
+  logInfo(logger, `[render] rendering country feeds: count=${streamCountryFeeds.length}`);
+  let lastCountryProgressAt = Date.now();
+
+  for (const [countryIndex, countryFeed] of streamCountryFeeds.entries()) {
+    const currentCountry = countryIndex + 1;
+    if (
+      currentCountry === 1 ||
+      currentCountry === streamCountryFeeds.length ||
+      currentCountry % 100 === 0
+    ) {
+      const progressLog = formatLoopProgressLog({
+        label: "country feeds",
+        currentIndex: currentCountry,
+        totalItems: streamCountryFeeds.length,
+        lastCheckpointAt: lastCountryProgressAt,
+        checkpointAt: Date.now(),
+      });
+      logInfo(logger, progressLog.message);
+      lastCountryProgressAt = progressLog.checkpointAt;
+    }
+
+    const streamCountryItems = countryFeedContext.itemsBySectionIdByCountry.get(countryFeed.sectionId);
+    const countryItems = streamCountryItems?.get(countryFeed.country) || [];
+    const totalPages = Math.max(1, Math.ceil(countryItems.length / GLOBAL_FEED_PAGE_SIZE));
+
+    for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
+      const countryModel = buildCountryFeedModel(displayPayload, countryFeed.sectionId, countryFeed.slug, {
+        currentPage,
+        context: countryFeedContext,
+      });
+      pages[getCountryFeedOutputPath(countryFeed.sectionId, countryFeed.country, currentPage)] = renderGlobalFeed(countryModel);
+    }
+  }
+  logInfo(logger, "[render] rendered country feeds");
 
   logInfo(logger, "[render] building author directory");
   const authorDirectory = buildAuthorDirectory(displayPayload);
@@ -115,7 +176,7 @@ export async function renderSite({
   logInfo(logger, `[render] built authors index model: authors=${authorsIndexModel.authors.length}`);
   logInfo(
     logger,
-    `[render] built page models: spaces=${spaceSlugs.length} authors=${authorsIndexModel.authors.length} streams=${contentStreams.length}`,
+    `[render] built page models: spaces=${spaceSlugs.length} authors=${authorsIndexModel.authors.length} sections=${feedSections.length}`,
   );
   pages["authors/index.html"] = renderAuthorsIndex(authorsIndexModel);
 
@@ -152,10 +213,10 @@ export async function renderSite({
   }
   logInfo(logger, "[render] rendered author pages");
 
-  logInfo(logger, `[render] rendering secondary streams: count=${secondaryStreams.length}`);
-  for (const stream of secondaryStreams) {
-    const totalPages = Math.max(1, Math.ceil(stream.totalItems / GLOBAL_FEED_PAGE_SIZE));
-    logInfo(logger, `[render] secondary stream ${stream.id}: pages=${totalPages}`);
+  logInfo(logger, `[render] rendering secondary feed sections: count=${secondarySections.length}`);
+  for (const section of secondarySections) {
+    const totalPages = Math.max(1, Math.ceil(section.totalItems / GLOBAL_FEED_PAGE_SIZE));
+    logInfo(logger, `[render] secondary feed section ${section.id}: pages=${totalPages}`);
     let lastSecondaryProgressAt = Date.now();
 
     for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
@@ -174,21 +235,26 @@ export async function renderSite({
           logger,
           progressLog.message.replace(
             "[render] primary stream progress",
-            `[render] secondary stream ${stream.id} progress`,
+            `[render] secondary feed section ${section.id} progress`,
           ),
         );
         lastSecondaryProgressAt = progressLog.checkpointAt;
       }
 
-      const streamModel = buildContentStreamModel(displayPayload, {
-        streamId: stream.id,
+      const streamModel = buildFeedSectionModel(displayPayload, {
+        sectionId: section.id,
         currentPage,
-        context: contentStreamContext,
+        context: feedSectionContext,
       });
-      pages[getContentStreamOutputPath(stream.id, currentPage)] = renderGlobalFeed(streamModel);
+      pages[getFeedSectionOutputPath(section.id, currentPage)] = renderGlobalFeed({
+        ...streamModel,
+        countryOptions: listCountryFeedOptions(displayPayload, section.id, null, {
+          context: countryFeedContext,
+        }),
+      });
     }
   }
-  logInfo(logger, "[render] rendered secondary streams");
+  logInfo(logger, "[render] rendered secondary feed sections");
 
   logInfo(logger, `[render] rendering space pages: spaces=${spaceSlugs.length}`);
   let lastSpaceProgressAt = Date.now();
