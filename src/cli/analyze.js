@@ -76,6 +76,7 @@ export async function runAnalyzeCli({
     limit: 100,
     outputPath: artifactPaths.contentComparisonReport,
     logger,
+    logStages: false,
     writeArtifact: false,
   });
 

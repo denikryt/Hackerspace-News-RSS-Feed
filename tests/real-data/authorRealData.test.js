@@ -20,7 +20,7 @@ describe("author links on real data", () => {
     const baselDetail = buildSpaceDetailModel(normalizedPayload, "chaos-computer-club-basel", {
       pageSize: 5000,
     });
-    const technikCafeDetail = buildSpaceDetailModel(normalizedPayload, "technikcafe", {
+    const drentheDetail = buildSpaceDetailModel(normalizedPayload, "hackerspace-drenthe", {
       pageSize: 5000,
     });
 
@@ -30,7 +30,7 @@ describe("author links on real data", () => {
     const baselItem = baselDetail.items.find(
       (item) => item.resolvedAuthor === "kuchenblechmafia, s3lph",
     );
-    const excludedItem = technikCafeDetail.items.find((item) => item.resolvedAuthor === "root");
+    const excludedItem = drentheDetail.items.find((item) => item.resolvedAuthor === "admin");
 
     expect(lucilleItem?.authorLinks).toEqual([
       { label: "Lucille DEWITTE", href: "/authors/lucille-dewitte.html" },
