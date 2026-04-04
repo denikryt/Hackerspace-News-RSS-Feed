@@ -55,9 +55,10 @@ export function buildDisplayContent(item) {
 export function renderDisplayContent(item) {
   const display = buildDisplayContent(item);
   const body = renderDisplayBody(display);
+  const attachmentImages = renderAttachmentImages(display.attachments);
   const attachments = renderAttachments(display.attachments);
 
-  return [body, attachments].filter(Boolean).join("");
+  return [body, attachmentImages, attachments].filter(Boolean).join("");
 }
 
 export function sanitizeContentHtml(value) {
@@ -135,18 +136,51 @@ function renderAttachments(attachments) {
   return `<div class="attachments"><p class="field-label">Attachments</p><ul>${items}</ul></div>`;
 }
 
+function renderAttachmentImages(attachments) {
+  const imageAttachments = (attachments || []).filter((attachment) => isImageAttachment(attachment));
+
+  if (imageAttachments.length === 0) {
+    return "";
+  }
+
+  const images = imageAttachments
+    .map(
+      (attachment) => `<figure class="attachment-image">
+        <img src="${escapeHtml(attachment.url)}" alt="${escapeHtml(attachment.label || "Attachment image")}">
+      </figure>`,
+    )
+    .join("");
+
+  return `<div class="attachment-images">${images}</div>`;
+}
+
 function normalizeDisplayAttachments(attachments) {
   if (!Array.isArray(attachments) || attachments.length === 0) {
     return [];
   }
 
-  return attachments
+  const normalizedAttachments = attachments
     .filter((attachment) => attachment?.url && isSafeUrl(attachment.url))
     .map((attachment) => ({
       url: attachment.url,
       type: attachment.type || undefined,
       label: attachment.title || attachment.label || getFileLabel(attachment.url),
     }));
+
+  const dedupedAttachments = [];
+  const seenAttachmentKeys = new Set();
+
+  for (const attachment of normalizedAttachments) {
+    const key = `${attachment.url}::${attachment.type || ""}::${attachment.label || ""}`;
+    if (seenAttachmentKeys.has(key)) {
+      continue;
+    }
+
+    seenAttachmentKeys.add(key);
+    dedupedAttachments.push(attachment);
+  }
+
+  return dedupedAttachments;
 }
 
 function normalizeText(value) {
@@ -183,4 +217,15 @@ function getFileLabel(url) {
   } catch {
     return String(url);
   }
+}
+
+function isImageAttachment(attachment) {
+  const type = String(attachment?.type || "").toLowerCase();
+  const url = String(attachment?.url || "").toLowerCase();
+
+  if (type.startsWith("image/")) {
+    return true;
+  }
+
+  return /\.(png|jpe?g|gif|webp|svg)(\?|$)/.test(url);
 }

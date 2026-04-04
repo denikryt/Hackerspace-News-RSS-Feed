@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildDisplayContent,
+  renderDisplayContent,
   sanitizeContentHtml,
 } from "../../src/contentDisplay.js";
 
@@ -46,6 +47,55 @@ describe("contentDisplay", () => {
         url: "https://example.com/audio.mp3",
         type: "audio/mpeg",
         label: "audio.mp3",
+      },
+    ]);
+  });
+
+  it("renders both inline html images and image attachments", () => {
+    const html = renderDisplayContent({
+      title: "Post",
+      contentHtml: `
+        <p>Lead text</p>
+        <p><img src="https://example.com/inline.png" alt="Inline image"></p>
+      `,
+      attachments: [
+        {
+          url: "https://example.com/attachment.jpg",
+          type: "image/jpeg",
+          title: "Attachment image",
+        },
+      ],
+    });
+
+    expect(html).toContain('<img src="https://example.com/inline.png" alt="Inline image">');
+    expect(html).toContain('class="attachment-images"');
+    expect(html).toContain('<img src="https://example.com/attachment.jpg" alt="Attachment image">');
+    expect(html).toContain('href="https://example.com/attachment.jpg"');
+    expect(html).toContain(">Attachments<");
+  });
+
+  it("deduplicates repeated attachments before rendering images and links", () => {
+    const display = buildDisplayContent({
+      title: "Post",
+      attachments: [
+        {
+          url: "https://example.com/image.jpg?width=600",
+          type: "image/jpeg",
+          title: "image.jpg",
+        },
+        {
+          url: "https://example.com/image.jpg?width=600",
+          type: "image/jpeg",
+          title: "image.jpg",
+        },
+      ],
+    });
+
+    expect(display.attachments).toEqual([
+      {
+        url: "https://example.com/image.jpg?width=600",
+        type: "image/jpeg",
+        label: "image.jpg",
       },
     ]);
   });
