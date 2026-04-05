@@ -25,6 +25,7 @@ export async function runBuildCli({
     sourceRowsPayload: refreshResult.sourceRowsPayload,
     validationsPayload: refreshResult.validationsPayload,
     normalizedPayload: refreshResult.normalizedPayload,
+    curatedPayload: refreshResult.curatedPayload,
     logger,
     writePages: true,
   });
@@ -33,6 +34,7 @@ export async function runBuildCli({
   logger(`Wrote ${paths.sourceRows}`);
   logger(`Wrote ${paths.validations}`);
   logger(`Wrote ${paths.normalizedFeeds}`);
+  logger(`Wrote ${paths.curatedNormalized}`);
   logger(`Rendered ${Object.keys(renderResult.pages).length} pages into ${distDir}`);
   logger(`Rendered ${Object.keys(renderResult.pages).length} pages in ${renderElapsedMs}ms`);
 }

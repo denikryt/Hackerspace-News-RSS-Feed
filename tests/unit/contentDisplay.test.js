@@ -117,4 +117,55 @@ describe("contentDisplay", () => {
       }),
     ).not.toThrow();
   });
+
+  it("renders both inline html images and image attachments", () => {
+    const html = renderDisplayContent({
+      title: "Post",
+      displayContent: {
+        text: `
+          <p>Lead text</p>
+          <p><img src="https://example.com/inline.png" alt="Inline image"></p>
+        `,
+        wasTruncated: false,
+        format: "html",
+        sourceField: "content:encoded",
+      },
+      attachments: [
+        {
+          url: "https://example.com/attachment.jpg",
+          type: "image/jpeg",
+          title: "Attachment image",
+        },
+      ],
+    });
+
+    expect(html).toContain('<img src="https://example.com/inline.png" alt="Inline image">');
+    expect(html).toContain('class="attachment-images"');
+    expect(html).toContain('<img src="https://example.com/attachment.jpg" alt="Attachment image">');
+    expect(html).toContain('href="https://example.com/attachment.jpg"');
+    expect(html).toContain(">Attachments<");
+  });
+
+  it("deduplicates repeated attachments before rendering images and links", () => {
+    const html = renderDisplayContent({
+      attachments: [
+        {
+          url: "https://example.com/image.jpg?width=600",
+          type: "image/jpeg",
+          title: "image.jpg",
+        },
+        {
+          url: "https://example.com/image.jpg?width=600",
+          type: "image/jpeg",
+          title: "image.jpg",
+        },
+      ],
+      observed: {
+        summaryCandidates: [],
+      },
+    });
+
+    expect((html.match(/attachment-images/g) || []).length).toBe(1);
+    expect((html.match(/href="https:\/\/example.com\/image.jpg\?width=600"/g) || []).length).toBe(1);
+  });
 });

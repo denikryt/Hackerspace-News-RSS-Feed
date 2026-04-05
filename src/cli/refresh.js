@@ -22,6 +22,7 @@ export async function runRefreshCli({
   logger(`Wrote ${paths.sourceRows}`);
   logger(`Wrote ${paths.validations}`);
   logger(`Wrote ${paths.normalizedFeeds}`);
+  logger(`Wrote ${paths.curatedNormalized}`);
 }
 
 async function loadDiscoveryValidSourceRows({ argv, readJsonImpl, paths }) {

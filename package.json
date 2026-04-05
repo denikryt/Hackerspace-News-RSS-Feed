@@ -7,6 +7,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "analyze": "node src/cli/analyze.js",
+    "curated:preview": "node src/cli/curatedPreview.js",
+    "curated:refresh": "node src/cli/refreshCurated.js",
     "analyze:item-content-tags": "node src/cli/analyzeMissingContent.js",
     "analyze:wiki-discovery": "node src/cli/analyzeWikiDiscoveryComparison.js",
     "analyze:wiki-discovery-unmatched": "node src/cli/analyzeWikiDiscoveryUnmatchedResponses.js",

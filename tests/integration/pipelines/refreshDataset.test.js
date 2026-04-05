@@ -27,6 +27,7 @@ describe("refreshDataset", () => {
       sourceRows: resolve(outputDir, "data/source_urls.json"),
       validations: resolve(outputDir, "data/feed_validation.json"),
       normalizedFeeds: resolve(outputDir, "data/feeds_normalized.json"),
+      curatedNormalized: resolve(outputDir, "data/curated_publications_normalized.json"),
     };
 
     const fetchImpl = vi.fn(async (url) => {
@@ -72,13 +73,15 @@ describe("refreshDataset", () => {
       sourceRowsPayload: expect.any(Object),
       validationsPayload: expect.any(Array),
       normalizedPayload: expect.any(Object),
+      curatedPayload: expect.any(Object),
     });
     expect(result.site).toBeUndefined();
 
-    const [sourceRowsJson, validationsJson, normalizedJson] = await Promise.all([
+    const [sourceRowsJson, validationsJson, normalizedJson, curatedJson] = await Promise.all([
       readFile(paths.sourceRows, "utf8"),
       readFile(paths.validations, "utf8"),
       readFile(paths.normalizedFeeds, "utf8"),
+      readFile(paths.curatedNormalized, "utf8"),
     ]);
 
     expect(JSON.parse(sourceRowsJson).urls).toHaveLength(3);
@@ -123,6 +126,17 @@ describe("refreshDataset", () => {
     expect(JSON.parse(normalizedJson).feeds[0].items[0].observed.contentCandidates).toBeUndefined();
     expect(JSON.parse(normalizedJson).feeds[0].items[0].summaryText).toBeUndefined();
     expect(JSON.parse(normalizedJson).feeds[0].items[0].summarySource).toBeUndefined();
+    expect(JSON.parse(curatedJson)).toEqual({
+      items: [],
+      unresolved: [],
+      summary: {
+        requested: 0,
+        resolved: 0,
+        unresolved: 0,
+        extraFeedsParsed: 0,
+        extraFeedFailures: 0,
+      },
+    });
   });
 
   it("logs feed fetch progress and outcomes when a logger is provided", async () => {
@@ -189,6 +203,7 @@ describe("refreshDataset", () => {
       sourceRows: resolve(outputDir, "data/source_urls.json"),
       validations: resolve(outputDir, "data/feed_validation.json"),
       normalizedFeeds: resolve(outputDir, "data/feeds_normalized.json"),
+      curatedNormalized: resolve(outputDir, "data/curated_publications_normalized.json"),
       curatedPublications: resolve(outputDir, "content/curated_publications.yml"),
     };
 
@@ -261,21 +276,38 @@ describe("refreshDataset", () => {
       });
     });
 
-    const result = await refreshDataset({ sourcePageUrl, fetchImpl, paths });
+    const result = await refreshDataset({ sourcePageUrl, fetchImpl, paths, writeSnapshots: true });
 
     expect(result.normalizedPayload.summary).toMatchObject({
       sourceRows: 3,
       parsedFeeds: 1,
       failedFeeds: 2,
     });
-    expect(result.normalizedPayload.curated.items).toHaveLength(1);
-    expect(result.normalizedPayload.curated.items[0]).toMatchObject({
+    expect(result.normalizedPayload.curated).toBeUndefined();
+    expect(result.curatedPayload.items).toHaveLength(1);
+    expect(result.curatedPayload.items[0]).toMatchObject({
       title: "Interview with Sasha",
       guid: "https://blog.nachitima.com/interview-with-sasha-hackerspace-stories",
       resolvedAuthor: "Nachitima",
       feedUrl: "https://blog.nachitima.com/feed/",
     });
-    expect(result.normalizedPayload.curated.unresolved).toEqual([]);
+    expect(result.curatedPayload.unresolved).toEqual([]);
+
+    const curatedJson = JSON.parse(await readFile(paths.curatedNormalized, "utf8"));
+    expect(curatedJson).toMatchObject({
+      items: [
+        expect.objectContaining({
+          title: "Interview with Sasha",
+          guid: "https://blog.nachitima.com/interview-with-sasha-hackerspace-stories",
+        }),
+      ],
+      unresolved: [],
+      summary: {
+        requested: 1,
+        resolved: 1,
+        unresolved: 0,
+      },
+    });
   });
 
   it("probes feeds with concurrency capped at 4", async () => {
