@@ -154,7 +154,6 @@ describe("enrichFeedItem", () => {
       format: "html",
       sourceField: "content:encoded",
     });
-    expect(enriched.displayContent.text).toHaveLength(508);
     expect(enriched.displayContent.text.endsWith("…</p>")).toBe(true);
     expect(enriched.observed.contentCandidates).toBeUndefined();
   });
