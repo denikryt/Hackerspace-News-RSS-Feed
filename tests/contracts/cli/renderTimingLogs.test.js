@@ -50,7 +50,7 @@ describe("render/build timing logs", () => {
       stdio: "pipe",
     });
 
-    expect(stdout).toContain("Refresh completed. Starting site render.");
+    expect(stdout).toContain("Curated refresh completed. Starting site render.");
     expect(stdout).toContain(`Wrote ${join(rootDir, "data/source_urls.json")}`);
     expect(stdout).toContain(`Wrote ${join(rootDir, "data/curated_publications_normalized.json")}`);
     expect(stdout).toContain(`Rendered 2 pages into ${join(rootDir, "dist")}`);
@@ -107,6 +107,20 @@ export const PATHS = {
     validationsPayload: {},
     normalizedPayload: {},
     curatedPayload: {},
+  };
+}\n`,
+    "utf8",
+  );
+
+  writeFileSync(
+    join(rootDir, "src/refreshCurated.js"),
+    `export async function refreshCurated({ logger } = {}) {
+  if (logger) {
+    logger("[refresh] curated refresh complete: resolved=1 unresolved=0");
+  }
+  return {
+    curatedPayload: {},
+    outputPath: ${JSON.stringify(join(rootDir, "data/curated_publications_normalized.json"))},
   };
 }\n`,
     "utf8",

@@ -79,7 +79,11 @@ describe("refresh/build discovery-valid flag", () => {
       sourceRowsPayload: {},
       validationsPayload: {},
       normalizedPayload: {},
-      curatedPayload: {},
+      curatedPayload: { items: ["from-refresh"] },
+    });
+    const refreshCuratedImpl = vi.fn().mockResolvedValue({
+      curatedPayload: { items: ["from-curated-refresh"] },
+      outputPath: "/tmp/data/curated_publications_normalized.json",
     });
     const renderImpl = vi.fn().mockResolvedValue({ pages: { "index.html": "<html></html>" } });
     const readJsonImpl = vi.fn().mockResolvedValue({
@@ -105,6 +109,7 @@ describe("refresh/build discovery-valid flag", () => {
     await runBuildCli({
       argv: ["--include-discovery-valid"],
       refreshImpl,
+      refreshCuratedImpl,
       renderImpl,
       readJsonImpl,
       logger,
@@ -123,9 +128,14 @@ describe("refresh/build discovery-valid flag", () => {
         }),
       ],
     });
+    expect(refreshCuratedImpl).toHaveBeenCalledWith({
+      logger,
+      writeSnapshot: true,
+      force: false,
+    });
     expect(renderImpl).toHaveBeenCalledWith(
       expect.objectContaining({
-        curatedPayload: {},
+        curatedPayload: { items: ["from-curated-refresh"] },
       }),
     );
   });

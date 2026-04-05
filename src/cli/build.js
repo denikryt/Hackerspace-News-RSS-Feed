@@ -1,11 +1,13 @@
 import { DIST_DIR, PATHS } from "../config.js";
 import { refreshDataset } from "../refreshDataset.js";
+import { refreshCurated } from "../refreshCurated.js";
 import { renderSite } from "../renderSite.js";
 import { readJson } from "../storage.js";
 
 export async function runBuildCli({
   argv = process.argv.slice(2),
   refreshImpl = refreshDataset,
+  refreshCuratedImpl = refreshCurated,
   renderImpl = renderSite,
   readJsonImpl = readJson,
   logger = console.log,
@@ -19,13 +21,18 @@ export async function runBuildCli({
 
   const additionalSourceRows = await loadDiscoveryValidSourceRows({ argv, readJsonImpl, paths });
   const refreshResult = await refreshImpl({ writeSnapshots: true, logger, additionalSourceRows });
-  logger("Refresh completed. Starting site render.");
+  const curatedRefreshResult = await refreshCuratedImpl({
+    logger,
+    writeSnapshot: true,
+    force: false,
+  });
+  logger("Curated refresh completed. Starting site render.");
   const renderStartedAt = Date.now();
   const renderResult = await renderImpl({
     sourceRowsPayload: refreshResult.sourceRowsPayload,
     validationsPayload: refreshResult.validationsPayload,
     normalizedPayload: refreshResult.normalizedPayload,
-    curatedPayload: refreshResult.curatedPayload,
+    curatedPayload: curatedRefreshResult.curatedPayload,
     logger,
     writePages: true,
   });
