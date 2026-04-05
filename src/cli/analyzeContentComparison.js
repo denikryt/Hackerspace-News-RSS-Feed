@@ -51,35 +51,70 @@ export async function analyzeContentComparison({
   fetchImpl = fetch,
   limit = 1000,
   outputPath = DEFAULT_OUTPUT_PATH,
-  logger = console.log,
   sourceRows,
   collectedRecords,
   includeDiscoveryValid = false,
   readJsonImpl,
   analysisPaths,
   writeArtifact = true,
+  logger,
+  logStages = true,
+  loadAnalysisSourceRowsImpl = loadAnalysisSourceRows,
+  collectAnalysisFeedsImpl = collectAnalysisFeeds,
+  writeContentComparisonArtifactImpl = writeContentComparisonArtifact,
 } = {}) {
-  const selectedSourceRows = sourceRows || (await loadAnalysisSourceRows({
+  if (logStages) {
+    logInfo(logger, "[analyze] loading source rows");
+  }
+  const selectedSourceRows = sourceRows || (await loadAnalysisSourceRowsImpl({
     sourcePageUrl,
     fetchImpl,
     includeDiscoveryValid,
     readJsonImpl,
     paths: analysisPaths,
   })).sourceRows;
-  const records = collectedRecords || (await collectAnalysisFeeds({
+  if (logStages) {
+    logInfo(logger, "[analyze] collecting feeds");
+  }
+  const records = collectedRecords || (await collectAnalysisFeedsImpl({
     sourceRows: selectedSourceRows,
     fetchImpl,
+    logger,
   })).records;
+  if (logStages) {
+    logInfo(logger, "[analyze] building content comparison report");
+  }
   const output = buildContentComparisonReport({ collectedRecords: records, limit });
 
   if (writeArtifact) {
-    await writeContentComparisonArtifact({ output, outputPath });
-    if (typeof logger === "function") {
-      logger(`Written ${output.examples.length} examples to ${outputPath}`);
+    if (logStages) {
+      logInfo(logger, "[analyze] writing content comparison artifact");
     }
+    await writeContentComparisonArtifactImpl({ output, outputPath });
   }
 
-  return output;
+  return {
+    ...output,
+    outputPath,
+  };
+}
+
+/**
+ * The direct CLI wrapper mirrors the other analysis scripts so users see a
+ * clear start line and the final artifact summary in one place.
+ */
+export async function runAnalyzeContentComparisonCli({
+  logger = console.log,
+  analyzeImpl = analyzeContentComparison,
+} = {}) {
+  logger("[analyze] starting content comparison");
+  const output = await analyzeImpl({
+    logger,
+    writeArtifact: true,
+  });
+
+  const outputPath = output.outputPath || DEFAULT_OUTPUT_PATH;
+  logger(`Written ${output.examples.length} examples to ${outputPath}`);
 }
 
 /**
@@ -168,6 +203,12 @@ function computeAverageContentSnippetLength(examples) {
   return Math.round(totalLength / examplesWithSnippets.length);
 }
 
+function logInfo(logger, message) {
+  if (typeof logger === "function") {
+    logger(message);
+  }
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
-  analyzeContentComparison().catch(console.error);
+  runAnalyzeContentComparisonCli().catch(console.error);
 }
