@@ -13,14 +13,17 @@ import { processCuratedSourceRows } from "./curatedPreview.js";
  */
 export async function collectCuratedSnapshot({
   paths = PATHS,
+  curatedSelections,
   fetchImpl = fetch,
   logger = null,
   readCuratedPublicationsImpl = readCuratedPublications,
   processCuratedSourceRowsImpl = processCuratedSourceRows,
 } = {}) {
   logInfo(logger, "[curated] loading curated selections");
-  const curatedSelections = await readCuratedPublicationsImpl(paths.curatedPublications);
-  const curatedSourceRows = buildCuratedSourceRows(curatedSelections, []);
+  const selectedCuratedEntries = Array.isArray(curatedSelections)
+    ? curatedSelections
+    : await readCuratedPublicationsImpl(paths.curatedPublications);
+  const curatedSourceRows = buildCuratedSourceRows(selectedCuratedEntries, []);
 
   logInfo(logger, "[curated] collecting curated feeds");
   const curatedFeedResults = await processCuratedSourceRowsImpl(curatedSourceRows, {
@@ -30,10 +33,10 @@ export async function collectCuratedSnapshot({
 
   logInfo(logger, "[curated] resolving curated publications");
   const curatedFeeds = curatedFeedResults.map((entry) => entry.feed).filter(Boolean);
-  const curated = resolveCuratedPublications(curatedSelections, curatedFeeds);
+  const curated = resolveCuratedPublications(selectedCuratedEntries, curatedFeeds);
   const curatedPayload = buildCuratedPayload({
     curated,
-    curatedSelections,
+    curatedSelections: selectedCuratedEntries,
     curatedFeeds,
     curatedFeedResults,
   });

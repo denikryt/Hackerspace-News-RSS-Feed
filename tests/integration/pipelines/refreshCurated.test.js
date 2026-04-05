@@ -84,6 +84,193 @@ describe("refreshCurated", () => {
       },
     });
   });
+
+  it("by default fetches only curated entries that are missing from the existing snapshot and preserves saved ones", async () => {
+    const rootDir = await createTrackedTempDir("hnf-refresh-curated-incremental-", tempDirs);
+    const paths = {
+      curatedPublications: resolve(rootDir, "content/curated_publications.yml"),
+      curatedNormalized: resolve(rootDir, "data/curated_publications_normalized.json"),
+    };
+
+    await writeText(
+      paths.curatedPublications,
+      [
+        "- feedUrl: https://blog.nachitima.com/feed/",
+        "  guid: existing-guid",
+        "- feedUrl: https://blog.nachitima.com/feed/",
+        "  guid: new-guid",
+      ].join("\n"),
+    );
+
+    await writeText(
+      paths.curatedNormalized,
+      `${JSON.stringify({
+        items: [
+          {
+            guid: "existing-guid",
+            title: "Existing item",
+            feedUrl: "https://blog.nachitima.com/feed/",
+            resolvedAuthor: "Saved Author",
+          },
+        ],
+        unresolved: [],
+        summary: {
+          requested: 1,
+          resolved: 1,
+          unresolved: 0,
+          extraFeedsParsed: 1,
+          extraFeedFailures: 0,
+        },
+      }, null, 2)}\n`,
+    );
+
+    const fetchImpl = vi.fn(async (url) => {
+      if (url === "https://blog.nachitima.com/feed/") {
+        return response({
+          url,
+          contentType: "application/rss+xml",
+          body: `<?xml version="1.0"?>
+            <rss version="2.0">
+              <channel>
+                <title>Nachitima Blog</title>
+                <link>https://blog.nachitima.com</link>
+                <description>Independent writing</description>
+                <item>
+                  <title>Existing item from feed</title>
+                  <guid>existing-guid</guid>
+                  <link>https://blog.nachitima.com/existing</link>
+                  <author>Feed Author</author>
+                  <pubDate>Thu, 02 Jan 2025 10:00:00 GMT</pubDate>
+                  <description>Old body</description>
+                </item>
+                <item>
+                  <title>New item</title>
+                  <guid>new-guid</guid>
+                  <link>https://blog.nachitima.com/new</link>
+                  <author>Nachitima</author>
+                  <pubDate>Fri, 03 Jan 2025 10:00:00 GMT</pubDate>
+                  <description>New body</description>
+                </item>
+              </channel>
+            </rss>`,
+        });
+      }
+
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+
+    const result = await refreshCurated({
+      paths,
+      fetchImpl,
+      writeSnapshot: true,
+    });
+
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(result.curatedPayload.items).toEqual([
+      expect.objectContaining({
+        guid: "existing-guid",
+        title: "Existing item",
+        resolvedAuthor: "Saved Author",
+      }),
+      expect.objectContaining({
+        guid: "new-guid",
+        title: "New item",
+        resolvedAuthor: "Nachitima",
+      }),
+    ]);
+
+    const writtenPayload = JSON.parse(await readFile(paths.curatedNormalized, "utf8"));
+    expect(writtenPayload.items).toEqual([
+      expect.objectContaining({
+        guid: "existing-guid",
+        title: "Existing item",
+        resolvedAuthor: "Saved Author",
+      }),
+      expect.objectContaining({
+        guid: "new-guid",
+        title: "New item",
+        resolvedAuthor: "Nachitima",
+      }),
+    ]);
+  });
+
+  it("force refresh rebuilds even already saved curated entries", async () => {
+    const rootDir = await createTrackedTempDir("hnf-refresh-curated-force-", tempDirs);
+    const paths = {
+      curatedPublications: resolve(rootDir, "content/curated_publications.yml"),
+      curatedNormalized: resolve(rootDir, "data/curated_publications_normalized.json"),
+    };
+
+    await writeText(
+      paths.curatedPublications,
+      "- feedUrl: https://blog.nachitima.com/feed/\n  guid: existing-guid\n",
+    );
+
+    await writeText(
+      paths.curatedNormalized,
+      `${JSON.stringify({
+        items: [
+          {
+            guid: "existing-guid",
+            title: "Existing item",
+            feedUrl: "https://blog.nachitima.com/feed/",
+            resolvedAuthor: "Saved Author",
+          },
+        ],
+        unresolved: [],
+        summary: {
+          requested: 1,
+          resolved: 1,
+          unresolved: 0,
+          extraFeedsParsed: 1,
+          extraFeedFailures: 0,
+        },
+      }, null, 2)}\n`,
+    );
+
+    const fetchImpl = vi.fn(async (url) => {
+      if (url === "https://blog.nachitima.com/feed/") {
+        return response({
+          url,
+          contentType: "application/rss+xml",
+          body: `<?xml version="1.0"?>
+            <rss version="2.0">
+              <channel>
+                <title>Nachitima Blog</title>
+                <link>https://blog.nachitima.com</link>
+                <description>Independent writing</description>
+                <item>
+                  <title>Existing item refreshed</title>
+                  <guid>existing-guid</guid>
+                  <link>https://blog.nachitima.com/existing</link>
+                  <author>Feed Author</author>
+                  <pubDate>Thu, 02 Jan 2025 10:00:00 GMT</pubDate>
+                  <description>Refreshed body</description>
+                </item>
+              </channel>
+            </rss>`,
+        });
+      }
+
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+
+    const result = await refreshCurated({
+      paths,
+      fetchImpl,
+      writeSnapshot: true,
+      force: true,
+    });
+
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(result.curatedPayload.items).toEqual([
+      expect.objectContaining({
+        guid: "existing-guid",
+        title: "Existing item refreshed",
+        resolvedAuthor: "Feed Author",
+      }),
+    ]);
+  });
 });
 
 async function writeText(filePath, value) {
