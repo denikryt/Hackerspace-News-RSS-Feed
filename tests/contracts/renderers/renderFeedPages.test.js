@@ -53,10 +53,9 @@ describe("feed page headers", () => {
     expect(html).toContain('id="feed-country-select"');
     expect(html).toContain('aria-label="Choose feed country"');
     expect(html).toContain('value="/feed/countries/france/index.html" selected');
-    expect(html).toContain("window.location.href");
-    expect(html).toContain(".feed-controls-shell{margin:0 auto 18px;}");
-    expect(html).toContain(".feed-control-country .control-select{inline-size:min(100%, 16rem);}");
-    expect(html).toContain("@media (max-width: 720px){.feed-control-country .control-select{inline-size:100%;}}");
+    expect(html).toContain('<script src="/feed-country-select.js"></script>');
+    expect(html).not.toContain("window.location.href");
+    expect(html).not.toContain(".feed-controls-shell{margin:0 auto 18px;}");
     expect(html).not.toContain('class="panel page-shell-narrow"><div class="feed-controls feed-controls-country"');
     expect(html.indexOf('class="page-nav page-nav--narrow"')).toBeLessThan(
       html.indexOf('class="feed-controls feed-controls-country"'),
@@ -87,7 +86,7 @@ describe("feed page headers", () => {
     expect(html).toContain('value="/events/index.html"');
     expect(html).toContain('value="/events/countries/france/index.html" selected');
     expect(html).toContain('id="feed-country-select"');
-    expect(html).toContain("window.location.href");
+    expect(html).toContain('<script src="/feed-country-select.js"></script>');
   });
 
   it("renders the space detail header shell and nav", () => {

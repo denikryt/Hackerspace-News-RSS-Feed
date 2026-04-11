@@ -1,3 +1,4 @@
+import { SPACES_INDEX_SCRIPT_HREF } from "../renderAssets.js";
 import {
   escapeHtml,
   formatCompactDate,
@@ -51,8 +52,8 @@ export function renderSpacesIndex(model) {
 
   return renderLayout({
     title: "Hackerspace News",
+    scriptHrefs: [SPACES_INDEX_SCRIPT_HREF],
     body: `
-      <style>.spaces-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:18px;row-gap:10px;align-items:end;margin-bottom:18px;}.spaces-control{display:block;min-inline-size:0;}.spaces-control-search{grid-column:1/-1;}.spaces-control-country{grid-column:1;}.spaces-control-sort{grid-column:2;}.spaces-control-toggle{grid-column:1/-1;}.spaces-control .control-input,.spaces-control .control-select{inline-size:100%;max-inline-size:100%;}.spaces-control-sort .control-select{margin-inline-start:auto;}@media (min-width: 761px){.spaces-controls{grid-template-columns:minmax(0,1.15fr) minmax(0,0.95fr) minmax(0,0.9fr) auto;}.spaces-control-search{grid-column:auto;}.spaces-control-country{grid-column:auto;}.spaces-control-sort{grid-column:auto;}.spaces-control-toggle{grid-column:auto;align-self:center;}}</style>
       ${renderPageHeader({
         title: "Hackerspace News",
         titleClass: "home-hero-title",
@@ -93,124 +94,13 @@ export function renderSpacesIndex(model) {
             </select>
           </label>
           <label class="spaces-control spaces-control-toggle">
-            <input id="show-failed-toggle" type="checkbox" />
+            <input id="show-failed-toggle" type="checkbox"${model.showFailed ? " checked" : ""} />
             Show failed feeds
           </label>
         </div>
         <div id="spaces-cards" class="cards">${cards}</div>
         <p id="spaces-empty-state" class="muted" hidden>No hackerspaces match the selected country.</p>
       </section>
-      <script>
-        const spaceSearchInput = document.getElementById("space-search-input");
-        const countryFilterSelect = document.getElementById("country-filter-select");
-        const failedToggle = document.getElementById("show-failed-toggle");
-        const sortModeSelect = document.getElementById("sort-mode-select");
-        const cardsContainer = document.getElementById("spaces-cards");
-        const emptyState = document.getElementById("spaces-empty-state");
-        const cards = Array.from(cardsContainer.querySelectorAll(".card"));
-        const storageKeys = {
-          query: "hackerspace-news-feed.query",
-          country: "hackerspace-news-feed.country",
-          showFailed: "hackerspace-news-feed.showFailed",
-          sortMode: "hackerspace-news-feed.sortMode",
-        };
-
-        const storedQuery = localStorage.getItem(storageKeys.query);
-        const storedCountry = localStorage.getItem(storageKeys.country);
-        const storedShowFailed = localStorage.getItem(storageKeys.showFailed);
-        const storedSortMode = localStorage.getItem(storageKeys.sortMode);
-
-        const defaultQuery = ${JSON.stringify(model.searchQuery || "")};
-        const defaultCountry = ${JSON.stringify(model.selectedCountry)};
-        const lastUpdatedLabel = document.getElementById("last-updated-label");
-        const availableCountries = new Set(["all", ...Array.from(countryFilterSelect.options).map((option) => option.value)]);
-
-        spaceSearchInput.value = storedQuery === null ? defaultQuery : storedQuery;
-        countryFilterSelect.value = availableCountries.has(storedCountry) ? storedCountry : defaultCountry;
-        failedToggle.checked = storedShowFailed === null ? ${model.showFailed ? "true" : "false"} : storedShowFailed === "true";
-        sortModeSelect.value = storedSortMode || ${JSON.stringify(model.sortMode)};
-
-        function compareAlphabetical(left, right) {
-          return left.dataset.spaceName.localeCompare(right.dataset.spaceName);
-        }
-
-        function compareLatest(left, right) {
-          const leftValue = Date.parse(left.dataset.latestItemDate || "") || Number.NEGATIVE_INFINITY;
-          const rightValue = Date.parse(right.dataset.latestItemDate || "") || Number.NEGATIVE_INFINITY;
-          if (rightValue !== leftValue) return rightValue - leftValue;
-          const leftCount = Number(left.dataset.publicationCount || "0");
-          const rightCount = Number(right.dataset.publicationCount || "0");
-          if (rightCount !== leftCount) return rightCount - leftCount;
-          return compareAlphabetical(left, right);
-        }
-
-        function comparePublicationCount(left, right) {
-          const leftCount = Number(left.dataset.publicationCount || "0");
-          const rightCount = Number(right.dataset.publicationCount || "0");
-          if (rightCount !== leftCount) return rightCount - leftCount;
-          return compareLatest(left, right);
-        }
-
-        function formatLocalUpdatedAt(label) {
-          if (!label) return;
-
-          const rawValue = label.dataset.updatedAt;
-          const parsed = rawValue ? new Date(rawValue) : null;
-          if (!parsed || Number.isNaN(parsed.getTime())) return;
-
-          const formatter = new Intl.DateTimeFormat(undefined, {
-            year: "numeric",
-            month: "short",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-
-          label.textContent = formatter.format(parsed);
-        }
-
-        function applyUiState() {
-          const spaceQuery = spaceSearchInput.value;
-          const selectedCountry = countryFilterSelect.value;
-          const showFailed = failedToggle.checked;
-          const sortMode = sortModeSelect.value;
-
-          localStorage.setItem(storageKeys.query, spaceQuery);
-          localStorage.setItem(storageKeys.country, selectedCountry);
-          localStorage.setItem(storageKeys.showFailed, String(showFailed));
-          localStorage.setItem(storageKeys.sortMode, sortMode);
-
-          const normalizedQuery = spaceQuery.trim().toLocaleLowerCase();
-          let visibleCount = 0;
-          cards.forEach((card) => {
-            const matchesQuery = normalizedQuery
-              ? (card.dataset.spaceName || "").toLocaleLowerCase().includes(normalizedQuery)
-              : true;
-            const matchesCountry = selectedCountry === "all" || card.dataset.country === selectedCountry;
-            const isFailure = card.dataset.isFailure === "true";
-            const isVisible = matchesQuery && matchesCountry && (showFailed || !isFailure);
-            card.style.display = isVisible ? "" : "none";
-            if (isVisible) {
-              visibleCount += 1;
-            }
-          });
-
-          const comparator = sortMode === "publication-count"
-            ? comparePublicationCount
-            : sortMode === "latest-publication"
-              ? compareLatest
-              : compareAlphabetical;
-          cards.sort(comparator).forEach((card) => cardsContainer.appendChild(card));
-          emptyState.hidden = visibleCount !== 0;
-        }
-
-        spaceSearchInput.addEventListener("input", applyUiState);
-        countryFilterSelect.addEventListener("change", applyUiState);
-        failedToggle.addEventListener("change", applyUiState);
-        sortModeSelect.addEventListener("change", applyUiState);
-        formatLocalUpdatedAt(lastUpdatedLabel);
-        applyUiState();
-      </script>
     `,
   });
 }

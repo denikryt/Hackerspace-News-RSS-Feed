@@ -1,4 +1,6 @@
+import { FEED_COUNTRY_SELECT_SCRIPT_HREF } from "../renderAssets.js";
 import { renderDisplayContent } from "../contentDisplay.js";
+import { buildPageSummaryLabel, renderPagination } from "./feedPageShared.js";
 import { renderAuthorLinks } from "./renderAuthorLinks.js";
 import {
   escapeHtml,
@@ -25,18 +27,16 @@ export function renderGlobalFeed(model) {
     )
     .join("");
 
-  const pagination = renderPagination(model);
   const pageTitle = model.pageTitle || "Feed";
   const pageIntro = model.pageIntro || "All publications sorted from new to old.";
   const streamNavItems = model.streamNavItems || [
     { href: "/feed/index.html", label: "Feed", isCurrent: true },
   ];
-  const controls = renderCountryControls(model);
 
   return renderLayout({
     title: pageTitle,
+    scriptHrefs: model.countryOptions?.length ? [FEED_COUNTRY_SELECT_SCRIPT_HREF] : [],
     body: `
-      <style>.feed-controls-shell{margin:0 auto 18px;}.feed-controls{display:grid;grid-template-columns:minmax(0,1fr);column-gap:18px;row-gap:10px;align-items:end;}.feed-control{display:block;min-inline-size:0;}.feed-control .control-select{max-inline-size:100%;}.feed-control-country .control-select{inline-size:min(100%, 16rem);}@media (max-width: 720px){.feed-control-country .control-select{inline-size:100%;}}</style>
       ${renderPageHeader({
         title: pageTitle,
         headerClass: "page-header--narrow page-header--compact",
@@ -47,24 +47,14 @@ export function renderGlobalFeed(model) {
         ],
         navClass: "page-nav--narrow",
       })}
-      ${controls}
+      ${renderCountryControls(model)}
       <section class="feed-list-shell page-shell-narrow timeline-shell-narrow">
         <p class="muted">${escapeHtml(buildPageSummaryLabel(model))}</p>
         <div class="item-list">${items || `<p class="muted">No feed items available.</p>`}</div>
-        ${pagination}
+        ${renderPagination(model, "Feed pagination")}
       </section>
     `,
   });
-}
-
-function buildPageSummaryLabel(model) {
-  const parts = [model.currentPageLabel || "Page 1 of 1"];
-
-  if (model.publicationCountLabel) {
-    parts.push(model.publicationCountLabel);
-  }
-
-  return parts.join(" · ");
 }
 
 function renderGlobalFeedMeta(item) {
@@ -124,46 +114,5 @@ function renderCountryControls(model) {
         </select>
       </label>
     </div>
-  </section>
-  <script>
-    const feedCountrySelect = document.getElementById("feed-country-select");
-    if (feedCountrySelect) {
-      feedCountrySelect.addEventListener("change", () => {
-        if (feedCountrySelect.value) {
-          window.location.href = feedCountrySelect.value;
-        }
-      });
-    }
-  </script>`;
-}
-
-function renderPagination(model) {
-  if (!model.totalPages || model.totalPages <= 1) {
-    return "";
-  }
-
-  const previousLink = model.hasPreviousPage
-    ? `<a class="pagination-link" href="${model.previousPageHref}">Previous</a>`
-    : `<span class="pagination-link disabled">Previous</span>`;
-
-  const nextLink = model.hasNextPage
-    ? `<a class="pagination-link" href="${model.nextPageHref}">Next</a>`
-    : `<span class="pagination-link disabled">Next</span>`;
-
-  const pageLinks = (model.pageLinks || [])
-    .map((link) => {
-      if (link.type === "ellipsis") {
-        return `<span class="pagination-ellipsis">...</span>`;
-      }
-
-      const className = link.isCurrent ? "pagination-link current" : "pagination-link";
-      return `<a class="${className}" href="${link.href}">${link.page}</a>`;
-    })
-    .join("");
-
-  return `<nav class="pagination" aria-label="Feed pagination">
-    ${previousLink}
-    <span class="pagination-pages">${pageLinks}</span>
-    ${nextLink}
-  </nav>`;
+  </section>`;
 }

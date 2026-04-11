@@ -44,10 +44,7 @@ describe("content rendering", () => {
     expect(html).toContain('href="/authors/bob.html"');
     expect(html).toContain('class="global-feed-meta-line global-feed-meta-line-primary"');
     expect(html).toContain('class="global-feed-meta-line global-feed-meta-line-authors"');
-    expect(html).toContain(".global-feed-meta { display: grid !important;");
-    expect(html).toContain(".timeline-entry {");
-    expect(html).toContain("grid-template-columns: 7rem 1rem minmax(0, 1fr)");
-    expect(html).toContain("overflow-wrap: anywhere");
+    expect(html).toContain('<link rel="stylesheet" href="/site.css" />');
   });
 
   it("renders sanitized html content and attachment links on detail pages", () => {
@@ -89,8 +86,7 @@ describe("content rendering", () => {
     expect(html).toContain('href="/authors/bob.html"');
     expect(html).toContain("events, news");
     expect(html).not.toContain("<script");
-    expect(html).toContain("max-inline-size: min(100%, 42rem)");
-    expect(html).toContain('img[src*="emoji"]');
+    expect(html).toContain('<link rel="stylesheet" href="/site.css" />');
   });
 
   it("renders detail page source above author links and omits the author line when absent", () => {

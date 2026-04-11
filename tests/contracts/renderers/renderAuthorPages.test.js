@@ -34,9 +34,6 @@ describe("author page rendering", () => {
     expect(html).toContain('href="/spaces/c3d2.html"');
     expect(html).toContain('class="author-hackerspace-link" href="/spaces/betamachine.html"');
     expect(html).toContain('class="space-card-links author-card-hackerspaces"');
-    expect(html).toContain(".author-card-title{color:var(--text);display:inline-block;max-inline-size:100%;overflow-wrap:anywhere;word-break:break-word;}");
-    expect(html).toContain(".space-card-links .author-hackerspace-link{color:#111;}");
-    expect(html).toContain(".author-card-hackerspaces{margin-top:auto;padding-top:1rem;}");
     expect(html).toContain(">BetaMachine<");
     expect(html).toContain(">C3D2<");
     expect(html).toContain('class="about-link-muted" href="/about/index.html"');
@@ -59,10 +56,9 @@ describe("author page rendering", () => {
     expect(html).toContain("All hackerspaces");
     expect(html).toContain("Publication count");
     expect(html).toContain("Latest publication");
-    expect(html).toContain("localStorage");
-    expect(html).toContain("hackerspace-news-feed.authors.query");
-    expect(html).toContain("hackerspace-news-feed.authors.hackerspace");
-    expect(html).toContain("hackerspace-news-feed.authors.sortMode");
+    expect(html).toContain('<link rel="stylesheet" href="/site.css" />');
+    expect(html).toContain('<script src="/authors-index.js"></script>');
+    expect(html).not.toContain("localStorage");
     expect(html).toContain('data-hackerspaces="BetaMachine|C3D2"');
     expect(html).toContain('data-publication-count="2"');
     expect(html).toContain('data-latest-item-date="2025-01-02T10:00:00.000Z"');
@@ -70,15 +66,6 @@ describe("author page rendering", () => {
     expect(html).not.toContain(">Search authors<");
     expect(html).not.toContain(">Hackerspace<");
     expect(html).not.toContain(">Sort authors<");
-    expect(html).toContain(".control-input {");
-    expect(html).toContain("border: 1px solid var(--border-strong);");
-    expect(html).toContain("background-color: var(--panel);");
-    expect(html).toContain(".authors-controls{display:grid;");
-    expect(html).toContain("margin-bottom:18px;");
-    expect(html).toContain(".authors-control-search{grid-column:1/-1;}");
-    expect(html).toContain(".authors-control-hackerspace{grid-column:1;}");
-    expect(html).toContain(".authors-control-sort{grid-column:2;}");
-    expect(html).toContain("@media (min-width: 761px)");
     expect(html).toContain('class="panel page-header page-header--wide page-header--compact"');
     expect(html).toContain('class="page-nav page-nav--wide page-nav--compact"');
     expect(html).toContain('class="panel page-summary page-summary--home"');
@@ -114,6 +101,7 @@ describe("author page rendering", () => {
     });
 
     expect(html).toContain("<h1>Alice</h1>");
+    expect(html).toContain('<link rel="stylesheet" href="/site.css" />');
     expect(html).toContain('class="about-link-muted" href="/about/index.html"');
     expect(html).toContain('href="/authors/index.html"');
     expect(html).toContain("1 of 41 publications");

@@ -1,4 +1,5 @@
 import { renderDisplayContent } from "../contentDisplay.js";
+import { buildPageSummaryLabel, renderPagination } from "./feedPageShared.js";
 import { renderAuthorLinks } from "./renderAuthorLinks.js";
 import {
   escapeHtml,
@@ -52,20 +53,10 @@ export function renderSpaceDetail(model) {
       <section class="feed-list-shell page-shell-narrow timeline-shell-narrow">
         <p class="muted">${escapeHtml(buildPageSummaryLabel(model))}</p>
         <div class="item-list">${items || `<p class="muted">No publications available.</p>`}</div>
-        ${renderPagination(model)}
+        ${renderPagination(model, "Space pagination")}
       </section>
     `,
   });
-}
-
-function buildPageSummaryLabel(model) {
-  const parts = [model.currentPageLabel || "Page 1 of 1"];
-
-  if (model.publicationCountLabel) {
-    parts.push(model.publicationCountLabel);
-  }
-
-  return parts.join(" · ");
 }
 
 function renderCategories(item) {
@@ -96,35 +87,4 @@ function renderDetailItemMeta(item) {
   }
 
   return lines.join("");
-}
-
-function renderPagination(model) {
-  if (!model.totalPages || model.totalPages <= 1) {
-    return "";
-  }
-
-  const previousLink = model.hasPreviousPage
-    ? `<a class="pagination-link" href="${model.previousPageHref}">Previous</a>`
-    : `<span class="pagination-link disabled">Previous</span>`;
-
-  const nextLink = model.hasNextPage
-    ? `<a class="pagination-link" href="${model.nextPageHref}">Next</a>`
-    : `<span class="pagination-link disabled">Next</span>`;
-
-  const pageLinks = (model.pageLinks || [])
-    .map((link) => {
-      if (link.type === "ellipsis") {
-        return `<span class="pagination-ellipsis">...</span>`;
-      }
-
-      const className = link.isCurrent ? "pagination-link current" : "pagination-link";
-      return `<a class="${className}" href="${link.href}">${link.page}</a>`;
-    })
-    .join("");
-
-  return `<nav class="pagination" aria-label="Space pagination">
-    ${previousLink}
-    <span class="pagination-pages">${pageLinks}</span>
-    ${nextLink}
-  </nav>`;
 }
