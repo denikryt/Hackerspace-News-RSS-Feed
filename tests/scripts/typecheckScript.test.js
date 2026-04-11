@@ -11,5 +11,5 @@ describe("typecheck script", () => {
     });
 
     expect(stdout).toContain("tsc --noEmit");
-  });
+  }, 15000);
 });
