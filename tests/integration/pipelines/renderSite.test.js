@@ -498,6 +498,33 @@ describe("renderSite", () => {
     expect(result.pages["events/page/3/index.html"]).toBeUndefined();
   });
 
+  it("rejects invalid normalized payloads before building page output", async () => {
+    await expect(() =>
+      renderSite({
+        sourceRowsPayload: {
+          sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
+          sectionTitle: "Spaces with RSS feeds",
+          extractedAt: "2026-03-19T20:00:00.000Z",
+          urls: [],
+        },
+        validationsPayload: [],
+        normalizedPayload: {
+          generatedAt: "2026-03-19T20:00:00.000Z",
+          sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
+          summary: {
+            sourceRows: 1,
+            validFeeds: 1,
+            parsedFeeds: "invalid",
+            emptyFeeds: 0,
+            failedFeeds: 0,
+          },
+          feeds: [],
+          failures: [],
+        },
+      }),
+    ).rejects.toThrow(/parsedFeeds/i);
+  });
+
 });
 
 async function writeJson(filePath, value) {

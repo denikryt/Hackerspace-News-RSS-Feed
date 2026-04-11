@@ -1,5 +1,5 @@
 import { FEED_COUNTRY_SELECT_SCRIPT_HREF } from "../renderAssets.js";
-import { renderDisplayContent } from "../contentDisplay.js";
+import { buildDisplayContent, renderDisplayModel } from "../contentDisplay.js";
 import { buildPageSummaryLabel, renderPagination } from "./feedPageShared.js";
 import { renderAuthorLinks } from "./renderAuthorLinks.js";
 import {
@@ -12,8 +12,10 @@ import {
 
 export function renderGlobalFeed(model) {
   const items = model.items
-    .map(
-      (item) => `<article class="timeline-entry">
+    .map((item) => {
+      const displayContent = item.displayContent || buildDisplayContent(item);
+
+      return `<article class="timeline-entry">
           ${renderTimelineDate(item.displayDate || item.publishedAt || item.updatedAt)}
           <div class="timeline-axis" aria-hidden="true"></div>
           <div class="timeline-content">
@@ -21,10 +23,10 @@ export function renderGlobalFeed(model) {
               <div class="meta global-feed-meta">${renderGlobalFeedMeta(item)}</div>
             </div>
             <h3 class="item-title">${escapeHtml(item.title || "Untitled item")}</h3>
-            ${renderDisplayContent(item)}
+            ${renderDisplayModel(displayContent)}
           </div>
-      </article>`,
-    )
+      </article>`;
+    })
     .join("");
 
   const pageTitle = model.pageTitle || "Feed";

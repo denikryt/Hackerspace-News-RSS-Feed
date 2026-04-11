@@ -1,4 +1,4 @@
-import { renderDisplayContent } from "../contentDisplay.js";
+import { buildDisplayContent, renderDisplayModel } from "../contentDisplay.js";
 import { buildPageSummaryLabel, renderPagination } from "./feedPageShared.js";
 import { renderAuthorLinks } from "./renderAuthorLinks.js";
 import {
@@ -12,8 +12,10 @@ import {
 
 export function renderSpaceDetail(model) {
   const items = (model.items || [])
-    .map(
-      (item) => `<article class="timeline-entry timeline-entry-detail">
+    .map((item) => {
+      const displayContent = item.displayContent || buildDisplayContent(item);
+
+      return `<article class="timeline-entry timeline-entry-detail">
           ${renderTimelineDate(item.displayDate || item.publishedAt || item.updatedAt)}
           <div class="timeline-axis" aria-hidden="true"></div>
           <div class="timeline-content">
@@ -21,11 +23,11 @@ export function renderSpaceDetail(model) {
               <div class="meta global-feed-meta detail-item-meta">${renderDetailItemMeta(item)}</div>
             </div>
             <h3 class="item-title">${escapeHtml(item.title || "Untitled item")}</h3>
-            ${renderDisplayContent(item)}
+            ${renderDisplayModel(displayContent)}
             ${renderCategories(item)}
           </div>
-      </article>`,
-    )
+      </article>`;
+    })
     .join("");
 
   return renderLayout({

@@ -12,6 +12,7 @@ import {
   buildSpacePageEntries,
 } from "./renderSitePageBuilders.js";
 import { readJson, writeText } from "./storage.js";
+import { validateNormalizedRenderPayloadForDisplay } from "./renderInputValidation.js";
 import { slugify } from "./utils/slugify.js";
 import { filterNormalizedPayloadForDisplay } from "./visibleData.js";
 import {
@@ -126,7 +127,7 @@ async function loadRenderInputs({ paths, sourceRowsPayload, validationsPayload, 
     return {
       sourceRowsPayload,
       validationsPayload,
-      normalizedPayload,
+      normalizedPayload: validateNormalizedRenderPayloadForDisplay(normalizedPayload),
     };
   }
 
@@ -136,10 +137,12 @@ async function loadRenderInputs({ paths, sourceRowsPayload, validationsPayload, 
     normalizedPayload ?? readJson(paths.normalizedFeeds),
   ]);
 
+  const validatedNormalizedPayload = validateNormalizedRenderPayloadForDisplay(loadedNormalizedPayload);
+
   return {
     sourceRowsPayload: loadedSourceRowsPayload,
     validationsPayload: loadedValidationsPayload,
-    normalizedPayload: loadedNormalizedPayload,
+    normalizedPayload: validatedNormalizedPayload,
   };
 }
 

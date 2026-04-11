@@ -6,6 +6,7 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
     "analyze": "node src/cli/analyze.js",
     "analyze:item-content-tags": "node src/cli/analyzeMissingContent.js",
     "analyze:wiki-discovery": "node src/cli/analyzeWikiDiscoveryComparison.js",
@@ -19,9 +20,14 @@
   },
   "dependencies": {
     "cheerio": "^1.0.0",
-    "rss-parser": "^3.13.0"
+    "rss-parser": "^3.13.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@kitajs/html": "^4.2.13",
+    "@types/node": "^25.6.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2",
     "vitest": "^3.2.4"
   }
 }
