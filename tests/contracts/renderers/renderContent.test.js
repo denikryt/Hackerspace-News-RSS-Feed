@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { buildDisplayContent } from "../../../src/contentDisplay.js";
 import { renderGlobalFeed } from "../../../src/renderers/renderGlobalFeed.js";
 import { renderSpaceDetail } from "../../../src/renderers/renderSpaceDetail.js";
 
@@ -13,7 +14,9 @@ describe("content rendering", () => {
           spaceHref: "/spaces/betamachine.html",
           link: "https://example.com/plain-post",
           displayDate: "2025-01-01T10:00:00.000Z",
-          summaryText: "First line\nSecond line",
+          displayContent: buildDisplayContent({
+            summaryText: "First line\nSecond line",
+          }),
           authorLinks: [
             { label: "Alice", href: "/authors/alice.html" },
             { label: "Bob", href: "/authors/bob.html" },
@@ -65,15 +68,17 @@ describe("content rendering", () => {
             { label: "Alice", href: "/authors/alice.html" },
             { label: "Bob", href: "/authors/bob.html" },
           ],
-          contentHtml:
-            '<p>Hello <a href="https://example.com/post">link</a></p><script>alert(1)</script>',
+          displayContent: buildDisplayContent({
+            contentHtml:
+              '<p>Hello <a href="https://example.com/post">link</a></p><script>alert(1)</script>',
+            attachments: [
+              {
+                url: "https://example.com/audio.mp3",
+                type: "audio/mpeg",
+              },
+            ],
+          }),
           normalizedCategories: ["events", "news"],
-          attachments: [
-            {
-              url: "https://example.com/audio.mp3",
-              type: "audio/mpeg",
-            },
-          ],
         },
       ],
       homeHref: "/index.html",

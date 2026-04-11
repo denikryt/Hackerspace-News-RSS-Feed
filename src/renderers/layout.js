@@ -1,4 +1,5 @@
 import { SITE_CSS_HREF } from "../renderAssets.js";
+import { renderPageHeaderTsx } from "./tsxSharedRuntime.js";
 
 export function renderLayout({ title, body, scriptHrefs = [] }) {
   const scriptsHtml = [...new Set(scriptHrefs)]
@@ -30,22 +31,16 @@ export function renderPageHeader({
   navItems = [],
   navClass = "",
 }) {
-  const sectionClass = ["panel", "page-header", headerClass].filter(Boolean).join(" ");
-  const titleClassAttribute = titleClass ? ` class="${titleClass}"` : "";
-  const navHtml = navItems.length > 0 ? renderNav(navItems) : "";
-  const wrappedNavHtml = navHtml
-    ? navClass
-      ? `<div class="page-nav ${navClass}">${navHtml}</div>`
-      : navHtml
-    : "";
-
-  return `
-      <section class="${sectionClass}">
-        <h1${titleClassAttribute}>${escapeHtml(title)}</h1>
-        ${introHtml}
-      </section>
-      ${wrappedNavHtml}
-    `;
+  // Shared page headers now render through the TSX-backed production helper so
+  // the HTML contract stays stable while the implementation becomes structured.
+  return renderPageHeaderTsx({
+    title,
+    titleClass,
+    introHtml,
+    headerClass,
+    navItems,
+    navClass,
+  });
 }
 
 export function renderMetric(label, value) {

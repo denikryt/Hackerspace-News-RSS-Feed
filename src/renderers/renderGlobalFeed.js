@@ -1,5 +1,5 @@
 import { FEED_COUNTRY_SELECT_SCRIPT_HREF } from "../renderAssets.js";
-import { buildDisplayContent, renderDisplayModel } from "../contentDisplay.js";
+import { renderDisplayModel } from "../contentDisplay.js";
 import { buildPageSummaryLabel, renderPagination } from "./feedPageShared.js";
 import { renderAuthorLinks } from "./renderAuthorLinks.js";
 import {
@@ -13,8 +13,8 @@ import {
 export function renderGlobalFeed(model) {
   const items = model.items
     .map((item) => {
-      const displayContent = item.displayContent || buildDisplayContent(item);
-
+      // Feed renderers consume prepared displayContent from view models instead
+      // of rebuilding display rules from raw item fields at render time.
       return `<article class="timeline-entry">
           ${renderTimelineDate(item.displayDate || item.publishedAt || item.updatedAt)}
           <div class="timeline-axis" aria-hidden="true"></div>
@@ -23,7 +23,7 @@ export function renderGlobalFeed(model) {
               <div class="meta global-feed-meta">${renderGlobalFeedMeta(item)}</div>
             </div>
             <h3 class="item-title">${escapeHtml(item.title || "Untitled item")}</h3>
-            ${renderDisplayModel(displayContent)}
+            ${renderDisplayModel(item.displayContent)}
           </div>
       </article>`;
     })

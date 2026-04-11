@@ -1,12 +1,8 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
-
 import { renderLayout, renderPageHeader } from "./layout.js";
-
-const ABOUT_HTML_PATH = resolve(process.cwd(), "content/about.html");
+import { loadAboutHtmlBoundary } from "./aboutHtmlBoundary.js";
 
 export function renderAboutPage() {
-  const aboutHtml = readFileSync(ABOUT_HTML_PATH, "utf8");
+  const aboutHtml = loadAboutHtmlBoundary();
 
   return renderLayout({
     title: "About",

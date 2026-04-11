@@ -16,5 +16,7 @@ describe("renderAboutPage", () => {
     expect(html).toContain(">Feed<");
     expect(html).toContain('href="/authors/index.html"');
     expect(html).toContain('class="page-copy page-copy--narrow about-copy"');
+    expect(html).toContain("<strong>Data Sources:</strong>");
+    expect(html).toContain("Made with passion by");
   });
 });

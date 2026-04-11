@@ -112,4 +112,57 @@ describe("feed page headers", () => {
     expect(html).toContain('href="/feed/index.html"');
     expect(html).toContain('href="/authors/index.html"');
   });
+
+  it("renders prepared display content and does not rebuild it from raw item fields", () => {
+    const feedHtml = renderGlobalFeed({
+      items: [
+        {
+          title: "Prepared item",
+          summaryText: "This raw summary must stay unused",
+          displayContent: {
+            renderMode: "text",
+            text: "Prepared display summary",
+            attachments: [],
+          },
+        },
+        {
+          title: "Missing prepared display",
+          summaryText: "This raw summary must not render",
+        },
+      ],
+      homeHref: "/index.html",
+      currentPageLabel: "Page 1 of 1",
+      streamNavItems: [{ href: "/feed/index.html", label: "Feed", isCurrent: true }],
+    });
+
+    const detailHtml = renderSpaceDetail({
+      spaceName: "Technik.cafe",
+      homeHref: "/index.html",
+      feedHref: "/feed/index.html",
+      authorsIndexHref: "/authors/index.html",
+      currentPageLabel: "Page 1 of 1",
+      items: [
+        {
+          title: "Prepared detail item",
+          summaryText: "This raw detail summary must stay unused",
+          displayContent: {
+            renderMode: "text",
+            text: "Prepared detail summary",
+            attachments: [],
+          },
+        },
+        {
+          title: "Missing prepared detail display",
+          summaryText: "This raw detail summary must not render",
+        },
+      ],
+    });
+
+    expect(feedHtml).toContain("Prepared display summary");
+    expect(feedHtml).not.toContain("This raw summary must stay unused");
+    expect(feedHtml).not.toContain("This raw summary must not render");
+    expect(detailHtml).toContain("Prepared detail summary");
+    expect(detailHtml).not.toContain("This raw detail summary must stay unused");
+    expect(detailHtml).not.toContain("This raw detail summary must not render");
+  });
 });
