@@ -190,11 +190,7 @@ export function buildAuthorPageEntries(context, { logger } = {}) {
 
   for (const [authorIndex, author] of context.authorsIndexModel.authors.entries()) {
     const currentAuthor = authorIndex + 1;
-    if (
-      currentAuthor === 1 ||
-      currentAuthor === context.authorsIndexModel.authors.length ||
-      currentAuthor % 100 === 0
-    ) {
+    if (shouldLogLoopCheckpoint(currentAuthor, context.authorsIndexModel.authors.length)) {
       const progressLog = formatLoopProgressLog({
         label: "author pages",
         currentIndex: currentAuthor,
@@ -206,21 +202,25 @@ export function buildAuthorPageEntries(context, { logger } = {}) {
       lastProgressAt = progressLog.checkpointAt;
     }
 
-    const detailModel = buildAuthorDetailModel(context.displayPayload, author.slug, {
-      authorDirectory: context.authorDirectory,
-    });
-    const totalPages = detailModel.totalPages || 1;
-
-    for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
-      const pagedModel = buildAuthorDetailModel(context.displayPayload, author.slug, {
-        currentPage,
-        authorDirectory: context.authorDirectory,
-      });
-      entries.push([
-        getAuthorDetailOutputPath(author.slug, currentPage),
-        renderAuthorDetail(pagedModel),
-      ]);
-    }
+    entries.push(
+      ...buildPaginatedEntityEntries({
+        getTotalPages() {
+          return buildAuthorDetailModel(context.displayPayload, author.slug, {
+            authorDirectory: context.authorDirectory,
+          }).totalPages || 1;
+        },
+        renderPage(currentPage) {
+          const pagedModel = buildAuthorDetailModel(context.displayPayload, author.slug, {
+            currentPage,
+            authorDirectory: context.authorDirectory,
+          });
+          return [
+            getAuthorDetailOutputPath(author.slug, currentPage),
+            renderAuthorDetail(pagedModel),
+          ];
+        },
+      }),
+    );
   }
 
   logInfo(logger, "[render] rendered author pages");
@@ -235,11 +235,7 @@ export function buildSpacePageEntries(context, { logger } = {}) {
 
   for (const [spaceIndex, spaceSlug] of context.spaceSlugs.entries()) {
     const currentSpace = spaceIndex + 1;
-    if (
-      currentSpace === 1 ||
-      currentSpace === context.spaceSlugs.length ||
-      currentSpace % 100 === 0
-    ) {
+    if (shouldLogLoopCheckpoint(currentSpace, context.spaceSlugs.length)) {
       const progressLog = formatLoopProgressLog({
         label: "space pages",
         currentIndex: currentSpace,
@@ -251,23 +247,27 @@ export function buildSpacePageEntries(context, { logger } = {}) {
       lastProgressAt = progressLog.checkpointAt;
     }
 
-    const detailModel = buildSpaceDetailModel(context.displayPayload, spaceSlug, {
-      authorDirectory: context.authorDirectory,
-    });
-    const totalPages = detailModel.totalPages || 1;
-
-    for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
-      const pagedModel = buildSpaceDetailModel(context.displayPayload, spaceSlug, {
-        currentPage,
-        authorDirectory: context.authorDirectory,
-      });
-      entries.push([
-        currentPage === 1
-          ? `spaces/${spaceSlug}.html`
-          : `spaces/${spaceSlug}/page/${currentPage}/index.html`,
-        renderSpaceDetail(pagedModel),
-      ]);
-    }
+    entries.push(
+      ...buildPaginatedEntityEntries({
+        getTotalPages() {
+          return buildSpaceDetailModel(context.displayPayload, spaceSlug, {
+            authorDirectory: context.authorDirectory,
+          }).totalPages || 1;
+        },
+        renderPage(currentPage) {
+          const pagedModel = buildSpaceDetailModel(context.displayPayload, spaceSlug, {
+            currentPage,
+            authorDirectory: context.authorDirectory,
+          });
+          return [
+            currentPage === 1
+              ? `spaces/${spaceSlug}.html`
+              : `spaces/${spaceSlug}/page/${currentPage}/index.html`,
+            renderSpaceDetail(pagedModel),
+          ];
+        },
+      }),
+    );
   }
 
   logInfo(logger, "[render] rendered space pages");
@@ -278,4 +278,20 @@ function logInfo(logger, message) {
   if (typeof logger === "function") {
     logger(message);
   }
+}
+
+function shouldLogLoopCheckpoint(currentIndex, totalItems) {
+  return currentIndex === 1 || currentIndex === totalItems || currentIndex % 100 === 0;
+}
+
+// Author and space detail builders share the same "discover total pages, then render each page" shape.
+function buildPaginatedEntityEntries({ getTotalPages, renderPage }) {
+  const totalPages = getTotalPages();
+  const entries = [];
+
+  for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
+    entries.push(renderPage(currentPage));
+  }
+
+  return entries;
 }
