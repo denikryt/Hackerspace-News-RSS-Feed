@@ -2,6 +2,7 @@ import { copyFile, mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { DIST_DIR, PATHS } from "./config.js";
+import { listStaticRenderAssets } from "./renderAssets.js";
 import { enrichFeed } from "./feedEnricher.js";
 import { normalizeFeed } from "./feedNormalizer.js";
 import { parseFeedBody } from "./feedParser.js";
@@ -11,8 +12,6 @@ import { renderGlobalFeed } from "./renderers/renderGlobalFeed.js";
 import { writeText } from "./storage.js";
 import { filterNormalizedPayloadForDisplay } from "./visibleData.js";
 import { buildCuratedIndexModel } from "./viewModels/curated.js";
-
-const FAVICON_SOURCE_PATH = resolve(process.cwd(), "content/favicon.png");
 
 /**
  * Curated preview intentionally stays narrow: it fetches only the feeds named
@@ -63,11 +62,14 @@ export async function renderCuratedPreview({
   if (writePages) {
     logInfo(logger, "[preview] writing curated preview files");
     await mkdir(distDir, { recursive: true });
+    const faviconAsset = listStaticRenderAssets().find((asset) => asset.outputPath === "favicon.png");
     await Promise.all([
       ...Object.entries(pages).map(([relativePath, html]) =>
         writeText(resolve(distDir, relativePath), html)
       ),
-      copyFile(FAVICON_SOURCE_PATH, resolve(distDir, "favicon.png")),
+      ...(faviconAsset
+        ? [copyFile(faviconAsset.sourcePath, resolve(distDir, faviconAsset.outputPath))]
+        : []),
     ]);
   }
 
