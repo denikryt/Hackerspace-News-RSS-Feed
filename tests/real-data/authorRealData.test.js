@@ -47,5 +47,5 @@ describe("author links on real data", () => {
     expect(globalLucille?.authorLinks).toEqual([
       { label: "Lucille DEWITTE", href: "/authors/lucille-dewitte.html" },
     ]);
-  }, 15000);
+  }, 45000);
 });

@@ -1,4 +1,5 @@
 import { getAuthorsIndexHref } from "../authors.js";
+import { buildDisplayContent } from "../contentDisplay.js";
 import { FEED_CONTENT_STREAM_ID, getFeedSectionHref } from "../feedSections.js";
 import { buildAuthorDirectory, withAuthorLinks } from "./authors.js";
 import { slugify } from "../utils/slugify.js";
@@ -56,7 +57,10 @@ export function buildSpaceDetailModel(
 
   const resolvedAuthorDirectory = authorDirectory || buildAuthorDirectory(normalizedPayload);
   const allItems = (feed.items || [])
-    .map((item) => withAuthorLinks(item, resolvedAuthorDirectory))
+    .map((item) => withAuthorLinks({
+      ...item,
+      displayContent: buildDisplayContent(item),
+    }, resolvedAuthorDirectory))
     .sort(compareItemsByDateDesc);
   const pagination = paginateItems(allItems, currentPage, pageSize);
   const hrefForPage = (pageNumber) => getSpaceDetailHref(spaceSlug, pageNumber);
