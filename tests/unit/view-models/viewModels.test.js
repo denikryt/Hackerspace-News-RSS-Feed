@@ -162,6 +162,10 @@ describe("multi-page view models", () => {
       { label: "Alice", href: "/authors/alice.html" },
       { label: "Bob", href: "/authors/bob.html" },
     ]);
+    expect(model.items[0].displayContent).toMatchObject({
+      renderMode: "text",
+      text: "Newest summary",
+    });
     expect(model.items[1].authorLinks).toEqual([]);
   });
 
@@ -213,6 +217,10 @@ describe("multi-page view models", () => {
         { label: "Alice", href: "/authors/alice.html" },
         { label: "Bob", href: "/authors/bob.html" },
       ],
+    });
+    expect(model.items[0].displayContent).toMatchObject({
+      renderMode: "text",
+      text: "Newest summary",
     });
     expect(model.items[1]).toMatchObject({
       title: "Older post",

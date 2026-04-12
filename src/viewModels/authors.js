@@ -9,7 +9,6 @@ import {
 } from "../authors.js";
 import { buildPageLinks, GLOBAL_FEED_PAGE_SIZE, paginateItems } from "../pagination.js";
 import { collectAggregatedPublicationItems } from "./publicationItems.js";
-import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
 
 const DEFAULT_AUTHOR_SORT_MODE = "alphabetical";

@@ -106,6 +106,21 @@ function renderDisplayBody(display) {
   return `<div class="content-body plain-text">${escapeHtml(display.text)}</div>`;
 }
 
+// Renderers can treat this as the stable HTML insertion boundary for prepared display content.
+export function renderDisplayModel(display) {
+  // Renderers may receive incomplete items during transitions, so a missing
+  // prepared display object degrades to an empty slot instead of broken HTML.
+  if (!display) {
+    return "";
+  }
+
+  const body = renderDisplayBody(display);
+  const attachmentImages = renderAttachmentImages(display.attachments);
+  const attachments = renderAttachments(display.attachments);
+
+  return [body, attachmentImages, attachments].filter(Boolean).join("");
+}
+
 function renderAttachments(attachments) {
   if (!attachments?.length) {
     return "";

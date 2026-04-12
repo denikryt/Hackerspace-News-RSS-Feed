@@ -1,3 +1,4 @@
+import { buildDisplayContent } from "../contentDisplay.js";
 import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
 
@@ -6,6 +7,7 @@ export function collectAggregatedPublicationItems(normalizedPayload) {
     (feed.items || []).map((item) =>
       removeUndefined({
         ...item,
+        displayContent: buildDisplayContent(item),
         sourceFeedUrl: feed.finalFeedUrl || feed.sourceListUrl,
         spaceName: feed.spaceName,
         country: feed.country,
@@ -18,6 +20,7 @@ export function collectAggregatedPublicationItems(normalizedPayload) {
   const curatedItems = (normalizedPayload.curated?.items || []).map((item) =>
     removeUndefined({
       ...item,
+      displayContent: buildDisplayContent(item),
       sourceFeedUrl: item.feedUrl || item.sourceListUrl,
       spaceName: item.spaceName,
       country: item.country,
