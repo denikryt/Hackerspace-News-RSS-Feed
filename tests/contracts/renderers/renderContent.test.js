@@ -112,16 +112,10 @@ describe("content rendering", () => {
           spaceHref: "/spaces/betamachine.html",
           link: "https://example.com/post",
           displayDate: "2025-01-01T10:00:00.000Z",
-          observed: {
-            summaryCandidates: [{ field: "summary", text: "Fallback summary" }],
-            contentCandidates: [
-              {
-                field: "content:encoded",
-                html: '<p>Hello <a href="https://example.com/post">link</a></p>',
-                text: "Hello link",
-              },
-            ],
-          },
+          displayContent: buildDisplayContent({
+            contentHtml: '<p>Hello <a href="https://example.com/post">link</a></p>',
+            link: "https://example.com/post",
+          }),
         },
       ],
       homeHref: "/index.html",
@@ -146,16 +140,10 @@ describe("content rendering", () => {
           spaceHref: "/spaces/betamachine.html",
           link: "https://example.com/long-html-post",
           displayDate: "2025-01-01T10:00:00.000Z",
-          observed: {
-            summaryCandidates: [],
-            contentCandidates: [
-              {
-                field: "content:encoded",
-                html: longHtml,
-                text: `${"x".repeat(320)} ${"y".repeat(320)}`,
-              },
-            ],
-          },
+          displayContent: buildDisplayContent({
+            contentHtml: longHtml,
+            link: "https://example.com/long-html-post",
+          }),
         },
       ],
       homeHref: "/index.html",
@@ -182,10 +170,10 @@ describe("content rendering", () => {
           spaceHref: "/spaces/betamachine.html",
           link: "https://example.com/long-post",
           displayDate: "2025-01-01T10:00:00.000Z",
-          observed: {
-            summaryCandidates: [],
-            contentCandidates: [{ field: "content:encoded", text: longText }],
-          },
+          displayContent: buildDisplayContent({
+            contentText: longText,
+            link: "https://example.com/long-post",
+          }),
         },
       ],
       homeHref: "/index.html",
@@ -208,10 +196,10 @@ describe("content rendering", () => {
           title: "Long post",
           link: "https://example.com/long-post",
           displayDate: "2025-01-01T10:00:00.000Z",
-          observed: {
-            summaryCandidates: [],
-            contentCandidates: [{ field: "content:encoded", text: longText }],
-          },
+          displayContent: buildDisplayContent({
+            contentText: longText,
+            link: "https://example.com/long-post",
+          }),
         },
       ],
       homeHref: "/index.html",

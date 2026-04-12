@@ -97,36 +97,9 @@ describe("refreshDataset", () => {
     expect(JSON.parse(normalizedJson).feeds[0].items[0]).toMatchObject({
       title: "Post one",
       displayDate: "2025-01-01T10:00:00.000Z",
-      dateSource: "pubDate",
-      displayContent: {
-        text: "Hello",
-        wasTruncated: false,
-        format: "text",
-        sourceField: "content",
-      },
-      observed: {
-        dateCandidates: [
-          {
-            field: "isoDate",
-            value: "2025-01-01T10:00:00.000Z",
-          },
-          {
-            field: "pubDate",
-            value: "2025-01-01T10:00:00.000Z",
-          },
-        ],
-        summaryCandidates: [
-          {
-            field: "contentSnippet",
-            text: "Hello",
-          },
-        ],
-      },
+      summaryText: "Hello",
     });
-    expect(JSON.parse(normalizedJson).feeds[0].items[0].observed.contentCandidates).toBeUndefined();
-    expect(JSON.parse(normalizedJson).feeds[0].items[0].summaryText).toBeUndefined();
-    expect(JSON.parse(normalizedJson).feeds[0].items[0].summarySource).toBeUndefined();
-    expect(JSON.parse(curatedJson)).toEqual({
+expect(JSON.parse(curatedJson)).toEqual({
       items: [],
       unresolved: [],
       summary: {

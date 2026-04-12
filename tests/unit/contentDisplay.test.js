@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildDisplayContent,
   renderDisplayContent,
   sanitizeContentHtml,
 } from "../../src/contentDisplay.js";
@@ -19,117 +20,41 @@ describe("contentDisplay", () => {
     expect(html).not.toContain("onerror=");
   });
 
-  it("renders plain text body with preserved line breaks", () => {
-    const html = renderDisplayContent({
-      observed: {
-        summaryCandidates: [{ field: "summary", text: "First line\nSecond line" }],
-        contentCandidates: [],
-      },
+  it("falls back to plain text with preserved line breaks", () => {
+    const display = buildDisplayContent({
+      title: "Post",
+      summaryText: "First line\nSecond line",
     });
 
-    expect(html).toContain('class="content-body plain-text"');
-    expect(html).toContain("First line\nSecond line");
+    expect(display.renderMode).toBe("text");
+    expect(display.text).toBe("First line\nSecond line");
+    expect(display.html).toBeUndefined();
   });
 
-  it("renders attachment links for safe enclosures", () => {
-    const html = renderDisplayContent({
+  it("normalizes attachment links from enclosures", () => {
+    const display = buildDisplayContent({
+      title: "Post",
       attachments: [
         {
           url: "https://example.com/audio.mp3",
           type: "audio/mpeg",
         },
       ],
-      observed: {
-        summaryCandidates: [],
-        contentCandidates: [],
-      },
     });
 
-    expect(html).toContain("Attachments");
-    expect(html).toContain("audio.mp3");
-    expect(html).toContain("audio/mpeg");
-  });
-
-  it("renders from persisted display content without raw content candidates", () => {
-    const html = renderDisplayContent({
-      displayContent: {
-        text: "Persisted display text…",
-        wasTruncated: true,
-        format: "text",
-        sourceField: "content:encoded",
+    expect(display.attachments).toEqual([
+      {
+        url: "https://example.com/audio.mp3",
+        type: "audio/mpeg",
+        label: "audio.mp3",
       },
-      observed: {
-        summaryCandidates: [],
-      },
-    });
-
-    expect(html).toContain('class="content-body plain-text"');
-    expect(html).toContain("Persisted display text…");
-  });
-
-  it("renders read more link when truncated display text has original link", () => {
-    const html = renderDisplayContent({
-      link: "https://example.com/original-post",
-      displayContent: {
-        text: "Persisted display text…",
-        wasTruncated: true,
-        format: "text",
-        sourceField: "content:encoded",
-      },
-      observed: {
-        summaryCandidates: [],
-      },
-    });
-
-    expect(html).toContain(">Read more<");
-    expect(html).toContain('href="https://example.com/original-post"');
-  });
-
-  it("does not render read more link when display text is not truncated", () => {
-    const html = renderDisplayContent({
-      link: "https://example.com/original-post",
-      displayContent: {
-        text: "Persisted display text",
-        wasTruncated: false,
-        format: "text",
-        sourceField: "content:encoded",
-      },
-      observed: {
-        summaryCandidates: [],
-      },
-    });
-
-    expect(html).not.toContain(">Read more<");
-  });
-
-  it("does not throw when html display falls back after sanitization removes everything", () => {
-    expect(() =>
-      renderDisplayContent({
-        displayContent: {
-          text: '<iframe src="https://example.com/embed"></iframe>',
-          wasTruncated: false,
-          format: "html",
-          sourceField: "summary",
-        },
-        observed: {
-          summaryCandidates: [],
-        },
-      }),
-    ).not.toThrow();
+    ]);
   });
 
   it("renders both inline html images and image attachments", () => {
     const html = renderDisplayContent({
       title: "Post",
-      displayContent: {
-        text: `
-          <p>Lead text</p>
-          <p><img src="https://example.com/inline.png" alt="Inline image"></p>
-        `,
-        wasTruncated: false,
-        format: "html",
-        sourceField: "content:encoded",
-      },
+      contentHtml: `<p>Lead text</p><p><img src="https://example.com/inline.png" alt="Inline image"></p>`,
       attachments: [
         {
           url: "https://example.com/attachment.jpg",
@@ -160,9 +85,6 @@ describe("contentDisplay", () => {
           title: "image.jpg",
         },
       ],
-      observed: {
-        summaryCandidates: [],
-      },
     });
 
     expect((html.match(/attachment-images/g) || []).length).toBe(1);

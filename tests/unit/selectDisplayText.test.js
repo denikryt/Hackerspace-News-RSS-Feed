@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { selectDisplayText } from "../../src/contentDisplay.js";
+import { selectDisplayText } from "../../src/displayText.js";
 
 describe("selectDisplayText", () => {
   describe("Summary Handling", () => {

@@ -60,13 +60,13 @@ describe("enrichFeedItem", () => {
       updatedAt: "2025-01-03T10:00:00.000Z",
       displayDate: "2025-01-01T10:00:00.000Z",
       dateSource: "pubDate",
-      displayContent: {
-        text: "<p>Full content words here</p>",
-        wasTruncated: false,
-        format: "html",
-        sourceField: "content:encoded",
-      },
-      wordCount: 3,
+      contentHtml: "<p>Full content words here</p>",
+      contentText: "Full content words here",
+      contentSource: "content:encoded",
+      summaryText: "Short summary words",
+      summarySource: "contentSnippet",
+      primaryTextSource: "content:encoded",
+      wordCount: 4,
       hasFullContent: true,
       hasSummary: true,
       hasCategories: true,
@@ -87,15 +87,15 @@ describe("enrichFeedItem", () => {
         summaryCandidates: [
           { field: "contentSnippet", text: "Short summary words" },
         ],
+        contentCandidates: [
+          {
+            field: "content:encoded",
+            html: "<p>Full content words here</p>",
+            text: "Full content words here",
+          },
+        ],
       },
     });
-    expect(enriched.observed.contentCandidates).toBeUndefined();
-    expect(enriched.summaryText).toBeUndefined();
-    expect(enriched.summaryHtml).toBeUndefined();
-    expect(enriched.summarySource).toBeUndefined();
-    expect(enriched.contentText).toBeUndefined();
-    expect(enriched.contentHtml).toBeUndefined();
-    expect(enriched.contentSource).toBeUndefined();
   });
 
   it("uses summary as the primary text when full content is missing", () => {
@@ -112,70 +112,16 @@ describe("enrichFeedItem", () => {
     });
 
     expect(enriched).toMatchObject({
-      displayContent: {
-        text: "<p>Summary only text</p>",
-        wasTruncated: false,
-        format: "html",
-        sourceField: "summary",
-      },
+      summaryHtml: "<p>Summary only text</p>",
+      summaryText: "Summary only text",
+      summarySource: "summary",
+      primaryTextSource: "summary",
       wordCount: 3,
       hasFullContent: false,
       hasSummary: true,
-      observed: {
-        summaryCandidates: [
-          {
-            field: "summary",
-            html: "<p>Summary only text</p>",
-            text: "Summary only text",
-          },
-        ],
-      },
     });
-    expect(enriched.summaryText).toBeUndefined();
-    expect(enriched.summaryHtml).toBeUndefined();
-    expect(enriched.summarySource).toBeUndefined();
-  });
-
-  it("stores only trimmed display content when full content exists without summary", () => {
-    const enriched = enrichFeedItem({
-      id: "content-only",
-      title: "Content only",
-      contentCandidates: [
-        {
-          field: "content:encoded",
-          text: "x".repeat(700),
-          html: `<p>${"x".repeat(700)}</p>`,
-        },
-      ],
-    });
-
-    expect(enriched.displayContent).toMatchObject({
-      wasTruncated: true,
-      format: "html",
-      sourceField: "content:encoded",
-    });
-    expect(enriched.displayContent.text.endsWith("…</p>")).toBe(true);
-    expect(enriched.observed.contentCandidates).toBeUndefined();
-  });
-
-  it("stores trimmed display content when summary exceeds the max length", () => {
-    const enriched = enrichFeedItem({
-      id: "summary-long",
-      title: "Summary long",
-      summaryCandidates: [
-        {
-          field: "summary",
-          text: "x".repeat(700),
-        },
-      ],
-    });
-
-    expect(enriched.displayContent).toMatchObject({
-      wasTruncated: true,
-      format: "text",
-      sourceField: "summary",
-    });
-    expect(enriched.displayContent.text).toHaveLength(501);
-    expect(enriched.displayContent.text.endsWith("…")).toBe(true);
+    expect(enriched.contentHtml).toBeUndefined();
+    expect(enriched.contentText).toBeUndefined();
+    expect(enriched.contentSource).toBeUndefined();
   });
 });

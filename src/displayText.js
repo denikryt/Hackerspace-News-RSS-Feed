@@ -177,7 +177,7 @@ function cleanCandidateHtml(value) {
   return trimmed ? trimmed : null;
 }
 
-function truncatePlainText(value, limit) {
+export function truncatePlainText(value, limit) {
   if (typeof value !== "string" || !value) {
     return { text: "", wasTruncated: false };
   }
@@ -205,7 +205,7 @@ function truncatePlainText(value, limit) {
   return { text: truncated + "…", wasTruncated: true };
 }
 
-function truncateHtml(value, limit) {
+export function truncateHtml(value, limit) {
   if (typeof value !== "string" || !value) {
     return undefined;
   }
