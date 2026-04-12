@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { relative, resolve } from "node:path";
 
 import {
   AUTHORS_INDEX_SCRIPT_HREF,
@@ -17,7 +18,17 @@ describe("renderAssets", () => {
   });
 
   it("lists the static asset manifest copied into dist during render", () => {
-    expect(listStaticRenderAssets().map((asset) => asset.outputPath)).toEqual([
+    const assets = listStaticRenderAssets();
+
+    expect(assets.map((asset) => asset.outputPath)).toEqual([
+      "favicon.png",
+      "site.css",
+      "feed-country-select.js",
+      "spaces-index.js",
+      "authors-index.js",
+    ]);
+
+    expect(assets.map((asset) => relative(resolve(process.cwd(), "static"), asset.sourcePath))).toEqual([
       "favicon.png",
       "site.css",
       "feed-country-select.js",
