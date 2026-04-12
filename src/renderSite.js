@@ -2,40 +2,32 @@ import { copyFile, mkdir, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { DIST_DIR, PATHS } from "./config.js";
-import { getCountryFeedOutputPath } from "./countryFeeds.js";
-import { FEED_CONTENT_STREAM_ID, getFeedSectionOutputPath } from "./feedSections.js";
-import { GLOBAL_FEED_PAGE_SIZE } from "./pagination.js";
-import { getAuthorDetailOutputPath } from "./authors.js";
-import { renderAuthorDetail } from "./renderers/renderAuthorDetail.js";
-import { renderAuthorsIndex } from "./renderers/renderAuthorsIndex.js";
-import { renderAboutPage } from "./renderers/renderAboutPage.js";
-import { renderGlobalFeed } from "./renderers/renderGlobalFeed.js";
-import { renderSpaceDetail } from "./renderers/renderSpaceDetail.js";
-import { renderSpacesIndex } from "./renderers/renderSpacesIndex.js";
+import { listStaticRenderAssets } from "./renderAssets.js";
+import {
+  buildAuthorPageEntries,
+  buildCountryFeedPageEntries,
+  buildPrimaryFeedSectionPageEntries,
+  buildRootStaticPageEntries,
+  buildSecondaryFeedSectionPageEntries,
+  buildSpacePageEntries,
+} from "./renderSitePageBuilders.js";
 import { readJson, writeText } from "./storage.js";
-import { formatLoopProgressLog, formatPrimaryStreamProgressLog } from "./renderProgress.js";
+import { validateNormalizedRenderPayloadForDisplay } from "./renderInputValidation.js";
 import { slugify } from "./utils/slugify.js";
 import { filterNormalizedPayloadForDisplay } from "./visibleData.js";
 import {
-  buildCountryFeedContext,
-  buildCountryFeedModel,
-  listCountryFeeds,
-  listCountryFeedOptions,
-} from "./viewModels/countryFeeds.js";
-import {
-  buildAuthorDetailModel,
   buildAuthorDirectory,
   buildAuthorsIndexModel,
 } from "./viewModels/authors.js";
 import {
+  buildCountryFeedContext,
+  listCountryFeeds,
+} from "./viewModels/countryFeeds.js";
+import {
   buildFeedSectionContext,
-  buildFeedSectionModel,
   listFeedSections,
 } from "./viewModels/feedSections.js";
-import { buildSpaceDetailModel } from "./viewModels/spaceDetail.js";
 import { buildSpacesIndexModel } from "./viewModels/spacesIndex.js";
-
-const FAVICON_SOURCE_PATH = resolve(process.cwd(), "content/favicon.png");
 
 export async function renderSite({
   paths = PATHS,
@@ -54,253 +46,20 @@ export async function renderSite({
     normalizedPayload,
   });
 
-  const displayPayload = filterNormalizedPayloadForDisplay(data.normalizedPayload, { now });
-  logInfo(logger, `[render] loaded inputs: feeds=${displayPayload.feeds.length} failures=${displayPayload.failures.length}`);
-  const spacesIndexModel = buildSpacesIndexModel(displayPayload);
-  logInfo(logger, "[render] built spaces index model");
-  const spaceSlugs = [
-    ...new Set(
-      [
-        ...displayPayload.feeds.map((feed) => slugify(feed.spaceName)),
-        ...displayPayload.failures.map((failure) => slugify(failure.hackerspaceName)),
-      ].filter(Boolean),
-    ),
+  const context = buildRenderContext(data, { now, logger });
+  const pageEntries = [
+    ...buildRootStaticPageEntries(context),
+    ...buildPrimaryFeedSectionPageEntries(context, { logger }),
+    ...buildCountryFeedPageEntries(context, { logger }),
+    ...buildAuthorPageEntries(context, { logger }),
+    ...buildSecondaryFeedSectionPageEntries(context, { logger }),
+    ...buildSpacePageEntries(context, { logger }),
   ];
-
-  const pages = {
-    "index.html": renderSpacesIndex(spacesIndexModel),
-    "about/index.html": renderAboutPage(),
-  };
-
-  const feedSectionContext = buildFeedSectionContext(displayPayload);
-  const feedSections = listFeedSections(displayPayload, { context: feedSectionContext });
-  const countryFeedContext = buildCountryFeedContext(displayPayload, { feedSectionContext });
-  logInfo(logger, `[render] built feed sections: count=${feedSections.length}`);
-  const primarySection = feedSections.find((section) => section.id === FEED_CONTENT_STREAM_ID);
-  const secondarySections = feedSections.filter((section) => section.id !== FEED_CONTENT_STREAM_ID);
-
-  if (primarySection) {
-    const totalPages = Math.max(1, Math.ceil(primarySection.totalItems / GLOBAL_FEED_PAGE_SIZE));
-    logInfo(logger, `[render] rendering primary feed section: pages=${totalPages}`);
-    let lastPrimaryProgressAt = Date.now();
-
-    for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
-      if (
-        currentPage === 1 ||
-        currentPage === totalPages ||
-        currentPage % 100 === 0
-      ) {
-        const progressLog = formatPrimaryStreamProgressLog({
-          currentPage,
-          totalPages,
-          lastCheckpointAt: lastPrimaryProgressAt,
-          checkpointAt: Date.now(),
-        });
-        logInfo(
-          logger,
-          progressLog.message.replace(
-            "[render] primary stream progress",
-            "[render] primary feed section progress",
-          ),
-        );
-        lastPrimaryProgressAt = progressLog.checkpointAt;
-      }
-
-      const streamModel = buildFeedSectionModel(displayPayload, {
-        sectionId: primarySection.id,
-        currentPage,
-        context: feedSectionContext,
-      });
-      pages[getFeedSectionOutputPath(primarySection.id, currentPage)] = renderGlobalFeed({
-        ...streamModel,
-        countryOptions: listCountryFeedOptions(displayPayload, primarySection.id, null, {
-          context: countryFeedContext,
-        }),
-      });
-    }
-
-    logInfo(logger, "[render] rendered primary feed section");
-  }
-  const streamCountryFeeds = feedSections.flatMap((stream) =>
-    listCountryFeeds(displayPayload, {
-      context: countryFeedContext,
-      sectionId: stream.id,
-    }).map((countryFeed) => ({
-      ...countryFeed,
-      sectionId: stream.id,
-    })),
-  );
-  logInfo(logger, `[render] rendering country feeds: count=${streamCountryFeeds.length}`);
-  let lastCountryProgressAt = Date.now();
-
-  for (const [countryIndex, countryFeed] of streamCountryFeeds.entries()) {
-    const currentCountry = countryIndex + 1;
-    if (
-      currentCountry === 1 ||
-      currentCountry === streamCountryFeeds.length ||
-      currentCountry % 100 === 0
-    ) {
-      const progressLog = formatLoopProgressLog({
-        label: "country feeds",
-        currentIndex: currentCountry,
-        totalItems: streamCountryFeeds.length,
-        lastCheckpointAt: lastCountryProgressAt,
-        checkpointAt: Date.now(),
-      });
-      logInfo(logger, progressLog.message);
-      lastCountryProgressAt = progressLog.checkpointAt;
-    }
-
-    const streamCountryItems = countryFeedContext.itemsBySectionIdByCountry.get(countryFeed.sectionId);
-    const countryItems = streamCountryItems?.get(countryFeed.country) || [];
-    const totalPages = Math.max(1, Math.ceil(countryItems.length / GLOBAL_FEED_PAGE_SIZE));
-
-    for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
-      const countryModel = buildCountryFeedModel(displayPayload, countryFeed.sectionId, countryFeed.slug, {
-        currentPage,
-        context: countryFeedContext,
-      });
-      pages[getCountryFeedOutputPath(countryFeed.sectionId, countryFeed.country, currentPage)] = renderGlobalFeed(countryModel);
-    }
-  }
-  logInfo(logger, "[render] rendered country feeds");
-
-  logInfo(logger, "[render] building author directory");
-  const authorDirectory = buildAuthorDirectory(displayPayload);
-  logInfo(logger, "[render] built author directory");
-  const authorsIndexModel = buildAuthorsIndexModel(displayPayload, { authorDirectory });
-  logInfo(logger, `[render] built authors index model: authors=${authorsIndexModel.authors.length}`);
-  logInfo(
-    logger,
-    `[render] built page models: spaces=${spaceSlugs.length} authors=${authorsIndexModel.authors.length} sections=${feedSections.length}`,
-  );
-  pages["authors/index.html"] = renderAuthorsIndex(authorsIndexModel);
-
-  logInfo(logger, `[render] rendering author pages: authors=${authorsIndexModel.authors.length}`);
-  let lastAuthorProgressAt = Date.now();
-  for (const [authorIndex, author] of authorsIndexModel.authors.entries()) {
-    const currentAuthor = authorIndex + 1;
-    if (
-      currentAuthor === 1 ||
-      currentAuthor === authorsIndexModel.authors.length ||
-      currentAuthor % 100 === 0
-    ) {
-      const progressLog = formatLoopProgressLog({
-        label: "author pages",
-        currentIndex: currentAuthor,
-        totalItems: authorsIndexModel.authors.length,
-        lastCheckpointAt: lastAuthorProgressAt,
-        checkpointAt: Date.now(),
-      });
-      logInfo(logger, progressLog.message);
-      lastAuthorProgressAt = progressLog.checkpointAt;
-    }
-
-    const detailModel = buildAuthorDetailModel(displayPayload, author.slug, { authorDirectory });
-    const totalPages = detailModel.totalPages || 1;
-
-    for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
-      const pagedModel = buildAuthorDetailModel(displayPayload, author.slug, {
-        currentPage,
-        authorDirectory,
-      });
-      pages[getAuthorDetailOutputPath(author.slug, currentPage)] = renderAuthorDetail(pagedModel);
-    }
-  }
-  logInfo(logger, "[render] rendered author pages");
-
-  logInfo(logger, `[render] rendering secondary feed sections: count=${secondarySections.length}`);
-  for (const section of secondarySections) {
-    const totalPages = Math.max(1, Math.ceil(section.totalItems / GLOBAL_FEED_PAGE_SIZE));
-    logInfo(logger, `[render] secondary feed section ${section.id}: pages=${totalPages}`);
-    let lastSecondaryProgressAt = Date.now();
-
-    for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
-      if (
-        currentPage === 1 ||
-        currentPage === totalPages ||
-        currentPage % 100 === 0
-      ) {
-        const progressLog = formatPrimaryStreamProgressLog({
-          currentPage,
-          totalPages,
-          lastCheckpointAt: lastSecondaryProgressAt,
-          checkpointAt: Date.now(),
-        });
-        logInfo(
-          logger,
-          progressLog.message.replace(
-            "[render] primary stream progress",
-            `[render] secondary feed section ${section.id} progress`,
-          ),
-        );
-        lastSecondaryProgressAt = progressLog.checkpointAt;
-      }
-
-      const streamModel = buildFeedSectionModel(displayPayload, {
-        sectionId: section.id,
-        currentPage,
-        context: feedSectionContext,
-      });
-      pages[getFeedSectionOutputPath(section.id, currentPage)] = renderGlobalFeed({
-        ...streamModel,
-        countryOptions: listCountryFeedOptions(displayPayload, section.id, null, {
-          context: countryFeedContext,
-        }),
-      });
-    }
-  }
-  logInfo(logger, "[render] rendered secondary feed sections");
-
-  logInfo(logger, `[render] rendering space pages: spaces=${spaceSlugs.length}`);
-  let lastSpaceProgressAt = Date.now();
-  for (const [spaceIndex, spaceSlug] of spaceSlugs.entries()) {
-    const currentSpace = spaceIndex + 1;
-    if (
-      currentSpace === 1 ||
-      currentSpace === spaceSlugs.length ||
-      currentSpace % 100 === 0
-    ) {
-      const progressLog = formatLoopProgressLog({
-        label: "space pages",
-        currentIndex: currentSpace,
-        totalItems: spaceSlugs.length,
-        lastCheckpointAt: lastSpaceProgressAt,
-        checkpointAt: Date.now(),
-      });
-      logInfo(logger, progressLog.message);
-      lastSpaceProgressAt = progressLog.checkpointAt;
-    }
-
-    const detailModel = buildSpaceDetailModel(displayPayload, spaceSlug, { authorDirectory });
-    const totalPages = detailModel.totalPages || 1;
-
-    for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
-      const pagedModel = buildSpaceDetailModel(displayPayload, spaceSlug, {
-        currentPage,
-        authorDirectory,
-      });
-      const relativePath =
-        currentPage === 1
-          ? `spaces/${spaceSlug}.html`
-          : `spaces/${spaceSlug}/page/${currentPage}/index.html`;
-      pages[relativePath] = renderSpaceDetail(pagedModel);
-    }
-  }
-  logInfo(logger, "[render] rendered space pages");
+  const pages = Object.fromEntries(pageEntries);
 
   if (writePages) {
     logInfo(logger, `[render] writing pages: count=${Object.keys(pages).length}`);
-    await rm(distDir, { recursive: true, force: true });
-    await mkdir(distDir, { recursive: true });
-    await Promise.all(
-      [
-        ...Object.entries(pages).map(([relativePath, html]) =>
-          writeText(resolve(distDir, relativePath), html),
-        ),
-        copyFile(FAVICON_SOURCE_PATH, resolve(distDir, "favicon.png")),
-      ],
-    );
+    await writeRenderOutput({ distDir, pages });
   }
 
   logInfo(logger, `[render] render complete: pages=${Object.keys(pages).length}`);
@@ -313,12 +72,62 @@ export async function renderSite({
   };
 }
 
+// Shared render data is built once so page builders stay pure and reuse the same inputs.
+function buildRenderContext(data, { now, logger }) {
+  const displayPayload = filterNormalizedPayloadForDisplay(data.normalizedPayload, { now });
+  logInfo(logger, `[render] loaded inputs: feeds=${displayPayload.feeds.length} failures=${displayPayload.failures.length}`);
+
+  const spacesIndexModel = buildSpacesIndexModel(displayPayload);
+  logInfo(logger, "[render] built spaces index model");
+
+  const feedSectionContext = buildFeedSectionContext(displayPayload);
+  const feedSections = listFeedSections(displayPayload, { context: feedSectionContext });
+  const countryFeedContext = buildCountryFeedContext(displayPayload, { feedSectionContext });
+  logInfo(logger, `[render] built feed sections: count=${feedSections.length}`);
+
+  const spaceSlugs = [
+    ...new Set(
+      [
+        ...displayPayload.feeds.map((feed) => slugify(feed.spaceName)),
+        ...displayPayload.failures.map((failure) => slugify(failure.hackerspaceName)),
+      ].filter(Boolean),
+    ),
+  ];
+
+  logInfo(logger, "[render] building author directory");
+  const authorDirectory = buildAuthorDirectory(displayPayload);
+  logInfo(logger, "[render] built author directory");
+  const authorsIndexModel = buildAuthorsIndexModel(displayPayload, { authorDirectory });
+  logInfo(logger, `[render] built authors index model: authors=${authorsIndexModel.authors.length}`);
+  logInfo(
+    logger,
+    `[render] built page models: spaces=${spaceSlugs.length} authors=${authorsIndexModel.authors.length} sections=${feedSections.length}`,
+  );
+
+  return {
+    displayPayload,
+    spacesIndexModel,
+    feedSectionContext,
+    feedSections,
+    countryFeedContext,
+    listCountryFeedsForSection(sectionId) {
+      return listCountryFeeds(displayPayload, {
+        context: countryFeedContext,
+        sectionId,
+      });
+    },
+    spaceSlugs,
+    authorDirectory,
+    authorsIndexModel,
+  };
+}
+
 async function loadRenderInputs({ paths, sourceRowsPayload, validationsPayload, normalizedPayload }) {
   if (sourceRowsPayload && validationsPayload && normalizedPayload) {
     return {
       sourceRowsPayload,
       validationsPayload,
-      normalizedPayload,
+      normalizedPayload: validateNormalizedRenderPayloadForDisplay(normalizedPayload),
     };
   }
 
@@ -328,11 +137,26 @@ async function loadRenderInputs({ paths, sourceRowsPayload, validationsPayload, 
     normalizedPayload ?? readJson(paths.normalizedFeeds),
   ]);
 
+  const validatedNormalizedPayload = validateNormalizedRenderPayloadForDisplay(loadedNormalizedPayload);
+
   return {
     sourceRowsPayload: loadedSourceRowsPayload,
     validationsPayload: loadedValidationsPayload,
-    normalizedPayload: loadedNormalizedPayload,
+    normalizedPayload: validatedNormalizedPayload,
   };
+}
+
+async function writeRenderOutput({ distDir, pages }) {
+  await rm(distDir, { recursive: true, force: true });
+  await mkdir(distDir, { recursive: true });
+  await Promise.all([
+    ...Object.entries(pages).map(([relativePath, html]) =>
+      writeText(resolve(distDir, relativePath), html),
+    ),
+    ...listStaticRenderAssets().map((asset) =>
+      copyFile(asset.sourcePath, resolve(distDir, asset.outputPath)),
+    ),
+  ]);
 }
 
 function logInfo(logger, message) {

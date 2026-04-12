@@ -53,11 +53,7 @@ export function buildDisplayContent(item) {
 }
 
 export function renderDisplayContent(item) {
-  const display = buildDisplayContent(item);
-  const body = renderDisplayBody(display);
-  const attachments = renderAttachments(display.attachments);
-
-  return [body, attachments].filter(Boolean).join("");
+  return renderDisplayModel(buildDisplayContent(item));
 }
 
 export function sanitizeContentHtml(value) {
@@ -116,6 +112,20 @@ function renderDisplayBody(display) {
   }
 
   return "";
+}
+
+// Renderers can treat this as the stable HTML insertion boundary for prepared display content.
+export function renderDisplayModel(display) {
+  // Renderers may receive incomplete items during transitions, so a missing
+  // prepared display object degrades to an empty slot instead of broken HTML.
+  if (!display) {
+    return "";
+  }
+
+  const body = renderDisplayBody(display);
+  const attachments = renderAttachments(display.attachments);
+
+  return [body, attachments].filter(Boolean).join("");
 }
 
 function renderAttachments(attachments) {

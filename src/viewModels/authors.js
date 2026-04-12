@@ -7,6 +7,7 @@ import {
   normalizeAuthorLookupKey,
   parseAuthorValue,
 } from "../authors.js";
+import { buildDisplayContent } from "../contentDisplay.js";
 import { buildPageLinks, GLOBAL_FEED_PAGE_SIZE, paginateItems } from "../pagination.js";
 import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
@@ -316,6 +317,7 @@ function collectAllFeedItems(normalizedPayload) {
     .flatMap((feed) =>
       (feed.items || []).map((item) => ({
         ...item,
+        displayContent: buildDisplayContent(item),
         spaceName: feed.spaceName,
         country: feed.country,
         spaceHref: `/spaces/${slugify(feed.spaceName)}.html`,
