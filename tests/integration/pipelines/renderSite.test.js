@@ -175,19 +175,29 @@ describe("renderSite", () => {
       readFile(resolve(distDir, "spaces/betamachine.html"), "utf8"),
     ]);
     const franceFeedHtml = await readFile(resolve(distDir, "feed/countries/france/index.html"), "utf8");
+    const [siteCss, spacesIndexJs, authorsIndexJs, feedCountrySelectJs] = await Promise.all([
+      readFile(resolve(distDir, "site.css"), "utf8"),
+      readFile(resolve(distDir, "spaces-index.js"), "utf8"),
+      readFile(resolve(distDir, "authors-index.js"), "utf8"),
+      readFile(resolve(distDir, "feed-country-select.js"), "utf8"),
+    ]);
     await access(resolve(distDir, "favicon.png"));
 
     expect(indexHtml).toContain("Hackerspace News");
     expect(indexHtml).toContain("Search hackerspaces");
     expect(indexHtml).toContain("Search by hackerspace name");
     expect(indexHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
+    expect(indexHtml).toContain('<link rel="stylesheet" href="/site.css" />');
+    expect(indexHtml).toContain('<script src="/spaces-index.js"></script>');
     expect(aboutHtml).toContain("About");
     expect(aboutHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
+    expect(aboutHtml).toContain('<link rel="stylesheet" href="/site.css" />');
     expect(feedHtml).toContain("Feed");
     expect(feedHtml).toContain("All countries");
     expect(feedHtml).toContain("Germany");
     expect(feedHtml).toContain("feed-country-select");
     expect(feedHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
+    expect(feedHtml).toContain('<script src="/feed-country-select.js"></script>');
     expect(franceFeedHtml).toContain("Feed · France");
     expect(franceFeedHtml).toContain('value="/feed/countries/france/index.html" selected');
     const eventsHtml = await readFile(resolve(distDir, "events/index.html"), "utf8");
@@ -203,8 +213,15 @@ describe("renderSite", () => {
     expect(authorsHtml).toContain("Sort authors");
     expect(authorsHtml).toContain("Publication count");
     expect(authorsHtml).toContain("Latest publication");
+    expect(authorsHtml).toContain('<script src="/authors-index.js"></script>');
     expect(detailHtml).toContain("BetaMachine");
     expect(detailHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
+    expect(siteCss).toContain(".content-body.rich-html img");
+    expect(siteCss).toContain(".spaces-controls");
+    expect(siteCss).toContain(".authors-controls");
+    expect(spacesIndexJs).toContain("hackerspace-news-feed.query");
+    expect(authorsIndexJs).toContain("hackerspace-news-feed.authors.query");
+    expect(feedCountrySelectJs).toContain("window.location.href");
   });
 
   it("writes only the current render output into dist without leaving stale artifacts", async () => {
@@ -263,7 +280,7 @@ describe("renderSite", () => {
 
     const actualDistFiles = await listRelativeFiles(distDir);
     expect(actualDistFiles.sort()).toEqual(
-      [...Object.keys(result.pages), "favicon.png"].sort(),
+      [...Object.keys(result.pages), "favicon.png", "site.css", "spaces-index.js", "authors-index.js", "feed-country-select.js"].sort(),
     );
   });
 
@@ -479,6 +496,33 @@ describe("renderSite", () => {
     expect(result.pages["events/index.html"]).toContain("Page 1 of 2");
     expect(result.pages["events/page/2/index.html"]).toContain("Page 2 of 2");
     expect(result.pages["events/page/3/index.html"]).toBeUndefined();
+  });
+
+  it("rejects invalid normalized payloads before building page output", async () => {
+    await expect(() =>
+      renderSite({
+        sourceRowsPayload: {
+          sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
+          sectionTitle: "Spaces with RSS feeds",
+          extractedAt: "2026-03-19T20:00:00.000Z",
+          urls: [],
+        },
+        validationsPayload: [],
+        normalizedPayload: {
+          generatedAt: "2026-03-19T20:00:00.000Z",
+          sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
+          summary: {
+            sourceRows: 1,
+            validFeeds: 1,
+            parsedFeeds: "invalid",
+            emptyFeeds: 0,
+            failedFeeds: 0,
+          },
+          feeds: [],
+          failures: [],
+        },
+      }),
+    ).rejects.toThrow(/parsedFeeds/i);
   });
 
 });

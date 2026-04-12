@@ -6,6 +6,7 @@ import {
   getFeedSectionHref,
 } from "../feedSections.js";
 import { getAuthorsIndexHref } from "../authors.js";
+import { buildDisplayContent } from "../contentDisplay.js";
 import { GLOBAL_FEED_PAGE_SIZE, buildPageLinks, paginateItems } from "../pagination.js";
 import { buildAuthorDirectory, withAuthorLinks } from "./authors.js";
 import { slugify } from "../utils/slugify.js";
@@ -119,6 +120,7 @@ function collectAllFeedItems(normalizedPayload, authorDirectory) {
         withAuthorLinks(
           {
             ...item,
+            displayContent: buildDisplayContent(item),
             spaceName: feed.spaceName,
             country: feed.country,
             spaceHref: `/spaces/${slugify(feed.spaceName)}.html`,

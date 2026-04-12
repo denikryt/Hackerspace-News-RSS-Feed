@@ -1,9 +1,11 @@
 import { load } from "cheerio";
 
 import { escapeHtml } from "./renderers/layout.js";
-import { selectDisplayText, selectItemDisplayContent } from "./displayText.js";
+import { selectDisplayText, truncatePlainText, truncateHtml } from "./displayText.js";
 
 export { selectDisplayText } from "./displayText.js";
+
+const MAX_CONTENT_LENGTH = 500;
 
 const ALLOWED_TAGS = new Set([
   "p",
@@ -27,14 +29,42 @@ const ALLOWED_ATTRIBUTES = {
   img: new Set(["src", "alt", "title"]),
 };
 
-export function renderDisplayContent(item) {
-  const display = selectItemDisplayContent(item);
+export function buildDisplayContent(item) {
+  const sanitizedHtml = sanitizeContentHtml(item.contentHtml || item.summaryHtml);
   const attachments = normalizeDisplayAttachments(item.attachments);
-  const body = renderDisplayBody(display);
-  const readMore = renderReadMoreLink(item.link, display);
-  const attachmentsHtml = renderAttachments(attachments);
 
-  return [body, readMore, attachmentsHtml].filter(Boolean).join("");
+  if (sanitizedHtml) {
+    const plainLength = sanitizedHtml.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().length;
+    if (plainLength > MAX_CONTENT_LENGTH) {
+      const truncatedHtml = truncateHtml(sanitizedHtml, MAX_CONTENT_LENGTH);
+      if (truncatedHtml) {
+        return { renderMode: "html", html: truncatedHtml, wasTruncated: true, link: item.link, attachments };
+      }
+    }
+    return { renderMode: "html", html: sanitizedHtml, wasTruncated: false, attachments };
+  }
+
+  const text = normalizeText(item.contentText || item.summaryText || item.summary);
+
+  if (text) {
+    const truncated = truncatePlainText(text, MAX_CONTENT_LENGTH);
+    return {
+      renderMode: "text",
+      text: truncated.text,
+      wasTruncated: truncated.wasTruncated,
+      ...(truncated.wasTruncated ? { link: item.link } : {}),
+      attachments,
+    };
+  }
+
+  return {
+    renderMode: attachments.length > 0 ? "attachments" : "empty",
+    attachments,
+  };
+}
+
+export function renderDisplayContent(item) {
+  return renderDisplayModel(buildDisplayContent(item));
 }
 
 export function sanitizeContentHtml(value) {
@@ -84,25 +114,38 @@ export function sanitizeContentHtml(value) {
 }
 
 function renderDisplayBody(display) {
-  if (!display?.text) {
+  if (display.renderMode === "html" && display.html) {
+    return `<div class="content-body rich-html">${display.html}</div>`;
+  }
+
+  if (display.renderMode === "text" && display.text) {
+    return `<div class="content-body plain-text">${escapeHtml(display.text)}</div>`;
+  }
+
+  return "";
+}
+
+// Renderers can treat this as the stable HTML insertion boundary for prepared display content.
+export function renderDisplayModel(display) {
+  // Renderers may receive incomplete items during transitions, so a missing
+  // prepared display object degrades to an empty slot instead of broken HTML.
+  if (!display) {
     return "";
   }
 
-  if (display.format === "html") {
-    const sanitized = sanitizeContentHtml(display.text);
-    if (sanitized) {
-      return `<div class="content-body rich-html">${sanitized}</div>`;
-    }
+  const body = renderDisplayBody(display);
+  const readMore = renderReadMoreLink(display.link, display);
+  const attachments = renderAttachments(display.attachments);
 
-    const plain = stripHtml(display.text);
-    if (plain) {
-      return `<div class="content-body plain-text">${escapeHtml(plain)}</div>`;
-    }
+  return [body, readMore, attachments].filter(Boolean).join("");
+}
 
+function renderReadMoreLink(url, display) {
+  if (!display?.wasTruncated || !url || !isSafeUrl(url)) {
     return "";
   }
 
-  return `<div class="content-body plain-text">${escapeHtml(display.text)}</div>`;
+  return `<p class="content-read-more"><a href="${escapeHtml(url)}">Read more</a></p>`;
 }
 
 function renderAttachments(attachments) {
@@ -122,14 +165,6 @@ function renderAttachments(attachments) {
   return `<div class="attachments"><p class="field-label">Attachments</p><ul>${items}</ul></div>`;
 }
 
-function renderReadMoreLink(url, display) {
-  if (!display?.wasTruncated || !url || !isSafeUrl(url)) {
-    return "";
-  }
-
-  return `<p class="content-read-more"><a href="${escapeHtml(url)}">Read more</a></p>`;
-}
-
 function normalizeDisplayAttachments(attachments) {
   if (!Array.isArray(attachments) || attachments.length === 0) {
     return [];
@@ -144,17 +179,17 @@ function normalizeDisplayAttachments(attachments) {
     }));
 }
 
-function looksLikeHtml(value) {
-  return /<[^>]+>/.test(String(value));
+function normalizeText(value) {
+  if (!value) {
+    return undefined;
+  }
+
+  const normalized = String(value).replace(/\r\n/g, "\n").trim();
+  return normalized || undefined;
 }
 
-function stripHtml(value) {
-  const text = load(`<div id="root">${String(value ?? "")}</div>`, null, false)
-    .text()
-    .replace(/\s+/g, " ")
-    .trim();
-
-  return text || undefined;
+function looksLikeHtml(value) {
+  return /<[^>]+>/.test(String(value));
 }
 
 function isSafeUrl(value) {

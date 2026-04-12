@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { buildDisplayContent } from "../../../src/contentDisplay.js";
 import { renderGlobalFeed } from "../../../src/renderers/renderGlobalFeed.js";
 import { renderSpaceDetail } from "../../../src/renderers/renderSpaceDetail.js";
 
@@ -13,12 +14,9 @@ describe("content rendering", () => {
           spaceHref: "/spaces/betamachine.html",
           link: "https://example.com/plain-post",
           displayDate: "2025-01-01T10:00:00.000Z",
-          observed: {
-            summaryCandidates: [
-              { field: "summary", text: "First line\nSecond line" },
-            ],
-            contentCandidates: [],
-          },
+          displayContent: buildDisplayContent({
+            summaryText: "First line\nSecond line",
+          }),
           authorLinks: [
             { label: "Alice", href: "/authors/alice.html" },
             { label: "Bob", href: "/authors/bob.html" },
@@ -49,10 +47,7 @@ describe("content rendering", () => {
     expect(html).toContain('href="/authors/bob.html"');
     expect(html).toContain('class="global-feed-meta-line global-feed-meta-line-primary"');
     expect(html).toContain('class="global-feed-meta-line global-feed-meta-line-authors"');
-    expect(html).toContain(".global-feed-meta { display: grid !important;");
-    expect(html).toContain(".timeline-entry {");
-    expect(html).toContain("grid-template-columns: 7rem 1rem minmax(0, 1fr)");
-    expect(html).toContain("overflow-wrap: anywhere");
+    expect(html).toContain('<link rel="stylesheet" href="/site.css" />');
   });
 
   it("renders sanitized html content and attachment links on detail pages", () => {
@@ -82,15 +77,17 @@ describe("content rendering", () => {
             { label: "Alice", href: "/authors/alice.html" },
             { label: "Bob", href: "/authors/bob.html" },
           ],
-          contentHtml:
-            '<p>Hello <a href="https://example.com/post">link</a></p><script>alert(1)</script>',
+          displayContent: buildDisplayContent({
+            contentHtml:
+              '<p>Hello <a href="https://example.com/post">link</a></p><script>alert(1)</script>',
+            attachments: [
+              {
+                url: "https://example.com/audio.mp3",
+                type: "audio/mpeg",
+              },
+            ],
+          }),
           normalizedCategories: ["events", "news"],
-          attachments: [
-            {
-              url: "https://example.com/audio.mp3",
-              type: "audio/mpeg",
-            },
-          ],
         },
       ],
       homeHref: "/index.html",
@@ -103,8 +100,7 @@ describe("content rendering", () => {
     expect(html).toContain('href="/authors/bob.html"');
     expect(html).toContain("events, news");
     expect(html).not.toContain("<script");
-    expect(html).toContain("max-inline-size: min(100%, 42rem)");
-    expect(html).toContain('img[src*="emoji"]');
+    expect(html).toContain('<link rel="stylesheet" href="/site.css" />');
   });
 
   it("keeps short html content as rich html in the global feed", () => {
@@ -116,16 +112,10 @@ describe("content rendering", () => {
           spaceHref: "/spaces/betamachine.html",
           link: "https://example.com/post",
           displayDate: "2025-01-01T10:00:00.000Z",
-          observed: {
-            summaryCandidates: [{ field: "summary", text: "Fallback summary" }],
-            contentCandidates: [
-              {
-                field: "content:encoded",
-                html: '<p>Hello <a href="https://example.com/post">link</a></p>',
-                text: "Hello link",
-              },
-            ],
-          },
+          displayContent: buildDisplayContent({
+            contentHtml: '<p>Hello <a href="https://example.com/post">link</a></p>',
+            link: "https://example.com/post",
+          }),
         },
       ],
       homeHref: "/index.html",
@@ -150,16 +140,10 @@ describe("content rendering", () => {
           spaceHref: "/spaces/betamachine.html",
           link: "https://example.com/long-html-post",
           displayDate: "2025-01-01T10:00:00.000Z",
-          observed: {
-            summaryCandidates: [],
-            contentCandidates: [
-              {
-                field: "content:encoded",
-                html: longHtml,
-                text: `${"x".repeat(320)} ${"y".repeat(320)}`,
-              },
-            ],
-          },
+          displayContent: buildDisplayContent({
+            contentHtml: longHtml,
+            link: "https://example.com/long-html-post",
+          }),
         },
       ],
       homeHref: "/index.html",
@@ -186,10 +170,10 @@ describe("content rendering", () => {
           spaceHref: "/spaces/betamachine.html",
           link: "https://example.com/long-post",
           displayDate: "2025-01-01T10:00:00.000Z",
-          observed: {
-            summaryCandidates: [],
-            contentCandidates: [{ field: "content:encoded", text: longText }],
-          },
+          displayContent: buildDisplayContent({
+            contentText: longText,
+            link: "https://example.com/long-post",
+          }),
         },
       ],
       homeHref: "/index.html",
@@ -212,10 +196,10 @@ describe("content rendering", () => {
           title: "Long post",
           link: "https://example.com/long-post",
           displayDate: "2025-01-01T10:00:00.000Z",
-          observed: {
-            summaryCandidates: [],
-            contentCandidates: [{ field: "content:encoded", text: longText }],
-          },
+          displayContent: buildDisplayContent({
+            contentText: longText,
+            link: "https://example.com/long-post",
+          }),
         },
       ],
       homeHref: "/index.html",

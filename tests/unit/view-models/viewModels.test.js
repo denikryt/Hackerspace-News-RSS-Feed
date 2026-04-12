@@ -37,11 +37,7 @@ const normalizedPayload = {
           authorSource: "author",
           publishedAt: "2025-01-02T10:00:00.000Z",
           displayDate: "2025-01-02T10:00:00.000Z",
-          observed: {
-            summaryCandidates: [
-              { field: "summary", text: "Newest summary" },
-            ],
-          },
+          summaryText: "Newest summary",
         },
         {
           id: "b-future",
@@ -162,6 +158,10 @@ describe("multi-page view models", () => {
       { label: "Alice", href: "/authors/alice.html" },
       { label: "Bob", href: "/authors/bob.html" },
     ]);
+    expect(model.items[0].displayContent).toMatchObject({
+      renderMode: "text",
+      text: "Newest summary",
+    });
     expect(model.items[1].authorLinks).toEqual([]);
   });
 
@@ -213,6 +213,10 @@ describe("multi-page view models", () => {
         { label: "Alice", href: "/authors/alice.html" },
         { label: "Bob", href: "/authors/bob.html" },
       ],
+    });
+    expect(model.items[0].displayContent).toMatchObject({
+      renderMode: "text",
+      text: "Newest summary",
     });
     expect(model.items[1]).toMatchObject({
       title: "Older post",
