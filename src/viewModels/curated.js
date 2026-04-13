@@ -1,10 +1,11 @@
+import { buildDisplayContent } from "../contentDisplay.js";
 import { getAuthorsIndexHref } from "../authors.js";
 import { buildAuthorDirectory, withAuthorLinks } from "./authors.js";
 
 export function buildCuratedIndexModel(normalizedPayload) {
   const authorDirectory = buildAuthorDirectory(normalizedPayload);
   const items = (normalizedPayload.curated?.items || []).map((item) =>
-    withAuthorLinks(item, authorDirectory),
+    withAuthorLinks({ ...item, displayContent: buildDisplayContent(item) }, authorDirectory),
   );
 
   return {
