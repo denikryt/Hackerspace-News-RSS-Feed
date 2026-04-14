@@ -19,6 +19,60 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, "..");
 
 // ---------------------------------------------------------------------------
+// Country flags
+// ---------------------------------------------------------------------------
+
+const COUNTRY_FLAGS = {
+  "Argentina": "🇦🇷",
+  "Australia": "🇦🇺",
+  "Austria": "🇦🇹",
+  "Belgium": "🇧🇪",
+  "Bolivia": "🇧🇴",
+  "Brazil": "🇧🇷",
+  "Bulgaria": "🇧🇬",
+  "CANADA": "🇨🇦",
+  "Canada": "🇨🇦",
+  "Catalonia": "🏴",
+  "China": "🇨🇳",
+  "Colombia": "🇨🇴",
+  "Croatia": "🇭🇷",
+  "Czech Republic": "🇨🇿",
+  "Denmark": "🇩🇰",
+  "Egypt": "🇪🇬",
+  "Finland": "🇫🇮",
+  "France": "🇫🇷",
+  "Germany": "🇩🇪",
+  "Hong Kong": "🇭🇰",
+  "Hungary": "🇭🇺",
+  "India": "🇮🇳",
+  "Ireland": "🇮🇪",
+  "Israel": "🇮🇱",
+  "Italy": "🇮🇹",
+  "Latvia": "🇱🇻",
+  "Luxembourg": "🇱🇺",
+  "Mexico": "🇲🇽",
+  "Nepal": "🇳🇵",
+  "Netherlands": "🇳🇱",
+  "New Zealand": "🇳🇿",
+  "Nigeria": "🇳🇬",
+  "Norway": "🇳🇴",
+  "Pakistan": "🇵🇰",
+  "Poland": "🇵🇱",
+  "Romania": "🇷🇴",
+  "Russian Federation": "🇷🇺",
+  "Slovenia": "🇸🇮",
+  "South Africa": "🇿🇦",
+  "Spain": "🇪🇸",
+  "Sweden": "🇸🇪",
+  "Switzerland": "🇨🇭",
+  "Togo": "🇹🇬",
+  "Türkiye": "🇹🇷",
+  "Ukraine": "🇺🇦",
+  "United Kingdom": "🇬🇧",
+  "United States of America": "🇺🇸",
+};
+
+// ---------------------------------------------------------------------------
 // Section assignment
 // ---------------------------------------------------------------------------
 
@@ -235,10 +289,13 @@ function toDateStr(date) {
  * Links are relative so the output directory can be opened from any location.
  * selectedCountry is null for the all-countries view.
  */
-export function buildCountryOptions(availableCountries, currentDate, selectedCountry) {
-  // Depth of current page relative to outDir root:
-  //   common/ pages are 1 level deep  → prefix "../"
-  //   country/X/ pages are 2 levels deep → prefix "../../"
+/**
+ * Builds country selector options.
+ * availableDatesByCountry: Map<country, string[]> — dates sorted newest-first per country.
+ * Each country option links to the most recent available date for that country.
+ * "All countries" links to currentDate in common/.
+ */
+export function buildCountryOptions(availableCountries, currentDate, selectedCountry, availableDatesByCountry = new Map()) {
   const base = selectedCountry === null ? "../" : "../../";
 
   const allOption = {
@@ -246,11 +303,15 @@ export function buildCountryOptions(availableCountries, currentDate, selectedCou
     href: `${base}common/${currentDate}.html`,
     isSelected: selectedCountry === null,
   };
-  const countryOptions = availableCountries.map((country) => ({
-    label: country,
-    href: `${base}country/${encodeCountry(country)}/${currentDate}.html`,
-    isSelected: country === selectedCountry,
-  }));
+  const countryOptions = availableCountries.map((country) => {
+    const dates = availableDatesByCountry.get(country) || [];
+    const latestDate = dates[0] || currentDate;
+    return {
+      label: country,
+      href: `${base}country/${encodeCountry(country)}/${latestDate}.html`,
+      isSelected: country === selectedCountry,
+    };
+  });
   return [allOption, ...countryOptions];
 }
 
@@ -264,28 +325,33 @@ export function encodeCountry(country) {
  * Maps each item to the lightweight Item shape used by the renderer.
  * selectedCountry is null for the all-countries view, or a country string to filter by.
  */
-export function buildDayPage(rawItems, availableDates, currentDate, now, selectedCountry = null) {
-  // Group by section before mapping to Item — assignSection reads normalizedCategories
-  // which is only present on raw items, not on the rendered Item shape.
+/**
+ * Assembles the full DayPage model from raw items and available date list.
+ * dropdownDates: dates shown in the date dropdown — for country pages this is
+ * only dates that have items for that country; for all-countries it's all dates.
+ */
+export function buildDayPage(rawItems, availableDates, currentDate, now, selectedCountry = null, dropdownDates = null) {
   const sections = groupBySection(rawItems).map((section) => ({
     label: section.label,
     columns: distributeIntoColumns(section.items.map(toItem), 3),
   }));
   const nav = buildDateNav(availableDates, currentDate, now);
 
-  // Relative paths depend on depth: common/ is 1 level, country/X/ is 2 levels.
   const depth = selectedCountry === null ? 1 : 2;
   const up = "../".repeat(depth);
+
+  const dateHrefBase = selectedCountry === null
+    ? `${up}common/`
+    : `${up}country/${encodeCountry(selectedCountry)}/`;
 
   return {
     dateLabel: formatDayMonth(currentDate),
     currentDate,
     selectedCountry,
     cssHref: `${up}newspaper-prototype.css`,
-    dateHrefBase: `${up}common/`,
+    dateHrefBase,
     nav,
-    // Full list of available dates for the dropdown — newest first.
-    allDates: availableDates,
+    allDates: dropdownDates ?? availableDates,
     sections,
   };
 }
@@ -305,6 +371,8 @@ function toItem(raw) {
     sourceName: raw.spaceName || null,
     bodyText: raw.summaryText || raw.contentText || null,
     imageUrl: imageAttachment ? imageAttachment.url : null,
+    countryFlag: raw.country ? (COUNTRY_FLAGS[raw.country] || null) : null,
+    countryName: raw.country || null,
   };
 }
 
@@ -331,8 +399,12 @@ function renderItem(item) {
     ? `<img class="np-item-image" src="${esc(item.imageUrl)}" alt="">`
     : "";
 
-  const meta = [item.sourceName, item.author].filter(Boolean).join(" · ");
-  const metaHtml = meta ? `<p class="np-item-meta">${esc(meta)}</p>` : "";
+  const flagHtml = item.countryFlag && item.countryName
+    ? `<span title="${esc(item.countryName)}">${item.countryFlag}</span>`
+    : (item.countryFlag || "");
+  const metaParts = [flagHtml, item.sourceName, item.author].filter(Boolean);
+  const meta = metaParts.join(" · ");
+  const metaHtml = meta ? `<p class="np-item-meta">${meta}</p>` : "";
 
   // Clamp body text to keep columns balanced; full text available at link.
   const bodyHtml = item.bodyText
@@ -340,9 +412,9 @@ function renderItem(item) {
     : "";
 
   return `<article class="np-item">
-    ${image}
     <h3 class="np-item-title"><a href="${esc(item.link)}">${esc(item.title)}</a></h3>
     ${metaHtml}
+    ${image}
     ${bodyHtml}
   </article>`;
 }
@@ -352,6 +424,7 @@ function renderItem(item) {
  * The section header spans all columns as a full-width divider.
  */
 function renderSection(section) {
+  const totalItems = section.columns.reduce((sum, col) => sum + col.items.length, 0);
   const columnsHtml = section.columns
     .map(
       (col, i) =>
@@ -361,7 +434,7 @@ function renderSection(section) {
 
   return `<section class="np-section">
   <h2 class="np-section-header">${esc(section.label)}</h2>
-  <div class="np-columns">${columnsHtml}</div>
+  <div class="np-columns" data-items="${totalItems}">${columnsHtml}</div>
 </section>`;
 }
 
@@ -452,7 +525,7 @@ export function renderHtml(dayPage, countryOptions = []) {
         <h1 class="page-title">Hackerspace News</h1>
         <nav class="section-nav page-nav">
           <a href="/index.html">Hackerspaces</a>
-          <a href="/feed/index.html" aria-current="page">Feed</a>
+          <a href="/feed/index.html" aria-current="page">News</a>
           <a href="/curated/index.html">Curated</a>
           <a href="/authors/index.html">Authors</a>
         </nav>
@@ -518,35 +591,44 @@ const NEWSPAPER_CSS = `/*
   color: var(--text);
 }
 
-/* Three-column grid separated by thin vertical rules */
+/* Three-column newspaper layout using CSS columns — browser distributes items automatically */
 .np-columns {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0;
+  column-count: 3;
+  column-gap: 0;
+  column-rule: 1px solid var(--border);
+}
+.np-columns[data-items="1"] { column-count: 1; }
+.np-columns[data-items="2"] { column-count: 2; }
+
+@media (max-width: 600px) {
+  .np-columns {
+    column-count: 2;
+  }
 }
 
 .np-column {
-  padding: 0 0.6rem 1.5rem;
+  display: contents;
 }
 
-/* Thin vertical rule between columns */
 .np-column--rule {
-  border-right: 1px solid var(--border);
+  /* rules handled by column-rule above */
 }
 
-/* Item layout within a column */
+/* Item layout */
 .np-item {
-  margin-bottom: 1.5rem;
+  break-inside: avoid;
+  padding: 0 0.6rem 1.5rem;
   overflow-wrap: break-word;
   word-break: break-word;
 }
 
 .np-item-image {
-  width: 100%;
   display: block;
+  max-width: 100%;
+  max-height: 220px;
+  width: auto;
+  height: auto;
   margin-bottom: 0.6rem;
-  object-fit: cover;
-  max-height: 180px;
 }
 
 .np-item-title {
@@ -579,9 +661,15 @@ const NEWSPAPER_CSS = `/*
   color: var(--text);
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+@media (max-width: 600px) {
+  .np-item-body {
+    -webkit-line-clamp: 8;
+  }
 }
 `;
 
@@ -649,6 +737,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   // All countries that appear in the dataset, sorted.
   const allCountries = [...new Set(allItems.map((i) => i.country).filter(Boolean))].sort();
 
+  // Build availableDatesByCountry: Map<country, string[]> — dates sorted newest-first.
+  // Used for country dropdown (link to latest date) and date dropdown (only existing dates).
+  const availableDatesByCountry = new Map();
+  for (const country of allCountries) {
+    const countryDates = buildAvailableDates(allItems.filter((i) => i.country === country), today);
+    availableDatesByCountry.set(country, countryDates);
+  }
+
   // Directory structure:
   //   outDir/common/YYYY-MM-DD.html
   //   outDir/country/EncodedName/YYYY-MM-DD.html
@@ -664,8 +760,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const dayItems = allItems.filter((i) => i.displayDate && i.displayDate.slice(0, 10) === date);
 
     // All-countries page → common/YYYY-MM-DD.html
-    const dayPage = buildDayPage(dayItems, availableDates, date, now, null);
-    const countryOptions = buildCountryOptions(allCountries, date, null);
+    const dayPage = buildDayPage(dayItems, availableDates, date, now, null, availableDates);
+    const countryOptions = buildCountryOptions(allCountries, date, null, availableDatesByCountry);
     fs.writeFileSync(path.join(commonDir, `${date}.html`), renderHtml(dayPage, countryOptions), "utf8");
     console.log(`common/${date}.html  (${dayItems.length} items)`);
 
@@ -673,8 +769,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const countriesOnDay = [...new Set(dayItems.map((i) => i.country).filter(Boolean))].sort();
     for (const country of countriesOnDay) {
       const countryItems = dayItems.filter((i) => i.country === country);
-      const countryPage = buildDayPage(countryItems, availableDates, date, now, country);
-      const countryPageOptions = buildCountryOptions(allCountries, date, country);
+      const countryDates = availableDatesByCountry.get(country) || [];
+      const countryNavDates = countryDates.filter((d) => datesToRender.includes(d));
+      const countryPage = buildDayPage(countryItems, countryNavDates, date, now, country, countryNavDates);
+      const countryPageOptions = buildCountryOptions(allCountries, date, country, availableDatesByCountry);
       const countryDir = path.join(outDir, "country", encodeCountry(country));
       fs.mkdirSync(countryDir, { recursive: true });
       fs.writeFileSync(path.join(countryDir, `${date}.html`), renderHtml(countryPage, countryPageOptions), "utf8");
