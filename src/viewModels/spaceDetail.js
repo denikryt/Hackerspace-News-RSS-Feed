@@ -14,7 +14,7 @@ import {
 export function buildSpaceDetailModel(
   normalizedPayload,
   spaceSlug,
-  { currentPage = 1, pageSize = GLOBAL_FEED_PAGE_SIZE, authorDirectory } = {},
+  { currentPage = 1, pageSize = GLOBAL_FEED_PAGE_SIZE, authorDirectory, enrichedItems } = {},
 ) {
   const feed = (normalizedPayload.feeds || []).find(
     (entry) => slugify(entry.spaceName) === spaceSlug,
@@ -56,12 +56,9 @@ export function buildSpaceDetailModel(
   }
 
   const resolvedAuthorDirectory = authorDirectory || buildAuthorDirectory(normalizedPayload);
-  const allItems = (feed.items || [])
-    .map((item) => withAuthorLinks({
-      ...item,
-      displayContent: buildDisplayContent(item),
-    }, resolvedAuthorDirectory))
-    .sort(compareItemsByDateDesc);
+  // enrichedItems is threaded from page 1 to subsequent pages by the render loop so
+  // buildDisplayContent (cheerio parse) runs exactly once per item regardless of page count.
+  const allItems = enrichedItems ?? buildEnrichedItems(feed, resolvedAuthorDirectory);
   const pagination = paginateItems(allItems, currentPage, pageSize);
   const hrefForPage = (pageNumber) => getSpaceDetailHref(spaceSlug, pageNumber);
 
@@ -94,7 +91,21 @@ export function buildSpaceDetailModel(
     homeHref: "/index.html",
     feedHref: getFeedSectionHref(FEED_CONTENT_STREAM_ID, 1),
     authorsIndexHref: getAuthorsIndexHref(),
+    // Carried forward so the render loop can pass it to subsequent pages without
+    // rebuilding the enriched item list. Not intended for use by renderers.
+    _enrichedItems: allItems,
   };
+}
+
+// Builds the full enriched item list for a feed: display content + author links + sort.
+// Extracted so callers can pre-build it once and thread it across pages via enrichedItems.
+function buildEnrichedItems(feed, authorDirectory) {
+  return (feed.items || [])
+    .map((item) => withAuthorLinks({
+      ...item,
+      displayContent: buildDisplayContent(item),
+    }, authorDirectory))
+    .sort(compareItemsByDateDesc);
 }
 
 function compareItemsByDateDesc(a, b) {
