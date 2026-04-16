@@ -204,11 +204,6 @@ export function buildAuthorPageEntries(context, { logger } = {}) {
 
     entries.push(
       ...buildPaginatedEntityEntries({
-        getTotalPages() {
-          return buildAuthorDetailModel(context.displayPayload, author.slug, {
-            authorDirectory: context.authorDirectory,
-          }).totalPages || 1;
-        },
         renderPage(currentPage) {
           const pagedModel = buildAuthorDetailModel(context.displayPayload, author.slug, {
             currentPage,
@@ -217,6 +212,7 @@ export function buildAuthorPageEntries(context, { logger } = {}) {
           return [
             getAuthorDetailOutputPath(author.slug, currentPage),
             renderAuthorDetail(pagedModel),
+            pagedModel.totalPages,
           ];
         },
       }),
@@ -249,21 +245,21 @@ export function buildSpacePageEntries(context, { logger } = {}) {
 
     entries.push(
       ...buildPaginatedEntityEntries({
-        getTotalPages() {
-          return buildSpaceDetailModel(context.displayPayload, spaceSlug, {
-            authorDirectory: context.authorDirectory,
-          }).totalPages || 1;
-        },
-        renderPage(currentPage) {
+        // enrichedItems is undefined on page 1; the model builds it and returns it as
+        // _enrichedItems so subsequent pages can skip rebuilding display content.
+        renderPage(currentPage, enrichedItems) {
           const pagedModel = buildSpaceDetailModel(context.displayPayload, spaceSlug, {
             currentPage,
             authorDirectory: context.authorDirectory,
+            enrichedItems,
           });
           return [
             currentPage === 1
               ? `spaces/${spaceSlug}.html`
               : `spaces/${spaceSlug}/page/${currentPage}/index.html`,
             renderSpaceDetail(pagedModel),
+            pagedModel.totalPages,
+            pagedModel._enrichedItems,
           ];
         },
       }),
@@ -284,13 +280,18 @@ function shouldLogLoopCheckpoint(currentIndex, totalItems) {
   return currentIndex === 1 || currentIndex === totalItems || currentIndex % 100 === 0;
 }
 
-// Author and space detail builders share the same "discover total pages, then render each page" shape.
-function buildPaginatedEntityEntries({ getTotalPages, renderPage }) {
-  const totalPages = getTotalPages();
-  const entries = [];
+// Author and space detail builders share the same paginated render shape.
+// renderPage returns a [path, html, totalPages, cache] tuple. Page 1 is rendered first
+// to discover totalPages without a separate model build, then remaining pages follow.
+// The optional cache element lets callers thread pre-built data (e.g. enriched items)
+// through subsequent pages so expensive per-item work is not repeated.
+function buildPaginatedEntityEntries({ renderPage }) {
+  const [firstPath, firstHtml, totalPages, cache] = renderPage(1, undefined);
+  const entries = [[firstPath, firstHtml]];
 
-  for (let currentPage = 1; currentPage <= totalPages; currentPage += 1) {
-    entries.push(renderPage(currentPage));
+  for (let currentPage = 2; currentPage <= totalPages; currentPage += 1) {
+    const [path, html] = renderPage(currentPage, cache);
+    entries.push([path, html]);
   }
 
   return entries;
