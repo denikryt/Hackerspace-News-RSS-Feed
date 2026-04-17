@@ -6,6 +6,7 @@ import { listStaticRenderAssets } from "./renderAssets.js";
 import {
   buildAuthorPageEntries,
   buildCountryFeedPageEntries,
+  buildNewspaperFeedPageEntries,
   buildPrimaryFeedSectionPageEntries,
   buildRootStaticPageEntries,
   buildSecondaryFeedSectionPageEntries,
@@ -38,6 +39,7 @@ export async function renderSite({
   now = Date.now(),
   writePages = false,
   logger = null,
+  layout = "newspaper",
 } = {}) {
   const data = await loadRenderInputs({
     paths,
@@ -47,10 +49,23 @@ export async function renderSite({
   });
 
   const context = buildRenderContext(data, { now, logger });
+  const nowDate = now instanceof Date ? now : new Date(now);
+  const today = nowDate.toISOString().slice(0, 10);
+
+  const feedPageEntries = layout === "legacy-feed"
+    ? [
+        ...buildPrimaryFeedSectionPageEntries(context, { logger }),
+        ...buildCountryFeedPageEntries(context, { logger }),
+      ]
+    : [
+        ...buildNewspaperFeedPageEntries(data.normalizedPayload, { today, now: nowDate }, { logger }),
+        // Secondary section (non-primary) country pages still use the legacy builder.
+        ...buildCountryFeedPageEntries(context, { logger, excludePrimarySection: true }),
+      ];
+
   const pageEntries = [
     ...buildRootStaticPageEntries(context),
-    ...buildPrimaryFeedSectionPageEntries(context, { logger }),
-    ...buildCountryFeedPageEntries(context, { logger }),
+    ...feedPageEntries,
     ...buildAuthorPageEntries(context, { logger }),
     ...buildSecondaryFeedSectionPageEntries(context, { logger }),
     ...buildSpacePageEntries(context, { logger }),
@@ -149,11 +164,15 @@ async function loadRenderInputs({ paths, sourceRowsPayload, validationsPayload, 
 async function writeRenderOutput({ distDir, pages }) {
   await rm(distDir, { recursive: true, force: true });
   await mkdir(distDir, { recursive: true });
+  const assets = listStaticRenderAssets();
+  // Pre-create subdirectories for assets that live in subdirectories of dist/.
+  const assetDirs = [...new Set(assets.map((a) => resolve(distDir, a.outputPath).replace(/\/[^/]+$/, "")))];
+  await Promise.all(assetDirs.map((dir) => mkdir(dir, { recursive: true })));
   await Promise.all([
     ...Object.entries(pages).map(([relativePath, html]) =>
       writeText(resolve(distDir, relativePath), html),
     ),
-    ...listStaticRenderAssets().map((asset) =>
+    ...assets.map((asset) =>
       copyFile(asset.sourcePath, resolve(distDir, asset.outputPath)),
     ),
   ]);
