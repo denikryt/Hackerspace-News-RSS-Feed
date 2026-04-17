@@ -293,6 +293,7 @@ export function buildNewspaperFeedPageEntries(normalizedPayload, context, { logg
   const navItems = [
     { href: "/index.html", label: "Hackerspaces", isCurrent: false },
     { href: "/feed/index.html", label: "News", isCurrent: true },
+    { href: "/curated/index.html", label: "Curated", isCurrent: false },
     { href: "/authors/index.html", label: "Authors", isCurrent: false },
   ];
 
