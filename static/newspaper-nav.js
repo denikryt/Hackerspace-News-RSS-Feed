@@ -9,10 +9,15 @@
   var select = controls.querySelector(".np-date-select");
   if (!select) return;
 
-  fetch("/feed/dates.json")
+  fetch("/news/dates.json")
     .then(function (r) { return r.json(); })
     .then(function (data) {
-      var dates = selectedCountry ? (data.byCountry[selectedCountry] || []) : data.dates;
+      // The zero-date render case emits an empty array, while populated cases
+      // keep the richer { dates, byCountry } object for the date selector.
+      var normalized = Array.isArray(data)
+        ? { dates: data, byCountry: {} }
+        : { dates: data.dates || [], byCountry: data.byCountry || {} };
+      var dates = selectedCountry ? (normalized.byCountry[selectedCountry] || []) : normalized.dates;
       var frag = document.createDocumentFragment();
       dates.forEach(function (date) {
         var opt = document.createElement("option");

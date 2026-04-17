@@ -8,7 +8,7 @@ const renderLayoutShell = renderLayout as (props: { title: string; body: string;
 
 export function renderAuthorsIndexPageTsx(model: RecordLike) {
   const homeHref = model.homeHref || "/index.html";
-  const feedHref = model.feedHref || "/feed/index.html";
+  const feedHref = model.feedHref || "/news/index.html";
   const authorsIndexHref = model.authorsIndexHref || "/authors/index.html";
   const navItems: NavItems = [
     { href: homeHref, label: "Hackerspaces" },

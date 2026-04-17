@@ -35,7 +35,7 @@ describe("renderers-tsx shared primitive parity", () => {
       navClass: "page-nav--narrow",
       navItems: [
         { href: "/index.html", label: "Hackerspaces" },
-        { href: "/feed/index.html", label: "Feed", isCurrent: true },
+        { href: "/news/index.html", label: "News", isCurrent: true },
       ],
     };
 
@@ -48,12 +48,12 @@ describe("renderers-tsx shared primitive parity", () => {
       totalPages: 3,
       hasPreviousPage: true,
       hasNextPage: true,
-      previousPageHref: "/feed/index.html",
-      nextPageHref: "/feed/page/3/index.html",
+      previousPageHref: "/news/index.html",
+      nextPageHref: "/news/page/3/index.html",
       pageLinks: [
-        { type: "page", page: 1, href: "/feed/index.html", isCurrent: false },
-        { type: "page", page: 2, href: "/feed/page/2/index.html", isCurrent: true },
-        { type: "page", page: 3, href: "/feed/page/3/index.html", isCurrent: false },
+        { type: "page", page: 1, href: "/news/index.html", isCurrent: false },
+        { type: "page", page: 2, href: "/news/page/2/index.html", isCurrent: true },
+        { type: "page", page: 3, href: "/news/page/3/index.html", isCurrent: false },
       ],
     };
 
