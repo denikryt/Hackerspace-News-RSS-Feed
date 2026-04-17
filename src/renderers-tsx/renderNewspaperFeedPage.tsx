@@ -99,7 +99,7 @@ export function renderNewspaperFeedPageTsx(model: RecordLike): string {
     .map(renderSection)
     .join("\n");
 
-  const headerHtml = renderPageHeaderShell({ title: "Hackerspace News", navItems });
+  const headerHtml = renderPageHeaderShell({ title: "Hackerspace News", titleClass: "home-hero-title", headerClass: "page-header--wide page-header--compact", navClass: "page-nav--wide page-nav--compact", navItems });
   const navHtml = renderDateNav(model);
   const body = `${headerHtml}${navHtml}${sectionsHtml}`;
 
