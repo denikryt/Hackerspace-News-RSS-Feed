@@ -15,7 +15,7 @@ export function renderAuthorDetailPageTsx(model: RecordLike) {
     pageTitle: model.authorDisplayName,
     pageIntro: `${model.publicationCountLabel || ""} ${sourceLabel}`.trim(),
     streamNavItems: [
-      { href: model.feedHref, label: "Feed", isCurrent: false },
+      { href: model.feedHref, label: "News", isCurrent: false },
       { href: "/curated/index.html", label: "Curated", isCurrent: false },
       { href: model.authorsIndexHref, label: "Authors", isCurrent: false },
       { href: model.canonicalHref || model.authorsIndexHref, label: model.authorDisplayName, isCurrent: true },

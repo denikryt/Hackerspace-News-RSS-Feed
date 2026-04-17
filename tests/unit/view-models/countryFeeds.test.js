@@ -109,12 +109,12 @@ describe("country feed contracts", () => {
   it("builds a paginated country feed model without adding country pages to the section nav", () => {
     const model = buildCountryFeedModel(normalizedPayload, "feed", "france");
 
-    expect(model.pageTitle).toBe("Feed · France");
+    expect(model.pageTitle).toBe("News · France");
     expect(model.pageIntro).toBe("All publications sorted from new to old.");
     expect(model.items.map((item) => item.title)).toEqual(["French newest", "French older"]);
     expect(model.streamNavItems[0]).toEqual({
       href: "/feed/index.html",
-      label: "Feed",
+      label: "News",
       isCurrent: true,
     });
     expect(model.streamNavItems.some((item) => item.href.includes("/feed/countries/"))).toBe(false);

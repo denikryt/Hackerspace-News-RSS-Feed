@@ -12,7 +12,7 @@ export function renderAuthorsIndexPageTsx(model: RecordLike) {
   const authorsIndexHref = model.authorsIndexHref || "/authors/index.html";
   const navItems: NavItems = [
     { href: homeHref, label: "Hackerspaces" },
-    { href: feedHref, label: "Feed" },
+    { href: feedHref, label: "News" },
     { href: "/curated/index.html", label: "Curated" },
     { href: authorsIndexHref, label: "Authors", isCurrent: true },
   ];

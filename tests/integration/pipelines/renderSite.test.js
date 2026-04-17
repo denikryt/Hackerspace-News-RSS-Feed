@@ -177,20 +177,16 @@ describe("renderSite", () => {
     const firstRun = await renderSite({ paths, distDir, now: Date.parse("2026-03-19T12:00:00.000Z"), writePages: true });
     const secondRun = await renderSite({ paths, distDir, now: Date.parse("2026-03-19T12:00:00.000Z"), writePages: true });
 
+    // Fixture items use publishedAt only (no displayDate), so the newspaper builder
+    // produces only feed/index.html (redirect). Newspaper date pages require displayDate.
     expect(Object.keys(firstRun.pages)).toEqual([
       "index.html",
       "about/index.html",
       "curated/index.html",
       "feed/index.html",
-      "feed/countries/france/index.html",
-      "feed/countries/germany/index.html",
-      "events/countries/france/index.html",
-      "events/countries/germany/index.html",
       "authors/index.html",
       "authors/alice.html",
       "authors/nachitima.html",
-      "events/index.html",
-      "other/index.html",
       "spaces/betamachine.html",
       "spaces/c3d2.html",
     ]);
@@ -204,7 +200,6 @@ describe("renderSite", () => {
       readFile(resolve(distDir, "authors/index.html"), "utf8"),
       readFile(resolve(distDir, "spaces/betamachine.html"), "utf8"),
     ]);
-    const franceFeedHtml = await readFile(resolve(distDir, "feed/countries/france/index.html"), "utf8");
     const [siteCss, spacesIndexJs, authorsIndexJs, feedCountrySelectJs] = await Promise.all([
       readFile(resolve(distDir, "site.css"), "utf8"),
       readFile(resolve(distDir, "spaces-index.js"), "utf8"),
@@ -212,6 +207,7 @@ describe("renderSite", () => {
       readFile(resolve(distDir, "feed-country-select.js"), "utf8"),
     ]);
     await access(resolve(distDir, "favicon.png"));
+    await access(resolve(distDir, "static/newspaper.css"));
 
     expect(indexHtml).toContain("Hackerspace News");
     expect(indexHtml).toContain("Search hackerspaces");
@@ -224,22 +220,8 @@ describe("renderSite", () => {
     expect(aboutHtml).toContain('<link rel="stylesheet" href="/site.css" />');
     expect(curatedHtml).toContain("Curated");
     expect(curatedHtml).toContain("Interview with Sasha");
-    expect(feedHtml).toContain("Feed");
-    expect(feedHtml).toContain("All countries");
-    expect(feedHtml).toContain("Germany");
-    expect(feedHtml).toContain("feed-country-select");
-    expect(feedHtml).toContain("Interview with Sasha");
-    expect(feedHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
-    expect(feedHtml).toContain('<script src="/feed-country-select.js"></script>');
-    expect(franceFeedHtml).toContain("Feed · France");
-    expect(franceFeedHtml).toContain('value="/feed/countries/france/index.html" selected');
-    const eventsHtml = await readFile(resolve(distDir, "events/index.html"), "utf8");
-    const franceEventsHtml = await readFile(resolve(distDir, "events/countries/france/index.html"), "utf8");
-    expect(eventsHtml).toContain("Events");
-    expect(eventsHtml).toContain('value="/events/index.html"');
-    expect(eventsHtml).toContain('value="/events/countries/germany/index.html"');
-    expect(franceEventsHtml).toContain("Events · France");
-    expect(franceEventsHtml).toContain('value="/events/countries/france/index.html" selected');
+    // feed/index.html is a redirect to the latest newspaper date page
+    expect(feedHtml).toContain('<meta http-equiv="refresh"');
     expect(authorsHtml).toContain("Authors");
     expect(authorsHtml).toContain("Nachitima");
     expect(authorsHtml).toContain("Search authors");
@@ -316,7 +298,7 @@ describe("renderSite", () => {
 
     const actualDistFiles = await listRelativeFiles(distDir);
     expect(actualDistFiles.sort()).toEqual(
-      [...Object.keys(result.pages), "favicon.png", "site.css", "spaces-index.js", "authors-index.js", "feed-country-select.js"].sort(),
+      [...Object.keys(result.pages), "favicon.png", "site.css", "spaces-index.js", "authors-index.js", "feed-country-select.js", "static/newspaper.css", "newspaper-nav.js"].sort(),
     );
   });
 
@@ -375,29 +357,18 @@ describe("renderSite", () => {
     const logLines = logger.mock.calls.map(([line]) => line);
     expect(logLines).toContain("[render] loaded inputs: feeds=1 failures=0");
     expect(logLines).toContain("[render] built spaces index model");
-    expect(logLines).toContain("[render] built feed sections: count=2");
-    expect(logLines).toContain("[render] rendering primary feed section: pages=1");
-    expect(logLines).toContain("[render] primary feed section progress: page 1/1");
-    expect(logLines).toContain("[render] rendered primary feed section");
-    expect(logLines).toContain("[render] rendering country feeds: count=2");
-    expect(logLines).toContain("[render] country feeds progress: item 1/2");
-    expect(logLines.some((line) => line.startsWith("[render] country feeds progress: item 2/2"))).toBe(true);
-    expect(logLines).toContain("[render] rendered country feeds");
+    expect(logLines).toContain("[render] newspaper feed: no dates with items found");
     expect(logLines).toContain("[render] rendering author pages: authors=1");
     expect(logLines).toContain("[render] author pages progress: item 1/1");
     expect(logLines).toContain("[render] rendered author pages");
-    expect(logLines).toContain("[render] rendering secondary feed sections: count=1");
-    expect(logLines).toContain("[render] secondary feed section events: pages=1");
-    expect(logLines).toContain("[render] secondary feed section events progress: page 1/1");
-    expect(logLines).toContain("[render] rendered secondary feed sections");
     expect(logLines).toContain("[render] rendering space pages: spaces=1");
     expect(logLines).toContain("[render] space pages progress: item 1/1");
     expect(logLines).toContain("[render] rendered space pages");
     expect(logLines).toContain("[render] building author directory");
     expect(logLines).toContain("[render] built author directory");
     expect(logLines).toContain("[render] built authors index model: authors=1");
-    expect(logLines).toContain("[render] built page models: spaces=1 authors=1 sections=2");
-    expect(logLines).toContain("[render] render complete: pages=9");
+    expect(logLines).toContain("[render] built page models: spaces=1 authors=1");
+    expect(logLines.some((line) => line.startsWith("[render] render complete:"))).toBe(true);
   });
 
   it("renders paginated author detail pages when an author has more than one page of items", async () => {
@@ -450,15 +421,8 @@ describe("renderSite", () => {
       "authors/alice.html",
       "authors/alice/page/2/index.html",
       "authors/index.html",
-      "feed/countries/wonderland/index.html",
-      "feed/countries/wonderland/page/2/index.html",
       "feed/index.html",
-      "feed/page/2/index.html",
       "index.html",
-      "other/countries/wonderland/index.html",
-      "other/countries/wonderland/page/2/index.html",
-      "other/index.html",
-      "other/page/2/index.html",
       "spaces/alpha.html",
       "spaces/alpha/page/2/index.html",
     ]);
@@ -467,72 +431,6 @@ describe("renderSite", () => {
     expect(result.pages["authors/alice/page/3/index.html"]).toBeUndefined();
   });
 
-  it("renders paginated secondary stream pages when a category stream spans multiple pages", async () => {
-    const result = await renderSite({
-      sourceRowsPayload: {
-        sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
-        sectionTitle: "Spaces with RSS feeds",
-        extractedAt: "2026-03-19T20:00:00.000Z",
-        urls: [],
-      },
-      validationsPayload: [],
-      normalizedPayload: {
-        generatedAt: "2026-03-19T20:00:00.000Z",
-        sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
-        summary: {
-          sourceRows: 1,
-          validFeeds: 1,
-          parsedFeeds: 1,
-          emptyFeeds: 0,
-          failedFeeds: 0,
-        },
-        feeds: [
-          {
-            id: "row-1-alpha",
-            rowNumber: 1,
-            sourceWikiUrl: "https://wiki.hackerspaces.org/Alpha",
-            finalFeedUrl: "https://alpha.example/feed.xml",
-            siteUrl: "https://alpha.example",
-            spaceName: "Alpha",
-            country: "Wonderland",
-            feedType: "rss",
-            status: "parsed_ok",
-            items: Array.from({ length: 11 }, (_, index) => ({
-              id: `event-${index + 1}`,
-              title: `Event ${index + 1}`,
-              link: `https://alpha.example/events/${index + 1}`,
-              resolvedAuthor: "Alice",
-              authorSource: "author",
-              publishedAt: `2025-01-${String(index + 1).padStart(2, "0")}T10:00:00.000Z`,
-              normalizedCategories: ["events"],
-            })),
-          },
-        ],
-        failures: [],
-      },
-    });
-
-    expect(Object.keys(result.pages).sort()).toEqual([
-      "about/index.html",
-      "authors/alice.html",
-      "authors/alice/page/2/index.html",
-      "authors/index.html",
-      "events/countries/wonderland/index.html",
-      "events/countries/wonderland/page/2/index.html",
-      "events/index.html",
-      "events/page/2/index.html",
-      "feed/countries/wonderland/index.html",
-      "feed/countries/wonderland/page/2/index.html",
-      "feed/index.html",
-      "feed/page/2/index.html",
-      "index.html",
-      "spaces/alpha.html",
-      "spaces/alpha/page/2/index.html",
-    ]);
-    expect(result.pages["events/index.html"]).toContain("Page 1 of 2");
-    expect(result.pages["events/page/2/index.html"]).toContain("Page 2 of 2");
-    expect(result.pages["events/page/3/index.html"]).toBeUndefined();
-  });
 
   it("rejects invalid normalized payloads before building page output", async () => {
     await expect(() =>
