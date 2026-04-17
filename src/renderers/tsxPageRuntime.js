@@ -9,6 +9,7 @@ export const {
   renderAuthorDetailPageTsx,
   renderAuthorsIndexPageTsx,
   renderGlobalFeedPageTsx,
+  renderNewspaperFeedPageTsx,
   renderSpaceDetailPageTsx,
   renderSpacesIndexPageTsx,
 } = pageModule;

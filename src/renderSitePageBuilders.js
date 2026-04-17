@@ -9,6 +9,7 @@ import { renderAuthorsIndex } from "./renderers/renderAuthorsIndex.js";
 import { renderGlobalFeed } from "./renderers/renderGlobalFeed.js";
 import { renderSpaceDetail } from "./renderers/renderSpaceDetail.js";
 import { renderSpacesIndex } from "./renderers/renderSpacesIndex.js";
+import { renderNewspaperFeedPageTsx } from "./renderers/tsxPageRuntime.js";
 import { buildAuthorDetailModel } from "./viewModels/authors.js";
 import {
   buildCountryFeedModel,
@@ -16,6 +17,12 @@ import {
 } from "./viewModels/countryFeeds.js";
 import { buildFeedSectionModel } from "./viewModels/feedSections.js";
 import { buildSpaceDetailModel } from "./viewModels/spaceDetail.js";
+import {
+  buildAvailableDatesByCountry,
+  buildAvailableDatesFromPayload,
+  buildNewspaperDayModel,
+  encodeCountryForPath,
+} from "./viewModels/newspaperFeed.js";
 
 // Root pages do not depend on pagination loops, so keep them as a small stable builder.
 export function buildRootStaticPageEntries(context) {
@@ -77,8 +84,14 @@ export function buildPrimaryFeedSectionPageEntries(context, { logger } = {}) {
 }
 
 // Country pages are grouped by section first so output order stays deterministic.
-export function buildCountryFeedPageEntries(context, { logger } = {}) {
-  const streamCountryFeeds = context.feedSections.flatMap((stream) =>
+// excludePrimarySection: when true, skips the primary feed section (used in newspaper mode
+// where primary feed country pages are replaced by per-day newspaper pages).
+export function buildCountryFeedPageEntries(context, { logger, excludePrimarySection = false } = {}) {
+  const sections = excludePrimarySection
+    ? context.feedSections.filter((s) => s.id !== FEED_CONTENT_STREAM_ID)
+    : context.feedSections;
+
+  const streamCountryFeeds = sections.flatMap((stream) =>
     context.listCountryFeedsForSection(stream.id).map((countryFeed) => ({
       ...countryFeed,
       sectionId: stream.id,
@@ -267,6 +280,99 @@ export function buildSpacePageEntries(context, { logger } = {}) {
   }
 
   logInfo(logger, "[render] rendered space pages");
+  return entries;
+}
+
+export function buildNewspaperFeedPageEntries(normalizedPayload, context, { logger } = {}) {
+  const today = context.today || new Date().toISOString().slice(0, 10);
+  const now = context.now || new Date();
+
+  const availableDates = buildAvailableDatesFromPayload(normalizedPayload, today);
+  const availableDatesByCountry = buildAvailableDatesByCountry(normalizedPayload, today);
+
+  const navItems = [
+    { href: "/index.html", label: "Hackerspaces", isCurrent: false },
+    { href: "/feed/index.html", label: "News", isCurrent: true },
+    { href: "/authors/index.html", label: "Authors", isCurrent: false },
+  ];
+
+  if (availableDates.length === 0) {
+    logInfo(logger, "[render] newspaper feed: no dates with items found");
+    return [["feed/index.html", '<meta http-equiv="refresh" content="0;url=./">']];
+  }
+
+  const allItems = (normalizedPayload.feeds || []).flatMap((feed) =>
+    (feed.items || []).map((item) => ({
+      title: item.title,
+      link: item.link,
+      displayDate: item.displayDate,
+      resolvedAuthor: item.resolvedAuthor,
+      summaryText: item.summaryText,
+      normalizedCategories: item.normalizedCategories,
+      attachments: item.attachments,
+      spaceName: feed.spaceName,
+      country: feed.country,
+    })),
+  );
+
+  // Group items by date once — avoids O(dates × items) repeated filtering.
+  const itemsByDate = new Map();
+  for (const item of allItems) {
+    const date = item.displayDate?.slice(0, 10);
+    if (!date) continue;
+    if (!itemsByDate.has(date)) itemsByDate.set(date, []);
+    itemsByDate.get(date).push(item);
+  }
+
+  logInfo(logger, `[render] newspaper feed: dates=${availableDates.length}`);
+  const entries = [];
+  let lastProgressAt = Date.now();
+
+  for (const [dateIndex, date] of availableDates.entries()) {
+    const currentDate = dateIndex + 1;
+    if (shouldLogLoopCheckpoint(currentDate, availableDates.length)) {
+      const progressLog = formatLoopProgressLog({
+        label: "newspaper feed",
+        currentIndex: currentDate,
+        totalItems: availableDates.length,
+        lastCheckpointAt: lastProgressAt,
+        checkpointAt: Date.now(),
+      });
+      logInfo(logger, progressLog.message);
+      lastProgressAt = progressLog.checkpointAt;
+    }
+
+    const dayItems = itemsByDate.get(date) || [];
+
+    // All-countries page
+    const dayModel = buildNewspaperDayModel(dayItems, date, now, null, availableDates, availableDatesByCountry, { navItems });
+    entries.push([`feed/${date}/index.html`, renderNewspaperFeedPageTsx(dayModel)]);
+
+    // Per-country pages — only for countries that have items on this date
+    const countriesOnDay = [...new Set(dayItems.map((i) => i.country).filter(Boolean))].sort();
+    for (const country of countriesOnDay) {
+      const countryItems = dayItems.filter((i) => i.country === country);
+      const countryModel = buildNewspaperDayModel(countryItems, date, now, country, availableDates, availableDatesByCountry, { navItems });
+      entries.push([`feed/${date}/${encodeCountryForPath(country)}/index.html`, renderNewspaperFeedPageTsx(countryModel)]);
+    }
+  }
+
+  // Shared date index — loaded by newspaper-nav.js to populate date <select> on the client.
+  // Avoids embedding 4000+ <option> elements in every HTML page.
+  const byCountry = {};
+  for (const [country, dates] of availableDatesByCountry) {
+    byCountry[country] = dates;
+  }
+  entries.push(["feed/dates.json", JSON.stringify({ dates: availableDates, byCountry })]);
+
+  // Redirect from /feed/index.html to most recent date
+  const latestDate = availableDates[0];
+  entries.push([
+    "feed/index.html",
+    `<!doctype html><html><head><meta http-equiv="refresh" content="0;url=${latestDate}/" /><title>Redirecting…</title></head><body></body></html>`,
+  ]);
+
+  logInfo(logger, `[render] newspaper feed: rendered ${entries.length} pages`);
   return entries;
 }
 
