@@ -4,6 +4,7 @@ import { relative, resolve } from "node:path";
 import {
   AUTHORS_INDEX_SCRIPT_HREF,
   FEED_COUNTRY_SELECT_SCRIPT_HREF,
+  NEWSPAPER_NAV_SCRIPT_HREF,
   SITE_CSS_HREF,
   SPACES_INDEX_SCRIPT_HREF,
   listStaticRenderAssets,
@@ -15,6 +16,7 @@ describe("renderAssets", () => {
     expect(FEED_COUNTRY_SELECT_SCRIPT_HREF).toBe("/feed-country-select.js");
     expect(SPACES_INDEX_SCRIPT_HREF).toBe("/spaces-index.js");
     expect(AUTHORS_INDEX_SCRIPT_HREF).toBe("/authors-index.js");
+    expect(NEWSPAPER_NAV_SCRIPT_HREF).toBe("/newspaper-nav.js");
   });
 
   it("lists the static asset manifest copied into dist during render", () => {
@@ -26,6 +28,8 @@ describe("renderAssets", () => {
       "feed-country-select.js",
       "spaces-index.js",
       "authors-index.js",
+      "static/newspaper.css",
+      "newspaper-nav.js",
     ]);
 
     expect(assets.map((asset) => relative(resolve(process.cwd(), "static"), asset.sourcePath))).toEqual([
@@ -34,6 +38,8 @@ describe("renderAssets", () => {
       "feed-country-select.js",
       "spaces-index.js",
       "authors-index.js",
+      "newspaper.css",
+      "newspaper-nav.js",
     ]);
   });
 });

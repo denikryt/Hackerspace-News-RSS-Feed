@@ -13,7 +13,7 @@ describe("renderAboutPage", () => {
     expect(html).not.toContain('class="about-link-muted" href="/about/index.html"');
     expect(html).toContain('href="/index.html"');
     expect(html).toContain('href="/feed/index.html"');
-    expect(html).toContain(">Feed<");
+    expect(html).toContain(">News<");
     expect(html).toContain('href="/curated/index.html"');
     expect(html).toContain(">Curated<");
     expect(html).toContain('href="/authors/index.html"');

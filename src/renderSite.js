@@ -5,10 +5,8 @@ import { DIST_DIR, PATHS } from "./config.js";
 import { listStaticRenderAssets } from "./renderAssets.js";
 import {
   buildAuthorPageEntries,
-  buildCountryFeedPageEntries,
-  buildPrimaryFeedSectionPageEntries,
+  buildNewspaperFeedPageEntries,
   buildRootStaticPageEntries,
-  buildSecondaryFeedSectionPageEntries,
   buildSpacePageEntries,
 } from "./renderSitePageBuilders.js";
 import { renderGlobalFeed } from "./renderers/renderGlobalFeed.js";
@@ -21,14 +19,6 @@ import {
   buildAuthorDirectory,
   buildAuthorsIndexModel,
 } from "./viewModels/authors.js";
-import {
-  buildCountryFeedContext,
-  listCountryFeeds,
-} from "./viewModels/countryFeeds.js";
-import {
-  buildFeedSectionContext,
-  listFeedSections,
-} from "./viewModels/feedSections.js";
 import { buildSpacesIndexModel } from "./viewModels/spacesIndex.js";
 
 export async function renderSite({
@@ -51,13 +41,14 @@ export async function renderSite({
   });
 
   const context = buildRenderContext(data, { now, logger });
+  const nowDate = now instanceof Date ? now : new Date(now);
+  const today = nowDate.toISOString().slice(0, 10);
+
   const pageEntries = [
     ...buildRootStaticPageEntries(context),
     ...buildCuratedPageEntries(context),
-    ...buildPrimaryFeedSectionPageEntries(context, { logger }),
-    ...buildCountryFeedPageEntries(context, { logger }),
+    ...buildNewspaperFeedPageEntries(data.normalizedPayload, { today, now: nowDate }, { logger }),
     ...buildAuthorPageEntries(context, { logger }),
-    ...buildSecondaryFeedSectionPageEntries(context, { logger }),
     ...buildSpacePageEntries(context, { logger }),
   ];
   const pages = Object.fromEntries(pageEntries);
@@ -86,11 +77,6 @@ function buildRenderContext(data, { now, logger }) {
   const spacesIndexModel = buildSpacesIndexModel(displayPayload);
   logInfo(logger, "[render] built spaces index model");
 
-  const feedSectionContext = buildFeedSectionContext(displayPayload);
-  const feedSections = listFeedSections(displayPayload, { context: feedSectionContext });
-  const countryFeedContext = buildCountryFeedContext(displayPayload, { feedSectionContext });
-  logInfo(logger, `[render] built feed sections: count=${feedSections.length}`);
-
   const spaceSlugs = [
     ...new Set(
       [
@@ -105,23 +91,11 @@ function buildRenderContext(data, { now, logger }) {
   logInfo(logger, "[render] built author directory");
   const authorsIndexModel = buildAuthorsIndexModel(displayPayload, { authorDirectory });
   logInfo(logger, `[render] built authors index model: authors=${authorsIndexModel.authors.length}`);
-  logInfo(
-    logger,
-    `[render] built page models: spaces=${spaceSlugs.length} authors=${authorsIndexModel.authors.length} sections=${feedSections.length}`,
-  );
+  logInfo(logger, `[render] built page models: spaces=${spaceSlugs.length} authors=${authorsIndexModel.authors.length}`);
 
   return {
     displayPayload,
     spacesIndexModel,
-    feedSectionContext,
-    feedSections,
-    countryFeedContext,
-    listCountryFeedsForSection(sectionId) {
-      return listCountryFeeds(displayPayload, {
-        context: countryFeedContext,
-        sectionId,
-      });
-    },
     spaceSlugs,
     authorDirectory,
     authorsIndexModel,
@@ -213,11 +187,15 @@ async function readOptionalCuratedPayload(paths) {
 async function writeRenderOutput({ distDir, pages }) {
   await rm(distDir, { recursive: true, force: true });
   await mkdir(distDir, { recursive: true });
+  const assets = listStaticRenderAssets();
+  // Pre-create subdirectories for assets that live in subdirectories of dist/.
+  const assetDirs = [...new Set(assets.map((a) => resolve(distDir, a.outputPath).replace(/\/[^/]+$/, "")))];
+  await Promise.all(assetDirs.map((dir) => mkdir(dir, { recursive: true })));
   await Promise.all([
     ...Object.entries(pages).map(([relativePath, html]) =>
       writeText(resolve(distDir, relativePath), html),
     ),
-    ...listStaticRenderAssets().map((asset) =>
+    ...assets.map((asset) =>
       copyFile(asset.sourcePath, resolve(distDir, asset.outputPath)),
     ),
   ]);
