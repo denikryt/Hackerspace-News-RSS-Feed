@@ -95,7 +95,7 @@ describe("renderNewspaperFeedPageTsx — site nav", () => {
 
   it("contains News link with aria-current=page", () => {
     const html = renderNewspaperFeedPageTsx(BASE_MODEL);
-    expect(html).toContain('href="/feed/index.html"');
+    expect(html).toContain('href="/news/index.html"');
     expect(html).toContain("News");
   });
 

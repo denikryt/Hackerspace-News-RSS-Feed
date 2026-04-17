@@ -140,7 +140,7 @@ describe("renderSite", () => {
       failures: [],
     };
 
-    await mkdir(resolve(distDir, "feed"), { recursive: true });
+    await mkdir(resolve(distDir, "news"), { recursive: true });
 
     await Promise.all([
       writeJson(paths.sourceRows, sourceRowsPayload),
@@ -152,11 +152,12 @@ describe("renderSite", () => {
     const secondRun = await renderSite({ paths, distDir, now: Date.parse("2026-03-19T12:00:00.000Z"), writePages: true });
 
     // Fixture items use publishedAt only (no displayDate), so the newspaper builder
-    // produces only feed/index.html (redirect). Newspaper date pages require displayDate.
+    // produces only the base /news artifacts. Newspaper date pages require displayDate.
     expect(Object.keys(firstRun.pages)).toEqual([
       "index.html",
       "about/index.html",
-      "feed/index.html",
+      "news/dates.json",
+      "news/index.html",
       "authors/index.html",
       "authors/alice.html",
       "spaces/betamachine.html",
@@ -164,18 +165,18 @@ describe("renderSite", () => {
     ]);
     expect(secondRun.pages).toEqual(firstRun.pages);
 
-    const [indexHtml, aboutHtml, feedHtml, authorsHtml, detailHtml] = await Promise.all([
+    const [indexHtml, aboutHtml, newsDatesJson, feedHtml, authorsHtml, detailHtml] = await Promise.all([
       readFile(resolve(distDir, "index.html"), "utf8"),
       readFile(resolve(distDir, "about/index.html"), "utf8"),
-      readFile(resolve(distDir, "feed/index.html"), "utf8"),
+      readFile(resolve(distDir, "news/dates.json"), "utf8"),
+      readFile(resolve(distDir, "news/index.html"), "utf8"),
       readFile(resolve(distDir, "authors/index.html"), "utf8"),
       readFile(resolve(distDir, "spaces/betamachine.html"), "utf8"),
     ]);
-    const [siteCss, spacesIndexJs, authorsIndexJs, feedCountrySelectJs] = await Promise.all([
+    const [siteCss, spacesIndexJs, authorsIndexJs] = await Promise.all([
       readFile(resolve(distDir, "site.css"), "utf8"),
       readFile(resolve(distDir, "spaces-index.js"), "utf8"),
       readFile(resolve(distDir, "authors-index.js"), "utf8"),
-      readFile(resolve(distDir, "feed-country-select.js"), "utf8"),
     ]);
     await access(resolve(distDir, "favicon.png"));
     await access(resolve(distDir, "static/newspaper.css"));
@@ -189,7 +190,8 @@ describe("renderSite", () => {
     expect(aboutHtml).toContain("About");
     expect(aboutHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
     expect(aboutHtml).toContain('<link rel="stylesheet" href="/site.css" />');
-    // feed/index.html is a redirect to the latest newspaper date page
+    expect(JSON.parse(newsDatesJson)).toEqual([]);
+    // news/index.html is a redirect to the latest newspaper date page
     expect(feedHtml).toContain('<meta http-equiv="refresh"');
     expect(authorsHtml).toContain("Authors");
     expect(authorsHtml).toContain("Search authors");
@@ -205,7 +207,6 @@ describe("renderSite", () => {
     expect(siteCss).toContain(".authors-controls");
     expect(spacesIndexJs).toContain("hackerspace-news-feed.query");
     expect(authorsIndexJs).toContain("hackerspace-news-feed.authors.query");
-    expect(feedCountrySelectJs).toContain("window.location.href");
   });
 
   it("writes only the current render output into dist without leaving stale artifacts", async () => {
@@ -242,7 +243,7 @@ describe("renderSite", () => {
     };
 
     await Promise.all([
-      mkdir(resolve(distDir, "feed"), { recursive: true }),
+      mkdir(resolve(distDir, "news"), { recursive: true }),
       mkdir(resolve(distDir, "stale/nested"), { recursive: true }),
     ]);
 
@@ -250,7 +251,7 @@ describe("renderSite", () => {
       writeJson(paths.sourceRows, sourceRowsPayload),
       writeJson(paths.validations, validationsPayload),
       writeJson(paths.normalizedFeeds, normalizedPayload),
-      writeFile(resolve(distDir, "feed/index.html"), "<html>stale</html>", "utf8"),
+      writeFile(resolve(distDir, "news/index.html"), "<html>stale</html>", "utf8"),
       writeFile(resolve(distDir, "obsolete.txt"), "stale", "utf8"),
       writeFile(resolve(distDir, "stale/nested/old.html"), "<html>old</html>", "utf8"),
     ]);
@@ -264,7 +265,7 @@ describe("renderSite", () => {
 
     const actualDistFiles = await listRelativeFiles(distDir);
     expect(actualDistFiles.sort()).toEqual(
-      [...Object.keys(result.pages), "favicon.png", "site.css", "spaces-index.js", "authors-index.js", "feed-country-select.js", "static/newspaper.css", "newspaper-nav.js"].sort(),
+      [...Object.keys(result.pages), "favicon.png", "site.css", "spaces-index.js", "authors-index.js", "static/newspaper.css", "newspaper-nav.js"].sort(),
     );
   });
 
@@ -387,8 +388,9 @@ describe("renderSite", () => {
       "authors/alice.html",
       "authors/alice/page/2/index.html",
       "authors/index.html",
-      "feed/index.html",
       "index.html",
+      "news/dates.json",
+      "news/index.html",
       "spaces/alpha.html",
       "spaces/alpha/page/2/index.html",
     ]);
