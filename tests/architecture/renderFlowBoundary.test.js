@@ -89,7 +89,7 @@ describe("render flow boundary", () => {
       expect(Object.keys(result.pages)).toEqual(expect.arrayContaining([
         "index.html",
         "about/index.html",
-        "feed/index.html",
+        "news/index.html",
       ]));
       expect(await readFile(resolve(distDir, "index.html"), "utf8")).toContain("Hackerspace News");
       await access(resolve(distDir, "favicon.png"));

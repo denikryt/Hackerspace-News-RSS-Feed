@@ -4,7 +4,6 @@ import { describe, expect, it } from "vitest";
 
 import { resolveRepoPath } from "../_shared/paths.js";
 
-import { buildGlobalFeedModel } from "../../src/viewModels/globalFeed.js";
 import { buildSpaceDetailModel } from "../../src/viewModels/spaceDetail.js";
 
 describe("author links on real data", () => {
@@ -13,7 +12,6 @@ describe("author links on real data", () => {
       await readFile(resolveRepoPath("data", "feeds_normalized.json"), "utf8"),
     );
 
-    const globalFeed = buildGlobalFeedModel(normalizedPayload, { pageSize: 5000 });
     const betaMachineDetail = buildSpaceDetailModel(normalizedPayload, "betamachine", {
       pageSize: 5000,
     });
@@ -42,10 +40,5 @@ describe("author links on real data", () => {
     ]);
 
     expect(excludedItem?.authorLinks).toEqual([]);
-
-    const globalLucille = globalFeed.items.find((item) => item.resolvedAuthor === "Lucille DEWITTE");
-    expect(globalLucille?.authorLinks).toEqual([
-      { label: "Lucille DEWITTE", href: "/authors/lucille-dewitte.html" },
-    ]);
   }, 45000);
 });

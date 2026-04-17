@@ -38,7 +38,7 @@ describe("author page rendering", () => {
     expect(html).toContain(">C3D2<");
     expect(html).toContain('class="about-link-muted" href="/about/index.html"');
     expect(html).toContain('href="/index.html"');
-    expect(html).toContain('href="/feed/index.html"');
+    expect(html).toContain('href="/news/index.html"');
     expect(html).toContain(">News<");
     expect(html).toContain('href="/authors/index.html"');
     expect(html).toContain('id="author-search-input"');
@@ -85,7 +85,7 @@ describe("author page rendering", () => {
         },
       ],
       homeHref: "/index.html",
-      feedHref: "/feed/index.html",
+      feedHref: "/news/index.html",
       authorsIndexHref: "/authors/index.html",
       currentPageLabel: "Page 2 of 5",
       publicationCountLabel: "1 of 41 publications",

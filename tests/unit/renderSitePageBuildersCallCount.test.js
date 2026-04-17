@@ -2,13 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock all renderers and view-model builders so we can spy on call counts.
 
-vi.mock("../../src/feedSections.js", () => ({
-  FEED_CONTENT_STREAM_ID: "feed",
-  getFeedSectionOutputPath: vi.fn((sectionId, currentPage) =>
-    currentPage === 1 ? `${sectionId}/index.html` : `${sectionId}/page/${currentPage}/index.html`,
-  ),
-}));
-
 vi.mock("../../src/authors.js", () => ({
   getAuthorDetailOutputPath: vi.fn((slug, page) =>
     page === 1 ? `authors/${slug}.html` : `authors/${slug}/page/${page}/index.html`,

@@ -39,24 +39,24 @@ describe("pagination", () => {
   });
 
   it("builds single-page and ellipsis page-link sets", () => {
-    expect(buildPageLinks(1, 1, (page) => `/feed/page/${page}/`)).toEqual([
-      { type: "page", page: 1, href: "/feed/page/1/", isCurrent: true },
+    expect(buildPageLinks(1, 1, (page) => `/news/page/${page}/`)).toEqual([
+      { type: "page", page: 1, href: "/news/page/1/", isCurrent: true },
     ]);
 
-    expect(buildPageLinks(5, 10, (page) => `/feed/page/${page}/`)).toEqual([
-      { type: "page", page: 1, href: "/feed/page/1/", isCurrent: false },
+    expect(buildPageLinks(5, 10, (page) => `/news/page/${page}/`)).toEqual([
+      { type: "page", page: 1, href: "/news/page/1/", isCurrent: false },
       { type: "ellipsis" },
-      { type: "page", page: 4, href: "/feed/page/4/", isCurrent: false },
-      { type: "page", page: 5, href: "/feed/page/5/", isCurrent: true },
-      { type: "page", page: 6, href: "/feed/page/6/", isCurrent: false },
+      { type: "page", page: 4, href: "/news/page/4/", isCurrent: false },
+      { type: "page", page: 5, href: "/news/page/5/", isCurrent: true },
+      { type: "page", page: 6, href: "/news/page/6/", isCurrent: false },
       { type: "ellipsis" },
-      { type: "page", page: 10, href: "/feed/page/10/", isCurrent: false },
+      { type: "page", page: 10, href: "/news/page/10/", isCurrent: false },
     ]);
   });
 
   it("builds canonical first-page hrefs for feed and space detail pages", () => {
-    expect(getGlobalFeedHref(1)).toBe("/feed/index.html");
-    expect(getGlobalFeedHref(3)).toBe("/feed/page/3/");
+    expect(getGlobalFeedHref(1)).toBe("/news/index.html");
+    expect(getGlobalFeedHref(3)).toBe("/news/page/3/");
     expect(getSpaceDetailHref("betamachine", 1)).toBe("/spaces/betamachine.html");
     expect(getSpaceDetailHref("betamachine", 4)).toBe("/spaces/betamachine/page/4/");
   });

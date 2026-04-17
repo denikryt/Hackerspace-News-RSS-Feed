@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
 
-import { buildCountryFeedContext, listCountryFeedOptions } from "../../../src/viewModels/countryFeeds.js";
-import { buildFeedSectionContext } from "../../../src/viewModels/feedSections.js";
-import { buildGlobalFeedModel } from "../../../src/viewModels/globalFeed.js";
 import { buildSpaceDetailModel } from "../../../src/viewModels/spaceDetail.js";
 import { buildSpacesIndexModel } from "../../../src/viewModels/spacesIndex.js";
 import { filterNormalizedPayloadForDisplay } from "../../../src/visibleData.js";
@@ -153,7 +150,7 @@ describe("multi-page view models", () => {
 
     expect(model.spaceName).toBe("BetaMachine");
     expect(model.items.map((item) => item.title)).toEqual(["Newest post", "Older post"]);
-    expect(model.feedHref).toBe("/feed/index.html");
+    expect(model.feedHref).toBe("/news/index.html");
     expect(model.items[0].authorLinks).toEqual([
       { label: "Alice", href: "/authors/alice.html" },
       { label: "Bob", href: "/authors/bob.html" },
@@ -201,71 +198,4 @@ describe("multi-page view models", () => {
     ]);
   });
 
-  it("builds a global feed model sorted by date descending", () => {
-    const model = buildGlobalFeedModel(filteredPayload);
-
-    expect(model.items).toHaveLength(2);
-    expect(model.items[0]).toMatchObject({
-      title: "Newest post",
-      spaceName: "BetaMachine",
-      spaceHref: "/spaces/betamachine.html",
-      authorLinks: [
-        { label: "Alice", href: "/authors/alice.html" },
-        { label: "Bob", href: "/authors/bob.html" },
-      ],
-    });
-    expect(model.items[0].displayContent).toMatchObject({
-      renderMode: "text",
-      text: "Newest summary",
-    });
-    expect(model.items[1]).toMatchObject({
-      title: "Older post",
-      authorLinks: [],
-    });
-  });
-
-  it("builds a paginated global feed model with page links", () => {
-    const payload = {
-      ...filteredPayload,
-      feeds: [
-        {
-          ...filteredPayload.feeds[0],
-          items: Array.from({ length: 12 }, (_, index) => ({
-            id: `item-${index + 1}`,
-            title: `Post ${index + 1}`,
-            displayDate: `2025-01-${String(12 - index).padStart(2, "0")}T10:00:00.000Z`,
-          })),
-        },
-      ],
-    };
-
-    const model = buildGlobalFeedModel(payload, { currentPage: 2, pageSize: 10 });
-
-    expect(model.currentPage).toBe(2);
-    expect(model.totalPages).toBe(2);
-    expect(model.items).toHaveLength(2);
-    expect(model.publicationCountLabel).toBe("2 of 12 publications");
-    expect(model.hasPreviousPage).toBe(true);
-    expect(model.hasNextPage).toBe(false);
-    expect(model.previousPageHref).toBe("/feed/index.html");
-    expect(model.pageLinks).toEqual([
-      { type: "page", page: 1, href: "/feed/index.html", isCurrent: false },
-      { type: "page", page: 2, href: "/feed/page/2/", isCurrent: true },
-    ]);
-  });
-
-  it("reuses shared country feed context when building the global feed model", () => {
-    const feedSectionContext = buildFeedSectionContext(filteredPayload);
-    const countryFeedContext = buildCountryFeedContext(filteredPayload, { feedSectionContext });
-    const expectedOptions = listCountryFeedOptions(filteredPayload, "feed", null, {
-      context: countryFeedContext,
-    });
-
-    const model = buildGlobalFeedModel(filteredPayload, {
-      context: feedSectionContext,
-      countryFeedContext,
-    });
-
-    expect(model.countryOptions).toBe(expectedOptions);
-  });
 });

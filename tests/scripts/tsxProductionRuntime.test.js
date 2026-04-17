@@ -17,19 +17,19 @@ describe("tsx-backed production helpers", () => {
           console.log(JSON.stringify({
             header: renderPageHeader({
               title: "Runtime",
-              navItems: [{ href: "/feed/index.html", label: "Feed", isCurrent: true }],
+              navItems: [{ href: "/news/index.html", label: "News", isCurrent: true }],
             }),
             pagination: renderPagination({
               currentPage: 2,
               totalPages: 3,
               hasPreviousPage: true,
               hasNextPage: true,
-              previousPageHref: "/feed/index.html",
-              nextPageHref: "/feed/page/3/",
+              previousPageHref: "/news/index.html",
+              nextPageHref: "/news/page/3/",
               pageLinks: [
-                { type: "page", page: 1, href: "/feed/index.html", isCurrent: false },
-                { type: "page", page: 2, href: "/feed/page/2/", isCurrent: true },
-                { type: "page", page: 3, href: "/feed/page/3/", isCurrent: false }
+                { type: "page", page: 1, href: "/news/index.html", isCurrent: false },
+                { type: "page", page: 2, href: "/news/page/2/", isCurrent: true },
+                { type: "page", page: 3, href: "/news/page/3/", isCurrent: false }
               ],
             }, "Feed pagination"),
             authors: renderAuthorLinks([{ label: "Alice", href: "/authors/alice.html" }]),
