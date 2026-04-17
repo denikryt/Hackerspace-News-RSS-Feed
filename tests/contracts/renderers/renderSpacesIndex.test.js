@@ -63,7 +63,7 @@ describe("renderSpacesIndex", () => {
     expect(html).toContain('href="/about/index.html"');
     expect(html).toContain('class="about-link-muted"');
     expect(html).toContain(">About<");
-    expect(html).toContain('href="/feed/index.html"');
+    expect(html).toContain('href="/news/index.html"');
     expect(html).toContain(">News<");
     expect(html).toContain('href="/authors/index.html"');
     expect(html).toContain("Last updated:");

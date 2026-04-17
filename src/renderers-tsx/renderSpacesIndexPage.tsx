@@ -10,8 +10,8 @@ export function renderSpacesIndexPageTsx(model: RecordLike) {
   const lastUpdatedIso = model.generatedAt ? escapeHtml(model.generatedAt) : "";
   const navItems: NavItems = [
     { href: "/index.html", label: "Hackerspaces", isCurrent: true },
-    { href: "/feed/index.html", label: "News" },
     { href: "/curated/index.html", label: "Curated" },
+    { href: "/news/index.html", label: "News" },
     { href: "/authors/index.html", label: "Authors" },
   ];
   const body = [

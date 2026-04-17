@@ -14,7 +14,7 @@ It validates candidate feed URLs, parses supported feeds, normalizes the data in
 
 - spaces index
 - per-space detail pages
-- global feed pages sorted by date descending
+- per-day newspaper pages under `/news/`
 
 ## Requirements
 

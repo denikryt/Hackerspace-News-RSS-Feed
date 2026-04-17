@@ -74,7 +74,7 @@ function renderDateNav(model: RecordLike): string {
   ${nextLink}
 </nav>
 <section class="feed-controls-shell">
-<div class="feed-controls feed-controls-np" data-date-href-base="${escapeHtml(base)}" data-current-date="${escapeHtml(model.currentDate as string)}" data-selected-country="${escapeHtml((model.selectedCountry as string) || "")}">
+<div class="feed-controls feed-controls-np" data-date-href-base="${escapeHtml(base)}" data-current-date="${escapeHtml(model.currentDate as string)}" data-selected-country="${escapeHtml((model.selectedCountry as string) || "")}" data-country-path="${escapeHtml((model.countryPath as string) || "")}">
   <label class="feed-control feed-control-date"><select class="control-select np-date-select" onchange="location.href=this.value"></select></label>
   <label class="feed-control feed-control-country"><select id="feed-country-select" class="control-select" aria-label="Choose feed country" onchange="location.href=this.value">${countryOptions}</select></label>
 </div>
@@ -84,7 +84,7 @@ function renderDateNav(model: RecordLike): string {
 export function renderNewspaperFeedPageTsx(model: RecordLike): string {
   const navItems = (model.navItems as NavItems | undefined) ?? [
     { href: "/index.html", label: "Hackerspaces", isCurrent: false },
-    { href: "/feed/index.html", label: "News", isCurrent: true },
+    { href: "/news/index.html", label: "News", isCurrent: true },
     { href: "/authors/index.html", label: "Authors", isCurrent: false },
   ];
 

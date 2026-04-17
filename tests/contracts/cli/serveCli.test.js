@@ -19,10 +19,10 @@ describe("createPreviewServer", () => {
     const { baseUrl, close } = await startServer({ distDir });
 
     try {
-      const [rootResponse, feedResponse, fileRouteResponse, pagedRouteResponse, faviconResponse] =
+      const [rootResponse, newsResponse, fileRouteResponse, pagedRouteResponse, faviconResponse] =
         await Promise.all([
           fetch(`${baseUrl}/`),
-          fetch(`${baseUrl}/feed`),
+          fetch(`${baseUrl}/news`),
           fetch(`${baseUrl}/spaces/example.html`),
           fetch(`${baseUrl}/spaces/example/page/2/`),
           fetch(`${baseUrl}/favicon.png`),
@@ -31,9 +31,9 @@ describe("createPreviewServer", () => {
       expect(rootResponse.status).toBe(200);
       expect(await rootResponse.text()).toContain("Home");
 
-      expect(feedResponse.status).toBe(200);
-      expect(feedResponse.headers.get("content-type")).toBe("text/html; charset=utf-8");
-      expect(await feedResponse.text()).toContain("Feed");
+      expect(newsResponse.status).toBe(200);
+      expect(newsResponse.headers.get("content-type")).toBe("text/html; charset=utf-8");
+      expect(await newsResponse.text()).toContain("Feed");
 
       expect(fileRouteResponse.status).toBe(200);
       expect(await fileRouteResponse.text()).toContain("Space detail");
@@ -98,7 +98,7 @@ async function createDistFixture() {
 
   await Promise.all([
     writeText(resolve(distDir, "index.html"), "<html><body>Home</body></html>"),
-    writeText(resolve(distDir, "feed/index.html"), "<html><body>Feed</body></html>"),
+    writeText(resolve(distDir, "news/index.html"), "<html><body>Feed</body></html>"),
     writeText(resolve(distDir, "spaces/example.html"), "<html><body>Space detail</body></html>"),
     writeText(resolve(distDir, "spaces/example/page/2/index.html"), "<html><body>Page 2</body></html>"),
     writeBinary(resolve(distDir, "favicon.png"), new Uint8Array([137, 80, 78, 71])),

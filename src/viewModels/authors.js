@@ -58,7 +58,7 @@ export function buildAuthorsIndexModel(
     authors: sortedAuthors,
     visibleAuthors,
     homeHref: "/index.html",
-    feedHref: "/feed/index.html",
+    feedHref: "/news/index.html",
     authorsIndexHref: getAuthorsIndexHref(),
   };
 }
@@ -120,7 +120,7 @@ export function buildAuthorDetailModel(
         : undefined,
     pageLinks: buildPageLinks(pagination.currentPage, pagination.totalPages, hrefForPage),
     homeHref: "/index.html",
-    feedHref: "/feed/index.html",
+    feedHref: "/news/index.html",
     authorsIndexHref: getAuthorsIndexHref(),
     canonicalHref: hrefForPage(pagination.currentPage),
   };

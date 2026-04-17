@@ -21,7 +21,7 @@ describe("buildDataset", () => {
       const renderSite = vi.fn().mockResolvedValue({
         pages: {
           "index.html": "<html>home</html>",
-          "feed/index.html": "<html>feed</html>",
+          "news/index.html": "<html>feed</html>",
         },
         debugOnly: "ignore-me",
       });
@@ -55,7 +55,7 @@ describe("buildDataset", () => {
         site: {
           pages: {
             "index.html": "<html>home</html>",
-            "feed/index.html": "<html>feed</html>",
+            "news/index.html": "<html>feed</html>",
           },
         },
       });
@@ -119,14 +119,14 @@ describe("buildDataset", () => {
     });
     expect(Object.keys(result.site.pages)).toContain("index.html");
     expect(Object.keys(result.site.pages)).toContain("about/index.html");
-    expect(Object.keys(result.site.pages)).toContain("feed/index.html");
+    expect(Object.keys(result.site.pages)).toContain("news/index.html");
     expect(Object.keys(result.site.pages)).toContain("authors/index.html");
     expect(Object.keys(result.site.pages)).toContain("authors/alice.html");
     expect(Object.keys(result.site.pages)).toContain("spaces/betamachine.html");
     expect(result.site.pages["index.html"]).toContain("Hackerspace News");
     expect(result.site.pages["about/index.html"]).toContain("About");
-    // feed/index.html is now a meta-refresh redirect to the latest newspaper date page
-    expect(result.site.pages["feed/index.html"]).toContain('<meta http-equiv="refresh"');
+    // news/index.html is now a meta-refresh redirect to the latest newspaper date page
+    expect(result.site.pages["news/index.html"]).toContain('<meta http-equiv="refresh"');
     expect(result.site.pages["authors/index.html"]).toContain("Authors");
     expect(result.site.pages["spaces/betamachine.html"]).toContain("BetaMachine");
   });
@@ -175,11 +175,11 @@ describe("buildDataset", () => {
 
     const result = await buildDataset({ sourcePageUrl, fetchImpl });
 
-    // Newspaper layout: items without displayDate produce only feed/index.html (redirect).
+    // Newspaper layout: items without displayDate produce only news/index.html (redirect).
     // Pagination is per-date, not across the entire feed.
-    expect(Object.keys(result.site.pages)).toContain("feed/index.html");
-    expect(result.site.pages["feed/index.html"]).toContain('<meta http-equiv="refresh"');
-    expect(Object.keys(result.site.pages)).not.toContain("feed/page/2/index.html");
+    expect(Object.keys(result.site.pages)).toContain("news/index.html");
+    expect(result.site.pages["news/index.html"]).toContain('<meta http-equiv="refresh"');
+    expect(Object.keys(result.site.pages)).not.toContain("news/page/2/index.html");
   });
 
   it("builds paginated detail pages when a space has more than 10 items", async () => {
