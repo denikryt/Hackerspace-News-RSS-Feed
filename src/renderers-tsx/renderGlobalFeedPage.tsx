@@ -17,7 +17,7 @@ export function renderGlobalFeedPageTsx(model: RecordLike) {
       renderMeta: renderGlobalFeedMeta,
       renderExtraBody: () => "",
       renderPreList: renderCountryControls,
-      resolveNavItems: (value) => [{ href: value.homeHref, label: "Hackerspaces" }, ...(value.streamNavItems || [{ href: "/feed/index.html", label: "Feed", isCurrent: true }])],
+      resolveNavItems: (value) => [{ href: value.homeHref, label: "Hackerspaces" }, ...(value.streamNavItems || [{ href: "/feed/index.html", label: "News", isCurrent: true }])],
     }),
   });
 }

@@ -14,7 +14,7 @@ export function renderAboutPageTsx() {
       headerClass: "page-header--narrow page-header--compact",
       navItems: [
         { href: "/index.html", label: "Hackerspaces" },
-        { href: "/feed/index.html", label: "Feed" },
+        { href: "/feed/index.html", label: "News" },
         { href: "/authors/index.html", label: "Authors" },
       ],
       navClass: "page-nav--narrow",
