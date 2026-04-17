@@ -5,6 +5,7 @@
   var base = controls.getAttribute("data-date-href-base") || "";
   var currentDate = controls.getAttribute("data-current-date") || "";
   var selectedCountry = controls.getAttribute("data-selected-country") || "";
+  var countryPath = controls.getAttribute("data-country-path") || "";
   var select = controls.querySelector(".np-date-select");
   if (!select) return;
 
@@ -15,7 +16,7 @@
       var frag = document.createDocumentFragment();
       dates.forEach(function (date) {
         var opt = document.createElement("option");
-        opt.value = base + date + "/";
+        opt.value = base + date + "/" + (countryPath ? countryPath + "/" : "");
         opt.textContent = formatDate(date);
         if (date === currentDate) opt.selected = true;
         frag.appendChild(opt);

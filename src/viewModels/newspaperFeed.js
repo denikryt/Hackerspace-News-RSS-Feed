@@ -301,6 +301,7 @@ export function buildNewspaperDayModel(itemsForDate, targetDate, now, selectedCo
     dateLabel: formatDayMonth(targetDate),
     currentDate: targetDate,
     selectedCountry,
+    countryPath: selectedCountry ? encodeCountryForPath(selectedCountry) : "",
     cssHref: "/static/newspaper.css",
     dateHrefBase,
     nav,
