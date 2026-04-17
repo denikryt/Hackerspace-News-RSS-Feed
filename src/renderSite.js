@@ -5,11 +5,8 @@ import { DIST_DIR, PATHS } from "./config.js";
 import { listStaticRenderAssets } from "./renderAssets.js";
 import {
   buildAuthorPageEntries,
-  buildCountryFeedPageEntries,
   buildNewspaperFeedPageEntries,
-  buildPrimaryFeedSectionPageEntries,
   buildRootStaticPageEntries,
-  buildSecondaryFeedSectionPageEntries,
   buildSpacePageEntries,
 } from "./renderSitePageBuilders.js";
 import { readJson, writeText } from "./storage.js";
@@ -20,14 +17,6 @@ import {
   buildAuthorDirectory,
   buildAuthorsIndexModel,
 } from "./viewModels/authors.js";
-import {
-  buildCountryFeedContext,
-  listCountryFeeds,
-} from "./viewModels/countryFeeds.js";
-import {
-  buildFeedSectionContext,
-  listFeedSections,
-} from "./viewModels/feedSections.js";
 import { buildSpacesIndexModel } from "./viewModels/spacesIndex.js";
 
 export async function renderSite({
@@ -39,7 +28,6 @@ export async function renderSite({
   now = Date.now(),
   writePages = false,
   logger = null,
-  layout = "newspaper",
 } = {}) {
   const data = await loadRenderInputs({
     paths,
@@ -52,22 +40,10 @@ export async function renderSite({
   const nowDate = now instanceof Date ? now : new Date(now);
   const today = nowDate.toISOString().slice(0, 10);
 
-  const feedPageEntries = layout === "legacy-feed"
-    ? [
-        ...buildPrimaryFeedSectionPageEntries(context, { logger }),
-        ...buildCountryFeedPageEntries(context, { logger }),
-      ]
-    : [
-        ...buildNewspaperFeedPageEntries(data.normalizedPayload, { today, now: nowDate }, { logger }),
-        // Secondary section (non-primary) country pages still use the legacy builder.
-        ...buildCountryFeedPageEntries(context, { logger, excludePrimarySection: true }),
-      ];
-
   const pageEntries = [
     ...buildRootStaticPageEntries(context),
-    ...feedPageEntries,
+    ...buildNewspaperFeedPageEntries(data.normalizedPayload, { today, now: nowDate }, { logger }),
     ...buildAuthorPageEntries(context, { logger }),
-    ...buildSecondaryFeedSectionPageEntries(context, { logger }),
     ...buildSpacePageEntries(context, { logger }),
   ];
   const pages = Object.fromEntries(pageEntries);
@@ -95,11 +71,6 @@ function buildRenderContext(data, { now, logger }) {
   const spacesIndexModel = buildSpacesIndexModel(displayPayload);
   logInfo(logger, "[render] built spaces index model");
 
-  const feedSectionContext = buildFeedSectionContext(displayPayload);
-  const feedSections = listFeedSections(displayPayload, { context: feedSectionContext });
-  const countryFeedContext = buildCountryFeedContext(displayPayload, { feedSectionContext });
-  logInfo(logger, `[render] built feed sections: count=${feedSections.length}`);
-
   const spaceSlugs = [
     ...new Set(
       [
@@ -114,23 +85,11 @@ function buildRenderContext(data, { now, logger }) {
   logInfo(logger, "[render] built author directory");
   const authorsIndexModel = buildAuthorsIndexModel(displayPayload, { authorDirectory });
   logInfo(logger, `[render] built authors index model: authors=${authorsIndexModel.authors.length}`);
-  logInfo(
-    logger,
-    `[render] built page models: spaces=${spaceSlugs.length} authors=${authorsIndexModel.authors.length} sections=${feedSections.length}`,
-  );
+  logInfo(logger, `[render] built page models: spaces=${spaceSlugs.length} authors=${authorsIndexModel.authors.length}`);
 
   return {
     displayPayload,
     spacesIndexModel,
-    feedSectionContext,
-    feedSections,
-    countryFeedContext,
-    listCountryFeedsForSection(sectionId) {
-      return listCountryFeeds(displayPayload, {
-        context: countryFeedContext,
-        sectionId,
-      });
-    },
     spaceSlugs,
     authorDirectory,
     authorsIndexModel,

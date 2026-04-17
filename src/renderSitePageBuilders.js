@@ -290,6 +290,12 @@ export function buildNewspaperFeedPageEntries(normalizedPayload, context, { logg
   const availableDates = buildAvailableDatesFromPayload(normalizedPayload, today);
   const availableDatesByCountry = buildAvailableDatesByCountry(normalizedPayload, today);
 
+  const navItems = [
+    { href: "/index.html", label: "Hackerspaces", isCurrent: false },
+    { href: "/feed/index.html", label: "News", isCurrent: true },
+    { href: "/authors/index.html", label: "Authors", isCurrent: false },
+  ];
+
   if (availableDates.length === 0) {
     logInfo(logger, "[render] newspaper feed: no dates with items found");
     return [["feed/index.html", '<meta http-equiv="refresh" content="0;url=./">']];
@@ -339,14 +345,14 @@ export function buildNewspaperFeedPageEntries(normalizedPayload, context, { logg
     const dayItems = itemsByDate.get(date) || [];
 
     // All-countries page
-    const dayModel = buildNewspaperDayModel(dayItems, date, now, null, availableDates, availableDatesByCountry);
+    const dayModel = buildNewspaperDayModel(dayItems, date, now, null, availableDates, availableDatesByCountry, { navItems });
     entries.push([`feed/${date}/index.html`, renderNewspaperFeedPageTsx(dayModel)]);
 
     // Per-country pages — only for countries that have items on this date
     const countriesOnDay = [...new Set(dayItems.map((i) => i.country).filter(Boolean))].sort();
     for (const country of countriesOnDay) {
       const countryItems = dayItems.filter((i) => i.country === country);
-      const countryModel = buildNewspaperDayModel(countryItems, date, now, country, availableDates, availableDatesByCountry);
+      const countryModel = buildNewspaperDayModel(countryItems, date, now, country, availableDates, availableDatesByCountry, { navItems });
       entries.push([`feed/${date}/${encodeCountryForPath(country)}/index.html`, renderNewspaperFeedPageTsx(countryModel)]);
     }
   }

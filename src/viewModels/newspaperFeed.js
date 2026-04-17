@@ -276,7 +276,7 @@ function buildCountryOptions(availableCountries, currentDate, selectedCountry, a
  * availableDates: all available dates (for date nav prev/next).
  * availableDatesByCountry: Map<country, string[]> used for country dropdown dates.
  */
-export function buildNewspaperDayModel(itemsForDate, targetDate, now, selectedCountry, availableDates, availableDatesByCountry) {
+export function buildNewspaperDayModel(itemsForDate, targetDate, now, selectedCountry, availableDates, availableDatesByCountry, { navItems } = {}) {
   const depth = selectedCountry === null ? 1 : 2;
   const dateHrefBase = "../".repeat(depth);
 
@@ -304,6 +304,7 @@ export function buildNewspaperDayModel(itemsForDate, targetDate, now, selectedCo
     cssHref: "/static/newspaper.css",
     dateHrefBase,
     nav,
+    navItems,
     sections,
     countryOptions,
   };

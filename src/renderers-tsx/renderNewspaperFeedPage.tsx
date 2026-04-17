@@ -1,7 +1,7 @@
 /** @jsxImportSource @kitajs/html */
 
 import { escapeHtml } from "../renderers/layout.js";
-import { renderPageHeaderShell, type RecordLike } from "./pageHelpers.js";
+import { renderPageHeaderShell, type NavItems, type RecordLike } from "./pageHelpers.js";
 
 function renderItem(item: RecordLike): string {
   const flagHtml = item.countryFlag && item.countryName
@@ -82,10 +82,9 @@ function renderDateNav(model: RecordLike): string {
 }
 
 export function renderNewspaperFeedPageTsx(model: RecordLike): string {
-  const navItems = [
+  const navItems = (model.navItems as NavItems | undefined) ?? [
     { href: "/index.html", label: "Hackerspaces", isCurrent: false },
     { href: "/feed/index.html", label: "News", isCurrent: true },
-    { href: "/curated/index.html", label: "Curated", isCurrent: false },
     { href: "/authors/index.html", label: "Authors", isCurrent: false },
   ];
 

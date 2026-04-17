@@ -99,12 +99,6 @@ describe("renderNewspaperFeedPageTsx — site nav", () => {
     expect(html).toContain("News");
   });
 
-  it("contains Curated link", () => {
-    const html = renderNewspaperFeedPageTsx(BASE_MODEL);
-    expect(html).toContain('href="/curated/index.html"');
-    expect(html).toContain("Curated");
-  });
-
   it("contains Authors link", () => {
     const html = renderNewspaperFeedPageTsx(BASE_MODEL);
     expect(html).toContain('href="/authors/index.html"');

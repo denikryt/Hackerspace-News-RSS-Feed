@@ -39,7 +39,7 @@ describe("author page rendering", () => {
     expect(html).toContain('class="about-link-muted" href="/about/index.html"');
     expect(html).toContain('href="/index.html"');
     expect(html).toContain('href="/feed/index.html"');
-    expect(html).toContain(">Feed<");
+    expect(html).toContain(">News<");
     expect(html).toContain('href="/authors/index.html"');
     expect(html).toContain('id="author-search-input"');
     expect(html).toContain('aria-label="Search authors"');
