@@ -25,7 +25,7 @@ describe("renderCuratedPreview", () => {
       `- feedUrl: https://blog.nachitima.com/feed/\n  guid: https://blog.nachitima.com/interview-with-sasha-hackerspace-stories\n`,
     );
     await writeText(resolve(distDir, "index.html"), "<html><body>Existing home</body></html>");
-    await writeText(resolve(distDir, "feed/index.html"), "<html><body>Existing feed</body></html>");
+    await writeText(resolve(distDir, "news/index.html"), "<html><body>Existing feed</body></html>");
     await writeText(resolve(distDir, "curated/index.html"), "<html><body>Old curated</body></html>");
 
     const fetchImpl = vi.fn(async (url) => {
@@ -72,7 +72,7 @@ describe("renderCuratedPreview", () => {
     expect(curatedHtml).toContain("Nachitima");
 
     expect(await readFile(resolve(distDir, "index.html"), "utf8")).toContain("Existing home");
-    expect(await readFile(resolve(distDir, "feed/index.html"), "utf8")).toContain("Existing feed");
+    expect(await readFile(resolve(distDir, "news/index.html"), "utf8")).toContain("Existing feed");
     await access(resolve(distDir, "favicon.png"));
   });
 });
