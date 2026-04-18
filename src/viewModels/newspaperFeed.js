@@ -196,7 +196,8 @@ function formatDayMonth(dateStr) {
 }
 
 
-function buildDateNav(availableDates, currentDate, now) {
+// countryPath is appended to prev/next hrefs so country-page nav stays within the same country.
+function buildDateNav(availableDates, currentDate, now, countryPath = "") {
   const todayStr = toDateStr(now);
   const yesterdayStr = toDateStr(new Date(now.getTime() - 86_400_000));
 
@@ -211,9 +212,9 @@ function buildDateNav(availableDates, currentDate, now) {
   }
 
   return {
-    prev: olderDate ? { label: label(olderDate), date: olderDate } : null,
+    prev: olderDate ? { label: label(olderDate), date: olderDate, countryPath } : null,
     current: { label: label(currentDate), date: currentDate },
-    next: newerDate ? { label: label(newerDate), date: newerDate } : null,
+    next: newerDate ? { label: label(newerDate), date: newerDate, countryPath } : null,
   };
 }
 
@@ -280,7 +281,14 @@ export function buildNewspaperDayModel(itemsForDate, targetDate, now, selectedCo
   const depth = selectedCountry === null ? 1 : 2;
   const dateHrefBase = "../".repeat(depth);
 
-  const nav = buildDateNav(availableDates, targetDate, now);
+  // On country pages use only dates available for that country so prev/next nav
+  // stays within the country's own date range instead of jumping to all-countries dates.
+  const datesForNav = selectedCountry
+    ? (availableDatesByCountry.get(selectedCountry) || [])
+    : availableDates;
+  const countryPath = selectedCountry ? encodeCountryForPath(selectedCountry) : "";
+
+  const nav = buildDateNav(datesForNav, targetDate, now, countryPath);
 
   const sections = groupBySection(itemsForDate).map((section) => ({
     label: section.label,
@@ -301,7 +309,7 @@ export function buildNewspaperDayModel(itemsForDate, targetDate, now, selectedCo
     dateLabel: formatDayMonth(targetDate),
     currentDate: targetDate,
     selectedCountry,
-    countryPath: selectedCountry ? encodeCountryForPath(selectedCountry) : "",
+    countryPath,
     cssHref: "/static/newspaper.css",
     dateHrefBase,
     nav,
