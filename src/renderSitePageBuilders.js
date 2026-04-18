@@ -140,6 +140,7 @@ export function buildNewspaperFeedPageEntries(normalizedPayload, context, { logg
       resolvedAuthor: item.resolvedAuthor,
       summaryText: item.summaryText,
       normalizedCategories: item.normalizedCategories,
+      categoriesRaw: item.categoriesRaw,
       attachments: item.attachments,
       spaceName: feed.spaceName,
       country: feed.country,

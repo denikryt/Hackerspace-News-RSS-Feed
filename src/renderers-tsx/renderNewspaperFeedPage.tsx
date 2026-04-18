@@ -25,11 +25,17 @@ function renderItem(item: RecordLike): string {
     ? `<p class="np-item-body">${escapeHtml(item.summaryText as string)}</p>`
     : "";
 
+  const rawTags = item.categoriesRaw as string[] | null;
+  const tagsHtml = rawTags?.length
+    ? `<p class="np-item-tags">${rawTags.map((t) => `<span class="np-tag">${escapeHtml(t)}</span>`).join("")}</p>`
+    : "";
+
   return `<article class="np-item">
     <h3 class="np-item-title"><a href="${escapeHtml(item.link as string)}">${escapeHtml(item.title as string)}</a></h3>
     ${metaHtml}
     ${imageHtml}
     ${bodyHtml}
+    ${tagsHtml}
   </article>`;
 }
 

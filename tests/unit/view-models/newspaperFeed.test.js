@@ -303,6 +303,27 @@ describe("buildNewspaperDayModel — item mapping", () => {
     const newsItems = model.sections.find((s) => s.label === "News").columns.flatMap((c) => c.items);
     expect(newsItems[0].summaryText).toBeNull();
   });
+
+  it("passes categoriesRaw through to mapped item", () => {
+    const items = [makeItemFull({ categoriesRaw: ["Workshops", "3D Printing"] })];
+    const model = buildNewspaperDayModel(items, "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
+    const newsItems = model.sections.find((s) => s.label === "News").columns.flatMap((c) => c.items);
+    expect(newsItems[0].categoriesRaw).toEqual(["Workshops", "3D Printing"]);
+  });
+
+  it("sets categoriesRaw to null when absent", () => {
+    const items = [makeItemFull({ categoriesRaw: undefined })];
+    const model = buildNewspaperDayModel(items, "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
+    const newsItems = model.sections.find((s) => s.label === "News").columns.flatMap((c) => c.items);
+    expect(newsItems[0].categoriesRaw).toBeNull();
+  });
+
+  it("sets categoriesRaw to null when empty array", () => {
+    const items = [makeItemFull({ categoriesRaw: [] })];
+    const model = buildNewspaperDayModel(items, "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
+    const newsItems = model.sections.find((s) => s.label === "News").columns.flatMap((c) => c.items);
+    expect(newsItems[0].categoriesRaw).toBeNull();
+  });
 });
 
 describe("buildNewspaperDayModel — countryOptions", () => {

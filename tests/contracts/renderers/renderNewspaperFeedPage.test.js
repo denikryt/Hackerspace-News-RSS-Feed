@@ -285,4 +285,35 @@ describe("renderNewspaperFeedPageTsx — items", () => {
     expect(flagPos).toBeLessThan(spacePos);
     expect(spacePos).toBeLessThan(authorPos);
   });
+
+  it("renders np-item-tags when categoriesRaw is present", () => {
+    const model = {
+      ...BASE_MODEL,
+      sections: [makeSection("News", [makeItem({ categoriesRaw: ["Workshops", "3D Printing"] })])],
+    };
+    const html = renderNewspaperFeedPageTsx(model);
+    expect(html).toContain('class="np-item-tags"');
+    expect(html).toContain('class="np-tag"');
+    expect(html).toContain("Workshops");
+    expect(html).toContain("3D Printing");
+  });
+
+  it("does not render np-item-tags when categoriesRaw is absent", () => {
+    const model = {
+      ...BASE_MODEL,
+      sections: [makeSection("News", [makeItem({ categoriesRaw: null })])],
+    };
+    const html = renderNewspaperFeedPageTsx(model);
+    expect(html).not.toContain('class="np-item-tags"');
+  });
+
+  it("HTML-escapes tag strings", () => {
+    const model = {
+      ...BASE_MODEL,
+      sections: [makeSection("News", [makeItem({ categoriesRaw: ["<script>alert(1)</script>"] })])],
+    };
+    const html = renderNewspaperFeedPageTsx(model);
+    expect(html).not.toContain("<script>");
+    expect(html).toContain("&lt;script&gt;");
+  });
 });

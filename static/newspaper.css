@@ -127,3 +127,14 @@
     -webkit-line-clamp: 8;
   }
 }
+
+.np-item-tags {
+  margin: 0.3rem 0 0;
+  font-size: 0.72rem;
+  color: var(--muted, #888);
+  line-height: 1.4;
+}
+
+.np-tag + .np-tag::before {
+  content: " · ";
+}
