@@ -57,7 +57,7 @@ function renderDateNav(model: RecordLike): string {
     ? `<a href="${href((model.nav.prev as RecordLike).date as string, (model.nav.prev as RecordLike).countryPath as string || "")}">${escapeHtml((model.nav.prev as RecordLike).label as string)}</a>`
     : "";
 
-  const currentLink = `<a href="${href(model.currentDate as string, "")}" aria-current="page">${escapeHtml((model.nav.current as RecordLike).label as string)}</a>`;
+  const currentLink = `<a href="${href(model.currentDate as string, (model.countryPath as string) || "")}" aria-current="page">${escapeHtml((model.nav.current as RecordLike).label as string)}</a>`;
 
   const nextLink = model.nav.next
     ? `<a href="${href((model.nav.next as RecordLike).date as string, (model.nav.next as RecordLike).countryPath as string || "")}">${escapeHtml((model.nav.next as RecordLike).label as string)}</a>`
