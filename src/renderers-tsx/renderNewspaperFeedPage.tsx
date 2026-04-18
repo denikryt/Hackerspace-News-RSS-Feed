@@ -86,6 +86,7 @@ export function renderNewspaperFeedPageTsx(model: RecordLike): string {
   const navItems = (model.navItems as NavItems | undefined) ?? [
     { href: "/index.html", label: "Hackerspaces", isCurrent: false },
     { href: "/news/index.html", label: "News", isCurrent: true },
+    { href: "/curated/index.html", label: "Curated", isCurrent: false },
     { href: "/authors/index.html", label: "Authors", isCurrent: false },
   ];
 
