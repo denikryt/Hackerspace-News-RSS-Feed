@@ -111,7 +111,8 @@
 }
 
 /* Body text clamped to ~4 lines for visual balance across columns */
-.np-item-body {
+.np-item-body,
+.np-item .content-body {
   font-size: 0.85rem;
   line-height: 1.55;
   color: var(--text);
@@ -123,7 +124,8 @@
 }
 
 @media (max-width: 600px) {
-  .np-item-body {
+  .np-item-body,
+  .np-item .content-body {
     -webkit-line-clamp: 8;
   }
 }
