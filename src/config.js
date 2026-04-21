@@ -1,5 +1,7 @@
 import { resolve } from "node:path";
 
+export const SITE_URL = "https://hackerspace.news";
+
 export const SOURCE_PAGE_URL =
   "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds";
 export const WEBSITE_DISCOVERY_SOURCE_PAGE_URL =

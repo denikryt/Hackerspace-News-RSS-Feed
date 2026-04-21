@@ -162,6 +162,8 @@ describe("renderSite", () => {
       "authors/alice.html",
       "spaces/betamachine.html",
       "spaces/c3d2.html",
+      "sitemap.xml",
+      "robots.txt",
     ]);
     expect(secondRun.pages).toEqual(firstRun.pages);
 
@@ -207,6 +209,27 @@ describe("renderSite", () => {
     expect(siteCss).toContain(".authors-controls");
     expect(spacesIndexJs).toContain("hackerspace-news-feed.query");
     expect(authorsIndexJs).toContain("hackerspace-news-feed.authors.query");
+
+    const [sitemapXml, robotsTxt] = await Promise.all([
+      readFile(resolve(distDir, "sitemap.xml"), "utf8"),
+      readFile(resolve(distDir, "robots.txt"), "utf8"),
+    ]);
+
+    expect(sitemapXml).toMatch(/^<\?xml version="1\.0" encoding="UTF-8"\?>/);
+    expect(sitemapXml).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
+    expect(sitemapXml).toContain("</urlset>");
+    expect(sitemapXml).toContain("<loc>https://hackerspace.news/</loc>");
+    expect(sitemapXml).toContain("<loc>https://hackerspace.news/spaces/betamachine.html</loc>");
+    expect(sitemapXml).toContain("<loc>https://hackerspace.news/spaces/c3d2.html</loc>");
+    expect(sitemapXml).toContain("<loc>https://hackerspace.news/authors/alice.html</loc>");
+    expect(sitemapXml).not.toContain("news/index.html");
+    expect(sitemapXml).not.toContain("dates.json");
+    expect(sitemapXml).not.toContain("sitemap.xml");
+    expect(sitemapXml).not.toContain("robots.txt");
+
+    expect(robotsTxt).toContain("User-agent: *");
+    expect(robotsTxt).toContain("Allow: /");
+    expect(robotsTxt).toContain("Sitemap: https://hackerspace.news/sitemap.xml");
   });
 
   it("writes only the current render output into dist without leaving stale artifacts", async () => {
@@ -391,6 +414,8 @@ describe("renderSite", () => {
       "index.html",
       "news/dates.json",
       "news/index.html",
+      "robots.txt",
+      "sitemap.xml",
       "spaces/alpha.html",
       "spaces/alpha/page/2/index.html",
     ]);

@@ -226,15 +226,21 @@ function toItem(raw) {
   const imageAttachment = (raw.attachments || []).find(
     (a) => a.type && a.type.startsWith("image/"),
   );
+  // categoriesRaw carries the original feed tags unmodified; null when absent or empty.
+  const categoriesRaw = raw.categoriesRaw?.length ? raw.categoriesRaw : null;
   return {
     title: raw.title || "",
     link: raw.link || "",
     resolvedAuthor: raw.resolvedAuthor || null,
     spaceName: raw.spaceName || null,
+    contentHtml: raw.contentHtml || null,
+    contentText: raw.contentText || null,
+    summaryHtml: raw.summaryHtml || null,
     summaryText: raw.summaryText || null,
     imageUrl: imageAttachment ? imageAttachment.url : null,
     countryFlag: raw.country ? (COUNTRY_FLAGS[raw.country] || null) : null,
     countryName: raw.country || null,
+    categoriesRaw,
   };
 }
 

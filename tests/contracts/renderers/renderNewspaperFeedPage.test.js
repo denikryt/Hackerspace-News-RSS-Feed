@@ -285,4 +285,74 @@ describe("renderNewspaperFeedPageTsx — items", () => {
     expect(flagPos).toBeLessThan(spacePos);
     expect(spacePos).toBeLessThan(authorPos);
   });
+
+  it("renders np-item-tags when categoriesRaw is present", () => {
+    const model = {
+      ...BASE_MODEL,
+      sections: [makeSection("News", [makeItem({ categoriesRaw: ["Workshops", "3D Printing"] })])],
+    };
+    const html = renderNewspaperFeedPageTsx(model);
+    expect(html).toContain('class="np-item-tags"');
+    expect(html).toContain('class="np-tag"');
+    expect(html).toContain("Workshops");
+    expect(html).toContain("3D Printing");
+  });
+
+  it("does not render np-item-tags when categoriesRaw is absent", () => {
+    const model = {
+      ...BASE_MODEL,
+      sections: [makeSection("News", [makeItem({ categoriesRaw: null })])],
+    };
+    const html = renderNewspaperFeedPageTsx(model);
+    expect(html).not.toContain('class="np-item-tags"');
+  });
+
+  it("HTML-escapes tag strings", () => {
+    const model = {
+      ...BASE_MODEL,
+      sections: [makeSection("News", [makeItem({ categoriesRaw: ["<script>alert(1)</script>"] })])],
+    };
+    const html = renderNewspaperFeedPageTsx(model);
+    expect(html).not.toContain("<script>");
+    expect(html).toContain("&lt;script&gt;");
+  });
+
+  it("strips HTML tags from contentHtml and renders as plain text", () => {
+    const model = {
+      ...BASE_MODEL,
+      sections: [makeSection("News", [makeItem({ contentHtml: "<p>Full content</p>", summaryText: "Short summary" })])],
+    };
+    const html = renderNewspaperFeedPageTsx(model);
+    expect(html).toContain('class="np-item-body"');
+    expect(html).toContain("Full content");
+    expect(html).not.toContain("<p>Full content</p>");
+  });
+
+  it("falls back to summaryText when contentHtml is absent", () => {
+    const model = {
+      ...BASE_MODEL,
+      sections: [makeSection("News", [makeItem({ summaryText: "Just a summary" })])],
+    };
+    const html = renderNewspaperFeedPageTsx(model);
+    expect(html).toContain("Just a summary");
+  });
+
+  it("renders plain-text body when only summaryText is present", () => {
+    const model = {
+      ...BASE_MODEL,
+      sections: [makeSection("News", [makeItem({ summaryText: "Plain text only" })])],
+    };
+    const html = renderNewspaperFeedPageTsx(model);
+    expect(html).toContain('class="np-item-body"');
+    expect(html).toContain("Plain text only");
+  });
+
+  it("renders no body when both contentHtml and summaryText are absent", () => {
+    const model = {
+      ...BASE_MODEL,
+      sections: [makeSection("News", [makeItem({ summaryText: null, contentHtml: null })])],
+    };
+    const html = renderNewspaperFeedPageTsx(model);
+    expect(html).not.toContain("np-item-body");
+  });
 });

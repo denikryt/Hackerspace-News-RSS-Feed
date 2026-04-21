@@ -303,6 +303,69 @@ describe("buildNewspaperDayModel — item mapping", () => {
     const newsItems = model.sections.find((s) => s.label === "News").columns.flatMap((c) => c.items);
     expect(newsItems[0].summaryText).toBeNull();
   });
+
+  it("passes categoriesRaw through to mapped item", () => {
+    const items = [makeItemFull({ categoriesRaw: ["Workshops", "3D Printing"] })];
+    const model = buildNewspaperDayModel(items, "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
+    const newsItems = model.sections.find((s) => s.label === "News").columns.flatMap((c) => c.items);
+    expect(newsItems[0].categoriesRaw).toEqual(["Workshops", "3D Printing"]);
+  });
+
+  it("sets categoriesRaw to null when absent", () => {
+    const items = [makeItemFull({ categoriesRaw: undefined })];
+    const model = buildNewspaperDayModel(items, "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
+    const newsItems = model.sections.find((s) => s.label === "News").columns.flatMap((c) => c.items);
+    expect(newsItems[0].categoriesRaw).toBeNull();
+  });
+
+  it("sets categoriesRaw to null when empty array", () => {
+    const items = [makeItemFull({ categoriesRaw: [] })];
+    const model = buildNewspaperDayModel(items, "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
+    const newsItems = model.sections.find((s) => s.label === "News").columns.flatMap((c) => c.items);
+    expect(newsItems[0].categoriesRaw).toBeNull();
+  });
+
+  it("passes contentHtml through to mapped item", () => {
+    const items = [makeItemFull({ contentHtml: "<p>Full content</p>" })];
+    const model = buildNewspaperDayModel(items, "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
+    const newsItems = model.sections.find((s) => s.label === "News").columns.flatMap((c) => c.items);
+    expect(newsItems[0].contentHtml).toBe("<p>Full content</p>");
+  });
+
+  it("sets contentHtml to null when absent", () => {
+    const items = [makeItemFull({ contentHtml: undefined })];
+    const model = buildNewspaperDayModel(items, "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
+    const newsItems = model.sections.find((s) => s.label === "News").columns.flatMap((c) => c.items);
+    expect(newsItems[0].contentHtml).toBeNull();
+  });
+
+  it("passes summaryHtml through to mapped item", () => {
+    const items = [makeItemFull({ summaryHtml: "<p>Summary HTML</p>" })];
+    const model = buildNewspaperDayModel(items, "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
+    const newsItems = model.sections.find((s) => s.label === "News").columns.flatMap((c) => c.items);
+    expect(newsItems[0].summaryHtml).toBe("<p>Summary HTML</p>");
+  });
+
+  it("sets summaryHtml to null when absent", () => {
+    const items = [makeItemFull({ summaryHtml: undefined })];
+    const model = buildNewspaperDayModel(items, "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
+    const newsItems = model.sections.find((s) => s.label === "News").columns.flatMap((c) => c.items);
+    expect(newsItems[0].summaryHtml).toBeNull();
+  });
+
+  it("passes contentText through to mapped item", () => {
+    const items = [makeItemFull({ contentText: "Full plain text content" })];
+    const model = buildNewspaperDayModel(items, "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
+    const newsItems = model.sections.find((s) => s.label === "News").columns.flatMap((c) => c.items);
+    expect(newsItems[0].contentText).toBe("Full plain text content");
+  });
+
+  it("sets contentText to null when absent", () => {
+    const items = [makeItemFull({ contentText: undefined })];
+    const model = buildNewspaperDayModel(items, "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
+    const newsItems = model.sections.find((s) => s.label === "News").columns.flatMap((c) => c.items);
+    expect(newsItems[0].contentText).toBeNull();
+  });
 });
 
 describe("buildNewspaperDayModel — countryOptions", () => {

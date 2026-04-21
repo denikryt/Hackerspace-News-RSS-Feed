@@ -3,6 +3,36 @@
 import { escapeHtml } from "../renderers/layout.js";
 import { renderPageHeaderShell, type NavItems, type RecordLike } from "./pageHelpers.js";
 
+const HTML_ENTITIES: Record<string, string> = {
+  "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#39;": "'",
+  "&apos;": "'", "&nbsp;": " ", "&#8217;": "’", "&#8216;": "‘",
+  "&#8220;": "“", "&#8221;": "”", "&#8230;": "…",
+};
+
+function decodeEntities(text: string): string {
+  return text.replace(/&[#\w]+;/g, (entity) => {
+    if (HTML_ENTITIES[entity]) return HTML_ENTITIES[entity];
+    if (entity.startsWith("&#x")) {
+      const cp = parseInt(entity.slice(3, -1), 16);
+      return Number.isFinite(cp) ? String.fromCodePoint(cp) : entity;
+    }
+    if (entity.startsWith("&#")) {
+      const cp = parseInt(entity.slice(2, -1), 10);
+      return Number.isFinite(cp) ? String.fromCodePoint(cp) : entity;
+    }
+    return entity;
+  });
+}
+
+function pickPlainText(item: RecordLike): string {
+  const html = (item.summaryHtml || item.contentHtml) as string | null | undefined;
+  if (html) {
+    const stripped = html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+    return decodeEntities(stripped);
+  }
+  return ((item.summaryText || item.contentText) as string | null | undefined)?.trim() ?? "";
+}
+
 function renderItem(item: RecordLike): string {
   const flagHtml = item.countryFlag && item.countryName
     ? String(<span title={escapeHtml(item.countryName as string)}>{item.countryFlag as string}</span>)
@@ -21,8 +51,12 @@ function renderItem(item: RecordLike): string {
     ? String(<img class="np-item-image" src={item.imageUrl as string} alt="" />)
     : "";
 
-  const bodyHtml = item.summaryText
-    ? `<p class="np-item-body">${escapeHtml(item.summaryText as string)}</p>`
+  const plainText = pickPlainText(item);
+  const bodyHtml = plainText ? `<p class="np-item-body">${escapeHtml(plainText)}</p>` : "";
+
+  const rawTags = item.categoriesRaw as string[] | null;
+  const tagsHtml = rawTags?.length
+    ? `<p class="np-item-tags">${rawTags.map((t) => `<span class="np-tag">${escapeHtml(t)}</span>`).join("")}</p>`
     : "";
 
   return `<article class="np-item">
@@ -30,6 +64,7 @@ function renderItem(item: RecordLike): string {
     ${metaHtml}
     ${imageHtml}
     ${bodyHtml}
+    ${tagsHtml}
   </article>`;
 }
 
