@@ -1,7 +1,7 @@
 import { copyFile, mkdir, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 
-import { DIST_DIR, PATHS } from "./config.js";
+import { DIST_DIR, PATHS, SITE_URL } from "./config.js";
 import { listStaticRenderAssets } from "./renderAssets.js";
 import {
   buildAuthorPageEntries,
@@ -12,6 +12,7 @@ import {
 import { renderGlobalFeed } from "./renderers/renderGlobalFeed.js";
 import { readJson, writeText } from "./storage.js";
 import { validateNormalizedRenderPayloadForDisplay } from "./renderInputValidation.js";
+import { buildRobotsTxt, buildSitemapXml } from "./sitemap.js";
 import { slugify } from "./utils/slugify.js";
 import { filterNormalizedPayloadForDisplay } from "./visibleData.js";
 import { buildCuratedIndexModel } from "./viewModels/curated.js";
@@ -52,6 +53,9 @@ export async function renderSite({
     ...buildSpacePageEntries(context, { logger }),
   ];
   const pages = Object.fromEntries(pageEntries);
+
+  pages["sitemap.xml"] = buildSitemapXml(Object.keys(pages), SITE_URL);
+  pages["robots.txt"] = buildRobotsTxt(SITE_URL);
 
   if (writePages) {
     logInfo(logger, `[render] writing pages: count=${Object.keys(pages).length}`);
