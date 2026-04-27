@@ -65,6 +65,8 @@ export async function discoverHackerspaceFeeds({
   waitImpl,
   requestConcurrency = DEFAULT_REQUEST_CONCURRENCY,
   minRequestDelayMs = DEFAULT_MIN_REQUEST_DELAY_MS,
+  // Sites already in the valid feed list — skipped without any HTTP requests.
+  knownSiteUrls = new Set(),
 } = {}) {
   const scheduler = createRequestScheduler({
     concurrency: requestConcurrency,
@@ -90,12 +92,18 @@ export async function discoverHackerspaceFeeds({
 
   await mapWithConcurrency(sourceRows, requestConcurrency, async (site, index) => {
       logInfo(logger, `[discover] starting site ${index + 1}/${sourceRows.length}: ${site.siteUrl}`);
-      const entry = await discoverFeedForSite({
-        site,
-        fetchImpl: scheduledFetchImpl,
-        waitImpl,
-        logger,
-      });
+      const isKnown = knownSiteUrls.has(site.siteUrl);
+      if (isKnown) {
+        logInfo(logger, `[discover] [skip] ${site.siteUrl} — already in valid feed list`);
+      }
+      const entry = isKnown
+        ? buildSkippedKnownEntry(site)
+        : await discoverFeedForSite({
+          site,
+          fetchImpl: scheduledFetchImpl,
+          waitImpl,
+          logger,
+        });
       entries[index] = entry;
       logInfo(
         logger,
@@ -129,7 +137,9 @@ export async function discoverHackerspaceFeeds({
     groupedByValidationStatus: groupEntriesByValidationStatus(entries),
   };
 
-  if (writeOutput && entries.length === 0) {
+  // Always write the final complete payload — the progressive writes above only
+  // contain entries completed so far and may miss entries that finished early.
+  if (writeOutput) {
     await writeTextImpl(
       paths.discoveredHackerspaceFeeds,
       renderDiscoveryPayloadJson({ generatedAt, sourcePageUrl, entries }),
@@ -381,11 +391,26 @@ function pushCandidate({ candidates, seen, feedUrl, discoveryMethod }) {
   candidates.push({ feedUrl, discoveryMethod });
 }
 
+function buildSkippedKnownEntry(site) {
+  // Site already has a confirmed valid feed — skip all HTTP work for this run.
+  return {
+    hackerspaceName: site.hackerspaceName,
+    hackerspaceWikiUrl: site.hackerspaceWikiUrl || null,
+    country: site.country || "",
+    siteUrl: site.siteUrl,
+    discoveryMethod: null,
+    status: "skipped_known",
+    validationStatus: "not_checked",
+    validationNote: "Skipped: site already has a known valid feed",
+  };
+}
+
 function buildSummary(entries) {
   return {
     sites: entries.length,
     confirmed: entries.filter((entry) => entry.status === "confirmed").length,
     skipped: entries.filter((entry) => entry.status === "skipped").length,
+    skippedKnown: entries.filter((entry) => entry.status === "skipped_known").length,
     valid: entries.filter((entry) => entry.validationStatus === "valid").length,
     empty: entries.filter((entry) => entry.validationStatus === "empty").length,
     invalid: entries.filter((entry) => entry.validationStatus === "invalid").length,
