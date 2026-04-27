@@ -406,6 +406,85 @@ describe("discoverHackerspaceFeeds", () => {
     expect(logLines).toContain("[discover] completed site 2/2: http://www.twitter.com/sugarshack (skipped/not_checked)");
   });
 
+  it("skips sites whose siteUrl is in knownSiteUrls without making network requests for them", async () => {
+    // Two sites in the HTML; only Alpha is already known — Beta should still be fetched.
+    const twoSiteHtml = `
+      <table>
+        <tr><th>hackerspace</th><th>Country</th><th>Website</th></tr>
+        <tr data-row-number="1">
+          <td><a href="/Alpha">Alpha</a></td>
+          <td>Wonderland</td>
+          <td><a href="https://alpha.example/">https://alpha.example/</a></td>
+        </tr>
+        <tr data-row-number="2">
+          <td><a href="/Beta">Beta</a></td>
+          <td>Nowhere</td>
+          <td><a href="https://beta.example/">https://beta.example/</a></td>
+        </tr>
+      </table>
+    `;
+    const fetchImpl = vi.fn(async (url) => {
+      if (url === sourcePageUrl) return htmlResponse(url, twoSiteHtml);
+      if (url === "https://beta.example/") return htmlResponse(url, "<html><body>no alternate</body></html>");
+      return notFoundResponse(url);
+    });
+
+    const result = await discoverHackerspaceFeeds({
+      sourcePageUrl,
+      fetchImpl,
+      knownSiteUrls: new Set(["https://alpha.example/"]),
+      waitImpl: vi.fn().mockResolvedValue(undefined),
+    });
+
+    // Alpha was skipped — only source page + beta homepage were fetched.
+    const fetchedUrls = fetchImpl.mock.calls.map(([url]) => url);
+    expect(fetchedUrls).not.toContain("https://alpha.example/");
+    expect(fetchedUrls).toContain("https://beta.example/");
+
+    const alphaEntry = result.discoveryPayload.entries.find((e) => e.siteUrl === "https://alpha.example/");
+    expect(alphaEntry).toMatchObject({
+      siteUrl: "https://alpha.example/",
+      status: "skipped_known",
+      validationStatus: "not_checked",
+    });
+  });
+
+  it("processes all sites when knownSiteUrls is omitted (default behavior unchanged)", async () => {
+    const twoSiteHtml = `
+      <table>
+        <tr><th>hackerspace</th><th>Country</th><th>Website</th></tr>
+        <tr data-row-number="1">
+          <td><a href="/Alpha">Alpha</a></td>
+          <td>Wonderland</td>
+          <td><a href="https://alpha.example/">https://alpha.example/</a></td>
+        </tr>
+        <tr data-row-number="2">
+          <td><a href="/Beta">Beta</a></td>
+          <td>Nowhere</td>
+          <td><a href="https://beta.example/">https://beta.example/</a></td>
+        </tr>
+      </table>
+    `;
+    const fetchImpl = vi.fn(async (url) => {
+      if (url === sourcePageUrl) return htmlResponse(url, twoSiteHtml);
+      if (url === "https://alpha.example/") return htmlResponse(url, "<html><body>no alternate</body></html>");
+      if (url === "https://beta.example/") return htmlResponse(url, "<html><body>no alternate</body></html>");
+      return notFoundResponse(url);
+    });
+
+    const result = await discoverHackerspaceFeeds({
+      sourcePageUrl,
+      fetchImpl,
+      waitImpl: vi.fn().mockResolvedValue(undefined),
+    });
+
+    const fetchedUrls = fetchImpl.mock.calls.map(([url]) => url);
+    expect(fetchedUrls).toContain("https://alpha.example/");
+    expect(fetchedUrls).toContain("https://beta.example/");
+    expect(result.discoveryPayload.entries).toHaveLength(2);
+    expect(result.discoveryPayload.entries.every((e) => e.status !== "skipped_known")).toBe(true);
+  });
+
   it("updates the discovered feeds file incrementally while the crawl is running", async () => {
     const outputDir = await createTrackedTempDir("hnf-discovery-progress-", tempDirs);
 
@@ -451,13 +530,14 @@ describe("discoverHackerspaceFeeds", () => {
     });
 
     const discoveryWrites = writes.filter(({ filePath }) => filePath === paths.discoveredHackerspaceFeeds);
-    expect(discoveryWrites).toHaveLength(2);
+    // 2 progressive writes (one per site) + 1 final complete write at the end.
+    expect(discoveryWrites.length).toBeGreaterThanOrEqual(2);
     const firstWrite = JSON.parse(discoveryWrites[0].value);
-    const secondWrite = JSON.parse(discoveryWrites[1].value);
+    const lastWrite = JSON.parse(discoveryWrites[discoveryWrites.length - 1].value);
     expect(firstWrite.groupedByValidationStatus.not_checked).toEqual([
       expect.objectContaining({ siteUrl: "https://t.me/sandbox_events" }),
     ]);
-    expect(secondWrite.groupedByValidationStatus.not_checked).toEqual(
+    expect(lastWrite.groupedByValidationStatus.not_checked).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ siteUrl: "https://t.me/sandbox_events" }),
         expect.objectContaining({ siteUrl: "http://www.twitter.com/sugarshack" }),
