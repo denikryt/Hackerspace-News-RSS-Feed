@@ -62,6 +62,8 @@ const SECTION_WORKSHOPS = "Workshops";
 const SECTION_NEWS = "News";
 const SECTION_BLOGS = "Blogs";
 const SECTION_COMMUNITY = "Community";
+// Items with no tags at all — separates noisy untagged posts from tagged content.
+const SECTION_OTHER = "Other";
 
 const CATEGORY_TO_SECTION = {
   events: SECTION_EVENTS,
@@ -80,11 +82,15 @@ const ALL_SECTIONS = [
   SECTION_COMMUNITY,
   SECTION_NEWS,
   SECTION_BLOGS,
+  SECTION_OTHER,
 ];
 
 const GENERIC_SECTIONS = new Set([SECTION_NEWS]);
 
 function assignSection(item) {
+  // Items with no tags go to Other — distinct from items with unmapped tags.
+  if (!item.categoriesRaw) return SECTION_OTHER;
+
   const categories = item.normalizedCategories || [];
   let genericFallback = null;
 
