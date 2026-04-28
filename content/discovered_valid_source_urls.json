@@ -1,6 +1,6 @@
 {
   "sourcePageUrl": "https://wiki.hackerspaces.org/List_of_Hacker_Spaces",
-  "extractedAt": "2026-04-27T23:40:43.748Z",
+  "extractedAt": "2026-04-28T14:09:01.017Z",
   "urls": [
     {
       "hackerspaceName": "Entität",
@@ -355,14 +355,6 @@
       "sourceType": "discovery"
     },
     {
-      "hackerspaceName": "KwartzLab",
-      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/KwartzLab",
-      "country": "Canada",
-      "siteUrl": "http://www.kwartzlab.ca/",
-      "candidateFeedUrl": "https://www.kwartzlab.ca/news?format=rss",
-      "sourceType": "discovery"
-    },
-    {
       "hackerspaceName": "C3D2",
       "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/C3D2",
       "country": "Germany",
@@ -487,7 +479,7 @@
       "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Dordtse_Elektronica_Club",
       "country": "Netherlands",
       "siteUrl": "http://pi4dec.nl/",
-      "candidateFeedUrl": "https://www.pi4dec.nl/comments/feed/",
+      "candidateFeedUrl": "https://www.pi4dec.nl/feed/",
       "sourceType": "discovery"
     },
     {
@@ -640,14 +632,6 @@
       "country": "Poland",
       "siteUrl": "https://hackerspace-krk.pl/",
       "candidateFeedUrl": "https://hackerspace-krk.pl/index.xml",
-      "sourceType": "discovery"
-    },
-    {
-      "hackerspaceName": "Omega Verksted",
-      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Omega_Verksted",
-      "country": "Norway",
-      "siteUrl": "http://www.omegav.no/",
-      "candidateFeedUrl": "https://www.omegav.no/newsrss",
       "sourceType": "discovery"
     },
     {
@@ -1163,6 +1147,14 @@
       "sourceType": "discovery"
     },
     {
+      "hackerspaceName": "Coh@bit Fablab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Coh@bit_Fablab",
+      "country": "France",
+      "siteUrl": "https://www.iut.u-bordeaux.fr/cohabit/",
+      "candidateFeedUrl": "https://www.iut.u-bordeaux.fr/index.xml",
+      "sourceType": "discovery"
+    },
+    {
       "hackerspaceName": "Leitstelle511-ccch",
       "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Leitstelle511-ccch",
       "country": "Germany",
@@ -1659,19 +1651,11 @@
       "sourceType": "discovery"
     },
     {
-      "hackerspaceName": "Passable",
-      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Passable",
-      "country": "United States of America",
-      "siteUrl": "http://passable.art/",
-      "candidateFeedUrl": "http://passable.art/feed/",
-      "sourceType": "discovery"
-    },
-    {
       "hackerspaceName": "DoESLiverpool",
       "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/DoESLiverpool",
       "country": "United Kingdom",
       "siteUrl": "http://doesliverpool.com/",
-      "candidateFeedUrl": "https://doesliverpool.com/feed/",
+      "candidateFeedUrl": "https://doesliverpool.com/comments/feed/",
       "sourceType": "discovery"
     },
     {
@@ -1688,14 +1672,6 @@
       "country": "Catalonia",
       "siteUrl": "http://www.lagresca.org/",
       "candidateFeedUrl": "http://lagresca.org/feed/",
-      "sourceType": "discovery"
-    },
-    {
-      "hackerspaceName": "DevLoL",
-      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/DevLoL",
-      "country": "Austria",
-      "siteUrl": "https://devlol.org/",
-      "candidateFeedUrl": "https://devlol.org/wiki/DevLoL?action=rss_rc&unique=1&ddiffs=1",
       "sourceType": "discovery"
     },
     {
@@ -2051,14 +2027,6 @@
       "sourceType": "discovery"
     },
     {
-      "hackerspaceName": "Foothills Community Workshop",
-      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Foothills_Community_Workshop",
-      "country": "United States of America",
-      "siteUrl": "http://www.foothillscommunityworkshop.org/",
-      "candidateFeedUrl": "http://fcwhack.com/?feed=rss2",
-      "sourceType": "discovery"
-    },
-    {
       "hackerspaceName": "CBI Maker Space",
       "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/CBI_Maker_Space",
       "country": "United States of America",
@@ -2159,7 +2127,7 @@
       "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/ChattLab",
       "country": "United States of America",
       "siteUrl": "http://www.chattlab.org/",
-      "candidateFeedUrl": "https://wiki.chattlab.org/feed.php",
+      "candidateFeedUrl": "https://wiki.chattlab.org/feed.php?mode=list&ns=",
       "sourceType": "discovery"
     },
     {
@@ -2515,14 +2483,6 @@
       "sourceType": "discovery"
     },
     {
-      "hackerspaceName": "Fresno Ideaworks",
-      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Fresno_Ideaworks",
-      "country": "United States of America",
-      "siteUrl": "http://fresnoideaworks.org/",
-      "candidateFeedUrl": "https://www.fresnoideaworks.org/RSS",
-      "sourceType": "discovery"
-    },
-    {
       "hackerspaceName": "Politecnico Open unix Labs",
       "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Politecnico_Open_unix_Labs",
       "country": "Italy",
@@ -2547,14 +2507,6 @@
       "sourceType": "discovery"
     },
     {
-      "hackerspaceName": "CT Hackerspace",
-      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/CT_Hackerspace",
-      "country": "United States of America",
-      "siteUrl": "http://www.cthackerspace.com/",
-      "candidateFeedUrl": "https://cthacker.space/rss.xml",
-      "sourceType": "discovery"
-    },
-    {
       "hackerspaceName": "HacDC",
       "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/HacDC",
       "country": "United States of America",
@@ -2576,6 +2528,14 @@
       "country": "Brazil",
       "siteUrl": "http://matehackers.org/",
       "candidateFeedUrl": "https://matehackers.org/feed.php",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "EigenLab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/EigenLab",
+      "country": "Italy",
+      "siteUrl": "https://eigenlab.org/",
+      "candidateFeedUrl": "https://eigenlab.org/feed/atom/",
       "sourceType": "discovery"
     },
     {
@@ -2859,14 +2819,6 @@
       "sourceType": "discovery"
     },
     {
-      "hackerspaceName": "ЦМИТ «Дружба»/Friendship FabLab",
-      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/%D0%A6%D0%9C%D0%98%D0%A2_%C2%AB%D0%94%D1%80%D1%83%D0%B6%D0%B1%D0%B0%C2%BB/Friendship_FabLab",
-      "country": "Russian Federation",
-      "siteUrl": "http://cmit.ru/",
-      "candidateFeedUrl": "https://cmit.ru/tomsk/feed/",
-      "sourceType": "discovery"
-    },
-    {
       "hackerspaceName": "Dock18",
       "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Dock18",
       "country": "Switzerland",
@@ -3016,6 +2968,62 @@
       "country": "Italy",
       "siteUrl": "http://www.frankensteingarage.it/",
       "candidateFeedUrl": "http://frankensteingarage.it/feed/",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "KwartzLab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/KwartzLab",
+      "country": "Canada",
+      "siteUrl": "http://www.kwartzlab.ca/",
+      "candidateFeedUrl": "https://www.kwartzlab.ca/news?format=rss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Omega Verksted",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Omega_Verksted",
+      "country": "Norway",
+      "siteUrl": "http://www.omegav.no/",
+      "candidateFeedUrl": "https://www.omegav.no/newsrss",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Calango hacker clube",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Calango_hacker_clube",
+      "country": "Brazil",
+      "siteUrl": "http://www.calango.club/",
+      "candidateFeedUrl": "https://www.calango.club/feed.php",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "DevLoL",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/DevLoL",
+      "country": "Austria",
+      "siteUrl": "https://devlol.org/",
+      "candidateFeedUrl": "https://devlol.org/wiki/DevLoL?action=rss_rc&unique=1&ddiffs=1",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Foothills Community Workshop",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Foothills_Community_Workshop",
+      "country": "United States of America",
+      "siteUrl": "http://www.foothillscommunityworkshop.org/",
+      "candidateFeedUrl": "http://fcwhack.com/?feed=comments-rss2",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "Fresno Ideaworks",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/Fresno_Ideaworks",
+      "country": "United States of America",
+      "siteUrl": "http://fresnoideaworks.org/",
+      "candidateFeedUrl": "https://www.fresnoideaworks.org/RSS",
+      "sourceType": "discovery"
+    },
+    {
+      "hackerspaceName": "ЦМИТ «Дружба»/Friendship FabLab",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/%D0%A6%D0%9C%D0%98%D0%A2_%C2%AB%D0%94%D1%80%D1%83%D0%B6%D0%B1%D0%B0%C2%BB/Friendship_FabLab",
+      "country": "Russian Federation",
+      "siteUrl": "http://cmit.ru/",
+      "candidateFeedUrl": "https://cmit.ru/tomsk/feed/",
       "sourceType": "discovery"
     }
   ]
