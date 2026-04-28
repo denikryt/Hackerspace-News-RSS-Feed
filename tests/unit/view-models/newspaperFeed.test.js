@@ -181,6 +181,7 @@ function makeItemFull(overrides = {}) {
     spaceName: "HackerSpace DE",
     country: "Germany",
     normalizedCategories: ["news"],
+    categoriesRaw: ["news"],
     summaryText: "Summary text",
     attachments: [],
     ...overrides,
@@ -194,9 +195,9 @@ const DATES_BY_COUNTRY = new Map([
 ]);
 
 describe("buildNewspaperDayModel — sections", () => {
-  it("returns sections in canonical order: Events, Projects, Workshops, Community, News, Blogs", () => {
+  it("returns sections in canonical order: Events, Projects, Workshops, Community, News, Blogs, Other", () => {
     const model = buildNewspaperDayModel([], "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
-    expect(model.sections.map((s) => s.label)).toEqual(["Events", "Projects", "Workshops", "Community", "News", "Blogs"]);
+    expect(model.sections.map((s) => s.label)).toEqual(["Events", "Projects", "Workshops", "Community", "News", "Blogs", "Other"]);
   });
 
   it("places items into correct sections", () => {
@@ -217,6 +218,33 @@ describe("buildNewspaperDayModel — sections", () => {
     expect(newsSection.columns[0].items.length).toBe(2);
     expect(newsSection.columns[1].items.length).toBe(1);
     expect(newsSection.columns[2].items.length).toBe(1);
+  });
+
+  it("places items with no tags (null categoriesRaw) into Other section", () => {
+    const items = [
+      makeItemFull({ categoriesRaw: null, normalizedCategories: undefined }),
+      makeItemFull({ categoriesRaw: null, normalizedCategories: undefined, title: "Another untagged" }),
+    ];
+    const model = buildNewspaperDayModel(items, "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
+    const byLabel = Object.fromEntries(model.sections.map((s) => [s.label, s]));
+    expect(byLabel["Other"].totalItems).toBe(2);
+    expect(byLabel["News"].totalItems).toBe(0);
+  });
+
+  it("places items with unmapped tags into News, not Other", () => {
+    const items = [
+      makeItemFull({ categoriesRaw: ["some-unknown-tag"], normalizedCategories: [] }),
+    ];
+    const model = buildNewspaperDayModel(items, "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
+    const byLabel = Object.fromEntries(model.sections.map((s) => [s.label, s]));
+    expect(byLabel["News"].totalItems).toBe(1);
+    expect(byLabel["Other"].totalItems).toBe(0);
+  });
+
+  it("Other is the last section", () => {
+    const model = buildNewspaperDayModel([], "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
+    const labels = model.sections.map((s) => s.label);
+    expect(labels[labels.length - 1]).toBe("Other");
   });
 });
 
@@ -311,11 +339,11 @@ describe("buildNewspaperDayModel — item mapping", () => {
     expect(newsItems[0].categoriesRaw).toEqual(["Workshops", "3D Printing"]);
   });
 
-  it("sets categoriesRaw to null when absent", () => {
+  it("sets categoriesRaw to null when absent — item goes to Other", () => {
     const items = [makeItemFull({ categoriesRaw: undefined })];
     const model = buildNewspaperDayModel(items, "2026-04-15", NOW, null, AVAILABLE_DATES, DATES_BY_COUNTRY);
-    const newsItems = model.sections.find((s) => s.label === "News").columns.flatMap((c) => c.items);
-    expect(newsItems[0].categoriesRaw).toBeNull();
+    const otherItems = model.sections.find((s) => s.label === "Other").columns.flatMap((c) => c.items);
+    expect(otherItems[0].categoriesRaw).toBeNull();
   });
 
   it("sets categoriesRaw to null when empty array", () => {
