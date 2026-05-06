@@ -52,6 +52,74 @@ describe("renderSite", () => {
     vi.resetModules();
   });
 
+  it("adds canonical links to rendered html pages and skips redirect pages", async () => {
+    const result = await renderSite({
+      sourceRowsPayload: {
+        sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
+        sectionTitle: "Spaces with RSS feeds",
+        extractedAt: "2026-03-19T20:00:00.000Z",
+        urls: [],
+      },
+      validationsPayload: [],
+      normalizedPayload: {
+        generatedAt: "2026-03-19T20:00:00.000Z",
+        sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
+        summary: {
+          sourceRows: 1,
+          validFeeds: 1,
+          parsedFeeds: 1,
+          emptyFeeds: 0,
+          failedFeeds: 0,
+        },
+        feeds: [
+          {
+            id: "row-1-alpha",
+            rowNumber: 1,
+            sourceWikiUrl: "https://wiki.hackerspaces.org/Alpha",
+            finalFeedUrl: "https://alpha.example/feed.xml",
+            siteUrl: "https://alpha.example",
+            spaceName: "Alpha Space",
+            country: "Germany",
+            feedType: "rss",
+            status: "parsed_ok",
+            items: [
+              {
+                id: "alpha-1",
+                title: "Alpha post",
+                link: "https://alpha.example/posts/alpha-post",
+                resolvedAuthor: "Alice",
+                authorSource: "author",
+                displayDate: "2026-03-18T10:00:00.000Z",
+                publishedAt: "2026-03-18T10:00:00.000Z",
+                summary: "Alpha summary",
+                normalizedCategories: ["events"],
+              },
+            ],
+          },
+        ],
+        failures: [],
+      },
+      now: Date.parse("2026-03-19T12:00:00.000Z"),
+    });
+
+    expect(result.pages["index.html"]).toContain(
+      '<link rel="canonical" href="https://hackerspace.news/" />',
+    );
+    expect(result.pages["about/index.html"]).toContain(
+      '<link rel="canonical" href="https://hackerspace.news/about/" />',
+    );
+    expect(result.pages["authors/index.html"]).toContain(
+      '<link rel="canonical" href="https://hackerspace.news/authors/" />',
+    );
+    expect(result.pages["spaces/alpha-space.html"]).toContain(
+      '<link rel="canonical" href="https://hackerspace.news/spaces/alpha-space.html" />',
+    );
+    expect(result.pages["news/2026-03-18/index.html"]).toContain(
+      '<link rel="canonical" href="https://hackerspace.news/news/2026-03-18/" />',
+    );
+    expect(result.pages["news/index.html"]).not.toContain('rel="canonical"');
+  });
+
   it("renders dist pages from local json only and produces reproducible output", async () => {
     const rootDir = await createTrackedTempDir("hnf-render-", tempDirs);
 

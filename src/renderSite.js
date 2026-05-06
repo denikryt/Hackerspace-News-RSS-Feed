@@ -1,6 +1,7 @@
 import { copyFile, mkdir, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 
+import { injectCanonicalHref, pagePathToCanonicalUrl } from "./canonical.js";
 import { DIST_DIR, PATHS, SITE_URL } from "./config.js";
 import { listStaticRenderAssets } from "./renderAssets.js";
 import {
@@ -47,7 +48,7 @@ export async function renderSite({
     ...buildAuthorPageEntries(context, { logger }),
     ...buildSpacePageEntries(context, { logger }),
   ];
-  const pages = Object.fromEntries(pageEntries);
+  const pages = addCanonicalUrlsToRenderedPages(Object.fromEntries(pageEntries), SITE_URL);
 
   pages["sitemap.xml"] = buildSitemapXml(Object.keys(pages), SITE_URL);
   pages["robots.txt"] = buildRobotsTxt(SITE_URL);
@@ -122,6 +123,17 @@ async function loadRenderInputs({ paths, sourceRowsPayload, validationsPayload, 
     validationsPayload: loadedValidationsPayload,
     normalizedPayload: validatedNormalizedPayload,
   };
+}
+
+// The render pipeline owns the output paths, so canonical link insertion lives
+// here rather than being duplicated across individual page renderers.
+function addCanonicalUrlsToRenderedPages(pages, siteUrl) {
+  return Object.fromEntries(
+    Object.entries(pages).map(([relativePath, content]) => {
+      const canonicalHref = pagePathToCanonicalUrl(relativePath, siteUrl);
+      return [relativePath, injectCanonicalHref(content, canonicalHref)];
+    }),
+  );
 }
 
 async function writeRenderOutput({ distDir, pages }) {
