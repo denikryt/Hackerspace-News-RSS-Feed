@@ -17,17 +17,17 @@ describe("tsx-backed production helpers", () => {
           console.log(JSON.stringify({
             header: renderPageHeader({
               title: "Runtime",
-              navItems: [{ href: "/news/index.html", label: "News", isCurrent: true }],
+              navItems: [{ href: "/news/", label: "News", isCurrent: true }],
             }),
             pagination: renderPagination({
               currentPage: 2,
               totalPages: 3,
               hasPreviousPage: true,
               hasNextPage: true,
-              previousPageHref: "/news/index.html",
+              previousPageHref: "/news/",
               nextPageHref: "/news/page/3/",
               pageLinks: [
-                { type: "page", page: 1, href: "/news/index.html", isCurrent: false },
+                { type: "page", page: 1, href: "/news/", isCurrent: false },
                 { type: "page", page: 2, href: "/news/page/2/", isCurrent: true },
                 { type: "page", page: 3, href: "/news/page/3/", isCurrent: false }
               ],

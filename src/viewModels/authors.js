@@ -9,6 +9,7 @@ import {
 } from "../authors.js";
 import { buildDisplayContent } from "../contentDisplay.js";
 import { buildPageLinks, GLOBAL_FEED_PAGE_SIZE, paginateItems } from "../pagination.js";
+import { getHomeHref, getNewsIndexHref } from "../sitePaths.js";
 import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
 
@@ -58,8 +59,8 @@ export function buildAuthorsIndexModel(
     availableHackerspaces,
     authors: sortedAuthors,
     visibleAuthors,
-    homeHref: "/index.html",
-    feedHref: "/news/index.html",
+    homeHref: getHomeHref(),
+    feedHref: getNewsIndexHref(),
     authorsIndexHref: getAuthorsIndexHref(),
   };
 }
@@ -120,8 +121,8 @@ export function buildAuthorDetailModel(
         ? hrefForPage(pagination.currentPage + 1)
         : undefined,
     pageLinks: buildPageLinks(pagination.currentPage, pagination.totalPages, hrefForPage),
-    homeHref: "/index.html",
-    feedHref: "/news/index.html",
+    homeHref: getHomeHref(),
+    feedHref: getNewsIndexHref(),
     authorsIndexHref: getAuthorsIndexHref(),
     canonicalHref: hrefForPage(pagination.currentPage),
   };

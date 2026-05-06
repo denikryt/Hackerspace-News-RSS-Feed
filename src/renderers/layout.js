@@ -1,4 +1,5 @@
 import { SITE_CSS_HREF } from "../renderAssets.js";
+import { getAboutHref } from "../sitePaths.js";
 import { renderPageHeaderTsx } from "./tsxSharedRuntime.js";
 
 export function renderLayout({ title, body, scriptHrefs = [] }) {
@@ -48,7 +49,7 @@ export function renderMetric(label, value) {
 }
 
 export function renderAboutHeaderLink() {
-  return `<a class="about-link-muted" href="/about/index.html">About</a>`;
+  return `<a class="about-link-muted" href="${getAboutHref()}">About</a>`;
 }
 
 export function renderField(label, value) {

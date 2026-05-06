@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
+import { getAuthorsIndexHref as getCanonicalAuthorsIndexHref } from "./sitePaths.js";
 import { slugify } from "./utils/slugify.js";
 
 const EXCLUDED_AUTHOR_NAMES_PATH = resolve(process.cwd(), "config/excluded_author_names.txt");
@@ -82,7 +83,7 @@ export function parseAuthorValue(rawAuthor, { authorOverrides = getAuthorOverrid
 }
 
 export function getAuthorsIndexHref() {
-  return "/authors/index.html";
+  return getCanonicalAuthorsIndexHref();
 }
 
 export function getAuthorDetailHref(authorSlug, pageNumber = 1) {
