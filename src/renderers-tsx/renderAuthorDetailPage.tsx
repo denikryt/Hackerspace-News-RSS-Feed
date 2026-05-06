@@ -1,4 +1,5 @@
 import { renderGlobalFeedPageTsx } from "./renderGlobalFeedPage.js";
+import { getCuratedHref } from "../sitePaths.js";
 import type { RecordLike } from "./pageHelpers.js";
 
 export function renderAuthorDetailPageTsx(model: RecordLike) {
@@ -16,7 +17,7 @@ export function renderAuthorDetailPageTsx(model: RecordLike) {
     pageIntro: `${model.publicationCountLabel || ""} ${sourceLabel}`.trim(),
     streamNavItems: [
       { href: model.feedHref, label: "News", isCurrent: false },
-      { href: "/curated/index.html", label: "Curated", isCurrent: false },
+      { href: getCuratedHref(), label: "Curated", isCurrent: false },
       { href: model.authorsIndexHref, label: "Authors", isCurrent: false },
       { href: model.canonicalHref || model.authorsIndexHref, label: model.authorDisplayName, isCurrent: true },
     ],

@@ -6,6 +6,7 @@ import { renderAuthorsIndex } from "./renderers/renderAuthorsIndex.js";
 import { renderSpaceDetail } from "./renderers/renderSpaceDetail.js";
 import { renderSpacesIndex } from "./renderers/renderSpacesIndex.js";
 import { renderNewspaperFeedPageTsx } from "./renderers/tsxPageRuntime.js";
+import { getAuthorsIndexHref, getCuratedHref, getHomeHref, getNewsIndexHref } from "./sitePaths.js";
 import { buildAuthorDetailModel } from "./viewModels/authors.js";
 import { buildSpaceDetailModel } from "./viewModels/spaceDetail.js";
 import {
@@ -119,10 +120,10 @@ export function buildNewspaperFeedPageEntries(normalizedPayload, context, { logg
   const availableDatesByCountry = buildAvailableDatesByCountry(normalizedPayload, today);
 
   const navItems = [
-    { href: "/index.html", label: "Hackerspaces", isCurrent: false },
-    { href: "/news/index.html", label: "News", isCurrent: true },
-    { href: "/curated/index.html", label: "Curated", isCurrent: false },
-    { href: "/authors/index.html", label: "Authors", isCurrent: false },
+    { href: getHomeHref(), label: "Hackerspaces", isCurrent: false },
+    { href: getNewsIndexHref(), label: "News", isCurrent: true },
+    { href: getCuratedHref(), label: "Curated", isCurrent: false },
+    { href: getAuthorsIndexHref(), label: "Authors", isCurrent: false },
   ];
 
   if (availableDates.length === 0) {

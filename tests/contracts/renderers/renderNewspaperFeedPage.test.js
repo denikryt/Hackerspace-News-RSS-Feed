@@ -89,19 +89,19 @@ describe("renderNewspaperFeedPageTsx — layout", () => {
 describe("renderNewspaperFeedPageTsx — site nav", () => {
   it("contains Hackerspaces link", () => {
     const html = renderNewspaperFeedPageTsx(BASE_MODEL);
-    expect(html).toContain('href="/index.html"');
+    expect(html).toContain('href="/"');
     expect(html).toContain("Hackerspaces");
   });
 
   it("contains News link with aria-current=page", () => {
     const html = renderNewspaperFeedPageTsx(BASE_MODEL);
-    expect(html).toContain('href="/news/index.html"');
+    expect(html).toContain('href="/news/"');
     expect(html).toContain("News");
   });
 
   it("contains Authors link", () => {
     const html = renderNewspaperFeedPageTsx(BASE_MODEL);
-    expect(html).toContain('href="/authors/index.html"');
+    expect(html).toContain('href="/authors/"');
     expect(html).toContain("Authors");
   });
 });

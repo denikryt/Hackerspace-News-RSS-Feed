@@ -23,10 +23,10 @@ describe("content rendering", () => {
           ],
         },
       ],
-      homeHref: "/index.html",
+      homeHref: "/",
       pageTitle: "Feed",
       pageIntro: "All publications sorted from new to old.",
-      streamNavItems: [{ href: "/news/index.html", label: "Feed", isCurrent: true }],
+      streamNavItems: [{ href: "/news/", label: "Feed", isCurrent: true }],
       publicationCountLabel: "1 of 1 publications",
     });
 
@@ -81,8 +81,8 @@ describe("content rendering", () => {
           normalizedCategories: ["events", "news"],
         },
       ],
-      homeHref: "/index.html",
-      feedHref: "/news/index.html",
+      homeHref: "/",
+      feedHref: "/news/",
     });
 
     expect(html).toContain('<a href="https://example.com/post">link</a>');
@@ -111,8 +111,8 @@ describe("content rendering", () => {
           authorLinks: [],
         },
       ],
-      homeHref: "/index.html",
-      feedHref: "/news/index.html",
+      homeHref: "/",
+      feedHref: "/news/",
     });
 
     expect(html).toContain('href="https://example.com/post-with-author">Source</a>');
@@ -135,16 +135,16 @@ describe("content rendering", () => {
           displayDate: "2025-01-01T10:00:00.000Z",
         },
       ],
-      homeHref: "/index.html",
+      homeHref: "/",
       currentPage: 2,
       totalPages: 5,
       currentPageLabel: "Page 2 of 5",
       hasPreviousPage: true,
       hasNextPage: true,
-      previousPageHref: "/news/index.html",
+      previousPageHref: "/news/",
       nextPageHref: "/news/page/3/",
       pageLinks: [
-        { type: "page", page: 1, href: "/news/index.html", isCurrent: false },
+        { type: "page", page: 1, href: "/news/", isCurrent: false },
         { type: "page", page: 2, href: "/news/page/2/", isCurrent: true },
         { type: "page", page: 3, href: "/news/page/3/", isCurrent: false },
         { type: "ellipsis" },
@@ -152,7 +152,7 @@ describe("content rendering", () => {
       ],
       pageTitle: "Feed",
       pageIntro: "All publications sorted from new to old.",
-      streamNavItems: [{ href: "/news/index.html", label: "Feed", isCurrent: true }],
+      streamNavItems: [{ href: "/news/", label: "Feed", isCurrent: true }],
       publicationCountLabel: "1 of 42 publications",
     });
 
@@ -194,8 +194,8 @@ describe("content rendering", () => {
         { type: "ellipsis" },
         { type: "page", page: 5, href: "/spaces/betamachine/page/5/", isCurrent: false },
       ],
-      homeHref: "/index.html",
-      feedHref: "/news/index.html",
+      homeHref: "/",
+      feedHref: "/news/",
       publicationCountLabel: "1 of 41 publications",
     });
 

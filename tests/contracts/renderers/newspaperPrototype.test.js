@@ -112,9 +112,9 @@ describe("renderHtml contract", () => {
   it("renders the site header with the four nav links", () => {
     const html = buildHtml();
     expect(html).toContain("Hackerspaces");
-    expect(html).toContain('href="/news/index.html"');
-    expect(html).toContain('href="/curated/index.html"');
-    expect(html).toContain('href="/authors/index.html"');
+    expect(html).toContain('href="/news/"');
+    expect(html).toContain('href="/curated/"');
+    expect(html).toContain('href="/authors/"');
   });
 
   it("omits body text when summaryText is absent", () => {

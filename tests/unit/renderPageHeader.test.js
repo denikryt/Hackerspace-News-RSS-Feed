@@ -10,8 +10,8 @@ describe("renderPageHeader", () => {
       introHtml: '<p class="muted">Intro copy</p>',
       navClass: "page-nav--narrow",
       navItems: [
-        { href: "/index.html", label: "Hackerspaces" },
-        { href: "/news/index.html", label: "News", isCurrent: true },
+        { href: "/", label: "Hackerspaces" },
+        { href: "/news/", label: "News", isCurrent: true },
       ],
     });
 
@@ -19,7 +19,7 @@ describe("renderPageHeader", () => {
     expect(html).toContain("<h1>About</h1>");
     expect(html).toContain("Intro copy");
     expect(html).toContain('class="page-nav page-nav--narrow"');
-    expect(html).toContain('href="/news/index.html"');
+    expect(html).toContain('href="/news/"');
     expect(html).toContain('aria-current="page"');
   });
 

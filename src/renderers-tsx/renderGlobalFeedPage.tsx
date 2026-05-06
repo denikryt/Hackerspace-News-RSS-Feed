@@ -1,4 +1,5 @@
 import { escapeHtml, renderAboutHeaderLink, renderLayout } from "../renderers/layout.js";
+import { getNewsIndexHref } from "../sitePaths.js";
 import { renderCountryControls, renderFeedLikePageBody, renderGlobalFeedMeta, type RecordLike } from "./pageHelpers.js";
 
 const renderLayoutShell = renderLayout as (props: { title: string; body: string; scriptHrefs?: string[] }) => string;
@@ -14,7 +15,7 @@ export function renderGlobalFeedPageTsx(model: RecordLike) {
       renderMeta: renderGlobalFeedMeta,
       renderExtraBody: () => "",
       renderPreList: renderCountryControls,
-      resolveNavItems: (value) => [{ href: value.homeHref, label: "Hackerspaces" }, ...(value.streamNavItems || [{ href: "/news/index.html", label: "News", isCurrent: true }])],
+      resolveNavItems: (value) => [{ href: value.homeHref, label: "Hackerspaces" }, ...(value.streamNavItems || [{ href: getNewsIndexHref(), label: "News", isCurrent: true }])],
     }),
   });
 }

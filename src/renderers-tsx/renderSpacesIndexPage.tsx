@@ -2,6 +2,7 @@
 
 import { SPACES_INDEX_SCRIPT_HREF } from "../renderAssets.js";
 import { escapeHtml, renderLayout, renderMetric } from "../renderers/layout.js";
+import { getAuthorsIndexHref, getAboutHref, getCuratedHref, getHomeHref, getNewsIndexHref } from "../sitePaths.js";
 import { renderPageHeaderShell, renderSpaceCard, type NavItems, type RecordLike } from "./pageHelpers.js";
 
 const renderLayoutShell = renderLayout as (props: { title: string; body: string; scriptHrefs?: string[] }) => string;
@@ -9,17 +10,17 @@ const renderLayoutShell = renderLayout as (props: { title: string; body: string;
 export function renderSpacesIndexPageTsx(model: RecordLike) {
   const lastUpdatedIso = model.generatedAt ? escapeHtml(model.generatedAt) : "";
   const navItems: NavItems = [
-    { href: "/index.html", label: "Hackerspaces", isCurrent: true },
-    { href: "/news/index.html", label: "News" },
-    { href: "/curated/index.html", label: "Curated" },
-    { href: "/authors/index.html", label: "Authors" },
+    { href: getHomeHref(), label: "Hackerspaces", isCurrent: true },
+    { href: getNewsIndexHref(), label: "News" },
+    { href: getCuratedHref(), label: "Curated" },
+    { href: getAuthorsIndexHref(), label: "Authors" },
   ];
   const body = [
     renderPageHeaderShell({
       title: "Hackerspace News",
       titleClass: "home-hero-title",
       headerClass: "page-header--wide page-header--compact",
-      introHtml: `<p class="muted"><a class="about-link-muted" href="/about/index.html">About</a>${lastUpdatedIso ? ` <span>• Last updated: <span id="last-updated-label" data-updated-at="${lastUpdatedIso}">${lastUpdatedIso}</span></span>` : ""}</p>`,
+      introHtml: `<p class="muted"><a class="about-link-muted" href="${getAboutHref()}">About</a>${lastUpdatedIso ? ` <span>• Last updated: <span id="last-updated-label" data-updated-at="${lastUpdatedIso}">${lastUpdatedIso}</span></span>` : ""}</p>`,
       navItems,
       navClass: "page-nav--wide page-nav--compact",
     }),

@@ -1,3 +1,5 @@
+import { getNewsIndexHref } from "./sitePaths.js";
+
 export const GLOBAL_FEED_PAGE_SIZE = 10;
 
 export function normalizePageNumber(requestedPage, totalPages) {
@@ -64,7 +66,7 @@ export function buildPageLinks(currentPage, totalPages, hrefForPage) {
 }
 
 export function getGlobalFeedHref(pageNumber) {
-  return pageNumber <= 1 ? "/news/index.html" : `/news/page/${pageNumber}/`;
+  return pageNumber <= 1 ? getNewsIndexHref() : `/news/page/${pageNumber}/`;
 }
 
 export function getSpaceDetailHref(spaceSlug, pageNumber) {
