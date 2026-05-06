@@ -19,9 +19,9 @@ describe("tsx-backed page runtime", () => {
             about: renderAboutPageTsx(),
             feed: renderGlobalFeedPageTsx({
               items: [],
-              homeHref: "/index.html",
+              homeHref: "/",
               currentPageLabel: "Page 1 of 1",
-              streamNavItems: [{ href: "/news/index.html", label: "News", isCurrent: true }],
+              streamNavItems: [{ href: "/news/", label: "News", isCurrent: true }],
             }),
           }));
         `,
@@ -38,7 +38,7 @@ describe("tsx-backed page runtime", () => {
     expect(payload.about).toContain("<title>About</title>");
     expect(payload.about).toContain("<strong>Data Sources:</strong>");
     expect(payload.feed).toContain("<title>Feed</title>");
-    expect(payload.feed).toContain('href="/news/index.html"');
+    expect(payload.feed).toContain('href="/news/"');
     expect(payload.feed).toContain("No feed items available.");
   });
 });

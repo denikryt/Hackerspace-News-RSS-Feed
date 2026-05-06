@@ -36,11 +36,11 @@ describe("author page rendering", () => {
     expect(html).toContain('class="space-card-links author-card-hackerspaces"');
     expect(html).toContain(">BetaMachine<");
     expect(html).toContain(">C3D2<");
-    expect(html).toContain('class="about-link-muted" href="/about/index.html"');
-    expect(html).toContain('href="/index.html"');
-    expect(html).toContain('href="/news/index.html"');
+    expect(html).toContain('class="about-link-muted" href="/about/"');
+    expect(html).toContain('href="/"');
+    expect(html).toContain('href="/news/"');
     expect(html).toContain(">News<");
-    expect(html).toContain('href="/authors/index.html"');
+    expect(html).toContain('href="/authors/"');
     expect(html).toContain('id="author-search-input"');
     expect(html).toContain('aria-label="Search authors"');
     expect(html).toContain('class="control-input"');
@@ -84,9 +84,9 @@ describe("author page rendering", () => {
           displayDate: "2025-01-02T10:00:00.000Z",
         },
       ],
-      homeHref: "/index.html",
-      feedHref: "/news/index.html",
-      authorsIndexHref: "/authors/index.html",
+      homeHref: "/",
+      feedHref: "/news/",
+      authorsIndexHref: "/authors/",
       currentPageLabel: "Page 2 of 5",
       publicationCountLabel: "1 of 41 publications",
       hasPreviousPage: true,
@@ -102,8 +102,8 @@ describe("author page rendering", () => {
 
     expect(html).toContain("<h1>Alice</h1>");
     expect(html).toContain('<link rel="stylesheet" href="/site.css" />');
-    expect(html).toContain('class="about-link-muted" href="/about/index.html"');
-    expect(html).toContain('href="/authors/index.html"');
+    expect(html).toContain('class="about-link-muted" href="/about/"');
+    expect(html).toContain('href="/authors/"');
     expect(html).toContain("1 of 41 publications");
     expect(html).toContain("/authors/alice/page/3/");
   });

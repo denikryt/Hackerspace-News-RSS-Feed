@@ -1,5 +1,6 @@
 import { buildDisplayContent } from "../contentDisplay.js";
 import { getAuthorsIndexHref } from "../authors.js";
+import { getCuratedHref, getHomeHref, getNewsIndexHref } from "../sitePaths.js";
 import { buildAuthorDirectory, withAuthorLinks } from "./authors.js";
 
 export function buildCuratedIndexModel(normalizedPayload) {
@@ -15,10 +16,10 @@ export function buildCuratedIndexModel(normalizedPayload) {
     currentPageLabel: "Page 1 of 1",
     publicationCountLabel: `${items.length} publication${items.length === 1 ? "" : "s"}`,
     streamNavItems: [
-      { href: "/news/index.html", label: "News", isCurrent: false },
-      { href: "/curated/index.html", label: "Curated", isCurrent: true },
+      { href: getNewsIndexHref(), label: "News", isCurrent: false },
+      { href: getCuratedHref(), label: "Curated", isCurrent: true },
       { href: getAuthorsIndexHref(), label: "Authors", isCurrent: false },
     ],
-    homeHref: "/index.html",
+    homeHref: getHomeHref(),
   };
 }

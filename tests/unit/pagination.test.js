@@ -55,7 +55,7 @@ describe("pagination", () => {
   });
 
   it("builds canonical first-page hrefs for feed and space detail pages", () => {
-    expect(getGlobalFeedHref(1)).toBe("/news/index.html");
+    expect(getGlobalFeedHref(1)).toBe("/news/");
     expect(getGlobalFeedHref(3)).toBe("/news/page/3/");
     expect(getSpaceDetailHref("betamachine", 1)).toBe("/spaces/betamachine.html");
     expect(getSpaceDetailHref("betamachine", 4)).toBe("/spaces/betamachine/page/4/");

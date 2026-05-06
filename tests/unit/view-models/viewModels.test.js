@@ -150,7 +150,7 @@ describe("multi-page view models", () => {
 
     expect(model.spaceName).toBe("BetaMachine");
     expect(model.items.map((item) => item.title)).toEqual(["Newest post", "Older post"]);
-    expect(model.feedHref).toBe("/news/index.html");
+    expect(model.feedHref).toBe("/news/");
     expect(model.items[0].authorLinks).toEqual([
       { label: "Alice", href: "/authors/alice.html" },
       { label: "Bob", href: "/authors/bob.html" },

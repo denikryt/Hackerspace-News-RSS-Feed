@@ -1,4 +1,5 @@
 import { escapeHtml, renderAboutHeaderLink, renderField, renderLayout } from "../renderers/layout.js";
+import { getCuratedHref } from "../sitePaths.js";
 import { renderCategories, renderDetailItemMeta, renderFeedLikePageBody, type RecordLike } from "./pageHelpers.js";
 
 const renderLayoutShell = renderLayout as (props: { title: string; body: string; scriptHrefs?: string[] }) => string;
@@ -25,7 +26,7 @@ export function renderSpaceDetailPageTsx(model: RecordLike) {
       resolveNavItems: (value) => [
         { href: value.homeHref, label: "Hackerspaces" },
         { href: value.feedHref, label: "News" },
-        { href: "/curated/index.html", label: "Curated" },
+        { href: getCuratedHref(), label: "Curated" },
         { href: value.authorsIndexHref, label: "Authors" },
       ],
     }),

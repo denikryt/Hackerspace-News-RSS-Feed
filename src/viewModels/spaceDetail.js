@@ -1,5 +1,6 @@
 import { getAuthorsIndexHref } from "../authors.js";
 import { buildDisplayContent } from "../contentDisplay.js";
+import { getHomeHref, getNewsIndexHref } from "../sitePaths.js";
 import { buildAuthorDirectory, withAuthorLinks } from "./authors.js";
 import { slugify } from "../utils/slugify.js";
 import { getEffectiveItemDate } from "../visibleData.js";
@@ -48,8 +49,8 @@ export function buildSpaceDetailModel(
       previousPageHref: undefined,
       nextPageHref: undefined,
       pageLinks: [],
-      homeHref: "/index.html",
-      feedHref: "/news/index.html",
+      homeHref: getHomeHref(),
+      feedHref: getNewsIndexHref(),
       authorsIndexHref: getAuthorsIndexHref(),
     };
   }
@@ -87,8 +88,8 @@ export function buildSpaceDetailModel(
         ? hrefForPage(pagination.currentPage + 1)
         : undefined,
     pageLinks: buildPageLinks(pagination.currentPage, pagination.totalPages, hrefForPage),
-    homeHref: "/index.html",
-    feedHref: "/news/index.html",
+    homeHref: getHomeHref(),
+    feedHref: getNewsIndexHref(),
     authorsIndexHref: getAuthorsIndexHref(),
     // Carried forward so the render loop can pass it to subsequent pages without
     // rebuilding the enriched item list. Not intended for use by renderers.

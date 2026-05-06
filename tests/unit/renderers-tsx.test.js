@@ -34,8 +34,8 @@ describe("renderers-tsx shared primitive parity", () => {
       introHtml: '<p class="muted">Intro copy</p>',
       navClass: "page-nav--narrow",
       navItems: [
-        { href: "/index.html", label: "Hackerspaces" },
-        { href: "/news/index.html", label: "News", isCurrent: true },
+        { href: "/", label: "Hackerspaces" },
+        { href: "/news/", label: "News", isCurrent: true },
       ],
     };
 
@@ -48,12 +48,12 @@ describe("renderers-tsx shared primitive parity", () => {
       totalPages: 3,
       hasPreviousPage: true,
       hasNextPage: true,
-      previousPageHref: "/news/index.html",
-      nextPageHref: "/news/page/3/index.html",
+      previousPageHref: "/news/",
+      nextPageHref: "/news/page/3/",
       pageLinks: [
-        { type: "page", page: 1, href: "/news/index.html", isCurrent: false },
-        { type: "page", page: 2, href: "/news/page/2/index.html", isCurrent: true },
-        { type: "page", page: 3, href: "/news/page/3/index.html", isCurrent: false },
+        { type: "page", page: 1, href: "/news/", isCurrent: false },
+        { type: "page", page: 2, href: "/news/page/2/", isCurrent: true },
+        { type: "page", page: 3, href: "/news/page/3/", isCurrent: false },
       ],
     };
 

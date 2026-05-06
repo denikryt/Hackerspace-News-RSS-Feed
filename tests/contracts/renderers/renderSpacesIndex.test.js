@@ -60,12 +60,12 @@ describe("renderSpacesIndex", () => {
     expect(html).toContain('<link rel="stylesheet" href="/site.css" />');
     expect(html).toContain('<script src="/spaces-index.js"></script>');
     expect(html).not.toContain("localStorage");
-    expect(html).toContain('href="/about/index.html"');
+    expect(html).toContain('href="/about/"');
     expect(html).toContain('class="about-link-muted"');
     expect(html).toContain(">About<");
-    expect(html).toContain('href="/news/index.html"');
+    expect(html).toContain('href="/news/"');
     expect(html).toContain(">News<");
-    expect(html).toContain('href="/authors/index.html"');
+    expect(html).toContain('href="/authors/"');
     expect(html).toContain("Last updated:");
     expect(html).toContain('data-updated-at="2026-03-19T20:00:00.000Z"');
     expect(html).not.toContain("Source page:");

@@ -524,10 +524,10 @@ export function renderHtml(dayPage, countryOptions = []) {
       <header class="page-header">
         <h1 class="page-title">Hackerspace News</h1>
         <nav class="section-nav page-nav">
-          <a href="/index.html">Hackerspaces</a>
-          <a href="/news/index.html" aria-current="page">News</a>
-          <a href="/curated/index.html">Curated</a>
-          <a href="/authors/index.html">Authors</a>
+          <a href="/">Hackerspaces</a>
+          <a href="/news/" aria-current="page">News</a>
+          <a href="/curated/">Curated</a>
+          <a href="/authors/">Authors</a>
         </nav>
       </header>
       ${navHtml}

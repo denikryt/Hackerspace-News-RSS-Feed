@@ -7,14 +7,14 @@ describe("feed page headers", () => {
   it("renders the content stream header shell and nav", () => {
     const html = renderGlobalFeed({
       items: [],
-      homeHref: "/index.html",
+      homeHref: "/",
       pageTitle: "Events",
       pageIntro: "Items tagged as events.",
       currentPageLabel: "Page 1 of 1",
       streamNavItems: [
-        { href: "/curated/index.html", label: "Curated", isCurrent: false },
-        { href: "/news/index.html", label: "Feed", isCurrent: false },
-        { href: "/authors/index.html", label: "Authors", isCurrent: false },
+        { href: "/news/", label: "Feed", isCurrent: false },
+        { href: "/curated/", label: "Curated", isCurrent: false },
+        { href: "/authors/", label: "Authors", isCurrent: false },
         { href: "/events/index.html", label: "Events", isCurrent: true },
         { href: "/other/index.html", label: "Other", isCurrent: false },
       ],
@@ -23,11 +23,11 @@ describe("feed page headers", () => {
     expect(html).toContain('class="panel page-header page-header--narrow page-header--compact"');
     expect(html).toContain("<h1>Events</h1>");
     expect(html).toContain("Items tagged as events.");
-    expect(html).toContain('class="about-link-muted" href="/about/index.html"');
-    expect(html).toContain('href="/index.html"');
-    expect(html).toContain('href="/curated/index.html"');
-    expect(html).toContain('href="/news/index.html"');
-    expect(html).toContain('href="/authors/index.html"');
+    expect(html).toContain('class="about-link-muted" href="/about/"');
+    expect(html).toContain('href="/"');
+    expect(html).toContain('href="/news/"');
+    expect(html).toContain('href="/curated/"');
+    expect(html).toContain('href="/authors/"');
     expect(html).toContain('href="/events/index.html"');
   });
 
@@ -37,9 +37,9 @@ describe("feed page headers", () => {
       country: "Germany",
       sourceWikiUrl: "https://wiki.hackerspaces.org/Technik.cafe",
       siteUrl: "https://technik.cafe",
-      homeHref: "/index.html",
-      feedHref: "/news/index.html",
-      authorsIndexHref: "/authors/index.html",
+      homeHref: "/",
+      feedHref: "/news/",
+      authorsIndexHref: "/authors/",
       currentPageLabel: "Page 1 of 1",
       items: [],
     });
@@ -47,13 +47,13 @@ describe("feed page headers", () => {
     expect(html).toContain('class="panel page-header page-header--narrow page-header--compact"');
     expect(html).toContain("<h1>Technik.cafe</h1>");
     expect(html).toContain("Country:");
-    expect(html).toContain('class="about-link-muted" href="/about/index.html"');
+    expect(html).toContain('class="about-link-muted" href="/about/"');
     expect(html).toContain(">Wiki<");
     expect(html).toContain(">Website<");
-    expect(html).toContain('href="/index.html"');
-    expect(html).toContain('href="/curated/index.html"');
-    expect(html).toContain('href="/news/index.html"');
-    expect(html).toContain('href="/authors/index.html"');
+    expect(html).toContain('href="/"');
+    expect(html).toContain('href="/news/"');
+    expect(html).toContain('href="/curated/"');
+    expect(html).toContain('href="/authors/"');
   });
 
   it("renders prepared display content and does not rebuild it from raw item fields", () => {
@@ -73,16 +73,16 @@ describe("feed page headers", () => {
           summaryText: "This raw summary must not render",
         },
       ],
-      homeHref: "/index.html",
+      homeHref: "/",
       currentPageLabel: "Page 1 of 1",
-      streamNavItems: [{ href: "/news/index.html", label: "Feed", isCurrent: true }],
+      streamNavItems: [{ href: "/news/", label: "Feed", isCurrent: true }],
     });
 
     const detailHtml = renderSpaceDetail({
       spaceName: "Technik.cafe",
-      homeHref: "/index.html",
-      feedHref: "/news/index.html",
-      authorsIndexHref: "/authors/index.html",
+      homeHref: "/",
+      feedHref: "/news/",
+      authorsIndexHref: "/authors/",
       currentPageLabel: "Page 1 of 1",
       items: [
         {

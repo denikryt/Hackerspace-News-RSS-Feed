@@ -98,12 +98,12 @@ describe("page renderer TSX parity", () => {
           ],
         },
       ],
-      homeHref: "/index.html",
+      homeHref: "/",
       pageTitle: "Feed",
       pageIntro: "All publications sorted from new to old.",
       currentPageLabel: "Page 1 of 1",
       publicationCountLabel: "1 of 1 publications",
-      streamNavItems: [{ href: "/news/index.html", label: "News", isCurrent: true }],
+      streamNavItems: [{ href: "/news/", label: "News", isCurrent: true }],
     };
 
     expect(renderGlobalFeedPageTsx(model)).toBe(renderGlobalFeed(model));
@@ -115,9 +115,9 @@ describe("page renderer TSX parity", () => {
       country: "France",
       sourceWikiUrl: "https://wiki.hackerspaces.org/BetaMachine",
       siteUrl: "https://www.betamachine.fr",
-      homeHref: "/index.html",
-      feedHref: "/news/index.html",
-      authorsIndexHref: "/authors/index.html",
+      homeHref: "/",
+      feedHref: "/news/",
+      authorsIndexHref: "/authors/",
       currentPageLabel: "Page 1 of 1",
       items: [
         {
@@ -149,9 +149,9 @@ describe("page renderer TSX parity", () => {
           displayDate: "2025-01-02T10:00:00.000Z",
         },
       ],
-      homeHref: "/index.html",
-      feedHref: "/news/index.html",
-      authorsIndexHref: "/authors/index.html",
+      homeHref: "/",
+      feedHref: "/news/",
+      authorsIndexHref: "/authors/",
       currentPageLabel: "Page 2 of 5",
       publicationCountLabel: "1 of 41 publications",
       hasPreviousPage: true,
