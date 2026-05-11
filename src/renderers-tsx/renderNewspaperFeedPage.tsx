@@ -57,7 +57,7 @@ function renderItem(item: RecordLike): string {
 
   const rawTags = item.categoriesRaw as string[] | null;
   const tagsHtml = rawTags?.length
-    ? `<p class="np-item-tags">${rawTags.map((t) => `<span class="np-tag">${escapeHtml(t)}</span>`).join("")}</p>`
+    ? `<p class="np-item-tags">${rawTags.slice(0, 5).map((t) => `<span class="np-tag">${escapeHtml(t)}</span>`).join("")}</p>`
     : "";
 
   return `<article class="np-item">
