@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, readdir as readDir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -26,7 +26,18 @@ describe("refreshDataset", () => {
       sourceRows: resolve(outputDir, "data/source_urls.json"),
       validations: resolve(outputDir, "data/feed_validation.json"),
       normalizedFeeds: resolve(outputDir, "data/feeds_normalized.json"),
+      calendarSources: resolve(outputDir, "content/ics_events.json"),
+      calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
+      calendarEvents: resolve(outputDir, "data/calendar/events.json"),
     };
+
+    await mkdir(resolve(outputDir, "content"), { recursive: true });
+    await writeFile(paths.calendarSources, JSON.stringify({
+      items: [
+        { url: "https://calendar.example/direct.ics" },
+        { url: "https://calendar.example/not-ics" },
+      ],
+    }, null, 2), "utf8");
 
     const fetchImpl = vi.fn(async (url) => {
       if (url === sourcePageUrl) {
@@ -58,6 +69,30 @@ describe("refreshDataset", () => {
         });
       }
 
+      if (url === "https://calendar.example/direct.ics") {
+        return response({
+          url,
+          contentType: "text/calendar; charset=utf-8",
+          body: `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+UID:direct-1
+SUMMARY:Direct ICS Event
+DTSTART:20260523T070000Z
+DTEND:20260523T090000Z
+END:VEVENT
+END:VCALENDAR`,
+        });
+      }
+
+      if (url === "https://calendar.example/not-ics") {
+        return response({
+          url,
+          contentType: "text/html; charset=utf-8",
+          body: "<html><body>plain page</body></html>",
+        });
+      }
+
       return response({
         url,
         contentType: "text/html; charset=utf-8",
@@ -71,13 +106,15 @@ describe("refreshDataset", () => {
       sourceRowsPayload: expect.any(Object),
       validationsPayload: expect.any(Array),
       normalizedPayload: expect.any(Object),
+      calendarPayload: expect.any(Object),
     });
     expect(result.site).toBeUndefined();
 
-    const [sourceRowsJson, validationsJson, normalizedJson] = await Promise.all([
+    const [sourceRowsJson, validationsJson, normalizedJson, calendarJson] = await Promise.all([
       readFile(paths.sourceRows, "utf8"),
       readFile(paths.validations, "utf8"),
       readFile(paths.normalizedFeeds, "utf8"),
+      readFile(paths.calendarEvents, "utf8"),
     ]);
 
     expect(JSON.parse(sourceRowsJson).urls).toHaveLength(3);
@@ -95,6 +132,37 @@ describe("refreshDataset", () => {
       displayDate: "2025-01-01T10:00:00.000Z",
       summaryText: "Hello",
     });
+    expect(JSON.parse(calendarJson)).toMatchObject({
+      summary: {
+        sources: 2,
+        parsedSources: 1,
+        parsedEvents: 1,
+        failedSources: 1,
+      },
+      items: [
+        expect.objectContaining({
+          url: "https://calendar.example/direct.ics",
+          status: "parsed_ok",
+          snapshotFile: "source-001.ics",
+          eventCount: 1,
+        }),
+        expect.objectContaining({
+          url: "https://calendar.example/not-ics",
+          status: "fetch_failed",
+          snapshotFile: null,
+          errorCode: "non_calendar_response",
+          eventCount: 0,
+        }),
+      ],
+      events: [expect.objectContaining({
+        uid: "direct-1",
+        summary: "Direct ICS Event",
+        sourceFile: "source-001.ics",
+      })],
+    });
+
+    const rawFileNames = (await readDir(paths.calendarRawDirectory)).sort();
+    expect(rawFileNames).toEqual(["source-001.ics"]);
   });
 
   it("logs feed fetch progress and outcomes when a logger is provided", async () => {
@@ -151,6 +219,70 @@ describe("refreshDataset", () => {
     expect(logLines).toContain("[refresh] probing feed 3/3: https://trac.raumfahrtagentur.org/blog?format=rss&user=anonymous");
     expect(logLines).toContain("[refresh] failed feed 3/3: https://trac.raumfahrtagentur.org/blog?format=rss&user=anonymous (non_xml_response: 200)");
     expect(logLines).toContain("[refresh] refresh complete: feeds=1 failures=2");
+  });
+
+  it("can refresh only calendar snapshots without touching the feed pipeline", async () => {
+    const outputDir = await createTrackedTempDir("hnf-refresh-calendar-only-", tempDirs);
+    const paths = {
+      sourceRows: resolve(outputDir, "data/source_urls.json"),
+      validations: resolve(outputDir, "data/feed_validation.json"),
+      normalizedFeeds: resolve(outputDir, "data/feeds_normalized.json"),
+      calendarSources: resolve(outputDir, "content/ics_events.json"),
+      calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
+      calendarEvents: resolve(outputDir, "data/calendar/events.json"),
+    };
+
+    await mkdir(resolve(outputDir, "content"), { recursive: true });
+    await writeFile(paths.calendarSources, JSON.stringify({
+      items: [
+        { url: "https://calendar.example/direct.ics" },
+      ],
+    }, null, 2), "utf8");
+
+    const fetchImpl = vi.fn(async (url) => {
+      if (url === "https://calendar.example/direct.ics") {
+        return response({
+          url,
+          contentType: "text/calendar; charset=utf-8",
+          body: `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+UID:calendar-only-1
+SUMMARY:Calendar Only Event
+DTSTART:20260523T070000Z
+DTEND:20260523T090000Z
+END:VEVENT
+END:VCALENDAR`,
+        });
+      }
+
+      throw new Error(`Unexpected URL: ${url}`);
+    });
+
+    const result = await refreshDataset({
+      sourcePageUrl,
+      fetchImpl,
+      paths,
+      writeSnapshots: true,
+      refreshCalendarOnly: true,
+    });
+
+    expect(result).toEqual({
+      calendarPayload: expect.objectContaining({
+        summary: {
+          sources: 1,
+          parsedSources: 1,
+          parsedEvents: 1,
+          failedSources: 0,
+        },
+      }),
+    });
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(fetchImpl).toHaveBeenCalledWith("https://calendar.example/direct.ics");
+    await expect(readFile(paths.calendarEvents, "utf8")).resolves.toContain("Calendar Only Event");
+    await expect(readFile(paths.sourceRows, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+    await expect(readFile(paths.validations, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+    await expect(readFile(paths.normalizedFeeds, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
   });
 
   it("probes feeds with concurrency capped at 4", async () => {

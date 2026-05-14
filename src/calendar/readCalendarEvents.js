@@ -25,7 +25,7 @@ export async function readCalendarEvents({ directoryPath } = {}) {
   const parsedEventCollections = await Promise.all(
     icsFiles.map(async (fileName) => {
       const text = await readFile(`${directoryPath}/${fileName}`, "utf8");
-      return parseCalendarIcs(text, { sourceFile: fileName });
+      return parseCalendarIcsText(text, { sourceFile: fileName });
     }),
   );
 
@@ -53,7 +53,7 @@ function unfoldIcsLines(text) {
 
 // Each VEVENT becomes one normalized event record with explicit date semantics
 // so later layers can keep timed and all-day values separate.
-function parseCalendarIcs(text, { sourceFile }) {
+export function parseCalendarIcsText(text, { sourceFile }) {
   const lines = unfoldIcsLines(text);
   const events = [];
   let currentLines = null;
@@ -346,4 +346,8 @@ function compareCalendarEvents(left, right) {
   }
 
   return (left.summary || "").localeCompare(right.summary || "");
+}
+
+export function sortCalendarEvents(events) {
+  return [...(Array.isArray(events) ? events : [])].sort(compareCalendarEvents);
 }

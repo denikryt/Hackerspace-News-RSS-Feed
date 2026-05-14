@@ -21,7 +21,6 @@ export function renderCalendarPageTsx(model: RecordLike) {
       navClass: "page-nav--wide page-nav--compact",
     }),
     renderCalendarShell(model),
-    `<script id="calendar-events-data" type="application/json">${escapeInlineJson((model.serializedEventsJson as string) || "[]")}</script>`,
     `<script id="calendar-initial-state" type="application/json">${escapeInlineJson((model.serializedInitialStateJson as string) || "{}")}</script>`,
   ].join("");
 
@@ -33,7 +32,7 @@ export function renderCalendarPageTsx(model: RecordLike) {
 }
 
 function renderCalendarShell(model: RecordLike) {
-  return `<section id="calendar-root" class="calendar-shell page-shell-wide" data-selected-date="${escapeHtml((model.selectedDate as string) || "")}" data-selected-month="${escapeHtml((model.selectedMonth as string) || "")}">
+  return `<section id="calendar-root" class="calendar-shell page-shell-wide" data-selected-date="${escapeHtml((model.selectedDate as string) || "")}" data-selected-month="${escapeHtml((model.selectedMonth as string) || "")}" data-events-path="${escapeHtml((model.eventsPath as string) || "/calendar/events.json")}">
     <div class="calendar-panel">
       <div class="calendar-toolbar">
         <button type="button" class="calendar-month-button" data-calendar-nav="prev" aria-label="Previous month">Previous</button>

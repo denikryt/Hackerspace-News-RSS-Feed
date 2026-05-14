@@ -3,6 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { cleanupTrackedTempDirs, createTempDirTracker, createTrackedTempDir } from "../_shared/tempDirs.js";
+import { formatDateKeyInTimeZone, shiftMonthKey } from "../../src/calendar/dateFormatting.js";
 import { buildCalendarPageModel, readCalendarEvents } from "../../src/calendar/index.js";
 
 const tempDirs = createTempDirTracker();
@@ -12,6 +13,16 @@ afterEach(async () => {
 });
 
 describe("calendar module", () => {
+  it("formats client-visible date keys as stable ISO dates", () => {
+    expect(formatDateKeyInTimeZone("2026-02-03T03:00:00.000Z", "America/Los_Angeles")).toBe("2026-02-02");
+    expect(formatDateKeyInTimeZone("2026-02-03T03:00:00.000Z", "UTC")).toBe("2026-02-03");
+  });
+
+  it("shifts month keys predictably for calendar navigation", () => {
+    expect(shiftMonthKey("2026-02", 1)).toBe("2026-03");
+    expect(shiftMonthKey("2026-01", -1)).toBe("2025-12");
+  });
+
   it("reads ICS files from a directory and preserves observed event fields", async () => {
     const rootDir = await createTrackedTempDir("calendar-ics-", tempDirs);
     const calendarDir = resolve(rootDir, "ICS");
@@ -91,6 +102,7 @@ END:VCALENDAR`, "utf8");
     expect(model.selectedDate).toBe("2026-05-14");
     expect(model.selectedDayEvents).toHaveLength(1);
     expect(model.selectedDayEvents[0].timeLabel).toContain("7:30 PM");
+    expect(model.selectedMonth).toBe("2026-05");
   });
 
   it("returns a stable empty state when the ICS directory does not exist", async () => {

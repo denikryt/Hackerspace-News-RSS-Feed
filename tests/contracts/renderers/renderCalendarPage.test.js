@@ -65,8 +65,8 @@ describe("renderCalendarPage", () => {
     const html = renderCalendarPage(MODEL);
 
     expect(html).toContain('src="/calendar-page.js"');
-    expect(html).toContain('id="calendar-events-data"');
     expect(html).toContain('id="calendar-initial-state"');
+    expect(html).toContain('data-events-path="/calendar/events.json"');
   });
 
   it("omits missing optional event fields cleanly", () => {

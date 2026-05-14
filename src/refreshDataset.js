@@ -1,4 +1,5 @@
 import { SOURCE_PAGE_URL, PATHS } from "./config.js";
+import { refreshCalendarSnapshot } from "./calendar/index.js";
 import { enrichFeed } from "./feedEnricher.js";
 import { normalizeFeed } from "./feedNormalizer.js";
 import { parseFeedBody } from "./feedParser.js";
@@ -14,7 +15,27 @@ export async function refreshDataset({
   writeSnapshots = false,
   logger = null,
   additionalSourceRows = [],
+  refreshCalendarOnly = false,
 } = {}) {
+  const calendarPayload = await refreshCalendarSnapshot({
+    calendarSourcesPath: paths.calendarSources,
+    rawDirectoryPath: paths.calendarRawDirectory,
+    fetchImpl,
+    writeSnapshots,
+    logger,
+  });
+
+  if (refreshCalendarOnly) {
+    if (writeSnapshots) {
+      await writeJson(paths.calendarEvents, calendarPayload);
+    }
+
+    logInfo(logger, "[refresh] calendar-only refresh complete");
+    return {
+      calendarPayload,
+    };
+  }
+
   const html = await fetchPageHtml({ sourcePageUrl, fetchImpl, logger });
   const sourceRows = mergeSourceRows({
     wikiSourceRows: extractSourceRows({ html, sourcePageUrl }),
@@ -112,6 +133,7 @@ export async function refreshDataset({
         failedFeeds: failures.length,
       },
     },
+    calendarPayload,
   };
 
   if (writeSnapshots) {
@@ -119,6 +141,7 @@ export async function refreshDataset({
       writeJson(paths.sourceRows, result.sourceRowsPayload),
       writeJson(paths.validations, result.validationsPayload),
       writeJson(paths.normalizedFeeds, result.normalizedPayload),
+      writeJson(paths.calendarEvents, result.calendarPayload),
     ]);
   }
 

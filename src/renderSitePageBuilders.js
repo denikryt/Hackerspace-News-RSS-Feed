@@ -1,7 +1,5 @@
-import { dirname, resolve } from "node:path";
-
 import { getAuthorDetailOutputPath } from "./authors.js";
-import { buildCalendarPageModel, readCalendarEvents } from "./calendar/index.js";
+import { buildCalendarPageModel } from "./calendar/index.js";
 import { formatLoopProgressLog } from "./renderProgress.js";
 import { renderAboutPage } from "./renderers/renderAboutPage.js";
 import { renderAuthorDetail } from "./renderers/renderAuthorDetail.js";
@@ -32,15 +30,18 @@ export function buildRootStaticPageEntries(context) {
 // Calendar is a standalone page sourced from local ICS files, so it stays in
 // its own builder instead of being mixed into the feed/date page loops.
 export async function buildCalendarPageEntries(context, { logger } = {}) {
-  const calendarDirectory = resolveCalendarDirectory(context.paths || {});
-  const events = await readCalendarEvents({ directoryPath: calendarDirectory });
+  const calendarPayload = context.calendarPayload || { events: [] };
+  const events = Array.isArray(calendarPayload.events) ? calendarPayload.events : [];
   const model = buildCalendarPageModel(events, {
     timeZone: "UTC",
     now: context.now || new Date(),
   });
 
   logInfo(logger, `[render] calendar page: events=${events.length}`);
-  return [["calendar/index.html", renderCalendarPage({ ...model, navItems: buildPrimaryNavItems("Calendar") })]];
+  return [
+    ["calendar/index.html", renderCalendarPage({ ...model, navItems: buildPrimaryNavItems("Calendar"), eventsPath: "/calendar/events.json" })],
+    ["calendar/events.json", JSON.stringify(calendarPayload, null, 2)],
+  ];
 }
 
 // Author detail pages depend on the shared author directory, so keep that dependency explicit.
@@ -231,18 +232,6 @@ function logInfo(logger, message) {
   if (typeof logger === "function") {
     logger(message);
   }
-}
-
-function resolveCalendarDirectory(paths) {
-  if (paths.calendarIcsDirectory) {
-    return paths.calendarIcsDirectory;
-  }
-
-  if (paths.normalizedFeeds) {
-    return resolve(dirname(paths.normalizedFeeds), "ICS");
-  }
-
-  return resolve(process.cwd(), "data/ICS");
 }
 
 function shouldLogLoopCheckpoint(currentIndex, totalItems) {

@@ -1,3 +1,11 @@
+import {
+  formatDateKeyInTimeZone,
+  formatLongDateLabel,
+  formatMediumDateLabel,
+  formatMonthLabel,
+  formatTimeLabel,
+} from "./dateFormatting.js";
+
 // The calendar page model is pure and timezone-aware so the same rules can be
 // applied for server fallback rendering and for client-side reformatting.
 export function buildCalendarPageModel(events, {
@@ -9,7 +17,7 @@ export function buildCalendarPageModel(events, {
   const normalizedEvents = Array.isArray(events) ? events : [];
   const eventIndex = buildEventIndex(normalizedEvents, timeZone);
   const availableDates = [...eventIndex.keys()].sort((left, right) => left.localeCompare(right));
-  const fallbackDate = formatDateKey(now, timeZone);
+  const fallbackDate = formatDateKeyInTimeZone(now, timeZone);
   const resolvedMonth = resolveSelectedMonth({ availableDates, fallbackDate, selectedDate, selectedMonth });
   const resolvedDate = resolveSelectedDate({ availableDates, fallbackDate, selectedDate, resolvedMonth });
 
@@ -121,8 +129,8 @@ function listVisibleDatesForEvent(event, timeZone) {
     return [];
   }
 
-  const startDateKey = formatDateKey(event.startInstant, timeZone);
-  const endDateKey = formatDateKey(event.endInstant || event.startInstant, timeZone);
+  const startDateKey = formatDateKeyInTimeZone(event.startInstant, timeZone);
+  const endDateKey = formatDateKeyInTimeZone(event.endInstant || event.startInstant, timeZone);
   return listDateKeysBetween(startDateKey, endDateKey);
 }
 
@@ -148,8 +156,8 @@ function formatEventTimeLabel(event, timeZone) {
 
   const startDate = new Date(event.startInstant);
   const endDate = event.endInstant ? new Date(event.endInstant) : null;
-  const startDateKey = formatDateKey(startDate, timeZone);
-  const endDateKey = endDate ? formatDateKey(endDate, timeZone) : startDateKey;
+  const startDateKey = formatDateKeyInTimeZone(startDate, timeZone);
+  const endDateKey = endDate ? formatDateKeyInTimeZone(endDate, timeZone) : startDateKey;
   const startTime = formatTimeLabel(startDate, timeZone);
 
   if (!endDate) {
@@ -162,55 +170,6 @@ function formatEventTimeLabel(event, timeZone) {
   }
 
   return `${formatMediumDateLabel(startDateKey)} ${startTime} - ${formatMediumDateLabel(endDateKey)} ${endTime}`;
-}
-
-function formatDateKey(value, timeZone) {
-  const date = value instanceof Date ? value : new Date(value);
-  const formatter = new Intl.DateTimeFormat("en-CA", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-
-  return formatter.format(date);
-}
-
-function formatLongDateLabel(dateKey, timeZone) {
-  const date = new Date(`${dateKey}T00:00:00.000Z`);
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone,
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  }).format(date);
-}
-
-function formatMediumDateLabel(dateKey) {
-  const date = new Date(`${dateKey}T00:00:00.000Z`);
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone: "UTC",
-    month: "short",
-    day: "numeric",
-  }).format(date);
-}
-
-function formatMonthLabel(monthKey) {
-  const date = new Date(`${monthKey}-01T00:00:00.000Z`);
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone: "UTC",
-    month: "long",
-    year: "numeric",
-  }).format(date);
-}
-
-function formatTimeLabel(date, timeZone) {
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone,
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(date);
 }
 
 function listDateKeysBetween(startDateKey, endDateKey) {

@@ -28,6 +28,7 @@ export async function renderSite({
   sourceRowsPayload,
   validationsPayload,
   normalizedPayload,
+  calendarPayload,
   now = Date.now(),
   writePages = false,
   logger = null,
@@ -37,13 +38,17 @@ export async function renderSite({
     sourceRowsPayload,
     validationsPayload,
     normalizedPayload,
+    calendarPayload,
   });
 
   const context = buildRenderContext(data, { now, logger });
   const nowDate = now instanceof Date ? now : new Date(now);
   const today = nowDate.toISOString().slice(0, 10);
 
-  const calendarPageEntries = await buildCalendarPageEntries({ paths, now: nowDate }, { logger });
+  const calendarPageEntries = await buildCalendarPageEntries({
+    calendarPayload: data.calendarPayload,
+    now: nowDate,
+  }, { logger });
 
   const pageEntries = [
     ...buildRootStaticPageEntries(context),
@@ -68,6 +73,7 @@ export async function renderSite({
     sourceRowsPayload: data.sourceRowsPayload,
     validationsPayload: data.validationsPayload,
     normalizedPayload: data.normalizedPayload,
+    calendarPayload: data.calendarPayload,
     pages,
   };
 }
@@ -105,19 +111,21 @@ function buildRenderContext(data, { now, logger }) {
   };
 }
 
-async function loadRenderInputs({ paths, sourceRowsPayload, validationsPayload, normalizedPayload }) {
-  if (sourceRowsPayload && validationsPayload && normalizedPayload) {
+async function loadRenderInputs({ paths, sourceRowsPayload, validationsPayload, normalizedPayload, calendarPayload }) {
+  if (sourceRowsPayload && validationsPayload && normalizedPayload && calendarPayload) {
     return {
       sourceRowsPayload,
       validationsPayload,
       normalizedPayload: validateNormalizedRenderPayloadForDisplay(normalizedPayload),
+      calendarPayload,
     };
   }
 
-  const [loadedSourceRowsPayload, loadedValidationsPayload, loadedNormalizedPayload] = await Promise.all([
+  const [loadedSourceRowsPayload, loadedValidationsPayload, loadedNormalizedPayload, loadedCalendarPayload] = await Promise.all([
     sourceRowsPayload ?? readJson(paths.sourceRows),
     validationsPayload ?? readJson(paths.validations),
     normalizedPayload ?? readJson(paths.normalizedFeeds),
+    calendarPayload ?? readCalendarPayload(paths.calendarEvents),
   ]);
 
   const validatedNormalizedPayload = validateNormalizedRenderPayloadForDisplay(loadedNormalizedPayload);
@@ -126,6 +134,38 @@ async function loadRenderInputs({ paths, sourceRowsPayload, validationsPayload, 
     sourceRowsPayload: loadedSourceRowsPayload,
     validationsPayload: loadedValidationsPayload,
     normalizedPayload: validatedNormalizedPayload,
+    calendarPayload: loadedCalendarPayload,
+  };
+}
+
+// Calendar data is an optional snapshot. Render keeps working when refresh has
+// not produced it yet, but still publishes a stable empty JSON artifact.
+async function readCalendarPayload(filePath) {
+  if (!filePath) {
+    return buildEmptyCalendarPayload();
+  }
+
+  try {
+    return await readJson(filePath);
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+      return buildEmptyCalendarPayload();
+    }
+    throw error;
+  }
+}
+
+function buildEmptyCalendarPayload() {
+  return {
+    generatedAt: null,
+    items: [],
+    events: [],
+    summary: {
+      sources: 0,
+      parsedSources: 0,
+      parsedEvents: 0,
+      failedSources: 0,
+    },
   };
 }
 

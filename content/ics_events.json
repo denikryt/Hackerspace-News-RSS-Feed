@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "url": "https://events.nu31.space/feed/ics?show_recurrent=true"
+    },
+    {
+      "url": "https://www.meetup.com/noisebridge/events/ical/"
+    },
+    {
+      "url": "https://hs3.pl/wydarzenia/index.ics"
+    },
+    {
+      "url": "https://mobilizon.pl/@hakierspejs_lodz/feed/ics"
+    },
+    {
+      "url": "https://mobilizon.pl/@hswro/feed/ics"
+    },
+    {
+      "url": "https://mobilizon.pl/@hspoz_group/feed/ics"
+    },
+    {
+      "url": "https://mobilizon.pl/@golang_trojmiasto/feed/ics"
+    },
+    {
+      "url": "https://mobilizon.pl/@hswaw/feed/ics"
+    },
+    {
+      "url": "https://hsp.sh/calendar.ics"
+    }
+  ]
+}

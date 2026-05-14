@@ -132,6 +132,7 @@ describe("renderSite", () => {
       sourceRows: resolve(dataDir, "source_urls.json"),
       validations: resolve(dataDir, "feed_validation.json"),
       normalizedFeeds: resolve(dataDir, "feeds_normalized.json"),
+      calendarEvents: resolve(dataDir, "calendar/events.json"),
     };
 
     const sourceRowsPayload = {
@@ -211,12 +212,34 @@ describe("renderSite", () => {
       failures: [],
     };
 
+    const calendarPayload = {
+      generatedAt: "2026-03-19T20:00:00.000Z",
+      events: [
+        {
+          uid: "calendar-1",
+          summary: "Calendar event",
+          dateKind: "timed",
+          startInstant: "2026-03-18T18:00:00.000Z",
+          endInstant: "2026-03-18T20:00:00.000Z",
+          sourceTimeZone: "UTC",
+          sourceFile: "source-001.ics",
+        },
+      ],
+      summary: {
+        sources: 1,
+        parsedSources: 1,
+        parsedEvents: 1,
+        failedSources: 0,
+      },
+    };
+
     await mkdir(resolve(distDir, "news"), { recursive: true });
 
     await Promise.all([
       writeJson(paths.sourceRows, sourceRowsPayload),
       writeJson(paths.validations, validationsPayload),
       writeJson(paths.normalizedFeeds, normalizedPayload),
+      writeJson(paths.calendarEvents, calendarPayload),
     ]);
 
     const firstRun = await renderSite({ paths, distDir, now: Date.parse("2026-03-19T12:00:00.000Z"), writePages: true });
@@ -228,6 +251,7 @@ describe("renderSite", () => {
       "index.html",
       "about/index.html",
       "calendar/index.html",
+      "calendar/events.json",
       "news/dates.json",
       "news/index.html",
       "authors/index.html",
@@ -239,10 +263,11 @@ describe("renderSite", () => {
     ]);
     expect(secondRun.pages).toEqual(firstRun.pages);
 
-    const [indexHtml, aboutHtml, calendarHtml, newsDatesJson, feedHtml, authorsHtml, detailHtml] = await Promise.all([
+    const [indexHtml, aboutHtml, calendarHtml, calendarEventsJson, newsDatesJson, feedHtml, authorsHtml, detailHtml] = await Promise.all([
       readFile(resolve(distDir, "index.html"), "utf8"),
       readFile(resolve(distDir, "about/index.html"), "utf8"),
       readFile(resolve(distDir, "calendar/index.html"), "utf8"),
+      readFile(resolve(distDir, "calendar/events.json"), "utf8"),
       readFile(resolve(distDir, "news/dates.json"), "utf8"),
       readFile(resolve(distDir, "news/index.html"), "utf8"),
       readFile(resolve(distDir, "authors/index.html"), "utf8"),
@@ -269,6 +294,8 @@ describe("renderSite", () => {
     expect(calendarHtml).toContain("Calendar");
     expect(calendarHtml).toContain('<script src="/calendar-page.js"></script>');
     expect(calendarHtml).toContain('href="/calendar/" aria-current="page"');
+    expect(calendarHtml).toContain('data-events-path="/calendar/events.json"');
+    expect(JSON.parse(calendarEventsJson)).toEqual(calendarPayload);
     expect(JSON.parse(newsDatesJson)).toEqual([]);
     // news/index.html is a redirect to the latest newspaper date page
     expect(feedHtml).toContain('<meta http-equiv="refresh"');
@@ -285,6 +312,11 @@ describe("renderSite", () => {
     expect(siteCss).toContain(".spaces-controls");
     expect(siteCss).toContain(".authors-controls");
     expect(siteCss).toContain(".calendar-shell");
+    expect(siteCss).toContain(".calendar-panel,\n.calendar-day-panel");
+    expect(siteCss).toContain("border-radius: 0;");
+    expect(siteCss).toContain("box-shadow: none;");
+    expect(siteCss).toContain(".calendar-day.is-selected");
+    expect(siteCss).toContain("border-color: #111;");
     expect(spacesIndexJs).toContain("hackerspace-news-feed.query");
     expect(authorsIndexJs).toContain("hackerspace-news-feed.authors.query");
     expect(calendarPageJs).toContain("calendarPageRuntime");
@@ -492,6 +524,7 @@ describe("renderSite", () => {
       "authors/alice.html",
       "authors/alice/page/2/index.html",
       "authors/index.html",
+      "calendar/events.json",
       "calendar/index.html",
       "index.html",
       "news/dates.json",

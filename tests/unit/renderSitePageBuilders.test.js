@@ -56,17 +56,6 @@ vi.mock("../../src/viewModels/spaceDetail.js", () => ({
 }));
 
 vi.mock("../../src/calendar/index.js", () => ({
-  readCalendarEvents: vi.fn(async () => [
-    {
-      uid: "evt-1",
-      summary: "Open Night",
-      dateKind: "timed",
-      startInstant: "2026-05-14T19:00:00.000Z",
-      endInstant: "2026-05-14T21:00:00.000Z",
-      sourceTimeZone: "UTC",
-      sourceFile: "sample.ics",
-    },
-  ]),
   buildCalendarPageModel: vi.fn(() => ({ selectedDate: "2026-05-14" })),
 }));
 
@@ -90,11 +79,36 @@ describe("renderSitePageBuilders", () => {
 
   it("builds a standalone calendar page entry", async () => {
     const entries = await pageBuilders.buildCalendarPageEntries({
-      paths: { normalizedFeeds: "/tmp/data/feeds_normalized.json" },
+      calendarPayload: {
+        events: [
+          {
+            uid: "evt-1",
+            summary: "Open Night",
+            dateKind: "timed",
+            startInstant: "2026-05-14T19:00:00.000Z",
+            endInstant: "2026-05-14T21:00:00.000Z",
+            sourceTimeZone: "UTC",
+            sourceFile: "source-001.ics",
+          },
+        ],
+      },
     });
 
     expect(entries).toEqual([
       ["calendar/index.html", "calendar-page:2026-05-14"],
+      ["calendar/events.json", JSON.stringify({
+        events: [
+          {
+            uid: "evt-1",
+            summary: "Open Night",
+            dateKind: "timed",
+            startInstant: "2026-05-14T19:00:00.000Z",
+            endInstant: "2026-05-14T21:00:00.000Z",
+            sourceTimeZone: "UTC",
+            sourceFile: "source-001.ics",
+          },
+        ],
+      }, null, 2)],
     ]);
   });
 

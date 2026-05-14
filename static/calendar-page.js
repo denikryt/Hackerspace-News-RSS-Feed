@@ -1,21 +1,26 @@
 // The calendar page upgrades the UTC fallback markup to the visitor's local
 // timezone and keeps interaction state in the browser only.
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 (function calendarPageRuntime() {
   const root = document.getElementById("calendar-root");
-  const eventsNode = document.getElementById("calendar-events-data");
   const initialStateNode = document.getElementById("calendar-initial-state");
 
-  if (!root || !eventsNode || !initialStateNode) {
+  if (!root || !initialStateNode) {
     return;
   }
 
-  const events = safeParseJson(eventsNode.textContent, []);
+  initializeCalendar(root, initialStateNode);
+})();
+
+async function initializeCalendar(root, initialStateNode) {
   const initialState = safeParseJson(initialStateNode.textContent, {});
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
   const state = {
     selectedMonth: initialState.selectedMonth || root.dataset.selectedMonth || formatDateKey(new Date(), timeZone).slice(0, 7),
     selectedDate: initialState.selectedDate || root.dataset.selectedDate || formatDateKey(new Date(), timeZone),
   };
+  const events = await loadCalendarEvents(root.dataset.eventsPath || "/calendar/events.json");
 
   root.addEventListener("click", (event) => {
     const navButton = event.target.closest("[data-calendar-nav]");
@@ -53,13 +58,31 @@
     document.getElementById("calendar-grid").innerHTML = renderCalendarGrid(model);
     document.getElementById("calendar-selected-day-events").innerHTML = renderSelectedDayEvents(model.selectedDayEvents);
   }
-})();
+}
 
 function safeParseJson(text, fallbackValue) {
   try {
     return JSON.parse(text || "");
   } catch {
     return fallbackValue;
+  }
+}
+
+async function loadCalendarEvents(eventsPath) {
+  try {
+    const response = await fetch(eventsPath, {
+      headers: {
+        accept: "application/json",
+      },
+    });
+    if (!response.ok) {
+      return [];
+    }
+
+    const payload = safeParseJson(await response.text(), { events: [] });
+    return Array.isArray(payload?.events) ? payload.events : [];
+  } catch {
+    return [];
   }
 }
 
@@ -195,12 +218,19 @@ function formatEventTimeLabel(event, timeZone) {
 
 function formatDateKey(value, timeZone) {
   const date = value instanceof Date ? value : new Date(value);
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(date);
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+      .formatToParts(date)
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, part.value]),
+  );
+
+  return `${parts.year}-${parts.month}-${parts.day}`;
 }
 
 function formatMonthLabel(monthKey) {
@@ -305,5 +335,3 @@ function escapeHtml(value) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 }
-
-const DAY_MS = 24 * 60 * 60 * 1000;
