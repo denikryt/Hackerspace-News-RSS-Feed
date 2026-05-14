@@ -1,12 +1,17 @@
+import { dirname, resolve } from "node:path";
+
 import { getAuthorDetailOutputPath } from "./authors.js";
+import { buildCalendarPageModel, readCalendarEvents } from "./calendar/index.js";
 import { formatLoopProgressLog } from "./renderProgress.js";
 import { renderAboutPage } from "./renderers/renderAboutPage.js";
 import { renderAuthorDetail } from "./renderers/renderAuthorDetail.js";
 import { renderAuthorsIndex } from "./renderers/renderAuthorsIndex.js";
+import { renderCalendarPage } from "./renderers/renderCalendarPage.js";
 import { renderSpaceDetail } from "./renderers/renderSpaceDetail.js";
 import { renderSpacesIndex } from "./renderers/renderSpacesIndex.js";
 import { renderNewspaperFeedPageTsx } from "./renderers/tsxPageRuntime.js";
-import { getAuthorsIndexHref, getHomeHref, getNewsIndexHref } from "./sitePaths.js";
+import { getAuthorsIndexHref, getNewsIndexHref } from "./sitePaths.js";
+import { buildPrimaryNavItems } from "./siteNav.js";
 import { buildAuthorDetailModel } from "./viewModels/authors.js";
 import { buildSpaceDetailModel } from "./viewModels/spaceDetail.js";
 import {
@@ -22,6 +27,20 @@ export function buildRootStaticPageEntries(context) {
     ["index.html", renderSpacesIndex(context.spacesIndexModel)],
     ["about/index.html", renderAboutPage()],
   ];
+}
+
+// Calendar is a standalone page sourced from local ICS files, so it stays in
+// its own builder instead of being mixed into the feed/date page loops.
+export async function buildCalendarPageEntries(context, { logger } = {}) {
+  const calendarDirectory = resolveCalendarDirectory(context.paths || {});
+  const events = await readCalendarEvents({ directoryPath: calendarDirectory });
+  const model = buildCalendarPageModel(events, {
+    timeZone: "UTC",
+    now: context.now || new Date(),
+  });
+
+  logInfo(logger, `[render] calendar page: events=${events.length}`);
+  return [["calendar/index.html", renderCalendarPage({ ...model, navItems: buildPrimaryNavItems("Calendar") })]];
 }
 
 // Author detail pages depend on the shared author directory, so keep that dependency explicit.
@@ -119,11 +138,7 @@ export function buildNewspaperFeedPageEntries(normalizedPayload, context, { logg
   const availableDates = buildAvailableDatesFromPayload(normalizedPayload, today);
   const availableDatesByCountry = buildAvailableDatesByCountry(normalizedPayload, today);
 
-  const navItems = [
-    { href: getHomeHref(), label: "Hackerspaces", isCurrent: false },
-    { href: getNewsIndexHref(), label: "News", isCurrent: true },
-    { href: getAuthorsIndexHref(), label: "Authors", isCurrent: false },
-  ];
+  const navItems = buildPrimaryNavItems("News");
 
   if (availableDates.length === 0) {
     logInfo(logger, "[render] newspaper feed: no dates with items found");
@@ -216,6 +231,18 @@ function logInfo(logger, message) {
   if (typeof logger === "function") {
     logger(message);
   }
+}
+
+function resolveCalendarDirectory(paths) {
+  if (paths.calendarIcsDirectory) {
+    return paths.calendarIcsDirectory;
+  }
+
+  if (paths.normalizedFeeds) {
+    return resolve(dirname(paths.normalizedFeeds), "ICS");
+  }
+
+  return resolve(process.cwd(), "data/ICS");
 }
 
 function shouldLogLoopCheckpoint(currentIndex, totalItems) {

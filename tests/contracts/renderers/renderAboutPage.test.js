@@ -14,6 +14,8 @@ describe("renderAboutPage", () => {
     expect(html).toContain('href="/"');
     expect(html).toContain('href="/news/"');
     expect(html).toContain(">News<");
+    expect(html).toContain('href="/calendar/"');
+    expect(html).toContain(">Calendar<");
     expect(html).toContain('href="/authors/"');
     expect(html).toContain('class="page-copy page-copy--narrow about-copy"');
     expect(html).toContain("<strong>Data Sources:</strong>");

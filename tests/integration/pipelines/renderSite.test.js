@@ -108,6 +108,9 @@ describe("renderSite", () => {
     expect(result.pages["about/index.html"]).toContain(
       '<link rel="canonical" href="https://hackerspace.news/about/" />',
     );
+    expect(result.pages["calendar/index.html"]).toContain(
+      '<link rel="canonical" href="https://hackerspace.news/calendar/" />',
+    );
     expect(result.pages["authors/index.html"]).toContain(
       '<link rel="canonical" href="https://hackerspace.news/authors/" />',
     );
@@ -224,6 +227,7 @@ describe("renderSite", () => {
     expect(Object.keys(firstRun.pages)).toEqual([
       "index.html",
       "about/index.html",
+      "calendar/index.html",
       "news/dates.json",
       "news/index.html",
       "authors/index.html",
@@ -235,18 +239,20 @@ describe("renderSite", () => {
     ]);
     expect(secondRun.pages).toEqual(firstRun.pages);
 
-    const [indexHtml, aboutHtml, newsDatesJson, feedHtml, authorsHtml, detailHtml] = await Promise.all([
+    const [indexHtml, aboutHtml, calendarHtml, newsDatesJson, feedHtml, authorsHtml, detailHtml] = await Promise.all([
       readFile(resolve(distDir, "index.html"), "utf8"),
       readFile(resolve(distDir, "about/index.html"), "utf8"),
+      readFile(resolve(distDir, "calendar/index.html"), "utf8"),
       readFile(resolve(distDir, "news/dates.json"), "utf8"),
       readFile(resolve(distDir, "news/index.html"), "utf8"),
       readFile(resolve(distDir, "authors/index.html"), "utf8"),
       readFile(resolve(distDir, "spaces/betamachine.html"), "utf8"),
     ]);
-    const [siteCss, spacesIndexJs, authorsIndexJs] = await Promise.all([
+    const [siteCss, spacesIndexJs, authorsIndexJs, calendarPageJs] = await Promise.all([
       readFile(resolve(distDir, "site.css"), "utf8"),
       readFile(resolve(distDir, "spaces-index.js"), "utf8"),
       readFile(resolve(distDir, "authors-index.js"), "utf8"),
+      readFile(resolve(distDir, "calendar-page.js"), "utf8"),
     ]);
     await access(resolve(distDir, "favicon.png"));
     await access(resolve(distDir, "static/newspaper.css"));
@@ -260,6 +266,9 @@ describe("renderSite", () => {
     expect(aboutHtml).toContain("About");
     expect(aboutHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
     expect(aboutHtml).toContain('<link rel="stylesheet" href="/site.css" />');
+    expect(calendarHtml).toContain("Calendar");
+    expect(calendarHtml).toContain('<script src="/calendar-page.js"></script>');
+    expect(calendarHtml).toContain('href="/calendar/" aria-current="page"');
     expect(JSON.parse(newsDatesJson)).toEqual([]);
     // news/index.html is a redirect to the latest newspaper date page
     expect(feedHtml).toContain('<meta http-equiv="refresh"');
@@ -275,8 +284,10 @@ describe("renderSite", () => {
     expect(siteCss).toContain(".content-body.rich-html img");
     expect(siteCss).toContain(".spaces-controls");
     expect(siteCss).toContain(".authors-controls");
+    expect(siteCss).toContain(".calendar-shell");
     expect(spacesIndexJs).toContain("hackerspace-news-feed.query");
     expect(authorsIndexJs).toContain("hackerspace-news-feed.authors.query");
+    expect(calendarPageJs).toContain("calendarPageRuntime");
 
     const [sitemapXml, robotsTxt] = await Promise.all([
       readFile(resolve(distDir, "sitemap.xml"), "utf8"),
@@ -287,6 +298,7 @@ describe("renderSite", () => {
     expect(sitemapXml).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
     expect(sitemapXml).toContain("</urlset>");
     expect(sitemapXml).toContain("<loc>https://hackerspace.news/</loc>");
+    expect(sitemapXml).toContain("<loc>https://hackerspace.news/calendar/</loc>");
     expect(sitemapXml).toContain("<loc>https://hackerspace.news/spaces/betamachine.html</loc>");
     expect(sitemapXml).toContain("<loc>https://hackerspace.news/spaces/c3d2.html</loc>");
     expect(sitemapXml).toContain("<loc>https://hackerspace.news/authors/alice.html</loc>");
@@ -356,7 +368,7 @@ describe("renderSite", () => {
 
     const actualDistFiles = await listRelativeFiles(distDir);
     expect(actualDistFiles.sort()).toEqual(
-      [...Object.keys(result.pages), "favicon.png", "site.css", "spaces-index.js", "authors-index.js", "static/newspaper.css", "newspaper-nav.js"].sort(),
+      [...Object.keys(result.pages), "favicon.png", "site.css", "spaces-index.js", "authors-index.js", "static/newspaper.css", "newspaper-nav.js", "calendar-page.js"].sort(),
     );
   });
 
@@ -415,6 +427,7 @@ describe("renderSite", () => {
     const logLines = logger.mock.calls.map(([line]) => line);
     expect(logLines).toContain("[render] loaded inputs: feeds=1 failures=0");
     expect(logLines).toContain("[render] built spaces index model");
+    expect(logLines.some((line) => line.startsWith("[render] calendar page: events="))).toBe(true);
     expect(logLines).toContain("[render] newspaper feed: no dates with items found");
     expect(logLines).toContain("[render] rendering author pages: authors=1");
     expect(logLines).toContain("[render] author pages progress: item 1/1");
@@ -479,6 +492,7 @@ describe("renderSite", () => {
       "authors/alice.html",
       "authors/alice/page/2/index.html",
       "authors/index.html",
+      "calendar/index.html",
       "index.html",
       "news/dates.json",
       "news/index.html",

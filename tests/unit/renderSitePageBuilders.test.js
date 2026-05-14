@@ -16,6 +16,10 @@ vi.mock("../../src/renderers/renderAboutPage.js", () => ({
   renderAboutPage: vi.fn(() => "about-page"),
 }));
 
+vi.mock("../../src/renderers/renderCalendarPage.js", () => ({
+  renderCalendarPage: vi.fn((model) => `calendar-page:${model.selectedDate || "empty"}`),
+}));
+
 vi.mock("../../src/renderers/renderAuthorsIndex.js", () => ({
   renderAuthorsIndex: vi.fn((model) => `authors-index:${model.id}`),
 }));
@@ -51,6 +55,21 @@ vi.mock("../../src/viewModels/spaceDetail.js", () => ({
   })),
 }));
 
+vi.mock("../../src/calendar/index.js", () => ({
+  readCalendarEvents: vi.fn(async () => [
+    {
+      uid: "evt-1",
+      summary: "Open Night",
+      dateKind: "timed",
+      startInstant: "2026-05-14T19:00:00.000Z",
+      endInstant: "2026-05-14T21:00:00.000Z",
+      sourceTimeZone: "UTC",
+      sourceFile: "sample.ics",
+    },
+  ]),
+  buildCalendarPageModel: vi.fn(() => ({ selectedDate: "2026-05-14" })),
+}));
+
 const pageBuilders = await import("../../src/renderSitePageBuilders.js");
 
 describe("renderSitePageBuilders", () => {
@@ -63,9 +82,20 @@ describe("renderSitePageBuilders", () => {
     expect(pageBuilders.buildAuthorPageEntries).toBeTypeOf("function");
     expect(pageBuilders.buildSpacePageEntries).toBeTypeOf("function");
     expect(pageBuilders.buildNewspaperFeedPageEntries).toBeTypeOf("function");
+    expect(pageBuilders.buildCalendarPageEntries).toBeTypeOf("function");
     expect("buildPrimaryFeedSectionPageEntries" in pageBuilders).toBe(false);
     expect("buildSecondaryFeedSectionPageEntries" in pageBuilders).toBe(false);
     expect("buildCountryFeedPageEntries" in pageBuilders).toBe(false);
+  });
+
+  it("builds a standalone calendar page entry", async () => {
+    const entries = await pageBuilders.buildCalendarPageEntries({
+      paths: { normalizedFeeds: "/tmp/data/feeds_normalized.json" },
+    });
+
+    expect(entries).toEqual([
+      ["calendar/index.html", "calendar-page:2026-05-14"],
+    ]);
   });
 
   it("builds root static pages in the stable index/about order", () => {

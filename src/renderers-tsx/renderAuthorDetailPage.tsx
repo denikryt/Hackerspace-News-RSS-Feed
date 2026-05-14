@@ -1,3 +1,4 @@
+import { getCalendarHref } from "../sitePaths.js";
 import { renderGlobalFeedPageTsx } from "./renderGlobalFeedPage.js";
 import type { RecordLike } from "./pageHelpers.js";
 
@@ -16,6 +17,7 @@ export function renderAuthorDetailPageTsx(model: RecordLike) {
     pageIntro: `${model.publicationCountLabel || ""} ${sourceLabel}`.trim(),
     streamNavItems: [
       { href: model.feedHref, label: "News", isCurrent: false },
+      { href: getCalendarHref(), label: "Calendar", isCurrent: false },
       { href: model.authorsIndexHref, label: "Authors", isCurrent: false },
       { href: model.canonicalHref || model.authorsIndexHref, label: model.authorDisplayName, isCurrent: true },
     ],

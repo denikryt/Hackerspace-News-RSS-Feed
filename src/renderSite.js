@@ -6,6 +6,7 @@ import { DIST_DIR, PATHS, SITE_URL } from "./config.js";
 import { listStaticRenderAssets } from "./renderAssets.js";
 import {
   buildAuthorPageEntries,
+  buildCalendarPageEntries,
   buildNewspaperFeedPageEntries,
   buildRootStaticPageEntries,
   buildSpacePageEntries,
@@ -42,8 +43,11 @@ export async function renderSite({
   const nowDate = now instanceof Date ? now : new Date(now);
   const today = nowDate.toISOString().slice(0, 10);
 
+  const calendarPageEntries = await buildCalendarPageEntries({ paths, now: nowDate }, { logger });
+
   const pageEntries = [
     ...buildRootStaticPageEntries(context),
+    ...calendarPageEntries,
     ...buildNewspaperFeedPageEntries(data.normalizedPayload, { today, now: nowDate }, { logger }),
     ...buildAuthorPageEntries(context, { logger }),
     ...buildSpacePageEntries(context, { logger }),

@@ -3,6 +3,7 @@ import { relative, resolve } from "node:path";
 
 import {
   AUTHORS_INDEX_SCRIPT_HREF,
+  CALENDAR_PAGE_SCRIPT_HREF,
   NEWSPAPER_NAV_SCRIPT_HREF,
   SITE_CSS_HREF,
   SPACES_INDEX_SCRIPT_HREF,
@@ -15,6 +16,7 @@ describe("renderAssets", () => {
     expect(SPACES_INDEX_SCRIPT_HREF).toBe("/spaces-index.js");
     expect(AUTHORS_INDEX_SCRIPT_HREF).toBe("/authors-index.js");
     expect(NEWSPAPER_NAV_SCRIPT_HREF).toBe("/newspaper-nav.js");
+    expect(CALENDAR_PAGE_SCRIPT_HREF).toBe("/calendar-page.js");
   });
 
   it("lists the static asset manifest copied into dist during render", () => {
@@ -27,6 +29,7 @@ describe("renderAssets", () => {
       "authors-index.js",
       "static/newspaper.css",
       "newspaper-nav.js",
+      "calendar-page.js",
     ]);
 
     expect(assets.map((asset) => relative(resolve(process.cwd(), "static"), asset.sourcePath))).toEqual([
@@ -36,6 +39,7 @@ describe("renderAssets", () => {
       "authors-index.js",
       "newspaper.css",
       "newspaper-nav.js",
+      "calendar-page.js",
     ]);
   });
 });

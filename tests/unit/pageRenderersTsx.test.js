@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { renderAboutPage } from "../../src/renderers/renderAboutPage.js";
+import { renderCalendarPage } from "../../src/renderers/renderCalendarPage.js";
 import { renderAuthorDetail } from "../../src/renderers/renderAuthorDetail.js";
 import { renderAuthorsIndex } from "../../src/renderers/renderAuthorsIndex.js";
 import { renderGlobalFeed } from "../../src/renderers/renderGlobalFeed.js";
@@ -8,6 +9,7 @@ import { renderSpaceDetail } from "../../src/renderers/renderSpaceDetail.js";
 import { renderSpacesIndex } from "../../src/renderers/renderSpacesIndex.js";
 import {
   renderAboutPageTsx,
+  renderCalendarPageTsx,
   renderAuthorDetailPageTsx,
   renderAuthorsIndexPageTsx,
   renderGlobalFeedPageTsx,
@@ -18,6 +20,48 @@ import {
 describe("page renderer TSX parity", () => {
   it("matches the current about page output", () => {
     expect(renderAboutPageTsx()).toBe(renderAboutPage());
+  });
+
+  it("matches the current calendar page output", () => {
+    const model = {
+      pageTitle: "Calendar",
+      pageIntro: "Upcoming events from ICS feeds.",
+      selectedDate: "2026-05-14",
+      selectedDateLabel: "Thursday, May 14, 2026",
+      selectedMonthLabel: "May 2026",
+      weekDayLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      weeks: [
+        [
+          { date: "2026-05-11", dayNumber: 11, isCurrentMonth: true, isSelected: false, hasEvents: false },
+          { date: "2026-05-12", dayNumber: 12, isCurrentMonth: true, isSelected: false, hasEvents: false },
+          { date: "2026-05-13", dayNumber: 13, isCurrentMonth: true, isSelected: false, hasEvents: false },
+          { date: "2026-05-14", dayNumber: 14, isCurrentMonth: true, isSelected: true, hasEvents: true },
+          { date: "2026-05-15", dayNumber: 15, isCurrentMonth: true, isSelected: false, hasEvents: false },
+          { date: "2026-05-16", dayNumber: 16, isCurrentMonth: true, isSelected: false, hasEvents: false },
+          { date: "2026-05-17", dayNumber: 17, isCurrentMonth: true, isSelected: false, hasEvents: false },
+        ],
+      ],
+      selectedDayEvents: [
+        {
+          summary: "DC415",
+          dateLabel: "Thu, May 14, 2026",
+          timeLabel: "7:30 PM - 10:00 PM",
+          location: "Noisebridge",
+          url: "https://example.com/dc415",
+          categories: [],
+        },
+      ],
+      serializedEventsJson: "[]",
+      serializedInitialStateJson: "{\"selectedDate\":\"2026-05-14\",\"selectedMonth\":\"2026-05\"}",
+      navItems: [
+        { href: "/", label: "Hackerspaces" },
+        { href: "/news/", label: "News" },
+        { href: "/calendar/", label: "Calendar", isCurrent: true },
+        { href: "/authors/", label: "Authors" },
+      ],
+    };
+
+    expect(renderCalendarPageTsx(model)).toBe(renderCalendarPage(model));
   });
 
   it("matches the current spaces index page output", () => {

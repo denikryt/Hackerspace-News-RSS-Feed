@@ -3,6 +3,7 @@
 import { AUTHORS_INDEX_SCRIPT_HREF } from "../renderAssets.js";
 import { renderAboutHeaderLink, renderLayout } from "../renderers/layout.js";
 import { getAuthorsIndexHref, getHomeHref, getNewsIndexHref } from "../sitePaths.js";
+import { buildPrimaryNavItems } from "../siteNav.js";
 import { renderAuthorCard, renderPageHeaderShell, type NavItems, type RecordLike } from "./pageHelpers.js";
 
 const renderLayoutShell = renderLayout as (props: { title: string; body: string; scriptHrefs?: string[] }) => string;
@@ -11,11 +12,14 @@ export function renderAuthorsIndexPageTsx(model: RecordLike) {
   const homeHref = model.homeHref || getHomeHref();
   const feedHref = model.feedHref || getNewsIndexHref();
   const authorsIndexHref = model.authorsIndexHref || getAuthorsIndexHref();
-  const navItems: NavItems = [
-    { href: homeHref, label: "Hackerspaces" },
-    { href: feedHref, label: "News" },
-    { href: authorsIndexHref, label: "Authors", isCurrent: true },
-  ];
+  const navItems: NavItems = (homeHref === getHomeHref() && feedHref === getNewsIndexHref() && authorsIndexHref === getAuthorsIndexHref())
+    ? buildPrimaryNavItems("Authors")
+    : [
+      { href: homeHref, label: "Hackerspaces" },
+      { href: feedHref, label: "News" },
+      { href: "/calendar/", label: "Calendar" },
+      { href: authorsIndexHref, label: "Authors", isCurrent: true },
+    ];
   const body = [
     renderPageHeaderShell({
       title: "Authors",

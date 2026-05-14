@@ -2,7 +2,7 @@
 
 import { loadAboutHtmlBoundary } from "../renderers/aboutHtmlBoundary.js";
 import { renderLayout } from "../renderers/layout.js";
-import { getAuthorsIndexHref, getHomeHref, getNewsIndexHref } from "../sitePaths.js";
+import { buildPrimaryNavItems } from "../siteNav.js";
 import { renderPageHeaderShell } from "./pageHelpers.js";
 
 const renderLayoutShell = renderLayout as (props: { title: string; body: string; scriptHrefs?: string[] }) => string;
@@ -13,11 +13,7 @@ export function renderAboutPageTsx() {
     renderPageHeaderShell({
       title: "About",
       headerClass: "page-header--narrow page-header--compact",
-      navItems: [
-        { href: getHomeHref(), label: "Hackerspaces" },
-        { href: getNewsIndexHref(), label: "News" },
-        { href: getAuthorsIndexHref(), label: "Authors" },
-      ],
+      navItems: buildPrimaryNavItems(null),
       navClass: "page-nav--narrow",
     }),
     String(<section class="page-copy page-copy--narrow about-copy">{aboutHtml}</section>),
