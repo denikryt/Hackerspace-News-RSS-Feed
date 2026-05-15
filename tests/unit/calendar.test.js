@@ -105,6 +105,48 @@ END:VCALENDAR`, "utf8");
     expect(model.selectedMonth).toBe("2026-05");
   });
 
+  it("defaults to the current month instead of the earliest month with events", () => {
+    const model = buildCalendarPageModel([
+      {
+        uid: "future-1",
+        summary: "Future event",
+        dateKind: "timed",
+        startInstant: "2026-02-02T19:00:00.000Z",
+        endInstant: "2026-02-02T21:00:00.000Z",
+        sourceTimeZone: "UTC",
+        sourceFile: "source.ics",
+      },
+    ], {
+      timeZone: "UTC",
+      now: new Date("2026-05-14T12:00:00.000Z"),
+    });
+
+    expect(model.selectedMonth).toBe("2026-05");
+    expect(model.selectedDate).toBe("2026-05-14");
+    expect(model.selectedDayEvents).toEqual([]);
+  });
+
+  it("defaults to the current date even when the current month already has earlier events", () => {
+    const model = buildCalendarPageModel([
+      {
+        uid: "current-month-1",
+        summary: "Earlier event",
+        dateKind: "timed",
+        startInstant: "2026-05-02T19:00:00.000Z",
+        endInstant: "2026-05-02T21:00:00.000Z",
+        sourceTimeZone: "UTC",
+        sourceFile: "source.ics",
+      },
+    ], {
+      timeZone: "UTC",
+      now: new Date("2026-05-14T12:00:00.000Z"),
+    });
+
+    expect(model.selectedMonth).toBe("2026-05");
+    expect(model.selectedDate).toBe("2026-05-14");
+    expect(model.selectedDayEvents).toEqual([]);
+  });
+
   it("returns a stable empty state when the ICS directory does not exist", async () => {
     const events = await readCalendarEvents({ directoryPath: "/tmp/does-not-exist-calendar-dir" });
 

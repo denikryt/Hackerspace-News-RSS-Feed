@@ -65,9 +65,6 @@ function resolveSelectedMonth({ availableDates, fallbackDate, selectedDate, sele
   if (selectedMonth) {
     return selectedMonth;
   }
-  if (availableDates.length > 0) {
-    return availableDates[0].slice(0, 7);
-  }
   return fallbackDate.slice(0, 7);
 }
 
@@ -76,13 +73,13 @@ function resolveSelectedDate({ availableDates, fallbackDate, selectedDate, resol
     return selectedDate;
   }
 
+  if (fallbackDate.startsWith(`${resolvedMonth}-`)) {
+    return fallbackDate;
+  }
+
   const firstAvailableDateInMonth = availableDates.find((dateKey) => dateKey.startsWith(`${resolvedMonth}-`));
   if (firstAvailableDateInMonth) {
     return firstAvailableDateInMonth;
-  }
-
-  if (fallbackDate.startsWith(`${resolvedMonth}-`)) {
-    return fallbackDate;
   }
 
   return `${resolvedMonth}-01`;
