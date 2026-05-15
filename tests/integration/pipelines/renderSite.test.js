@@ -295,10 +295,11 @@ describe("renderSite", () => {
       readFile(resolve(distDir, "authors/index.html"), "utf8"),
       readFile(resolve(distDir, "spaces/betamachine.html"), "utf8"),
     ]);
-    const [siteCss, spacesIndexJs, authorsIndexJs] = await Promise.all([
+    const [siteCss, spacesIndexJs, authorsIndexJs, calendarTimeJs] = await Promise.all([
       readFile(resolve(distDir, "site.css"), "utf8"),
       readFile(resolve(distDir, "spaces-index.js"), "utf8"),
       readFile(resolve(distDir, "authors-index.js"), "utf8"),
+      readFile(resolve(distDir, "calendar-time.js"), "utf8"),
     ]);
     await access(resolve(distDir, "favicon.png"));
     await access(resolve(distDir, "static/newspaper.css"));
@@ -317,6 +318,7 @@ describe("renderSite", () => {
     expect(calendarHtml).toContain("Wednesday/March 18");
     expect(calendarHtml).toContain("Calendar event");
     expect(calendarHtml).not.toContain("calendar-grid");
+    expect(calendarHtml).toContain('<script src="/calendar-time.js"></script>');
     expect(JSON.parse(calendarEventsJson)).toEqual(calendarPayload);
     expect(JSON.parse(newsDatesJson)).toEqual([]);
     // news/index.html is a redirect to the latest newspaper date page
@@ -337,6 +339,7 @@ describe("renderSite", () => {
     expect(siteCss).toContain(".calendar-columns");
     expect(siteCss).toContain(".calendar-date-band");
     expect(siteCss).toContain(".calendar-event + .calendar-event");
+    expect(calendarTimeJs).toContain("data-calendar-local-time");
     expect(spacesIndexJs).toContain("hackerspace-news-feed.query");
     expect(authorsIndexJs).toContain("hackerspace-news-feed.authors.query");
 
@@ -419,7 +422,7 @@ describe("renderSite", () => {
 
     const actualDistFiles = await listRelativeFiles(distDir);
     expect(actualDistFiles.sort()).toEqual(
-      [...Object.keys(result.pages), "favicon.png", "site.css", "spaces-index.js", "authors-index.js", "static/newspaper.css", "newspaper-nav.js"].sort(),
+      [...Object.keys(result.pages), "favicon.png", "site.css", "spaces-index.js", "authors-index.js", "calendar-time.js", "static/newspaper.css", "newspaper-nav.js"].sort(),
     );
   });
 

@@ -1,6 +1,7 @@
 /** @jsxImportSource @kitajs/html */
 
 import { escapeHtml, renderAboutHeaderLink, renderLayout } from "../renderers/layout.js";
+import { CALENDAR_TIME_SCRIPT_HREF } from "../renderAssets.js";
 import { buildPrimaryNavItems } from "../siteNav.js";
 import { renderPageHeaderShell, type NavItems, type RecordLike } from "./pageHelpers.js";
 
@@ -25,6 +26,7 @@ export function renderCalendarPageTsx(model: RecordLike) {
   return renderLayoutShell({
     title: model.pageTitle || "Calendar",
     body,
+    scriptHrefs: [CALENDAR_TIME_SCRIPT_HREF],
   });
 }
 
@@ -73,7 +75,7 @@ function renderDayEvents(events: RecordLike[]) {
 
   return events.map((event) => {
     const metaBits = [
-      event.timeLabel ? `<span class="calendar-event-time">${escapeHtml(event.timeLabel as string)}</span>` : "",
+      event.timeLabel ? renderEventTime(event) : "",
       event.location ? `<span class="calendar-event-location">${escapeHtml(event.location as string)}</span>` : "",
       event.organizer ? `<span class="calendar-event-organizer">${escapeHtml(event.organizer as string)}</span>` : "",
     ].filter(Boolean).join("");
@@ -92,4 +94,25 @@ function renderDayEvents(events: RecordLike[]) {
       ${description}
     </article>`;
   }).join("");
+}
+
+// Calendar pages are static HTML, so timed events expose absolute instants in
+// data attributes and a tiny browser script rewrites only the label text.
+function renderEventTime(event: RecordLike) {
+  const timeRange = event.timeRange as RecordLike | null | undefined;
+  if (!timeRange?.startInstant) {
+    return `<span class="calendar-event-time">${escapeHtml(event.timeLabel as string)}</span>`;
+  }
+
+  const attributes = [
+    'class="calendar-event-time"',
+    'data-calendar-local-time="true"',
+    `data-start-instant="${escapeHtml(timeRange.startInstant as string)}"`,
+  ];
+
+  if (timeRange.endInstant) {
+    attributes.push(`data-end-instant="${escapeHtml(timeRange.endInstant as string)}"`);
+  }
+
+  return `<span ${attributes.join(" ")}>${escapeHtml(event.timeLabel as string)}</span>`;
 }

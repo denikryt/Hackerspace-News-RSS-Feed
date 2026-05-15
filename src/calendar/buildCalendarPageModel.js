@@ -114,11 +114,25 @@ function toVisibleDayEvent(event, timeZone, visibleDate) {
     summary: event.summary || "Untitled event",
     dateLabel: formatLongDateLabel(visibleDate, timeZone),
     timeLabel: formatEventTimeLabel(event, timeZone),
+    timeRange: buildClientTimeRange(event),
     location: event.location || null,
     description: event.description || null,
     url: event.url || null,
     organizer: event.organizer || null,
     sourceFile: event.sourceFile || null,
+  };
+}
+
+// The browser can only localize timed events when the rendered HTML carries
+// absolute instants. Date-only entries intentionally stay as static text.
+function buildClientTimeRange(event) {
+  if (!event || event.dateKind === "date" || !event.startInstant) {
+    return null;
+  }
+
+  return {
+    startInstant: event.startInstant,
+    endInstant: event.endInstant || null,
   };
 }
 

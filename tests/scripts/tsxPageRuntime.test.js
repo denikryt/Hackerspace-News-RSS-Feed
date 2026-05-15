@@ -51,6 +51,7 @@ describe("tsx-backed page runtime", () => {
     expect(payload.about).toContain("<title>About</title>");
     expect(payload.calendar).toContain("<title>Calendar</title>");
     expect(payload.calendar).toContain("May 2026");
+    expect(payload.calendar).toContain('src="/calendar-time.js"');
     expect(payload.calendar).not.toContain('src="/calendar-page.js"');
     expect(payload.about).toContain("<strong>Data Sources:</strong>");
     expect(payload.feed).toContain("<title>Feed</title>");
