@@ -31,8 +31,8 @@ export function renderCalendarPageTsx(model: RecordLike) {
 }
 
 function renderCalendarShell(model: RecordLike) {
-  return `<section class="calendar-shell page-shell-wide">
-    <div class="calendar-month-switcher" aria-label="Calendar month navigation">
+  return `<section class="calendar-shell page-shell-wide" data-calendar-events-path="/calendar/events.json" data-calendar-fallback-month="${escapeHtml((model.selectedMonth as string) || "")}">
+    <div class="calendar-month-switcher" data-calendar-month-switcher="true" aria-label="Calendar month navigation">
       <div class="calendar-month-switcher-side calendar-month-switcher-side--left">
         ${renderMonthNavLink(model.previousMonthLabel as string | null | undefined, model.previousMonthHref as string | null | undefined)}
       </div>
@@ -41,7 +41,7 @@ function renderCalendarShell(model: RecordLike) {
         ${renderMonthNavLink(model.nextMonthLabel as string | null | undefined, model.nextMonthHref as string | null | undefined)}
       </div>
     </div>
-    <div class="calendar-columns">
+    <div class="calendar-columns" data-calendar-columns="true">
       ${renderDateSections((model.dateSections as RecordLike[]) || [])}
     </div>
   </section>`;
@@ -75,7 +75,7 @@ function renderDayEvents(events: RecordLike[]) {
 
   return events.map((event) => {
     const metaBits = [
-      event.timeLabel ? renderEventTime(event) : "",
+      event.timeLabel ? `<span class="calendar-event-time">${escapeHtml(event.timeLabel as string)}</span>` : "",
       event.location ? `<span class="calendar-event-location">${escapeHtml(event.location as string)}</span>` : "",
       event.organizer ? `<span class="calendar-event-organizer">${escapeHtml(event.organizer as string)}</span>` : "",
     ].filter(Boolean).join("");
@@ -94,25 +94,4 @@ function renderDayEvents(events: RecordLike[]) {
       ${description}
     </article>`;
   }).join("");
-}
-
-// Calendar pages are static HTML, so timed events expose absolute instants in
-// data attributes and a tiny browser script rewrites only the label text.
-function renderEventTime(event: RecordLike) {
-  const timeRange = event.timeRange as RecordLike | null | undefined;
-  if (!timeRange?.startInstant) {
-    return `<span class="calendar-event-time">${escapeHtml(event.timeLabel as string)}</span>`;
-  }
-
-  const attributes = [
-    'class="calendar-event-time"',
-    'data-calendar-local-time="true"',
-    `data-start-instant="${escapeHtml(timeRange.startInstant as string)}"`,
-  ];
-
-  if (timeRange.endInstant) {
-    attributes.push(`data-end-instant="${escapeHtml(timeRange.endInstant as string)}"`);
-  }
-
-  return `<span ${attributes.join(" ")}>${escapeHtml(event.timeLabel as string)}</span>`;
 }

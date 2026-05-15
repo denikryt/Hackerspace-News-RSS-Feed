@@ -22,10 +22,6 @@ const MODEL = {
           summary: "DC415",
           dateLabel: "Thursday, May 14, 2026",
           timeLabel: "7:30 PM - 10:00 PM",
-          timeRange: {
-            startInstant: "2026-05-15T02:30:00.000Z",
-            endInstant: "2026-05-15T05:00:00.000Z",
-          },
           location: "Noisebridge",
           url: "https://example.com/dc415",
           organizer: "Noisebridge",
@@ -47,6 +43,8 @@ describe("renderCalendarPage", () => {
     expect(html).toContain('aria-current="page"');
     expect(html).toContain('href="/authors/"');
     expect(html).toContain('<script src="/calendar-time.js"></script>');
+    expect(html).toContain('data-calendar-events-path="/calendar/events.json"');
+    expect(html).toContain('data-calendar-fallback-month="2026-05"');
   });
 
   it("renders the month switcher and date columns", () => {
@@ -61,9 +59,8 @@ describe("renderCalendarPage", () => {
     expect(html).toContain("7:30 PM - 10:00 PM");
     expect(html).toContain("Noisebridge");
     expect(html).not.toContain("calendar-tag");
-    expect(html).toContain('data-calendar-local-time="true"');
-    expect(html).toContain('data-start-instant="2026-05-15T02:30:00.000Z"');
-    expect(html).toContain('data-end-instant="2026-05-15T05:00:00.000Z"');
+    expect(html).toContain('class="calendar-month-switcher"');
+    expect(html).toContain('class="calendar-columns"');
   });
 
   it("renders without the old interactive calendar runtime", () => {
@@ -84,7 +81,7 @@ describe("renderCalendarPage", () => {
       nextMonth: null,
       nextMonthLabel: null,
       nextMonthHref: null,
-      dateSections: [{ date: "2026-05-14", dateLabel: "Thursday/May 14", events: [{ summary: "Open Night", dateLabel: "Thursday, May 14", timeLabel: null, timeRange: null, location: null, url: null, organizer: null }] }],
+      dateSections: [{ date: "2026-05-14", dateLabel: "Thursday/May 14", events: [{ summary: "Open Night", dateLabel: "Thursday, May 14", timeLabel: null, location: null, url: null, organizer: null }] }],
     });
 
     expect(html).toContain("Open Night");
@@ -92,6 +89,5 @@ describe("renderCalendarPage", () => {
     expect(html).not.toContain("null");
     expect(html).not.toContain("March 2026");
     expect(html).not.toContain("June 2026");
-    expect(html).not.toContain('data-calendar-local-time="true"');
   });
 });

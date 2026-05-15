@@ -319,6 +319,7 @@ describe("renderSite", () => {
     expect(calendarHtml).toContain("Calendar event");
     expect(calendarHtml).not.toContain("calendar-grid");
     expect(calendarHtml).toContain('<script src="/calendar-time.js"></script>');
+    expect(calendarHtml).toContain('data-calendar-events-path="/calendar/events.json"');
     expect(JSON.parse(calendarEventsJson)).toEqual(calendarPayload);
     expect(JSON.parse(newsDatesJson)).toEqual([]);
     // news/index.html is a redirect to the latest newspaper date page
@@ -339,7 +340,8 @@ describe("renderSite", () => {
     expect(siteCss).toContain(".calendar-columns");
     expect(siteCss).toContain(".calendar-date-band");
     expect(siteCss).toContain(".calendar-event + .calendar-event");
-    expect(calendarTimeJs).toContain("data-calendar-local-time");
+    expect(calendarTimeJs).toContain("fetch(eventsPath)");
+    expect(calendarTimeJs).toContain("window.location.pathname");
     expect(spacesIndexJs).toContain("hackerspace-news-feed.query");
     expect(authorsIndexJs).toContain("hackerspace-news-feed.authors.query");
 
