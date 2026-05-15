@@ -2,55 +2,8 @@
 // Country flags
 // ---------------------------------------------------------------------------
 
-export const COUNTRY_FLAGS = {
-  "Argentina": "🇦🇷",
-  "Australia": "🇦🇺",
-  "Austria": "🇦🇹",
-  "Belgium": "🇧🇪",
-  "Bolivia": "🇧🇴",
-  "Brazil": "🇧🇷",
-  "Bulgaria": "🇧🇬",
-  "CANADA": "🇨🇦",
-  "Canada": "🇨🇦",
-  "Catalonia": "🏴",
-  "China": "🇨🇳",
-  "Colombia": "🇨🇴",
-  "Croatia": "🇭🇷",
-  "Czech Republic": "🇨🇿",
-  "Denmark": "🇩🇰",
-  "Egypt": "🇪🇬",
-  "Finland": "🇫🇮",
-  "France": "🇫🇷",
-  "Germany": "🇩🇪",
-  "Hong Kong": "🇭🇰",
-  "Hungary": "🇭🇺",
-  "India": "🇮🇳",
-  "Ireland": "🇮🇪",
-  "Israel": "🇮🇱",
-  "Italy": "🇮🇹",
-  "Latvia": "🇱🇻",
-  "Luxembourg": "🇱🇺",
-  "Mexico": "🇲🇽",
-  "Nepal": "🇳🇵",
-  "Netherlands": "🇳🇱",
-  "New Zealand": "🇳🇿",
-  "Nigeria": "🇳🇬",
-  "Norway": "🇳🇴",
-  "Pakistan": "🇵🇰",
-  "Poland": "🇵🇱",
-  "Romania": "🇷🇴",
-  "Russian Federation": "🇷🇺",
-  "Slovenia": "🇸🇮",
-  "South Africa": "🇿🇦",
-  "Spain": "🇪🇸",
-  "Sweden": "🇸🇪",
-  "Switzerland": "🇨🇭",
-  "Togo": "🇹🇬",
-  "Türkiye": "🇹🇷",
-  "Ukraine": "🇺🇦",
-  "United Kingdom": "🇬🇧",
-  "United States of America": "🇺🇸",
-};
+export { COUNTRY_FLAGS } from "../countryFlags.js";
+import { getCountryFlag } from "../countryFlags.js";
 
 // ---------------------------------------------------------------------------
 // Section assignment
@@ -244,7 +197,7 @@ function toItem(raw) {
     summaryHtml: raw.summaryHtml || null,
     summaryText: raw.summaryText || null,
     imageUrl: imageAttachment ? imageAttachment.url : null,
-    countryFlag: raw.country ? (COUNTRY_FLAGS[raw.country] || null) : null,
+    countryFlag: getCountryFlag(raw.country),
     countryName: raw.country || null,
     categoriesRaw,
   };

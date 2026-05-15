@@ -459,6 +459,17 @@ code { background: #f0f0eb; padding: 2px 4px; border-radius: 4px; }
   overflow-wrap: anywhere;
 }
 
+.calendar-event-source {
+  color: var(--muted);
+  margin: 0 0 0.6rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .calendar-event-description {
   display: -webkit-box;
   -webkit-line-clamp: 6;

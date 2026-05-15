@@ -91,6 +91,8 @@ END:VCALENDAR`, "utf8");
         startInstant: "2026-05-15T02:30:00.000Z",
         endInstant: "2026-05-15T05:00:00.000Z",
         sourceTimeZone: "America/Los_Angeles",
+        country: "USA",
+        hackerspaceName: "Noisebridge",
         sourceFile: "source.ics",
       },
     ], {
@@ -102,6 +104,11 @@ END:VCALENDAR`, "utf8");
     expect(model.selectedDate).toBe("2026-05-14");
     expect(model.selectedDayEvents).toHaveLength(1);
     expect(model.selectedDayEvents[0].timeLabel).toContain("7:30 PM");
+    expect(model.selectedDayEvents[0]).toMatchObject({
+      countryName: "USA",
+      countryFlag: "🇺🇸",
+      hackerspaceName: "Noisebridge",
+    });
     expect(model.selectedMonth).toBe("2026-05");
   });
 

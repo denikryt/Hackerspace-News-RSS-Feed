@@ -244,6 +244,10 @@ describe("renderSite", () => {
           startInstant: "2026-03-18T18:00:00.000Z",
           endInstant: "2026-03-18T20:00:00.000Z",
           sourceTimeZone: "UTC",
+          country: "Switzerland",
+          hackerspaceName: "Test Hackerspace",
+          location: "Long raw address that should not render",
+          organizer: "mailto:test@example.com",
           sourceFile: "source-001.ics",
         },
       ],
@@ -317,6 +321,10 @@ describe("renderSite", () => {
     expect(calendarHtml).toContain('href="/calendar/" aria-current="page"');
     expect(calendarHtml).toContain('<span class="calendar-date-band-weekday">Wednesday/</span><span class="calendar-date-band-date">March 18</span>');
     expect(calendarHtml).toContain("Calendar event");
+    expect(calendarHtml).toContain("🇨🇭");
+    expect(calendarHtml).toContain("Test Hackerspace");
+    expect(calendarHtml).not.toContain("Long raw address that should not render");
+    expect(calendarHtml).not.toContain("mailto:test@example.com");
     expect(calendarHtml).not.toContain("calendar-grid");
     expect(calendarHtml).toContain('<script src="/calendar-time.js"></script>');
     expect(calendarHtml).toContain('data-calendar-events-path="/calendar/events.json"');

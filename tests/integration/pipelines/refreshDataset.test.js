@@ -34,7 +34,7 @@ describe("refreshDataset", () => {
     await mkdir(resolve(outputDir, "content"), { recursive: true });
     await writeFile(paths.calendarSources, JSON.stringify({
       items: [
-        { url: "https://calendar.example/direct.ics" },
+        { url: "https://calendar.example/direct.ics", country: "Switzerland", hs_name: "Test Hackerspace" },
         { url: "https://calendar.example/not-ics" },
       ],
     }, null, 2), "utf8");
@@ -142,6 +142,8 @@ END:VCALENDAR`,
       items: [
         expect.objectContaining({
           url: "https://calendar.example/direct.ics",
+          country: "Switzerland",
+          hackerspaceName: "Test Hackerspace",
           status: "parsed_ok",
           snapshotFile: "source-001.ics",
           eventCount: 1,
@@ -158,6 +160,9 @@ END:VCALENDAR`,
         uid: "direct-1",
         summary: "Direct ICS Event",
         sourceFile: "source-001.ics",
+        country: "Switzerland",
+        countryFlag: "🇨🇭",
+        hackerspaceName: "Test Hackerspace",
       })],
     });
 

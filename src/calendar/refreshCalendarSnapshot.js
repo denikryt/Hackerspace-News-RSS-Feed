@@ -1,5 +1,6 @@
 import { mkdir, rm } from "node:fs/promises";
 
+import { getCountryFlag } from "../countryFlags.js";
 import { readJson, writeText } from "../storage.js";
 import { parseCalendarIcsText, sortCalendarEvents } from "./readCalendarEvents.js";
 
@@ -46,6 +47,8 @@ export async function refreshCalendarSnapshot({
 
 // The source list is hand-maintained and intentionally extensible, so the
 // loader accepts only object items with a usable url and ignores the rest.
+// Real data currently uses `hs_name`, while some older fixtures used
+// `HS_name`, so keep both spellings readable and explicit here.
 async function loadCalendarSourceItems({ calendarSourcesPath, readJsonImpl }) {
   if (!calendarSourcesPath) {
     return [];
@@ -65,8 +68,18 @@ async function loadCalendarSourceItems({ calendarSourcesPath, readJsonImpl }) {
     .filter((item) => item && typeof item === "object" && typeof item.url === "string" && item.url.trim() !== "")
     .map((item) => ({
       ...item,
+      country: typeof item.country === "string" && item.country.trim() !== "" ? item.country.trim() : null,
+      hackerspaceName: extractHackerspaceName(item),
       url: item.url.trim(),
     }));
+}
+
+function extractHackerspaceName(item) {
+  const rawValue = typeof item.hs_name === "string" && item.hs_name.trim() !== ""
+    ? item.hs_name
+    : item.HS_name;
+
+  return typeof rawValue === "string" && rawValue.trim() !== "" ? rawValue.trim() : null;
 }
 
 async function fetchCalendarSource({ sourceItem, snapshotFile, fetchImpl, logger }) {
@@ -92,7 +105,13 @@ async function fetchCalendarSource({ sourceItem, snapshotFile, fetchImpl, logger
       };
     }
 
-    const events = parseCalendarIcsText(primaryText, { sourceFile: snapshotFile });
+    const events = parseCalendarIcsText(primaryText, { sourceFile: snapshotFile })
+      .map((event) => ({
+        ...event,
+        country: sourceItem.country || null,
+        countryFlag: getCountryFlag(sourceItem.country),
+        hackerspaceName: sourceItem.hackerspaceName || null,
+      }));
     logInfo(logger, `[refresh] parsed calendar source: ${sourceItem.url} -> ${primaryUrl} (events=${events.length})`);
     return {
       ...sourceItem,

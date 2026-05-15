@@ -70,6 +70,7 @@ const COUNTRY_FLAGS = {
   "Ukraine": "🇺🇦",
   "United Kingdom": "🇬🇧",
   "United States of America": "🇺🇸",
+  "USA": "🇺🇸",
 };
 
 // ---------------------------------------------------------------------------

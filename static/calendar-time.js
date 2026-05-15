@@ -112,9 +112,8 @@ function renderDayEvents(events) {
   return events.map((event) => {
     const metaBits = [
       event.timeLabel ? `<span class="calendar-event-time">${escapeHtml(event.timeLabel)}</span>` : "",
-      event.location ? `<span class="calendar-event-location">${escapeHtml(event.location)}</span>` : "",
-      event.organizer ? `<span class="calendar-event-organizer">${escapeHtml(event.organizer)}</span>` : "",
     ].filter(Boolean).join("");
+    const sourceMeta = renderEventSourceMeta(event);
 
     const description = event.description
       ? `<p class="calendar-event-description">${escapeHtml(event.description).replaceAll("\n", "<br />")}</p>`
@@ -127,9 +126,26 @@ function renderDayEvents(events) {
     return `<article class="calendar-event">
       ${heading}
       ${metaBits ? `<div class="calendar-event-meta">${metaBits}</div>` : ""}
+      ${sourceMeta}
       ${description}
     </article>`;
   }).join("");
+}
+
+function renderEventSourceMeta(event) {
+  const flagHtml = event.countryFlag && event.countryName
+    ? `<span title="${escapeHtml(event.countryName)}">${event.countryFlag}</span>`
+    : (event.countryFlag || "");
+  const parts = [
+    flagHtml,
+    event.hackerspaceName ? escapeHtml(event.hackerspaceName) : "",
+  ].filter(Boolean);
+
+  if (!parts.length) {
+    return "";
+  }
+
+  return `<p class="calendar-event-source">${parts.join(" · ")}</p>`;
 }
 
 function buildDateSections({ monthKey, eventIndex, timeZone }) {
@@ -198,10 +214,11 @@ function toVisibleDayEvent(event, timeZone, visibleDate) {
     summary: event.summary || "Untitled event",
     dateLabel: formatLongDateLabel(visibleDate, timeZone),
     timeLabel: formatEventTimeLabel(event, timeZone),
-    location: event.location || null,
+    countryName: event.country || null,
+    countryFlag: event.countryFlag || null,
+    hackerspaceName: event.hackerspaceName || null,
     description: event.description || null,
     url: event.url || null,
-    organizer: event.organizer || null,
   };
 }
 

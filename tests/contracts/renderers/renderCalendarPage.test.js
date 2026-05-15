@@ -22,9 +22,12 @@ const MODEL = {
           summary: "DC415",
           dateLabel: "Thursday, May 14, 2026",
           timeLabel: "7:30 PM - 10:00 PM",
-          location: "Noisebridge",
+          countryName: "United States of America",
+          countryFlag: "🇺🇸",
+          hackerspaceName: "Noisebridge",
+          location: "Noisebridge, 272 Capp Street, San Francisco",
           url: "https://example.com/dc415",
-          organizer: "Noisebridge",
+          organizer: "mailto:Noisebridge",
         },
       ],
     },
@@ -57,7 +60,11 @@ describe("renderCalendarPage", () => {
     expect(html).toContain('<span class="calendar-date-band-weekday">Thursday/</span><span class="calendar-date-band-date">May 14</span>');
     expect(html).toContain("DC415");
     expect(html).toContain("7:30 PM - 10:00 PM");
+    expect(html).toContain("🇺🇸");
+    expect(html).toContain('<p class="calendar-event-source">');
     expect(html).toContain("Noisebridge");
+    expect(html).not.toContain("272 Capp Street");
+    expect(html).not.toContain("mailto:Noisebridge");
     expect(html).not.toContain("calendar-tag");
     expect(html).toContain('class="calendar-month-switcher"');
     expect(html).toContain('class="calendar-columns"');

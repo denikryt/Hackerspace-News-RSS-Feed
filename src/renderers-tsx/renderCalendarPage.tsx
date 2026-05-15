@@ -87,9 +87,8 @@ function renderDayEvents(events: RecordLike[]) {
   return events.map((event) => {
     const metaBits = [
       event.timeLabel ? `<span class="calendar-event-time">${escapeHtml(event.timeLabel as string)}</span>` : "",
-      event.location ? `<span class="calendar-event-location">${escapeHtml(event.location as string)}</span>` : "",
-      event.organizer ? `<span class="calendar-event-organizer">${escapeHtml(event.organizer as string)}</span>` : "",
     ].filter(Boolean).join("");
+    const sourceMeta = renderEventSourceMeta(event);
 
     const description = event.description
       ? `<p class="calendar-event-description">${escapeHtml(event.description as string).replaceAll("\n", "<br />")}</p>`
@@ -102,7 +101,26 @@ function renderDayEvents(events: RecordLike[]) {
     return `<article class="calendar-event">
       ${heading}
       ${metaBits ? `<div class="calendar-event-meta">${metaBits}</div>` : ""}
+      ${sourceMeta}
       ${description}
     </article>`;
   }).join("");
+}
+
+// Calendar identity should come from curated source metadata, not raw ICS
+// location strings that often contain TBD placeholders or mailing artifacts.
+function renderEventSourceMeta(event: RecordLike) {
+  const flagHtml = event.countryFlag && event.countryName
+    ? `<span title="${escapeHtml(event.countryName as string)}">${event.countryFlag as string}</span>`
+    : (event.countryFlag as string | undefined) || "";
+  const parts = [
+    flagHtml,
+    event.hackerspaceName ? escapeHtml(event.hackerspaceName as string) : "",
+  ].filter(Boolean);
+
+  if (!parts.length) {
+    return "";
+  }
+
+  return `<p class="calendar-event-source">${parts.join(" · ")}</p>`;
 }

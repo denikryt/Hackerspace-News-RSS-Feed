@@ -6,6 +6,7 @@ import {
   formatMonthLabel,
   formatTimeLabel,
 } from "./dateFormatting.js";
+import { getCountryFlag } from "../countryFlags.js";
 
 // The calendar page model is pure and timezone-aware so the same rules can be
 // applied for server fallback rendering and for client-side reformatting.
@@ -114,6 +115,11 @@ function toVisibleDayEvent(event, timeZone, visibleDate) {
     summary: event.summary || "Untitled event",
     dateLabel: formatLongDateLabel(visibleDate, timeZone),
     timeLabel: formatEventTimeLabel(event, timeZone),
+    countryName: event.country || null,
+    // Prefer the refresh snapshot metadata so server fallback and browser
+    // enhancement render the same source identity from one contract.
+    countryFlag: event.countryFlag || getCountryFlag(event.country),
+    hackerspaceName: event.hackerspaceName || null,
     location: event.location || null,
     description: event.description || null,
     url: event.url || null,
