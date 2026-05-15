@@ -105,10 +105,10 @@ describe("renderNewspaperFeedPageTsx — site nav", () => {
     expect(html).toContain("Authors");
   });
 
-  it("contains Calendar link", () => {
+  it("contains Events link", () => {
     const html = renderNewspaperFeedPageTsx(BASE_MODEL);
     expect(html).toContain('href="/calendar/"');
-    expect(html).toContain("Calendar");
+    expect(html).toContain("Events");
   });
 });
 

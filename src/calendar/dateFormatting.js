@@ -28,12 +28,19 @@ export function formatLongDateLabel(dateKey, timeZone) {
 }
 
 export function formatDateBandLabel(dateKey, timeZone) {
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone,
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  }).format(new Date(`${dateKey}T00:00:00.000Z`));
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    })
+      .formatToParts(new Date(`${dateKey}T00:00:00.000Z`))
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, part.value]),
+  );
+
+  return `${parts.weekday}/${parts.month} ${parts.day}`;
 }
 
 export function formatMediumDateLabel(dateKey) {

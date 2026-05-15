@@ -314,7 +314,7 @@ describe("renderSite", () => {
     expect(aboutHtml).toContain('<link rel="stylesheet" href="/site.css" />');
     expect(calendarHtml).toContain("Calendar");
     expect(calendarHtml).toContain('href="/calendar/" aria-current="page"');
-    expect(calendarHtml).toContain("Wednesday, March 18");
+    expect(calendarHtml).toContain("Wednesday/March 18");
     expect(calendarHtml).toContain("Calendar event");
     expect(calendarHtml).not.toContain("calendar-grid");
     expect(JSON.parse(calendarEventsJson)).toEqual(calendarPayload);

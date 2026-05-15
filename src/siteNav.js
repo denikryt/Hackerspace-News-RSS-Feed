@@ -6,7 +6,7 @@ export function buildPrimaryNavItems(currentSection) {
   return [
     { href: getHomeHref(), label: "Hackerspaces", isCurrent: currentSection === "Hackerspaces" },
     { href: getNewsIndexHref(), label: "News", isCurrent: currentSection === "News" },
-    { href: getCalendarHref(), label: "Calendar", isCurrent: currentSection === "Calendar" },
+    { href: getCalendarHref(), label: "Events", isCurrent: currentSection === "Calendar" },
     { href: getAuthorsIndexHref(), label: "Authors", isCurrent: currentSection === "Authors" },
   ];
 }
@@ -34,7 +34,7 @@ function ensureCalendarItem(items) {
   const result = [...items];
   const newsIndex = result.findIndex((item) => item.href === getNewsIndexHref());
   const insertIndex = newsIndex === -1 ? Math.min(1, result.length) : newsIndex + 1;
-  result.splice(insertIndex, 0, { href: getCalendarHref(), label: "Calendar", isCurrent: false });
+  result.splice(insertIndex, 0, { href: getCalendarHref(), label: "Events", isCurrent: false });
   return result;
 }
 

@@ -16,7 +16,7 @@ const MODEL = {
   dateSections: [
     {
       date: "2026-05-14",
-      dateLabel: "Thursday, May 14",
+      dateLabel: "Thursday/May 14",
       events: [
         {
           summary: "DC415",
@@ -51,7 +51,7 @@ describe("renderCalendarPage", () => {
     expect(html).toContain("May 2026");
     expect(html).toContain("March 2026");
     expect(html).toContain("June 2026");
-    expect(html).toContain("Thursday, May 14");
+    expect(html).toContain("Thursday/May 14");
     expect(html).toContain("DC415");
     expect(html).toContain("7:30 PM - 10:00 PM");
     expect(html).toContain("Noisebridge");
@@ -76,7 +76,7 @@ describe("renderCalendarPage", () => {
       nextMonth: null,
       nextMonthLabel: null,
       nextMonthHref: null,
-      dateSections: [{ date: "2026-05-14", dateLabel: "Thursday, May 14", events: [{ summary: "Open Night", dateLabel: "Thursday, May 14", timeLabel: null, location: null, url: null, organizer: null }] }],
+      dateSections: [{ date: "2026-05-14", dateLabel: "Thursday/May 14", events: [{ summary: "Open Night", dateLabel: "Thursday, May 14", timeLabel: null, location: null, url: null, organizer: null }] }],
     });
 
     expect(html).toContain("Open Night");

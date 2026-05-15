@@ -41,7 +41,7 @@ describe("author page rendering", () => {
     expect(html).toContain('href="/news/"');
     expect(html).toContain(">News<");
     expect(html).toContain('href="/calendar/"');
-    expect(html).toContain(">Calendar<");
+    expect(html).toContain(">Events<");
     expect(html).toContain('href="/authors/"');
     expect(html).toContain('id="author-search-input"');
     expect(html).toContain('aria-label="Search authors"');

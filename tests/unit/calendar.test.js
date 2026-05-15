@@ -209,7 +209,7 @@ END:VCALENDAR`, "utf8");
     expect(model.dateSections).toHaveLength(2);
     expect(model.dateSections[0]).toMatchObject({
       date: "2026-04-10",
-      dateLabel: "Friday, April 10",
+      dateLabel: "Friday/April 10",
     });
     expect(model.dateSections[0].events.map((event) => event.summary)).toEqual([
       "April event one",
@@ -217,7 +217,7 @@ END:VCALENDAR`, "utf8");
     ]);
     expect(model.dateSections[1]).toMatchObject({
       date: "2026-04-12",
-      dateLabel: "Sunday, April 12",
+      dateLabel: "Sunday/April 12",
     });
   });
 

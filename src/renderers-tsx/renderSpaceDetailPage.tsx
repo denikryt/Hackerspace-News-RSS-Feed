@@ -26,7 +26,7 @@ export function renderSpaceDetailPageTsx(model: RecordLike) {
       resolveNavItems: (value) => [
         { href: value.homeHref, label: "Hackerspaces" },
         { href: value.feedHref, label: "News" },
-        { href: getCalendarHref(), label: "Calendar" },
+        { href: getCalendarHref(), label: "Events" },
         { href: value.authorsIndexHref, label: "Authors" },
       ],
     }),

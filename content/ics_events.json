@@ -1,6 +1,9 @@
 {
   "items": [
     {
+      "url": "https://calendar.lab.glashack.space/ical"
+    },
+    {
       "url": "https://events.nu31.space/feed/ics?show_recurrent=true"
     },
     {
