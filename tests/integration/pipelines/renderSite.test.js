@@ -315,7 +315,7 @@ describe("renderSite", () => {
     expect(aboutHtml).toContain('<link rel="stylesheet" href="/site.css" />');
     expect(calendarHtml).toContain("Calendar");
     expect(calendarHtml).toContain('href="/calendar/" aria-current="page"');
-    expect(calendarHtml).toContain("Wednesday/March 18");
+    expect(calendarHtml).toContain('<span class="calendar-date-band-weekday">Wednesday/</span><span class="calendar-date-band-date">March 18</span>');
     expect(calendarHtml).toContain("Calendar event");
     expect(calendarHtml).not.toContain("calendar-grid");
     expect(calendarHtml).toContain('<script src="/calendar-time.js"></script>');
@@ -339,6 +339,7 @@ describe("renderSite", () => {
     expect(siteCss).toContain(".calendar-shell");
     expect(siteCss).toContain(".calendar-columns");
     expect(siteCss).toContain(".calendar-date-band");
+    expect(siteCss).toContain("@media (max-width: 560px)");
     expect(siteCss).toContain(".calendar-event + .calendar-event");
     expect(calendarTimeJs).toContain("fetch(eventsPath)");
     expect(calendarTimeJs).toContain("window.location.pathname");

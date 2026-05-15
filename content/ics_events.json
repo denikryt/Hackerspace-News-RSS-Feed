@@ -1,34 +1,44 @@
 {
   "items": [
     {
-      "url": "https://calendar.lab.glashack.space/ical"
+      "url": "https://calendar.lab.glashack.space/ical",
+      "country": "Ireland"
     },
     {
-      "url": "https://events.nu31.space/feed/ics?show_recurrent=true"
+      "url": "https://events.nu31.space/feed/ics?show_recurrent=true",
+      "country": "Ukraine"
     },
     {
-      "url": "https://www.meetup.com/noisebridge/events/ical/"
+      "url": "https://www.meetup.com/noisebridge/events/ical/",
+      "country": "USA"
     },
     {
-      "url": "https://hs3.pl/wydarzenia/index.ics"
+      "url": "https://hs3.pl/wydarzenia/index.ics",
+      "country": "Poland"
     },
     {
-      "url": "https://mobilizon.pl/@hakierspejs_lodz/feed/ics"
+      "url": "https://mobilizon.pl/@hakierspejs_lodz/feed/ics",
+      "country": "Poland"
     },
     {
-      "url": "https://mobilizon.pl/@hswro/feed/ics"
+      "url": "https://mobilizon.pl/@hswro/feed/ics",
+      "country": "Poland"
     },
     {
-      "url": "https://mobilizon.pl/@hspoz_group/feed/ics"
+      "url": "https://mobilizon.pl/@hspoz_group/feed/ics",
+      "country": "Poland"
     },
     {
-      "url": "https://mobilizon.pl/@golang_trojmiasto/feed/ics"
+      "url": "https://mobilizon.pl/@golang_trojmiasto/feed/ics",
+      "country": "Poland"
     },
     {
-      "url": "https://mobilizon.pl/@hswaw/feed/ics"
+      "url": "https://mobilizon.pl/@hswaw/feed/ics",
+      "country": "Poland"
     },
     {
-      "url": "https://hsp.sh/calendar.ics"
+      "url": "https://hsp.sh/calendar.ics",
+      "country": "Poland"
     }
   ]
 }

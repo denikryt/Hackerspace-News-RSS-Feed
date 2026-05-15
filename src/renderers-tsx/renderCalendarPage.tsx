@@ -61,11 +61,22 @@ function renderDateSections(sections: RecordLike[]) {
   }
 
   return sections.map((section) => `<section class="calendar-date-column">
-      <h3 class="calendar-date-band">${escapeHtml((section.dateLabel as string) || "")}</h3>
+      <h3 class="calendar-date-band">${renderDateBandLabel((section.dateLabel as string) || "")}</h3>
       <div class="calendar-date-events">
         ${renderDayEvents((section.events as RecordLike[]) || [])}
       </div>
     </section>`).join("");
+}
+
+// Date bands render as two explicit units so narrow layouts can always stack
+// the weekday line above the month/day line without relying on browser wraps.
+function renderDateBandLabel(label: string) {
+  const [weekday, rest] = String(label).split("/", 2);
+  if (!rest) {
+    return escapeHtml(label);
+  }
+
+  return `<span class="calendar-date-band-weekday">${escapeHtml(weekday)}/</span><span class="calendar-date-band-date">${escapeHtml(rest)}</span>`;
 }
 
 function renderDayEvents(events: RecordLike[]) {

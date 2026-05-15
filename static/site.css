@@ -415,6 +415,11 @@ code { background: #f0f0eb; padding: 2px 4px; border-radius: 4px; }
   word-break: break-word;
 }
 
+.calendar-date-band-weekday,
+.calendar-date-band-date {
+  display: inline;
+}
+
 .calendar-date-events {
   display: grid;
   gap: 0;
@@ -475,7 +480,7 @@ code { background: #f0f0eb; padding: 2px 4px; border-radius: 4px; }
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 560px) {
   .calendar-month-switcher {
     grid-template-columns: 1fr;
     gap: 0.45rem;
@@ -489,6 +494,11 @@ code { background: #f0f0eb; padding: 2px 4px; border-radius: 4px; }
 
   .calendar-date-band {
     font-size: 0.96rem;
+  }
+
+  .calendar-date-band-weekday,
+  .calendar-date-band-date {
+    display: block;
   }
 
   .calendar-event-title {

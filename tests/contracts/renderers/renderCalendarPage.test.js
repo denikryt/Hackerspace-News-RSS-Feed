@@ -54,7 +54,7 @@ describe("renderCalendarPage", () => {
     expect(html).toContain("May 2026");
     expect(html).toContain("March 2026");
     expect(html).toContain("June 2026");
-    expect(html).toContain("Thursday/May 14");
+    expect(html).toContain('<span class="calendar-date-band-weekday">Thursday/</span><span class="calendar-date-band-date">May 14</span>');
     expect(html).toContain("DC415");
     expect(html).toContain("7:30 PM - 10:00 PM");
     expect(html).toContain("Noisebridge");
