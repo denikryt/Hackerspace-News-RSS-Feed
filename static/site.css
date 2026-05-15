@@ -54,7 +54,6 @@ a {
 .section-nav { 
   display: flex; 
   gap: 18px; 
-  margin: 0 auto 20px; 
   flex-wrap: wrap; 
   inline-size: min(100%, 74rem); 
   justify-content: flex-start; 
@@ -107,7 +106,7 @@ a {
 .page-header--narrow.page-header--compact p { max-inline-size: 30rem; }
 .page-nav--narrow { inline-size: min(100%, 46rem); margin-inline: auto; }
 .page-nav--narrow > .section-nav { inline-size: 100%; }
-.page-nav--compact .section-nav { margin-bottom: 10px; padding-block: 8px 6px; }
+.page-nav--compact .section-nav { padding-block: 8px 6px; }
 .page-summary { padding-top: 8px; }
 .page-summary--home .summary-grid { margin-top: 0; margin-bottom: 8px; }
 .page-summary--home .meta { margin-top: 0; }
@@ -360,15 +359,14 @@ code { background: #f0f0eb; padding: 2px 4px; border-radius: 4px; }
   align-items: center;
   gap: 1rem;
   padding: 0.85rem 0;
-  border-top: 1px solid #111;
-  border-bottom: 1px solid #111;
+  border-bottom: 1px solid var(--border);
 }
 
 .calendar-month-switcher-side--left { text-align: left; }
 .calendar-month-switcher-side--right { text-align: right; }
 .calendar-month-current {
   margin: 0;
-  font-size: clamp(2.5rem, 6vw, 4.8rem);
+  font-size: 2.5rem;
   font-weight: 900;
   line-height: 0.92;
   text-align: center;

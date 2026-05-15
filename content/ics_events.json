@@ -2,43 +2,53 @@
   "items": [
     {
       "url": "https://calendar.lab.glashack.space/ical",
-      "country": "Ireland"
+      "country": "Ireland",
+      "HS_name": "Glasgow Hackerspace"
     },
     {
       "url": "https://events.nu31.space/feed/ics?show_recurrent=true",
-      "country": "Ukraine"
+      "country": "Ukraine",
+      "HS_name": "NU31 Hackerspace"
     },
     {
       "url": "https://www.meetup.com/noisebridge/events/ical/",
-      "country": "USA"
+      "country": "USA",
+      "HS_name": "Noisebridge"
     },
     {
       "url": "https://hs3.pl/wydarzenia/index.ics",
-      "country": "Poland"
+      "country": "Poland",
+      "HS_name": "Hackerspace Trojmiasto"
     },
     {
       "url": "https://mobilizon.pl/@hakierspejs_lodz/feed/ics",
-      "country": "Poland"
+      "country": "Poland",
+      "HS_name": "Hakierspejs Lodz"
     },
     {
       "url": "https://mobilizon.pl/@hswro/feed/ics",
-      "country": "Poland"
+      "country": "Poland",
+      "HS_name": "Hackerspace Wrocław"
     },
     {
       "url": "https://mobilizon.pl/@hspoz_group/feed/ics",
-      "country": "Poland"
+      "country": "Poland",
+      "HS_name": "Knyfyrtel Hackerspace Poznań"
     },
     {
       "url": "https://mobilizon.pl/@golang_trojmiasto/feed/ics",
-      "country": "Poland"
+      "country": "Poland",
+      "HS_name": "Golang Trojmiasto"
     },
     {
       "url": "https://mobilizon.pl/@hswaw/feed/ics",
-      "country": "Poland"
+      "country": "Poland",
+      "HS_name": "Warszawski Hackerspace"
     },
     {
       "url": "https://hsp.sh/calendar.ics",
-      "country": "Poland"
+      "country": "Poland",
+      "HS_name": "Hackerspace Pomorze"
     }
   ]
 }
