@@ -22,14 +22,13 @@ describe("tsx-backed page runtime", () => {
               pageTitle: "Calendar",
               pageIntro: "Upcoming events from ICS feeds.",
               navItems: [{ href: "/calendar/", label: "Calendar", isCurrent: true }],
-              selectedDate: "2026-05-14",
-              selectedDateLabel: "Thursday, May 14, 2026",
+              selectedMonth: "2026-05",
               selectedMonthLabel: "May 2026",
-              weekDayLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-              weeks: [],
-              selectedDayEvents: [],
-              serializedEventsJson: "[]",
-              serializedInitialStateJson: "{\\\"selectedDate\\\":\\\"2026-05-14\\\",\\\"selectedMonth\\\":\\\"2026-05\\\"}",
+              previousMonthLabel: "April 2026",
+              previousMonthHref: "/calendar/2026-04/",
+              nextMonthLabel: "June 2026",
+              nextMonthHref: "/calendar/2026-06/",
+              dateSections: [],
             }),
             feed: renderGlobalFeedPageTsx({
               items: [],
@@ -51,7 +50,8 @@ describe("tsx-backed page runtime", () => {
 
     expect(payload.about).toContain("<title>About</title>");
     expect(payload.calendar).toContain("<title>Calendar</title>");
-    expect(payload.calendar).toContain('src="/calendar-page.js"');
+    expect(payload.calendar).toContain("May 2026");
+    expect(payload.calendar).not.toContain('src="/calendar-page.js"');
     expect(payload.about).toContain("<strong>Data Sources:</strong>");
     expect(payload.feed).toContain("<title>Feed</title>");
     expect(payload.feed).toContain('href="/news/"');

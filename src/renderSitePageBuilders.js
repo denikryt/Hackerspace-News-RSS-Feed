@@ -32,14 +32,23 @@ export function buildRootStaticPageEntries(context) {
 export async function buildCalendarPageEntries(context, { logger } = {}) {
   const calendarPayload = context.calendarPayload || { events: [] };
   const events = Array.isArray(calendarPayload.events) ? calendarPayload.events : [];
-  const model = buildCalendarPageModel(events, {
+  const now = context.now || new Date();
+  const currentMonth = now.toISOString().slice(0, 7);
+  const baseModel = buildCalendarPageModel(events, {
     timeZone: "UTC",
-    now: context.now || new Date(),
+    now,
+  });
+  const monthEntries = buildCalendarMonthEntries({
+    events,
+    currentMonth,
+    monthKeys: baseModel.availableMonthsWithEvents || [],
+    now,
   });
 
   logInfo(logger, `[render] calendar page: events=${events.length}`);
   return [
-    ["calendar/index.html", renderCalendarPage({ ...model, navItems: buildPrimaryNavItems("Calendar"), eventsPath: "/calendar/events.json" })],
+    ["calendar/index.html", renderCalendarPage(withCalendarNavigation(baseModel, { currentMonth }))],
+    ...monthEntries,
     ["calendar/events.json", JSON.stringify(calendarPayload, null, 2)],
   ];
 }
@@ -232,6 +241,40 @@ function logInfo(logger, message) {
   if (typeof logger === "function") {
     logger(message);
   }
+}
+
+function buildCalendarMonthEntries({ events, currentMonth, monthKeys, now }) {
+  return monthKeys
+    .filter((monthKey) => monthKey !== currentMonth)
+    .map((monthKey) => {
+      const model = buildCalendarPageModel(events, {
+        timeZone: "UTC",
+        selectedMonth: monthKey,
+        now,
+      });
+
+      return [
+        `calendar/${monthKey}/index.html`,
+        renderCalendarPage(withCalendarNavigation(model, { currentMonth })),
+      ];
+    });
+}
+
+function withCalendarNavigation(model, { currentMonth }) {
+  return {
+    ...model,
+    navItems: buildPrimaryNavItems("Calendar"),
+    previousMonthHref: model.previousMonth ? getCalendarMonthHref(model.previousMonth, { currentMonth }) : null,
+    nextMonthHref: model.nextMonth ? getCalendarMonthHref(model.nextMonth, { currentMonth }) : null,
+  };
+}
+
+function getCalendarMonthHref(monthKey, { currentMonth }) {
+  if (monthKey === currentMonth) {
+    return "/calendar/";
+  }
+
+  return `/calendar/${monthKey}/`;
 }
 
 function shouldLogLoopCheckpoint(currentIndex, totalItems) {

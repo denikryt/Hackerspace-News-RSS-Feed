@@ -1,4 +1,5 @@
 import {
+  formatDateBandLabel,
   formatDateKeyInTimeZone,
   formatLongDateLabel,
   formatMediumDateLabel,
@@ -17,9 +18,11 @@ export function buildCalendarPageModel(events, {
   const normalizedEvents = Array.isArray(events) ? events : [];
   const eventIndex = buildEventIndex(normalizedEvents, timeZone);
   const availableDates = [...eventIndex.keys()].sort((left, right) => left.localeCompare(right));
+  const availableMonthsWithEvents = listAvailableMonthsWithEvents(availableDates);
   const fallbackDate = formatDateKeyInTimeZone(now, timeZone);
-  const resolvedMonth = resolveSelectedMonth({ availableDates, fallbackDate, selectedDate, selectedMonth });
+  const resolvedMonth = resolveSelectedMonth({ fallbackDate, selectedDate, selectedMonth });
   const resolvedDate = resolveSelectedDate({ availableDates, fallbackDate, selectedDate, resolvedMonth });
+  const monthNavigation = resolveMonthNavigation(availableMonthsWithEvents, resolvedMonth);
 
   return {
     pageTitle: "Calendar",
@@ -28,11 +31,13 @@ export function buildCalendarPageModel(events, {
     selectedDateLabel: formatLongDateLabel(resolvedDate, timeZone),
     selectedMonth: resolvedMonth,
     selectedMonthLabel: formatMonthLabel(resolvedMonth),
-    weekDayLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    weeks: buildMonthWeeks(resolvedMonth, eventIndex, resolvedDate),
+    previousMonth: monthNavigation.previousMonth,
+    previousMonthLabel: monthNavigation.previousMonth ? formatMonthLabel(monthNavigation.previousMonth) : null,
+    nextMonth: monthNavigation.nextMonth,
+    nextMonthLabel: monthNavigation.nextMonth ? formatMonthLabel(monthNavigation.nextMonth) : null,
+    availableMonthsWithEvents,
+    dateSections: buildDateSections({ monthKey: resolvedMonth, eventIndex, timeZone }),
     selectedDayEvents: (eventIndex.get(resolvedDate) || []).map((entry) => toVisibleDayEvent(entry.event, timeZone, resolvedDate)),
-    serializedEventsJson: JSON.stringify(normalizedEvents),
-    serializedInitialStateJson: JSON.stringify({ selectedDate: resolvedDate, selectedMonth: resolvedMonth }),
   };
 }
 
@@ -58,7 +63,7 @@ function buildEventIndex(events, timeZone) {
   return index;
 }
 
-function resolveSelectedMonth({ availableDates, fallbackDate, selectedDate, selectedMonth }) {
+function resolveSelectedMonth({ fallbackDate, selectedDate, selectedMonth }) {
   if (selectedDate) {
     return selectedDate.slice(0, 7);
   }
@@ -83,34 +88,6 @@ function resolveSelectedDate({ availableDates, fallbackDate, selectedDate, resol
   }
 
   return `${resolvedMonth}-01`;
-}
-
-function buildMonthWeeks(monthKey, eventIndex, selectedDate) {
-  const [year, month] = monthKey.split("-").map(Number);
-  const firstOfMonth = new Date(Date.UTC(year, month - 1, 1));
-  const firstWeekdayOffset = (firstOfMonth.getUTCDay() + 6) % 7;
-  const firstVisibleDate = new Date(Date.UTC(year, month - 1, 1 - firstWeekdayOffset));
-  const weeks = [];
-
-  for (let weekIndex = 0; weekIndex < 6; weekIndex += 1) {
-    const week = [];
-
-    for (let dayIndex = 0; dayIndex < 7; dayIndex += 1) {
-      const currentDate = new Date(firstVisibleDate.getTime() + ((weekIndex * 7) + dayIndex) * DAY_MS);
-      const dateKey = currentDate.toISOString().slice(0, 10);
-      week.push({
-        date: dateKey,
-        dayNumber: currentDate.getUTCDate(),
-        isCurrentMonth: dateKey.startsWith(`${monthKey}-`),
-        isSelected: dateKey === selectedDate,
-        hasEvents: eventIndex.has(dateKey),
-      });
-    }
-
-    weeks.push(week);
-  }
-
-  return weeks;
 }
 
 function listVisibleDatesForEvent(event, timeZone) {
@@ -190,6 +167,35 @@ function compareIndexedEvents(left, right) {
   }
 
   return (left.event.summary || "").localeCompare(right.event.summary || "");
+}
+
+function listAvailableMonthsWithEvents(availableDates) {
+  return [...new Set(availableDates.map((dateKey) => dateKey.slice(0, 7)))];
+}
+
+function resolveMonthNavigation(availableMonthsWithEvents, resolvedMonth) {
+  const previousMonth = [...availableMonthsWithEvents]
+    .reverse()
+    .find((monthKey) => monthKey < resolvedMonth) || null;
+  const nextMonth = availableMonthsWithEvents.find((monthKey) => monthKey > resolvedMonth) || null;
+
+  return {
+    previousMonth,
+    nextMonth,
+  };
+}
+
+// The static calendar page renders one editorial column per eventful day, so
+// this model filters out every empty date before the renderer sees it.
+function buildDateSections({ monthKey, eventIndex, timeZone }) {
+  return [...eventIndex.entries()]
+    .filter(([dateKey]) => dateKey.startsWith(`${monthKey}-`))
+    .sort(([leftDate], [rightDate]) => leftDate.localeCompare(rightDate))
+    .map(([dateKey, entries]) => ({
+      date: dateKey,
+      dateLabel: formatDateBandLabel(dateKey, timeZone),
+      events: entries.map((entry) => toVisibleDayEvent(entry.event, timeZone, dateKey)),
+    }));
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;

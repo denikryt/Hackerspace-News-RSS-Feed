@@ -6,7 +6,6 @@ export const NEWSPAPER_CSS_HREF = "/static/newspaper.css";
 export const NEWSPAPER_NAV_SCRIPT_HREF = "/newspaper-nav.js";
 export const SPACES_INDEX_SCRIPT_HREF = "/spaces-index.js";
 export const AUTHORS_INDEX_SCRIPT_HREF = "/authors-index.js";
-export const CALENDAR_PAGE_SCRIPT_HREF = "/calendar-page.js";
 
 const STATIC_DIR = resolve(process.cwd(), "static");
 
@@ -37,10 +36,6 @@ export function listStaticRenderAssets() {
     {
       sourcePath: resolve(STATIC_DIR, "newspaper-nav.js"),
       outputPath: "newspaper-nav.js",
-    },
-    {
-      sourcePath: resolve(STATIC_DIR, "calendar-page.js"),
-      outputPath: "calendar-page.js",
     },
   ];
 }

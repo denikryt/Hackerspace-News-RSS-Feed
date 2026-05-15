@@ -26,33 +26,28 @@ describe("page renderer TSX parity", () => {
     const model = {
       pageTitle: "Calendar",
       pageIntro: "Upcoming events from ICS feeds.",
-      selectedDate: "2026-05-14",
-      selectedDateLabel: "Thursday, May 14, 2026",
+      selectedMonth: "2026-05",
       selectedMonthLabel: "May 2026",
-      weekDayLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      weeks: [
-        [
-          { date: "2026-05-11", dayNumber: 11, isCurrentMonth: true, isSelected: false, hasEvents: false },
-          { date: "2026-05-12", dayNumber: 12, isCurrentMonth: true, isSelected: false, hasEvents: false },
-          { date: "2026-05-13", dayNumber: 13, isCurrentMonth: true, isSelected: false, hasEvents: false },
-          { date: "2026-05-14", dayNumber: 14, isCurrentMonth: true, isSelected: true, hasEvents: true },
-          { date: "2026-05-15", dayNumber: 15, isCurrentMonth: true, isSelected: false, hasEvents: false },
-          { date: "2026-05-16", dayNumber: 16, isCurrentMonth: true, isSelected: false, hasEvents: false },
-          { date: "2026-05-17", dayNumber: 17, isCurrentMonth: true, isSelected: false, hasEvents: false },
-        ],
-      ],
-      selectedDayEvents: [
+      previousMonthLabel: "April 2026",
+      previousMonthHref: "/calendar/2026-04/",
+      nextMonthLabel: "June 2026",
+      nextMonthHref: "/calendar/2026-06/",
+      dateSections: [
         {
-          summary: "DC415",
-          dateLabel: "Thu, May 14, 2026",
-          timeLabel: "7:30 PM - 10:00 PM",
-          location: "Noisebridge",
-          url: "https://example.com/dc415",
-          categories: [],
+          date: "2026-05-14",
+          dateLabel: "Thursday, May 14, 2026",
+          events: [
+            {
+              summary: "DC415",
+              dateLabel: "Thursday, May 14, 2026",
+              timeLabel: "7:30 PM - 10:00 PM",
+              location: "Noisebridge",
+              url: "https://example.com/dc415",
+              categories: [],
+            },
+          ],
         },
       ],
-      serializedEventsJson: "[]",
-      serializedInitialStateJson: "{\"selectedDate\":\"2026-05-14\",\"selectedMonth\":\"2026-05\"}",
       navItems: [
         { href: "/", label: "Hackerspaces" },
         { href: "/news/", label: "News" },

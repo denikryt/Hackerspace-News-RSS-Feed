@@ -17,7 +17,7 @@ vi.mock("../../src/renderers/renderAboutPage.js", () => ({
 }));
 
 vi.mock("../../src/renderers/renderCalendarPage.js", () => ({
-  renderCalendarPage: vi.fn((model) => `calendar-page:${model.selectedDate || "empty"}`),
+  renderCalendarPage: vi.fn((model) => `calendar-page:${model.selectedMonth || "empty"}`),
 }));
 
 vi.mock("../../src/renderers/renderAuthorsIndex.js", () => ({
@@ -56,7 +56,13 @@ vi.mock("../../src/viewModels/spaceDetail.js", () => ({
 }));
 
 vi.mock("../../src/calendar/index.js", () => ({
-  buildCalendarPageModel: vi.fn(() => ({ selectedDate: "2026-05-14" })),
+  buildCalendarPageModel: vi.fn((events, options) => ({
+    selectedMonth: options?.selectedMonth || "2026-05",
+    previousMonth: null,
+    nextMonth: null,
+    availableMonthsWithEvents: ["2026-05"],
+    dateSections: [],
+  })),
 }));
 
 const pageBuilders = await import("../../src/renderSitePageBuilders.js");
@@ -79,6 +85,7 @@ describe("renderSitePageBuilders", () => {
 
   it("builds a standalone calendar page entry", async () => {
     const entries = await pageBuilders.buildCalendarPageEntries({
+      now: new Date("2026-05-14T12:00:00.000Z"),
       calendarPayload: {
         events: [
           {
@@ -95,7 +102,7 @@ describe("renderSitePageBuilders", () => {
     });
 
     expect(entries).toEqual([
-      ["calendar/index.html", "calendar-page:2026-05-14"],
+      ["calendar/index.html", "calendar-page:2026-05"],
       ["calendar/events.json", JSON.stringify({
         events: [
           {

@@ -1,6 +1,5 @@
 /** @jsxImportSource @kitajs/html */
 
-import { CALENDAR_PAGE_SCRIPT_HREF } from "../renderAssets.js";
 import { escapeHtml, renderAboutHeaderLink, renderLayout } from "../renderers/layout.js";
 import { buildPrimaryNavItems } from "../siteNav.js";
 import { renderPageHeaderShell, type NavItems, type RecordLike } from "./pageHelpers.js";
@@ -21,66 +20,55 @@ export function renderCalendarPageTsx(model: RecordLike) {
       navClass: "page-nav--wide page-nav--compact",
     }),
     renderCalendarShell(model),
-    `<script id="calendar-initial-state" type="application/json">${escapeInlineJson((model.serializedInitialStateJson as string) || "{}")}</script>`,
   ].join("");
 
   return renderLayoutShell({
     title: model.pageTitle || "Calendar",
     body,
-    scriptHrefs: [CALENDAR_PAGE_SCRIPT_HREF],
   });
 }
 
 function renderCalendarShell(model: RecordLike) {
-  return `<section id="calendar-root" class="calendar-shell page-shell-wide" data-selected-date="${escapeHtml((model.selectedDate as string) || "")}" data-selected-month="${escapeHtml((model.selectedMonth as string) || "")}" data-events-path="${escapeHtml((model.eventsPath as string) || "/calendar/events.json")}">
-    <div class="calendar-panel">
-      <div class="calendar-toolbar">
-        <button type="button" class="calendar-month-button" data-calendar-nav="prev" aria-label="Previous month">Previous</button>
-        <h2 id="calendar-month-label" class="calendar-month-label">${escapeHtml((model.selectedMonthLabel as string) || "")}</h2>
-        <button type="button" class="calendar-month-button" data-calendar-nav="next" aria-label="Next month">Next</button>
+  return `<section class="calendar-shell page-shell-wide">
+    <div class="calendar-month-switcher" aria-label="Calendar month navigation">
+      <div class="calendar-month-switcher-side calendar-month-switcher-side--left">
+        ${renderMonthNavLink(model.previousMonthLabel as string | null | undefined, model.previousMonthHref as string | null | undefined)}
       </div>
-      <div id="calendar-grid" class="calendar-grid">
-        ${renderCalendarGrid(model)}
+      <h2 class="calendar-month-current">${escapeHtml((model.selectedMonthLabel as string) || "")}</h2>
+      <div class="calendar-month-switcher-side calendar-month-switcher-side--right">
+        ${renderMonthNavLink(model.nextMonthLabel as string | null | undefined, model.nextMonthHref as string | null | undefined)}
       </div>
     </div>
-    <aside class="calendar-day-panel">
-      <h3 id="calendar-selected-date-label" class="calendar-day-title">${escapeHtml((model.selectedDateLabel as string) || "No day selected")}</h3>
-      <div id="calendar-selected-day-events" class="calendar-day-events">
-        ${renderSelectedDayEvents((model.selectedDayEvents as RecordLike[]) || [])}
-      </div>
-    </aside>
+    <div class="calendar-columns">
+      ${renderDateSections((model.dateSections as RecordLike[]) || [])}
+    </div>
   </section>`;
 }
 
-function renderCalendarGrid(model: RecordLike) {
-  const weekDayLabels = ((model.weekDayLabels as string[]) || []).map((label) =>
-    `<div class="calendar-weekday">${escapeHtml(label)}</div>`,
-  ).join("");
+function renderMonthNavLink(label: string | null | undefined, href: string | null | undefined) {
+  if (!label || !href) {
+    return "";
+  }
 
-  const weeks = ((model.weeks as RecordLike[][]) || []).map((week) =>
-    week.map((day) => renderCalendarDay(day)).join(""),
-  ).join("");
-
-  return `${weekDayLabels}${weeks}`;
+  return `<a class="calendar-month-link" href="${escapeHtml(href)}">${escapeHtml(label)}</a>`;
 }
 
-function renderCalendarDay(day: RecordLike) {
-  const classNames = [
-    "calendar-day",
-    day.isCurrentMonth ? "" : "is-outside-month",
-    day.isSelected ? "is-selected" : "",
-    day.hasEvents ? "has-events" : "",
-  ].filter(Boolean).join(" ");
+function renderDateSections(sections: RecordLike[]) {
+  if (!sections.length) {
+    return '<p class="muted calendar-empty-state">No events scheduled for this month.</p>';
+  }
 
-  return `<button type="button" class="${classNames}" data-calendar-day="${escapeHtml(day.date as string)}" data-date="${escapeHtml(day.date as string)}" aria-pressed="${day.isSelected ? "true" : "false"}">
-    <span class="calendar-day-number">${escapeHtml(String(day.dayNumber || ""))}</span>
-    ${day.hasEvents ? '<span class="calendar-day-marker" aria-hidden="true"></span>' : ""}
-  </button>`;
+  return sections.map((section) => `<section class="calendar-date-column">
+      <h3 class="calendar-date-band">${escapeHtml((section.dateLabel as string) || "")}</h3>
+      <div class="calendar-date-events">
+        ${renderDayEvents((section.events as RecordLike[]) || [])}
+      </div>
+    </section>`).join("");
 }
 
-function renderSelectedDayEvents(events: RecordLike[]) {
+function renderDayEvents(events: RecordLike[]) {
   if (!events.length) {
-    return '<p class="muted calendar-empty-state">No events on this day.</p>';
+    return '<p class="muted calendar-empty-state">No events on this date.</p>';
   }
 
   return events.map((event) => {
@@ -104,17 +92,9 @@ function renderSelectedDayEvents(events: RecordLike[]) {
 
     return `<article class="calendar-event">
       ${heading}
-      <p class="muted calendar-event-date">${escapeHtml((event.dateLabel as string) || "")}</p>
       ${metaBits ? `<div class="calendar-event-meta">${metaBits}</div>` : ""}
       ${categories}
       ${description}
     </article>`;
   }).join("");
-}
-
-function escapeInlineJson(json: string) {
-  return String(json)
-    .replaceAll("<", "\\u003c")
-    .replaceAll(">", "\\u003e")
-    .replaceAll("&", "\\u0026");
 }

@@ -147,6 +147,102 @@ END:VCALENDAR`, "utf8");
     expect(model.selectedDayEvents).toEqual([]);
   });
 
+  it("builds date sections only for eventful dates in the selected month and exposes month navigation", () => {
+    const model = buildCalendarPageModel([
+      {
+        uid: "march-1",
+        summary: "March event",
+        dateKind: "timed",
+        startInstant: "2026-03-04T09:00:00.000Z",
+        endInstant: "2026-03-04T10:00:00.000Z",
+        sourceTimeZone: "UTC",
+        sourceFile: "source.ics",
+      },
+      {
+        uid: "april-1",
+        summary: "April event one",
+        dateKind: "timed",
+        startInstant: "2026-04-10T09:00:00.000Z",
+        endInstant: "2026-04-10T10:00:00.000Z",
+        sourceTimeZone: "UTC",
+        sourceFile: "source.ics",
+      },
+      {
+        uid: "april-2",
+        summary: "April event two",
+        dateKind: "timed",
+        startInstant: "2026-04-10T11:00:00.000Z",
+        endInstant: "2026-04-10T12:00:00.000Z",
+        sourceTimeZone: "UTC",
+        sourceFile: "source.ics",
+      },
+      {
+        uid: "april-3",
+        summary: "April next day",
+        dateKind: "timed",
+        startInstant: "2026-04-12T11:00:00.000Z",
+        endInstant: "2026-04-12T12:00:00.000Z",
+        sourceTimeZone: "UTC",
+        sourceFile: "source.ics",
+      },
+      {
+        uid: "june-1",
+        summary: "June event",
+        dateKind: "timed",
+        startInstant: "2026-06-02T09:00:00.000Z",
+        endInstant: "2026-06-02T10:00:00.000Z",
+        sourceTimeZone: "UTC",
+        sourceFile: "source.ics",
+      },
+    ], {
+      timeZone: "UTC",
+      selectedMonth: "2026-04",
+      now: new Date("2026-05-14T12:00:00.000Z"),
+    });
+
+    expect(model.selectedMonth).toBe("2026-04");
+    expect(model.selectedMonthLabel).toBe("April 2026");
+    expect(model.previousMonth).toBe("2026-03");
+    expect(model.previousMonthLabel).toBe("March 2026");
+    expect(model.nextMonth).toBe("2026-06");
+    expect(model.nextMonthLabel).toBe("June 2026");
+    expect(model.dateSections).toHaveLength(2);
+    expect(model.dateSections[0]).toMatchObject({
+      date: "2026-04-10",
+      dateLabel: "Friday, April 10",
+    });
+    expect(model.dateSections[0].events.map((event) => event.summary)).toEqual([
+      "April event one",
+      "April event two",
+    ]);
+    expect(model.dateSections[1]).toMatchObject({
+      date: "2026-04-12",
+      dateLabel: "Sunday, April 12",
+    });
+  });
+
+  it("omits previous and next month links when the selected month has no eventful neighbors", () => {
+    const model = buildCalendarPageModel([
+      {
+        uid: "may-1",
+        summary: "Only month event",
+        dateKind: "timed",
+        startInstant: "2026-05-14T09:00:00.000Z",
+        endInstant: "2026-05-14T10:00:00.000Z",
+        sourceTimeZone: "UTC",
+        sourceFile: "source.ics",
+      },
+    ], {
+      timeZone: "UTC",
+      selectedMonth: "2026-05",
+      now: new Date("2026-05-14T12:00:00.000Z"),
+    });
+
+    expect(model.previousMonth).toBeNull();
+    expect(model.nextMonth).toBeNull();
+    expect(model.dateSections).toHaveLength(1);
+  });
+
   it("returns a stable empty state when the ICS directory does not exist", async () => {
     const events = await readCalendarEvents({ directoryPath: "/tmp/does-not-exist-calendar-dir" });
 

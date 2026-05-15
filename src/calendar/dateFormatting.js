@@ -27,6 +27,15 @@ export function formatLongDateLabel(dateKey, timeZone) {
   }).format(new Date(`${dateKey}T00:00:00.000Z`));
 }
 
+export function formatDateBandLabel(dateKey, timeZone) {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(`${dateKey}T00:00:00.000Z`));
+}
+
 export function formatMediumDateLabel(dateKey) {
   return new Intl.DateTimeFormat("en-US", {
     timeZone: "UTC",

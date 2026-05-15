@@ -44,6 +44,17 @@ describe("renderSite", () => {
         feeds: [],
         failures: [],
       },
+      calendarPayload: {
+        generatedAt: "2026-03-19T20:00:00.000Z",
+        items: [],
+        events: [],
+        summary: {
+          sources: 0,
+          parsedSources: 0,
+          parsedEvents: 0,
+          failedSources: 0,
+        },
+      },
     });
 
     expect(renderAboutPage).toHaveBeenCalledWith();
@@ -98,6 +109,17 @@ describe("renderSite", () => {
           },
         ],
         failures: [],
+      },
+      calendarPayload: {
+        generatedAt: "2026-03-19T20:00:00.000Z",
+        items: [],
+        events: [],
+        summary: {
+          sources: 0,
+          parsedSources: 0,
+          parsedEvents: 0,
+          failedSources: 0,
+        },
       },
       now: Date.parse("2026-03-19T12:00:00.000Z"),
     });
@@ -273,11 +295,10 @@ describe("renderSite", () => {
       readFile(resolve(distDir, "authors/index.html"), "utf8"),
       readFile(resolve(distDir, "spaces/betamachine.html"), "utf8"),
     ]);
-    const [siteCss, spacesIndexJs, authorsIndexJs, calendarPageJs] = await Promise.all([
+    const [siteCss, spacesIndexJs, authorsIndexJs] = await Promise.all([
       readFile(resolve(distDir, "site.css"), "utf8"),
       readFile(resolve(distDir, "spaces-index.js"), "utf8"),
       readFile(resolve(distDir, "authors-index.js"), "utf8"),
-      readFile(resolve(distDir, "calendar-page.js"), "utf8"),
     ]);
     await access(resolve(distDir, "favicon.png"));
     await access(resolve(distDir, "static/newspaper.css"));
@@ -292,9 +313,10 @@ describe("renderSite", () => {
     expect(aboutHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
     expect(aboutHtml).toContain('<link rel="stylesheet" href="/site.css" />');
     expect(calendarHtml).toContain("Calendar");
-    expect(calendarHtml).toContain('<script src="/calendar-page.js"></script>');
     expect(calendarHtml).toContain('href="/calendar/" aria-current="page"');
-    expect(calendarHtml).toContain('data-events-path="/calendar/events.json"');
+    expect(calendarHtml).toContain("Wednesday, March 18");
+    expect(calendarHtml).toContain("Calendar event");
+    expect(calendarHtml).not.toContain("calendar-grid");
     expect(JSON.parse(calendarEventsJson)).toEqual(calendarPayload);
     expect(JSON.parse(newsDatesJson)).toEqual([]);
     // news/index.html is a redirect to the latest newspaper date page
@@ -312,14 +334,11 @@ describe("renderSite", () => {
     expect(siteCss).toContain(".spaces-controls");
     expect(siteCss).toContain(".authors-controls");
     expect(siteCss).toContain(".calendar-shell");
-    expect(siteCss).toContain(".calendar-panel,\n.calendar-day-panel");
-    expect(siteCss).toContain("border-radius: 0;");
-    expect(siteCss).toContain("box-shadow: none;");
-    expect(siteCss).toContain(".calendar-day.is-selected");
-    expect(siteCss).toContain("border-color: #111;");
+    expect(siteCss).toContain(".calendar-columns");
+    expect(siteCss).toContain(".calendar-date-band");
+    expect(siteCss).toContain(".calendar-event + .calendar-event");
     expect(spacesIndexJs).toContain("hackerspace-news-feed.query");
     expect(authorsIndexJs).toContain("hackerspace-news-feed.authors.query");
-    expect(calendarPageJs).toContain("calendarPageRuntime");
 
     const [sitemapXml, robotsTxt] = await Promise.all([
       readFile(resolve(distDir, "sitemap.xml"), "utf8"),
@@ -400,7 +419,7 @@ describe("renderSite", () => {
 
     const actualDistFiles = await listRelativeFiles(distDir);
     expect(actualDistFiles.sort()).toEqual(
-      [...Object.keys(result.pages), "favicon.png", "site.css", "spaces-index.js", "authors-index.js", "static/newspaper.css", "newspaper-nav.js", "calendar-page.js"].sort(),
+      [...Object.keys(result.pages), "favicon.png", "site.css", "spaces-index.js", "authors-index.js", "static/newspaper.css", "newspaper-nav.js"].sort(),
     );
   });
 
@@ -451,6 +470,17 @@ describe("renderSite", () => {
           },
         ],
         failures: [],
+      },
+      calendarPayload: {
+        generatedAt: "2026-03-19T20:00:00.000Z",
+        items: [],
+        events: [],
+        summary: {
+          sources: 0,
+          parsedSources: 0,
+          parsedEvents: 0,
+          failedSources: 0,
+        },
       },
       logger,
       writePages: false,
@@ -516,6 +546,17 @@ describe("renderSite", () => {
           },
         ],
         failures: [],
+      },
+      calendarPayload: {
+        generatedAt: "2026-03-19T20:00:00.000Z",
+        items: [],
+        events: [],
+        summary: {
+          sources: 0,
+          parsedSources: 0,
+          parsedEvents: 0,
+          failedSources: 0,
+        },
       },
     });
 
