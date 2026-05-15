@@ -117,7 +117,6 @@ function toVisibleDayEvent(event, timeZone, visibleDate) {
     location: event.location || null,
     description: event.description || null,
     url: event.url || null,
-    categories: event.categories || [],
     organizer: event.organizer || null,
     sourceFile: event.sourceFile || null,
   };

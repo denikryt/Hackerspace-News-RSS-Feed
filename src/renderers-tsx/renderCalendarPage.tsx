@@ -78,10 +78,6 @@ function renderDayEvents(events: RecordLike[]) {
       event.organizer ? `<span class="calendar-event-organizer">${escapeHtml(event.organizer as string)}</span>` : "",
     ].filter(Boolean).join("");
 
-    const categories = ((event.categories as string[]) || []).length
-      ? `<p class="calendar-event-categories">${(event.categories as string[]).map((category) => `<span class="calendar-tag">${escapeHtml(category)}</span>`).join("")}</p>`
-      : "";
-
     const description = event.description
       ? `<p class="calendar-event-description">${escapeHtml(event.description as string).replaceAll("\n", "<br />")}</p>`
       : "";
@@ -93,7 +89,6 @@ function renderDayEvents(events: RecordLike[]) {
     return `<article class="calendar-event">
       ${heading}
       ${metaBits ? `<div class="calendar-event-meta">${metaBits}</div>` : ""}
-      ${categories}
       ${description}
     </article>`;
   }).join("");

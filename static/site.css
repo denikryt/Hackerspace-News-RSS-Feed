@@ -456,26 +456,6 @@ code { background: #f0f0eb; padding: 2px 4px; border-radius: 4px; }
   overflow-wrap: anywhere;
 }
 
-.calendar-event-categories {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  margin: 0.45rem 0;
-}
-
-.calendar-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.15rem 0.45rem;
-  border: 1px solid #111;
-  border-radius: 0;
-  background: transparent;
-  color: #111;
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
 .calendar-event-description {
   display: -webkit-box;
   -webkit-line-clamp: 6;

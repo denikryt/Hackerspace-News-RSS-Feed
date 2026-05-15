@@ -24,7 +24,6 @@ const MODEL = {
           timeLabel: "7:30 PM - 10:00 PM",
           location: "Noisebridge",
           url: "https://example.com/dc415",
-          categories: ["security"],
           organizer: "Noisebridge",
         },
       ],
@@ -56,7 +55,7 @@ describe("renderCalendarPage", () => {
     expect(html).toContain("DC415");
     expect(html).toContain("7:30 PM - 10:00 PM");
     expect(html).toContain("Noisebridge");
-    expect(html).toContain("security");
+    expect(html).not.toContain("calendar-tag");
   });
 
   it("renders without the calendar client runtime", () => {
@@ -77,7 +76,7 @@ describe("renderCalendarPage", () => {
       nextMonth: null,
       nextMonthLabel: null,
       nextMonthHref: null,
-      dateSections: [{ date: "2026-05-14", dateLabel: "Thursday, May 14", events: [{ summary: "Open Night", dateLabel: "Thursday, May 14", timeLabel: null, location: null, url: null, categories: [], organizer: null }] }],
+      dateSections: [{ date: "2026-05-14", dateLabel: "Thursday, May 14", events: [{ summary: "Open Night", dateLabel: "Thursday, May 14", timeLabel: null, location: null, url: null, organizer: null }] }],
     });
 
     expect(html).toContain("Open Night");
