@@ -1,6 +1,11 @@
 {
   "items": [
     {
+      "url": "https://calendar.google.com/calendar/ical/p2m2av9dhrh4n1ub7jlsc68s7o%40group.calendar.google.com/public/basic.ics",
+      "country": "USA",
+      "hs_name": "NYC Resistor"
+    },
+    {
       "url": "https://calendar.lab.glashack.space/ical",
       "country": "Ireland",
       "hs_name": "Glasgow Hackerspace"
