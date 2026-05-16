@@ -54,6 +54,226 @@
       "url": "https://hsp.sh/calendar.ics",
       "country": "Poland",
       "hs_name": "Hackerspace Pomorze"
+    },
+    {
+      "url": "https://cloud.bckspc.de/remote.php/dav/public-calendars/sTMap39wFwkJERjt/?export",
+      "country": "Germany",
+      "hs_name": "Backspace"
+    },
+    {
+      "url": "https://bitlair.nl/events.ics?subset=promote",
+      "country": "Netherlands",
+      "hs_name": "Bitlair"
+    },
+    {
+      "url": "https://c3d2.de/hq.ics",
+      "country": "Germany",
+      "hs_name": "C3D2"
+    },
+    {
+      "url": "https://api.chaos-darmstadt.de/public.ics",
+      "country": "Germany",
+      "hs_name": "CCC Darmstadt"
+    },
+    {
+      "url": "https://status.aachen.ccc.de/api/v0/announcement/current.ics?public",
+      "country": "Germany",
+      "hs_name": "CCCAC"
+    },
+    {
+      "url": "https://ccc-basel.ch/feeds/termine.ics",
+      "country": "Switzerland",
+      "hs_name": "Chaos Computer Club Basel"
+    },
+    {
+      "url": "http://chaoschemnitz.de/chch.ical",
+      "country": "Germany",
+      "hs_name": "Chaos Computer Club Chemnitz"
+    },
+    {
+      "url": "https://cloud.c3l.lu/remote.php/dav/public-calendars/eK7pyq3yFBKDjPzJ/?export",
+      "country": "Luxembourg",
+      "hs_name": "ChaosStuff"
+    },
+    {
+      "url": "https://chaosdorf.de/~derf/cccd.ics",
+      "country": "Germany",
+      "hs_name": "Chaosdorf"
+    },
+    {
+      "url": "https://cloud.chaospott.de/remote.php/dav/public-calendars/5HM7B0ZOLEYC3QD0?export",
+      "country": "Germany",
+      "hs_name": "Chaospott"
+    },
+    {
+      "url": "https://cloud.ctbk.de/remote.php/dav/public-calendars/nZTMSHpd29ZRpAr6/?export",
+      "country": "Germany",
+      "hs_name": "Chaostreff Backnang"
+    },
+    {
+      "url": "https://nextcloud.jenix.ch/remote.php/dav/public-calendars/xFMZfKSBNfp3mRNR/",
+      "country": "Switzerland",
+      "hs_name": "Chaostreff Bern"
+    },
+    {
+      "url": "https://www.coredump.ch/events/?ical=1",
+      "country": "Switzerland",
+      "hs_name": "Coredump"
+    },
+    {
+      "url": "https://calendar.google.com/calendar/ical/c_05d84e50144f94ecc8f03618c316421e422457d37df1d416b788dedff060df85%40group.calendar.google.com/public/basic.ics",
+      "country": "United States of America",
+      "hs_name": "DMA.space"
+    },
+    {
+      "url": "https://das-labor.org/termine.ics",
+      "country": "Germany",
+      "hs_name": "Das Labor"
+    },
+    {
+      "url": "http://opentechcalendar.co.uk/api1/group/12/events.ical",
+      "country": "United Kingdom",
+      "hs_name": "Edinburgh Hacklab"
+    },
+    {
+      "url": "https://entropia.de/Vorlage:Termine",
+      "country": "Germany",
+      "hs_name": "Entropia"
+    },
+    {
+      "url": "https://www.google.com/calendar/ical/sruulkb8vh28dim9bcth8emdm4%40group.calendar.google.com/public/basic.ics",
+      "country": "Switzerland",
+      "hs_name": "FIXME"
+    },
+    {
+      "url": "https://wolke.hacknology.de/remote.php/dav/public-calendars/xBEeiockBriccHxA?export",
+      "country": "Germany",
+      "hs_name": "HacKNology"
+    },
+    {
+      "url": "https://calendar.google.com/calendar/ical/9cdc565d78854a899cbbc7cb6dfcb8fa411001437ae0f66bce0a82b5e7679d5e@group.calendar.google.com/public/basic.ics",
+      "country": "Armenia",
+      "hs_name": "Hacker Embassy"
+    },
+    {
+      "url": "https://cloud.sfz-aalen.space/remote.php/dav/public-calendars/fS6T564B79Er8P9r/?export",
+      "country": "Germany",
+      "hs_name": "Hackwerk Aalen"
+    },
+    {
+      "url": "https://caldav.ha.si/hasi/events/",
+      "country": "Germany",
+      "hs_name": "Hasi"
+    },
+    {
+      "url": "https://meta.it-syndikat.org/calendar.ics",
+      "country": "Austria",
+      "hs_name": "IT-Syndikat"
+    },
+    {
+      "url": "https://cloud.kraut.space/remote.php/dav/public-calendars/2EkPGt3PF6WwYsA3?export",
+      "country": "Germany",
+      "hs_name": "Krautspace"
+    },
+    {
+      "url": "http://api.leighhack.org/events.ics",
+      "country": "United Kingdom",
+      "hs_name": "Leigh Hackspace"
+    },
+    {
+      "url": "https://www.google.com/calendar/ical/gc1bopmh3c5n0ogvlo6ceujlkc%40group.calendar.google.com/public/basic.ics",
+      "country": "United Kingdom",
+      "hs_name": "London Hackspace"
+    },
+    {
+      "url": "https://calendar.google.com/calendar/ical/welkom%40maakplek.nl/public/basic.ics",
+      "country": "Netherlands",
+      "hs_name": "Maakplek"
+    },
+    {
+      "url": "https://www.kreativitaet-trifft-technik.de/calendar/ical/markusframer@gmail.com/public/basic.ics",
+      "country": "Germany",
+      "hs_name": "Mainframe"
+    },
+    {
+      "url": "https://www.netz39.de/feed/eo-events/events.ics",
+      "country": "Germany",
+      "hs_name": "Netz39"
+    },
+    {
+      "url": "https://chaotikum.org/events.ics",
+      "country": "Germany",
+      "hs_name": "Nobreakspace"
+    },
+    {
+      "url": "https://www.google.com/calendar/ical/info%40nottinghack.org.uk/public/basic.ics",
+      "country": "United Kingdom",
+      "hs_name": "Nottinghack"
+    },
+    {
+      "url": "https://cloud.port39.de/remote.php/dav/public-calendars/jYnZarf3cTGBXPtA?export",
+      "country": "Germany",
+      "hs_name": "Port39 - Hackerspace Stralsund"
+    },
+    {
+      "url": "https://www.pvv.ntnu.no/hendelser/",
+      "country": "Norway",
+      "hs_name": "Programvareverkstedet"
+    },
+    {
+      "url": "https://schaffenburg.org/calendar/complete.ics",
+      "country": "Germany",
+      "hs_name": "Schaffenburg"
+    },
+    {
+      "url": "https://section77.de/section77.ics",
+      "country": "Germany",
+      "hs_name": "Section77"
+    },
+    {
+      "url": "https://share.space.bi/index.php/apps/calendar/embed/jzHzgJzrkj8qkizS/timeGridDay/2024-03-16/view/sidebar/L3JlbW90ZS5waHAvZGF2L3B1YmxpYy1jYWxlbmRhcnMvanpIemdKenJrajhxa2l6Uy8zY2ZhNDU4MS0wYTJjLTQwOTEtYjU3Yi01NjExYzdlYjk0MjAuaWNz/1710604800",
+      "country": "Germany",
+      "hs_name": "Space.bi"
+    },
+    {
+      "url": "https://stratum0.org/kalender/events.ics",
+      "country": "Germany",
+      "hs_name": "Stratum 0"
+    },
+    {
+      "url": "http://www.google.com/calendar/ical/ij2r5jaqg6l2bdt5uv6ltngfq0%40group.calendar.google.com/public/basic.ics",
+      "country": "Netherlands",
+      "hs_name": "TkkrLab"
+    },
+    {
+      "url": "https://owncloud.hackerspace.pl/remote.php/dav/public-calendars/g8toktZrA9fyAHNi/?export",
+      "country": "Poland",
+      "hs_name": "Warsaw Hackerspace"
+    },
+    {
+      "url": "https://www.werkraum.space/ics/werkraum.ics",
+      "country": "Germany",
+      "hs_name": "WerkRaum"
+    },
+    {
+      "url": "http://calendars.service.z-labor.space/public.ics",
+      "country": "Germany",
+      "hs_name": "Z-Labor"
+    },
+    {
+      "url": "https://initlab.org/?ical=1",
+      "country": "Bulgaria",
+      "hs_name": "init Lab"
+    },
+    {
+      "url": "https://temporaerhaus.de/calendar/public.ics",
+      "country": "Germany",
+      "hs_name": "temporärhaus"
+    },
+    {
+      "url": "https://devhack.net/calendar.ics",
+      "country": "United States of America",
+      "hs_name": "∕dev/hack"
     }
   ]
 }

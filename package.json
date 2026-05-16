@@ -8,6 +8,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "analyze": "node src/cli/analyze.js",
+    "analyze:calendar-sources": "node src/cli/analyzeCalendarSources.js",
     "analyze:item-content-tags": "node src/cli/analyzeMissingContent.js",
     "analyze:wiki-discovery": "node src/cli/analyzeWikiDiscoveryComparison.js",
     "analyze:wiki-discovery-unmatched": "node src/cli/analyzeWikiDiscoveryUnmatchedResponses.js",
