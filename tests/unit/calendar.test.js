@@ -1,10 +1,15 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { cleanupTrackedTempDirs, createTempDirTracker, createTrackedTempDir } from "../_shared/tempDirs.js";
 import { formatDateKeyInTimeZone, shiftMonthKey } from "../../src/calendar/dateFormatting.js";
-import { buildCalendarIndex, buildCalendarPageModel, readCalendarEvents } from "../../src/calendar/index.js";
+import {
+  buildCalendarIndex,
+  buildCalendarPageModel,
+  readCalendarEvents,
+  refreshCalendarSnapshot,
+} from "../../src/calendar/index.js";
 
 const tempDirs = createTempDirTracker();
 
@@ -311,5 +316,62 @@ END:VCALENDAR`, "utf8");
     const events = await readCalendarEvents({ directoryPath: "/tmp/does-not-exist-calendar-dir" });
 
     expect(events).toEqual([]);
+  });
+
+  it("retries transient ICS fetch failures and then parses the source", async () => {
+    const fetchImpl = vi.fn();
+    fetchImpl
+      .mockRejectedValueOnce(Object.assign(new Error("temporary dns failure"), { code: "EAI_AGAIN" }))
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        url: "https://calendar.example/events.ics",
+        headers: {
+          get(name) {
+            return name.toLowerCase() === "content-type" ? "text/calendar; charset=utf-8" : null;
+          },
+        },
+        async text() {
+          return `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+UID:event-1
+SUMMARY:Open Night
+DTSTART:20260514T190000Z
+DTEND:20260514T210000Z
+END:VEVENT
+END:VCALENDAR`;
+        },
+      });
+
+    const logger = vi.fn();
+    const result = await refreshCalendarSnapshot({
+      sourceItems: [
+        {
+          url: "https://calendar.example/events.ics",
+          country: "Germany",
+          hs_name: "Test Space",
+        },
+      ],
+      fetchImpl,
+      logger,
+      waitImpl: vi.fn().mockResolvedValue(undefined),
+      retryDelaysMs: [1],
+    });
+
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(result.summary).toMatchObject({
+      parsedSources: 1,
+      failedSources: 0,
+      parsedEvents: 1,
+    });
+    expect(result.events[0]).toMatchObject({
+      summary: "Open Night",
+      country: "Germany",
+      hackerspaceName: "Test Space",
+    });
+    expect(logger).toHaveBeenCalledWith(
+      "[refresh] retrying calendar source fetch: https://calendar.example/events.ics after EAI_AGAIN (attempt 2/2, wait 1ms)",
+    );
   });
 });

@@ -274,6 +274,21 @@
       "url": "https://devhack.net/calendar.ics",
       "country": "United States of America",
       "hs_name": "∕dev/hack"
+    },
+    {
+      "url": "https://status.realraum.at/ics/grical_realraum_only.ical",
+      "country": "Austria",
+      "hs_name": "Realraum"
+    },
+    {
+      "url": "https://www.un-hack-bar.de/events.ics",
+      "country": "Germany",
+      "hs_name": "UN-Hack-Bar"
+    },
+    {
+      "url": "https://kalender.nerdberg.de/events.ics",
+      "country": "Germany",
+      "hs_name": "Nerdberg Hackspace"
     }
   ]
 }

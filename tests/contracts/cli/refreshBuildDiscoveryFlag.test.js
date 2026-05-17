@@ -49,6 +49,7 @@ describe("refresh/build discovery-valid flag", () => {
       sourceRows: "/tmp/data/source_urls.json",
       validations: "/tmp/data/feed_validation.json",
       normalizedFeeds: "/tmp/data/feeds_normalized.json",
+      calendarSources: "/tmp/content/ics_events.json",
       discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
     };
 
@@ -82,6 +83,7 @@ describe("refresh/build discovery-valid flag", () => {
       sourceRows: "/tmp/data/source_urls.json",
       validations: "/tmp/data/feed_validation.json",
       normalizedFeeds: "/tmp/data/feeds_normalized.json",
+      calendarSources: "/tmp/content/ics_events.json",
       calendarEvents: "/tmp/data/calendar/events.json",
       discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
     };
@@ -102,6 +104,7 @@ describe("refresh/build discovery-valid flag", () => {
       refreshCalendarOnly: true,
     });
     expect(logger).toHaveBeenCalledWith("Refresh completed. Reporting snapshot artifacts.");
+    expect(logger).toHaveBeenCalledWith(`Wrote ${paths.calendarSources}`);
     expect(logger).toHaveBeenCalledWith(`Wrote ${paths.calendarEvents}`);
     expect(logger).not.toHaveBeenCalledWith(`Wrote ${paths.sourceRows}`);
     expect(logger).not.toHaveBeenCalledWith(`Wrote ${paths.validations}`);
@@ -123,6 +126,7 @@ describe("refresh/build discovery-valid flag", () => {
         sourceRows: "/tmp/data/source_urls.json",
         validations: "/tmp/data/feed_validation.json",
         normalizedFeeds: "/tmp/data/feeds_normalized.json",
+        calendarSources: "/tmp/content/ics_events.json",
         calendarEvents: "/tmp/data/calendar/events.json",
         discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
       },

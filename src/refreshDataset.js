@@ -1,5 +1,6 @@
 import { SOURCE_PAGE_URL, PATHS } from "./config.js";
 import { buildCalendarIndex, refreshCalendarSnapshot } from "./calendar/index.js";
+import { refreshCalendarSourcesCatalog } from "./calendarSourceCatalog.js";
 import { enrichFeed } from "./feedEnricher.js";
 import { normalizeFeed } from "./feedNormalizer.js";
 import { parseFeedBody } from "./feedParser.js";
@@ -17,8 +18,20 @@ export async function refreshDataset({
   additionalSourceRows = [],
   refreshCalendarOnly = false,
 } = {}) {
+  const html = await fetchPageHtml({ sourcePageUrl, fetchImpl, logger });
+  const calendarSourcesResult = await refreshCalendarSourcesCatalog({
+    sourcePageUrl,
+    sourcePageHtml: html,
+    calendarSourcesPath: paths.calendarSources,
+    fetchImpl,
+    writeSnapshots,
+    logger,
+    allowMissingSection: true,
+  });
+  const calendarSourcesPayload = calendarSourcesResult.payload;
   const calendarPayload = await refreshCalendarSnapshot({
     calendarSourcesPath: paths.calendarSources,
+    sourceItems: calendarSourcesPayload.items,
     rawDirectoryPath: paths.calendarRawDirectory,
     fetchImpl,
     writeSnapshots,
@@ -40,12 +53,12 @@ export async function refreshDataset({
     logInfo(logger, `[refresh] calendar index prepared: months=${calendarIndexPayload.availableMonthsWithEvents.length}`);
     logInfo(logger, "[refresh] calendar-only refresh complete");
     return {
+      calendarSourcesPayload,
       calendarPayload,
       calendarIndexPayload,
     };
   }
 
-  const html = await fetchPageHtml({ sourcePageUrl, fetchImpl, logger });
   const sourceRows = mergeSourceRows({
     wikiSourceRows: extractSourceRows({ html, sourcePageUrl }),
     additionalSourceRows,
@@ -142,6 +155,7 @@ export async function refreshDataset({
         failedFeeds: failures.length,
       },
     },
+    calendarSourcesPayload,
     calendarPayload,
     calendarIndexPayload,
   };

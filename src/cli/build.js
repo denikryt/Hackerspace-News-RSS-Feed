@@ -33,6 +33,9 @@ export async function runBuildCli({
   logger(`Wrote ${paths.sourceRows}`);
   logger(`Wrote ${paths.validations}`);
   logger(`Wrote ${paths.normalizedFeeds}`);
+  if (paths.calendarSources) {
+    logger(`Wrote ${paths.calendarSources}`);
+  }
   if (paths.calendarEvents) {
     logger(`Wrote ${paths.calendarEvents}`);
   }

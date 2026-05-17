@@ -11,6 +11,26 @@ import { refreshDataset } from "../../../src/refreshDataset.js";
 
 const sourceHtml = readFixtureText("source-page", "user-jomat-oldid-94788-snippet.html");
 const sourcePageUrl = "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds";
+const sourceHtmlWithSpaceApi = `${sourceHtml}
+<h3><span id="Spaces_with_SpaceAPI">Spaces with SpaceAPI</span></h3>
+<table>
+  <tr><th>Hackerspace</th><th>SpaceAPI</th><th>Country</th></tr>
+  <tr data-row-number="1">
+    <td><a href="/Test_Hackerspace">Test Hackerspace</a></td>
+    <td><a href="https://spaceapi.example/status.json">https://spaceapi.example/status.json</a></td>
+    <td>Switzerland</td>
+  </tr>
+</table>`;
+const spaceApiOnlyHtml = `
+<h3><span id="Spaces_with_SpaceAPI">Spaces with SpaceAPI</span></h3>
+<table>
+  <tr><th>Hackerspace</th><th>SpaceAPI</th><th>Country</th></tr>
+  <tr data-row-number="1">
+    <td><a href="/Calendar_Only_Space">Calendar Only Space</a></td>
+    <td><a href="https://spaceapi.example/calendar-only.json">https://spaceapi.example/calendar-only.json</a></td>
+    <td>Germany</td>
+  </tr>
+</table>`;
 
 const tempDirs = createTempDirTracker();
 
@@ -34,10 +54,7 @@ describe("refreshDataset", () => {
 
     await mkdir(resolve(outputDir, "content"), { recursive: true });
     await writeFile(paths.calendarSources, JSON.stringify({
-      items: [
-        { url: "https://calendar.example/direct.ics", country: "Switzerland", hs_name: "Test Hackerspace" },
-        { url: "https://calendar.example/not-ics" },
-      ],
+      items: [],
     }, null, 2), "utf8");
 
     const fetchImpl = vi.fn(async (url) => {
@@ -45,7 +62,37 @@ describe("refreshDataset", () => {
         return response({
           url,
           contentType: "text/html; charset=utf-8",
-          body: sourceHtml,
+          body: sourceHtmlWithSpaceApi,
+        });
+      }
+
+      if (url === "https://spaceapi.example/status.json") {
+        return response({
+          url,
+          contentType: "application/json; charset=utf-8",
+          body: JSON.stringify({
+            feeds: {
+              calendar: {
+                url: "https://calendar.example/direct.ics",
+              },
+            },
+          }),
+        });
+      }
+
+      if (url === "https://calendar.example/direct.ics") {
+        return response({
+          url,
+          contentType: "text/calendar; charset=utf-8",
+          body: `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+UID:direct-1
+SUMMARY:Direct ICS Event
+DTSTART:20260523T070000Z
+DTEND:20260523T090000Z
+END:VEVENT
+END:VCALENDAR`,
         });
       }
 
@@ -70,30 +117,6 @@ describe("refreshDataset", () => {
         });
       }
 
-      if (url === "https://calendar.example/direct.ics") {
-        return response({
-          url,
-          contentType: "text/calendar; charset=utf-8",
-          body: `BEGIN:VCALENDAR
-VERSION:2.0
-BEGIN:VEVENT
-UID:direct-1
-SUMMARY:Direct ICS Event
-DTSTART:20260523T070000Z
-DTEND:20260523T090000Z
-END:VEVENT
-END:VCALENDAR`,
-        });
-      }
-
-      if (url === "https://calendar.example/not-ics") {
-        return response({
-          url,
-          contentType: "text/html; charset=utf-8",
-          body: "<html><body>plain page</body></html>",
-        });
-      }
-
       return response({
         url,
         contentType: "text/html; charset=utf-8",
@@ -107,15 +130,17 @@ END:VCALENDAR`,
       sourceRowsPayload: expect.any(Object),
       validationsPayload: expect.any(Array),
       normalizedPayload: expect.any(Object),
+      calendarSourcesPayload: expect.any(Object),
       calendarPayload: expect.any(Object),
       calendarIndexPayload: expect.any(Object),
     });
     expect(result.site).toBeUndefined();
 
-    const [sourceRowsJson, validationsJson, normalizedJson, calendarJson, calendarIndexJson] = await Promise.all([
+    const [sourceRowsJson, validationsJson, normalizedJson, calendarSourcesJson, calendarJson, calendarIndexJson] = await Promise.all([
       readFile(paths.sourceRows, "utf8"),
       readFile(paths.validations, "utf8"),
       readFile(paths.normalizedFeeds, "utf8"),
+      readFile(paths.calendarSources, "utf8"),
       readFile(paths.calendarEvents, "utf8"),
       readFile(paths.calendarIndex, "utf8"),
     ]);
@@ -135,12 +160,21 @@ END:VCALENDAR`,
       displayDate: "2025-01-01T10:00:00.000Z",
       summaryText: "Hello",
     });
+    expect(JSON.parse(calendarSourcesJson)).toEqual({
+      items: [
+        {
+          url: "https://calendar.example/direct.ics",
+          country: "Switzerland",
+          hs_name: "Test Hackerspace",
+        },
+      ],
+    });
     expect(JSON.parse(calendarJson)).toMatchObject({
       summary: {
-        sources: 2,
+        sources: 1,
         parsedSources: 1,
         parsedEvents: 1,
-        failedSources: 1,
+        failedSources: 0,
       },
       items: [
         expect.objectContaining({
@@ -150,13 +184,6 @@ END:VCALENDAR`,
           status: "parsed_ok",
           snapshotFile: "source-001.ics",
           eventCount: 1,
-        }),
-        expect.objectContaining({
-          url: "https://calendar.example/not-ics",
-          status: "fetch_failed",
-          snapshotFile: null,
-          errorCode: "non_calendar_response",
-          eventCount: 0,
         }),
       ],
       events: [expect.objectContaining({
@@ -264,12 +291,32 @@ END:VCALENDAR`,
 
     await mkdir(resolve(outputDir, "content"), { recursive: true });
     await writeFile(paths.calendarSources, JSON.stringify({
-      items: [
-        { url: "https://calendar.example/direct.ics" },
-      ],
+      items: [],
     }, null, 2), "utf8");
 
     const fetchImpl = vi.fn(async (url) => {
+      if (url === sourcePageUrl) {
+        return response({
+          url,
+          contentType: "text/html; charset=utf-8",
+          body: spaceApiOnlyHtml,
+        });
+      }
+
+      if (url === "https://spaceapi.example/calendar-only.json") {
+        return response({
+          url,
+          contentType: "application/json; charset=utf-8",
+          body: JSON.stringify({
+            feeds: {
+              calendar: {
+                url: "https://calendar.example/direct.ics",
+              },
+            },
+          }),
+        });
+      }
+
       if (url === "https://calendar.example/direct.ics") {
         return response({
           url,
@@ -298,6 +345,15 @@ END:VCALENDAR`,
     });
 
     expect(result).toEqual({
+      calendarSourcesPayload: expect.objectContaining({
+        items: [
+          {
+            url: "https://calendar.example/direct.ics",
+            country: "Germany",
+            hs_name: "Calendar Only Space",
+          },
+        ],
+      }),
       calendarPayload: expect.objectContaining({
         summary: {
           sources: 1,
@@ -310,10 +366,10 @@ END:VCALENDAR`,
         availableMonthsWithEvents: ["2026-05"],
       }),
     });
-    expect(fetchImpl).toHaveBeenCalledTimes(1);
-    expect(fetchImpl).toHaveBeenCalledWith("https://calendar.example/direct.ics");
+    expect(fetchImpl).toHaveBeenCalledTimes(3);
     await expect(readFile(paths.calendarEvents, "utf8")).resolves.toContain("Calendar Only Event");
     await expect(readFile(paths.calendarIndex, "utf8")).resolves.toContain("\"availableMonthsWithEvents\"");
+    await expect(readFile(paths.calendarSources, "utf8")).resolves.toContain("Calendar Only Space");
     await expect(readFile(paths.sourceRows, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
     await expect(readFile(paths.validations, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
     await expect(readFile(paths.normalizedFeeds, "utf8")).rejects.toMatchObject({ code: "ENOENT" });

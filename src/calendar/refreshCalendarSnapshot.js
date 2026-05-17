@@ -1,5 +1,7 @@
 import { mkdir, rm } from "node:fs/promises";
 
+import { getAttemptTimeoutMs } from "../networkAttemptTimeout.js";
+import { runWithNetworkRetry } from "../networkRetry.js";
 import { getCountryFlag } from "../countryFlags.js";
 import { readJson, writeText } from "../storage.js";
 import { parseCalendarIcsText, sortCalendarEvents } from "./readCalendarEvents.js";
@@ -10,26 +12,35 @@ import { parseCalendarIcsText, sortCalendarEvents } from "./readCalendarEvents.j
 // offline.
 export async function refreshCalendarSnapshot({
   calendarSourcesPath,
+  sourceItems,
   rawDirectoryPath,
   fetchImpl = fetch,
   readJsonImpl = readJson,
   writeSnapshots = false,
   logger = null,
+  waitImpl,
+  retryDelaysMs,
+  attemptTimeoutsMs,
 } = {}) {
   const generatedAt = new Date().toISOString();
-  const sourceItems = await loadCalendarSourceItems({ calendarSourcesPath, readJsonImpl });
+  const calendarSourceItems = Array.isArray(sourceItems)
+    ? normalizeCalendarSourceItems(sourceItems)
+    : await loadCalendarSourceItems({ calendarSourcesPath, readJsonImpl });
 
-  if (sourceItems.length === 0) {
+  if (calendarSourceItems.length === 0) {
     return buildCalendarPayload({ generatedAt, items: [], events: [] });
   }
 
-  const sourceResults = await mapWithConcurrency(sourceItems, 4, async (sourceItem, sourceIndex) => {
+  const sourceResults = await mapWithConcurrency(calendarSourceItems, 4, async (sourceItem, sourceIndex) => {
     const snapshotFile = `source-${String(sourceIndex + 1).padStart(3, "0")}.ics`;
     return fetchCalendarSource({
       sourceItem,
       snapshotFile,
       fetchImpl,
       logger,
+      waitImpl,
+      retryDelaysMs,
+      attemptTimeoutsMs,
     });
   });
 
@@ -64,7 +75,11 @@ async function loadCalendarSourceItems({ calendarSourcesPath, readJsonImpl }) {
     throw error;
   }
 
-  return (Array.isArray(payload?.items) ? payload.items : [])
+  return normalizeCalendarSourceItems(Array.isArray(payload?.items) ? payload.items : []);
+}
+
+function normalizeCalendarSourceItems(items) {
+  return (Array.isArray(items) ? items : [])
     .filter((item) => item && typeof item === "object" && typeof item.url === "string" && item.url.trim() !== "")
     .map((item) => ({
       ...item,
@@ -82,11 +97,33 @@ function extractHackerspaceName(item) {
   return typeof rawValue === "string" && rawValue.trim() !== "" ? rawValue.trim() : null;
 }
 
-async function fetchCalendarSource({ sourceItem, snapshotFile, fetchImpl, logger }) {
+async function fetchCalendarSource({
+  sourceItem,
+  snapshotFile,
+  fetchImpl,
+  logger,
+  waitImpl,
+  retryDelaysMs,
+  attemptTimeoutsMs,
+}) {
   logInfo(logger, `[refresh] probing calendar source: ${sourceItem.url}`);
 
   try {
-    const primaryResponse = await fetchImpl(sourceItem.url);
+    const primaryResponse = await runWithNetworkRetry({
+      run: ({ attemptNumber }) => fetchCalendarSourceWithTimeout({
+        sourceUrl: sourceItem.url,
+        fetchImpl,
+        timeoutMs: getAttemptTimeoutMs({ attemptNumber, timeoutsMs: attemptTimeoutsMs }),
+      }),
+      waitImpl,
+      retryDelaysMs,
+      onRetry: ({ attemptNumber, maxAttempts, delayMs, errorCode }) => {
+        logInfo(
+          logger,
+          `[refresh] retrying calendar source fetch: ${sourceItem.url} after ${errorCode} (attempt ${attemptNumber}/${maxAttempts}, wait ${delayMs}ms)`,
+        );
+      },
+    });
     const primaryText = await primaryResponse.text();
     const primaryUrl = primaryResponse.url || sourceItem.url;
 
@@ -141,6 +178,20 @@ async function fetchCalendarSource({ sourceItem, snapshotFile, fetchImpl, logger
       errorMessage: error instanceof Error ? error.message : String(error),
     };
   }
+}
+
+function fetchCalendarSourceWithTimeout({ sourceUrl, fetchImpl, timeoutMs }) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  return fetchImpl(sourceUrl, {
+    redirect: "follow",
+    signal: controller.signal,
+    headers: {
+      "user-agent": "HackerspaceNewsFeed/0.1 (+local)",
+      accept: "text/calendar, application/ics, */*",
+    },
+  }).finally(() => clearTimeout(timeoutId));
 }
 
 function isCalendarResponse({ url, contentType, body }) {
