@@ -358,6 +358,8 @@ describe("renderSite", () => {
     expect(siteCss).toContain(".calendar-controls");
     expect(siteCss).toContain(".calendar-columns");
     expect(siteCss).toContain(".calendar-date-band");
+    expect(siteCss).toContain("@media (min-width: 760px) and (max-width: 1099px)");
+    expect(siteCss).toContain("repeat(3, minmax(0, 1fr))");
     expect(siteCss).toContain("@media (max-width: 560px)");
     expect(siteCss).toContain(".calendar-event + .calendar-event");
     expect(calendarTimeJs).toContain("fetch(eventsPath)");

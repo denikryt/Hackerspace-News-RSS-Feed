@@ -1,0 +1,81 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - heading "Calendar" [level=1] [ref=e4]
+    - paragraph [ref=e5]:
+      - link "About" [ref=e6] [cursor=pointer]:
+        - /url: /about/
+      - text: • Upcoming events from local ICS files.
+  - navigation [ref=e8]:
+    - link "Hackerspaces" [ref=e9] [cursor=pointer]:
+      - /url: /
+    - link "News" [ref=e10] [cursor=pointer]:
+      - /url: /news/
+    - link "Events" [ref=e11] [cursor=pointer]:
+      - /url: /calendar/
+    - link "Authors" [ref=e12] [cursor=pointer]:
+      - /url: /authors/
+  - generic [ref=e13]:
+    - generic [ref=e14]:
+      - combobox "Filter events by country" [ref=e16]:
+        - option "All countries"
+        - option "Armenia"
+        - option "Austria"
+        - option "Bulgaria"
+        - option "Germany"
+        - option "Ireland"
+        - option "Luxembourg"
+        - option "Netherlands"
+        - option "Poland"
+        - option "Switzerland" [selected]
+        - option "Ukraine"
+        - option "United Kingdom"
+        - option "United States of America"
+      - combobox "Filter events by hackerspace" [ref=e18]:
+        - option "All hackerspaces"
+        - option "∕dev/hack"
+        - option "Backspace"
+        - option "Bitlair"
+        - option "C3D2"
+        - option "CCC Darmstadt"
+        - option "CCCAC"
+        - option "Chaos Computer Club Basel"
+        - option "Chaos Computer Club Chemnitz"
+        - option "Chaosdorf"
+        - option "Chaospott"
+        - option "ChaosStuff"
+        - option "Chaostreff Backnang"
+        - option "Das Labor"
+        - option "DMA.space"
+        - option "FIXME"
+        - option "Glasgow Hackerspace"
+        - option "Hacker Embassy"
+        - option "Hackerspace Pomorze"
+        - option "Hackerspace Trojmiasto"
+        - option "HacKNology"
+        - option "init Lab"
+        - option "IT-Syndikat"
+        - option "Knyfyrtel Hackerspace Poznań"
+        - option "Krautspace"
+        - option "Leigh Hackspace"
+        - option "London Hackspace"
+        - option "Maakplek"
+        - option "Nerdberg Hackspace"
+        - option "Netz39"
+        - option "Nobreakspace"
+        - option "Noisebridge" [selected]
+        - option "Nottinghack"
+        - option "NU31 Hackerspace"
+        - option "NYC Resistor"
+        - option "Realraum"
+        - option "Schaffenburg"
+        - option "Section77"
+        - option "Stratum 0"
+        - option "temporärhaus"
+        - option "TkkrLab"
+        - option "UN-Hack-Bar"
+        - option "Warsaw Hackerspace"
+        - option "WerkRaum"
+        - option "Z-Labor"
+    - generic "Calendar month navigation" [ref=e19]:
+      - heading "May 2026" [level=2] [ref=e20]
+    - paragraph [ref=e21]: No events match the selected filters.

@@ -66,7 +66,7 @@ describe("renderSpacesIndex", () => {
     expect(html).toContain('href="/news/"');
     expect(html).toContain(">News<");
     expect(html).toContain('href="/calendar/"');
-    expect(html).toContain(">Events<");
+    expect(html).toContain(">Calendar<");
     expect(html).toContain('href="/authors/"');
     expect(html).toContain("Last updated:");
     expect(html).toContain('data-updated-at="2026-03-19T20:00:00.000Z"');

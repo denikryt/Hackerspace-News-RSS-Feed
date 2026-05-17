@@ -349,7 +349,10 @@ code { background: #f0f0eb; padding: 2px 4px; border-radius: 4px; }
 
 .calendar-shell {
   display: grid;
-  gap: 1.5rem;
+  --calendar-controls-top-gap: 0.55rem;
+  --calendar-controls-bottom-gap: 0;
+  --calendar-shell-row-gap: 0.72rem;
+  gap: var(--calendar-shell-row-gap);
   padding: 0 0 2rem;
 }
 
@@ -358,6 +361,8 @@ code { background: #f0f0eb; padding: 2px 4px; border-radius: 4px; }
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 0.9rem 1rem;
   align-items: end;
+  padding-block-start: var(--calendar-controls-top-gap);
+  padding-block-end: var(--calendar-controls-bottom-gap);
 }
 
 .calendar-control {
@@ -432,7 +437,7 @@ code { background: #f0f0eb; padding: 2px 4px; border-radius: 4px; }
 
 .calendar-date-band-weekday,
 .calendar-date-band-date {
-  display: inline;
+  display: block;
 }
 
 .calendar-date-events {
@@ -506,11 +511,13 @@ code { background: #f0f0eb; padding: 2px 4px; border-radius: 4px; }
   }
 }
 
-@media (max-width: 560px) {
-  .calendar-controls {
-    grid-template-columns: 1fr;
+@media (min-width: 760px) and (max-width: 1099px) {
+  .calendar-columns {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
 
+@media (max-width: 560px) {
   .calendar-month-switcher {
     grid-template-columns: 1fr;
     gap: 0.45rem;
@@ -524,11 +531,6 @@ code { background: #f0f0eb; padding: 2px 4px; border-radius: 4px; }
 
   .calendar-date-band {
     font-size: 0.96rem;
-  }
-
-  .calendar-date-band-weekday,
-  .calendar-date-band-date {
-    display: block;
   }
 
   .calendar-event-title {

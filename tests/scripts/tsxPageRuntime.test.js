@@ -21,7 +21,7 @@ describe("tsx-backed page runtime", () => {
             calendar: renderCalendarPageTsx({
               pageTitle: "Calendar",
               pageIntro: "Upcoming events from ICS feeds.",
-              navItems: [{ href: "/calendar/", label: "Events", isCurrent: true }],
+              navItems: [{ href: "/calendar/", label: "Calendar", isCurrent: true }],
               selectedMonth: "2026-05",
               selectedMonthLabel: "May 2026",
               previousMonthLabel: "April 2026",

@@ -51,7 +51,7 @@ describe("page renderer TSX parity", () => {
       navItems: [
         { href: "/", label: "Hackerspaces" },
         { href: "/news/", label: "News" },
-        { href: "/calendar/", label: "Events", isCurrent: true },
+        { href: "/calendar/", label: "Calendar", isCurrent: true },
         { href: "/authors/", label: "Authors" },
       ],
     };

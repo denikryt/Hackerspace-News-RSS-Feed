@@ -17,7 +17,7 @@ export function renderAuthorsIndexPageTsx(model: RecordLike) {
     : [
       { href: homeHref, label: "Hackerspaces" },
       { href: feedHref, label: "News" },
-      { href: "/calendar/", label: "Events" },
+      { href: "/calendar/", label: "Calendar" },
       { href: authorsIndexHref, label: "Authors", isCurrent: true },
     ];
   const body = [
