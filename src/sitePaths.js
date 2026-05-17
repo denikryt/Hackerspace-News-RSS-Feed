@@ -12,6 +12,10 @@ export function getAuthorsIndexHref() {
   return "/authors/";
 }
 
+export function getCalendarHref() {
+  return "/calendar/";
+}
+
 export function getNewsIndexHref() {
   return "/news/";
 }

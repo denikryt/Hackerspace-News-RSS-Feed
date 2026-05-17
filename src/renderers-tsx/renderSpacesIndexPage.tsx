@@ -2,19 +2,15 @@
 
 import { SPACES_INDEX_SCRIPT_HREF } from "../renderAssets.js";
 import { escapeHtml, renderLayout, renderMetric } from "../renderers/layout.js";
-import { getAuthorsIndexHref, getAboutHref, getCuratedHref, getHomeHref, getNewsIndexHref } from "../sitePaths.js";
+import { getAboutHref } from "../sitePaths.js";
+import { buildPrimaryNavItems } from "../siteNav.js";
 import { renderPageHeaderShell, renderSpaceCard, type NavItems, type RecordLike } from "./pageHelpers.js";
 
 const renderLayoutShell = renderLayout as (props: { title: string; body: string; scriptHrefs?: string[] }) => string;
 
 export function renderSpacesIndexPageTsx(model: RecordLike) {
   const lastUpdatedIso = model.generatedAt ? escapeHtml(model.generatedAt) : "";
-  const navItems: NavItems = [
-    { href: getHomeHref(), label: "Hackerspaces", isCurrent: true },
-    { href: getNewsIndexHref(), label: "News" },
-    { href: getCuratedHref(), label: "Curated" },
-    { href: getAuthorsIndexHref(), label: "Authors" },
-  ];
+  const navItems: NavItems = buildPrimaryNavItems("Hackerspaces");
   const body = [
     renderPageHeaderShell({
       title: "Hackerspace News",

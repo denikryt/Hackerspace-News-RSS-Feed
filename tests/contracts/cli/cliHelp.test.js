@@ -32,6 +32,6 @@ describe("CLI help", () => {
     });
 
     expect(refreshImpl).not.toHaveBeenCalled();
-    expect(logger).toHaveBeenCalledWith("Usage: npm run refresh -- [--include-discovery-valid]");
+    expect(logger).toHaveBeenCalledWith("Usage: npm run refresh -- [--include-discovery-valid] [--calendar]");
   });
 });

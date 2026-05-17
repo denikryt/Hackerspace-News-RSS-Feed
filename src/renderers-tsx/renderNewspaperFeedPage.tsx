@@ -1,7 +1,7 @@
 /** @jsxImportSource @kitajs/html */
 
 import { escapeHtml } from "../renderers/layout.js";
-import { getAuthorsIndexHref, getCuratedHref, getHomeHref, getNewsIndexHref } from "../sitePaths.js";
+import { buildPrimaryNavItems } from "../siteNav.js";
 import { renderPageHeaderShell, type NavItems, type RecordLike } from "./pageHelpers.js";
 
 const HTML_ENTITIES: Record<string, string> = {
@@ -119,12 +119,7 @@ function renderDateNav(model: RecordLike): string {
 }
 
 export function renderNewspaperFeedPageTsx(model: RecordLike): string {
-  const navItems = (model.navItems as NavItems | undefined) ?? [
-    { href: getHomeHref(), label: "Hackerspaces", isCurrent: false },
-    { href: getNewsIndexHref(), label: "News", isCurrent: true },
-    { href: getCuratedHref(), label: "Curated", isCurrent: false },
-    { href: getAuthorsIndexHref(), label: "Authors", isCurrent: false },
-  ];
+  const navItems = (model.navItems as NavItems | undefined) ?? buildPrimaryNavItems("News");
 
   const countryTitle = model.selectedCountry ? ` — ${model.selectedCountry as string}` : "";
   const title = `Hackerspace News — ${model.dateLabel as string}${countryTitle}`;

@@ -2,10 +2,12 @@ import { copyFile, mkdir, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { injectCanonicalHref, pagePathToCanonicalUrl } from "./canonical.js";
+import { buildCalendarIndex } from "./calendar/index.js";
 import { DIST_DIR, PATHS, SITE_URL } from "./config.js";
 import { listStaticRenderAssets } from "./renderAssets.js";
 import {
   buildAuthorPageEntries,
+  buildCalendarPageEntries,
   buildNewspaperFeedPageEntries,
   buildRootStaticPageEntries,
   buildSpacePageEntries,
@@ -30,6 +32,8 @@ export async function renderSite({
   validationsPayload,
   normalizedPayload,
   curatedPayload,
+  calendarPayload,
+  calendarIndexPayload,
   now = Date.now(),
   writePages = false,
   logger = null,
@@ -40,15 +44,24 @@ export async function renderSite({
     validationsPayload,
     normalizedPayload,
     curatedPayload,
+    calendarPayload,
+    calendarIndexPayload,
   });
 
   const context = buildRenderContext(data, { now, logger });
   const nowDate = now instanceof Date ? now : new Date(now);
   const today = nowDate.toISOString().slice(0, 10);
 
+  const calendarPageEntries = await buildCalendarPageEntries({
+    calendarPayload: data.calendarPayload,
+    calendarIndexPayload: data.calendarIndexPayload,
+    now: nowDate,
+  }, { logger });
+
   const pageEntries = [
     ...buildRootStaticPageEntries(context),
     ...buildCuratedPageEntries(context),
+    ...calendarPageEntries,
     ...buildNewspaperFeedPageEntries(data.normalizedPayload, { today, now: nowDate }, { logger }),
     ...buildAuthorPageEntries(context, { logger }),
     ...buildSpacePageEntries(context, { logger }),
@@ -70,6 +83,8 @@ export async function renderSite({
     validationsPayload: data.validationsPayload,
     normalizedPayload: data.normalizedPayload,
     curatedPayload: data.curatedPayload,
+    calendarPayload: data.calendarPayload,
+    calendarIndexPayload: data.calendarIndexPayload,
     pages,
   };
 }
@@ -127,8 +142,10 @@ async function loadRenderInputs({
   validationsPayload,
   normalizedPayload,
   curatedPayload,
+  calendarPayload,
+  calendarIndexPayload,
 }) {
-  if (sourceRowsPayload && validationsPayload && normalizedPayload) {
+  if (sourceRowsPayload && validationsPayload && normalizedPayload && calendarPayload) {
     return {
       sourceRowsPayload,
       validationsPayload,
@@ -136,15 +153,29 @@ async function loadRenderInputs({
         mergeCuratedPayload(normalizedPayload, curatedPayload),
       ),
       curatedPayload,
+      calendarPayload,
+      calendarIndexPayload: calendarIndexPayload ?? buildCalendarIndex(calendarPayload.events, {
+        generatedAt: calendarPayload.generatedAt,
+        timeZone: "UTC",
+      }),
     };
   }
 
-  const [loadedSourceRowsPayload, loadedValidationsPayload, loadedNormalizedPayload, loadedCuratedPayload] = await Promise.all([
+  const [
+    loadedSourceRowsPayload,
+    loadedValidationsPayload,
+    loadedNormalizedPayload,
+    loadedCuratedPayload,
+    loadedCalendarPayload,
+  ] = await Promise.all([
     sourceRowsPayload ?? readJson(paths.sourceRows),
     validationsPayload ?? readJson(paths.validations),
     normalizedPayload ?? readJson(paths.normalizedFeeds),
     curatedPayload ?? readOptionalCuratedPayload(paths),
+    calendarPayload ?? readCalendarPayload(paths.calendarEvents),
   ]);
+  const loadedCalendarIndexPayload = calendarIndexPayload
+    ?? await readCalendarIndexPayload(paths.calendarIndex, loadedCalendarPayload);
 
   const validatedNormalizedPayload = validateNormalizedRenderPayloadForDisplay(
     mergeCuratedPayload(loadedNormalizedPayload, loadedCuratedPayload),
@@ -155,6 +186,62 @@ async function loadRenderInputs({
     validationsPayload: loadedValidationsPayload,
     normalizedPayload: validatedNormalizedPayload,
     curatedPayload: loadedCuratedPayload,
+    calendarPayload: loadedCalendarPayload,
+    calendarIndexPayload: loadedCalendarIndexPayload,
+  };
+}
+
+// Calendar data is an optional snapshot. Render keeps working when refresh has
+// not produced it yet, but still publishes a stable empty JSON artifact.
+async function readCalendarPayload(filePath) {
+  if (!filePath) {
+    return buildEmptyCalendarPayload();
+  }
+
+  try {
+    return await readJson(filePath);
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+      return buildEmptyCalendarPayload();
+    }
+    throw error;
+  }
+}
+
+// The refresh-time calendar index is preferred. Render can rebuild a fallback
+// index only when older snapshots do not have the new artifact yet.
+async function readCalendarIndexPayload(filePath, calendarPayload) {
+  if (!filePath) {
+    return buildCalendarIndex(calendarPayload?.events || [], {
+      generatedAt: calendarPayload?.generatedAt || null,
+      timeZone: "UTC",
+    });
+  }
+
+  try {
+    return await readJson(filePath);
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+      return buildCalendarIndex(calendarPayload?.events || [], {
+        generatedAt: calendarPayload?.generatedAt || null,
+        timeZone: "UTC",
+      });
+    }
+    throw error;
+  }
+}
+
+function buildEmptyCalendarPayload() {
+  return {
+    generatedAt: null,
+    items: [],
+    events: [],
+    summary: {
+      sources: 0,
+      parsedSources: 0,
+      parsedEvents: 0,
+      failedSources: 0,
+    },
   };
 }
 
@@ -204,7 +291,6 @@ async function writeRenderOutput({ distDir, pages }) {
   await rm(distDir, { recursive: true, force: true });
   await mkdir(distDir, { recursive: true });
   const assets = listStaticRenderAssets();
-  // Pre-create subdirectories for assets that live in subdirectories of dist/.
   const assetDirs = [...new Set(assets.map((a) => resolve(distDir, a.outputPath).replace(/\/[^/]+$/, "")))];
   await Promise.all(assetDirs.map((dir) => mkdir(dir, { recursive: true })));
   await Promise.all([

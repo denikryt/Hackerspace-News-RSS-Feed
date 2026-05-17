@@ -27,6 +27,7 @@ describe("feed page headers", () => {
     expect(html).toContain('href="/"');
     expect(html).toContain('href="/news/"');
     expect(html).toContain('href="/curated/"');
+    expect(html).toContain('href="/calendar/"');
     expect(html).toContain('href="/authors/"');
     expect(html).toContain('href="/events/index.html"');
   });
@@ -53,6 +54,7 @@ describe("feed page headers", () => {
     expect(html).toContain('href="/"');
     expect(html).toContain('href="/news/"');
     expect(html).toContain('href="/curated/"');
+    expect(html).toContain('href="/calendar/"');
     expect(html).toContain('href="/authors/"');
   });
 

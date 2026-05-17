@@ -7,4 +7,5 @@ tmp/
 notes/
 .claude/
 logs/
-.codex/
+.codex/.playwright-mcp/
+.playwright-mcp/

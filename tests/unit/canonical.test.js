@@ -26,6 +26,7 @@ describe("pagePathToCanonicalUrl", () => {
 
   it("returns null for redirect-only and non-html paths", () => {
     expect(pagePathToCanonicalUrl("news/index.html", SITE_URL)).toBeNull();
+    expect(pagePathToCanonicalUrl("calendar/index.html", SITE_URL)).toBeNull();
     expect(pagePathToCanonicalUrl("robots.txt", SITE_URL)).toBeNull();
     expect(pagePathToCanonicalUrl("news/dates.json", SITE_URL)).toBeNull();
   });

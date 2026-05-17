@@ -1,5 +1,5 @@
 import { escapeHtml, renderAboutHeaderLink, renderField, renderLayout } from "../renderers/layout.js";
-import { getCuratedHref } from "../sitePaths.js";
+import { getCalendarHref, getCuratedHref } from "../sitePaths.js";
 import { renderCategories, renderDetailItemMeta, renderFeedLikePageBody, type RecordLike } from "./pageHelpers.js";
 
 const renderLayoutShell = renderLayout as (props: { title: string; body: string; scriptHrefs?: string[] }) => string;
@@ -27,6 +27,7 @@ export function renderSpaceDetailPageTsx(model: RecordLike) {
         { href: value.homeHref, label: "Hackerspaces" },
         { href: value.feedHref, label: "News" },
         { href: getCuratedHref(), label: "Curated" },
+        { href: getCalendarHref(), label: "Calendar" },
         { href: value.authorsIndexHref, label: "Authors" },
       ],
     }),

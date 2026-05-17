@@ -46,6 +46,10 @@ describe("pagePathToUrl", () => {
     expect(pagePathToUrl("news/index.html", SITE_URL)).toBeNull();
   });
 
+  it("returns null for calendar/index.html (redirect, not canonical)", () => {
+    expect(pagePathToUrl("calendar/index.html", SITE_URL)).toBeNull();
+  });
+
   it("returns null for authors/index.html (index, not canonical content page)", () => {
     expect(pagePathToUrl("authors/index.html", SITE_URL)).toBeNull();
   });
@@ -95,6 +99,12 @@ describe("buildSitemapXml", () => {
     const xml = buildSitemapXml(["news/index.html", "news/2026-04-20/index.html"], SITE_URL);
     expect(xml).not.toContain("news/index.html");
     expect(xml).toContain("news/2026-04-20/");
+  });
+
+  it("excludes calendar/index.html", () => {
+    const xml = buildSitemapXml(["calendar/index.html", "calendar/2026-05/index.html"], SITE_URL);
+    expect(xml).not.toContain("calendar/index.html");
+    expect(xml).toContain("calendar/2026-05/");
   });
 
   it("excludes news/dates.json", () => {
