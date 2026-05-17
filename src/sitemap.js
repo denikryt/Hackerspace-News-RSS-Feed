@@ -1,4 +1,4 @@
-const EXCLUDED_PATHS = new Set(["news/index.html", "authors/index.html", "sitemap.xml", "robots.txt"]);
+const EXCLUDED_PATHS = new Set(["news/index.html", "calendar/index.html", "authors/index.html", "sitemap.xml", "robots.txt"]);
 
 export function pagePathToUrl(relativePath, siteUrl) {
   if (EXCLUDED_PATHS.has(relativePath)) return null;

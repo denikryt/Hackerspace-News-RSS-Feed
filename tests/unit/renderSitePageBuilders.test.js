@@ -83,7 +83,7 @@ describe("renderSitePageBuilders", () => {
     expect("buildCountryFeedPageEntries" in pageBuilders).toBe(false);
   });
 
-  it("builds a standalone calendar page entry", async () => {
+  it("builds a calendar redirect root plus month pages", async () => {
     const entries = await pageBuilders.buildCalendarPageEntries({
       now: new Date("2026-05-14T12:00:00.000Z"),
       calendarPayload: {
@@ -111,7 +111,8 @@ describe("renderSitePageBuilders", () => {
     });
 
     expect(entries).toEqual([
-      ["calendar/index.html", "calendar-page:2026-05"],
+      ["calendar/index.html", '<!doctype html><html><head><meta http-equiv="refresh" content="0;url=2026-05/" /><title>Redirecting…</title></head><body></body></html>'],
+      ["calendar/2026-05/index.html", "calendar-page:2026-05"],
       ["calendar/events.json", JSON.stringify({
         events: [
           {

@@ -37,6 +37,7 @@ export async function buildCalendarPageEntries(context, { logger } = {}) {
   const currentMonth = now.toISOString().slice(0, 7);
   const baseModel = buildCalendarPageModelFromIndex(calendarIndexPayload, {
     timeZone: "UTC",
+    selectedMonth: currentMonth,
     now,
   });
   const monthEntries = buildCalendarMonthEntries({
@@ -48,7 +49,7 @@ export async function buildCalendarPageEntries(context, { logger } = {}) {
 
   logInfo(logger, `[render] calendar page: events=${events.length} months=${(baseModel.availableMonthsWithEvents || []).length}`);
   return [
-    ["calendar/index.html", renderCalendarPage(withCalendarNavigation(baseModel, { currentMonth }))],
+    ["calendar/index.html", `<!doctype html><html><head><meta http-equiv="refresh" content="0;url=${currentMonth}/" /><title>Redirecting…</title></head><body></body></html>`],
     ...monthEntries,
     ["calendar/events.json", JSON.stringify(calendarPayload, null, 2)],
   ];
@@ -245,8 +246,9 @@ function logInfo(logger, message) {
 }
 
 function buildCalendarMonthEntries({ calendarIndexPayload, currentMonth, monthKeys, now }) {
-  return monthKeys
-    .filter((monthKey) => monthKey !== currentMonth)
+  const orderedMonthKeys = [...new Set([currentMonth, ...monthKeys])];
+
+  return orderedMonthKeys
     .map((monthKey) => {
       const model = buildCalendarPageModelFromIndex(calendarIndexPayload, {
         timeZone: "UTC",
@@ -265,16 +267,12 @@ function withCalendarNavigation(model, { currentMonth }) {
   return {
     ...model,
     navItems: buildPrimaryNavItems("Calendar"),
-    previousMonthHref: model.previousMonth ? getCalendarMonthHref(model.previousMonth, { currentMonth }) : null,
-    nextMonthHref: model.nextMonth ? getCalendarMonthHref(model.nextMonth, { currentMonth }) : null,
+    previousMonthHref: model.previousMonth ? getCalendarMonthHref(model.previousMonth) : null,
+    nextMonthHref: model.nextMonth ? getCalendarMonthHref(model.nextMonth) : null,
   };
 }
 
-function getCalendarMonthHref(monthKey, { currentMonth }) {
-  if (monthKey === currentMonth) {
-    return "/calendar/";
-  }
-
+function getCalendarMonthHref(monthKey) {
   return `/calendar/${monthKey}/`;
 }
 

@@ -132,8 +132,9 @@ describe("renderSite", () => {
     expect(result.pages["about/index.html"]).toContain(
       '<link rel="canonical" href="https://hackerspace.news/about/" />',
     );
-    expect(result.pages["calendar/index.html"]).toContain(
-      '<link rel="canonical" href="https://hackerspace.news/calendar/" />',
+    expect(result.pages["calendar/index.html"]).not.toContain('rel="canonical"');
+    expect(result.pages["calendar/2026-03/index.html"]).toContain(
+      '<link rel="canonical" href="https://hackerspace.news/calendar/2026-03/" />',
     );
     expect(result.pages["authors/index.html"]).toContain(
       '<link rel="canonical" href="https://hackerspace.news/authors/" />',
@@ -282,6 +283,7 @@ describe("renderSite", () => {
       "index.html",
       "about/index.html",
       "calendar/index.html",
+      "calendar/2026-03/index.html",
       "calendar/events.json",
       "news/dates.json",
       "news/index.html",
@@ -322,22 +324,8 @@ describe("renderSite", () => {
     expect(aboutHtml).toContain("About");
     expect(aboutHtml).toContain('<link rel="icon" href="/favicon.png" type="image/png" />');
     expect(aboutHtml).toContain('<link rel="stylesheet" href="/site.css" />');
-    expect(calendarHtml).toContain("Calendar");
-    expect(calendarHtml).toContain('href="/calendar/" aria-current="page"');
-    expect(calendarHtml).toContain('id="calendar-country-filter-select"');
-    expect(calendarHtml).toContain('id="calendar-hackerspace-filter-select"');
-    expect(calendarHtml).toContain("All countries");
-    expect(calendarHtml).toContain("All hackerspaces");
-    expect(calendarHtml).toContain('id="calendar-filter-empty-state"');
-    expect(calendarHtml).toContain('<span class="calendar-date-band-weekday">Wednesday/</span><span class="calendar-date-band-date">March 18</span>');
-    expect(calendarHtml).toContain("Calendar event");
-    expect(calendarHtml).toContain("🇨🇭");
-    expect(calendarHtml).toContain("Test Hackerspace");
-    expect(calendarHtml).not.toContain("Long raw address that should not render");
-    expect(calendarHtml).not.toContain("mailto:test@example.com");
-    expect(calendarHtml).not.toContain("calendar-grid");
-    expect(calendarHtml).toContain('<script src="/calendar-time.js"></script>');
-    expect(calendarHtml).toContain('data-calendar-events-path="/calendar/events.json"');
+    expect(calendarHtml).toContain('<meta http-equiv="refresh"');
+    expect(calendarHtml).toContain('content="0;url=2026-03/"');
     expect(JSON.parse(calendarEventsJson)).toEqual(calendarPayload);
     expect(JSON.parse(newsDatesJson)).toEqual([]);
     // news/index.html is a redirect to the latest newspaper date page
@@ -377,7 +365,8 @@ describe("renderSite", () => {
     expect(sitemapXml).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
     expect(sitemapXml).toContain("</urlset>");
     expect(sitemapXml).toContain("<loc>https://hackerspace.news/</loc>");
-    expect(sitemapXml).toContain("<loc>https://hackerspace.news/calendar/</loc>");
+    expect(sitemapXml).toContain("<loc>https://hackerspace.news/calendar/2026-03/</loc>");
+    expect(sitemapXml).not.toContain("<loc>https://hackerspace.news/calendar/</loc>");
     expect(sitemapXml).toContain("<loc>https://hackerspace.news/spaces/betamachine.html</loc>");
     expect(sitemapXml).toContain("<loc>https://hackerspace.news/spaces/c3d2.html</loc>");
     expect(sitemapXml).toContain("<loc>https://hackerspace.news/authors/alice.html</loc>");
@@ -595,6 +584,7 @@ describe("renderSite", () => {
       "authors/alice.html",
       "authors/alice/page/2/index.html",
       "authors/index.html",
+      "calendar/2026-05/index.html",
       "calendar/events.json",
       "calendar/index.html",
       "index.html",
