@@ -23,6 +23,7 @@ export function buildCalendarPageModelFromIndex(calendarIndex, {
   now = new Date(),
 } = {}) {
   const normalizedIndex = normalizeCalendarIndex(calendarIndex, timeZone);
+  const filterOptions = buildFilterOptions(normalizedIndex);
   const availableDates = listAvailableDates(normalizedIndex);
   const availableMonthsWithEvents = Array.isArray(normalizedIndex.availableMonthsWithEvents)
     ? normalizedIndex.availableMonthsWithEvents
@@ -44,6 +45,10 @@ export function buildCalendarPageModelFromIndex(calendarIndex, {
     nextMonth: monthNavigation.nextMonth,
     nextMonthLabel: monthNavigation.nextMonth ? formatMonthLabel(monthNavigation.nextMonth) : null,
     availableMonthsWithEvents,
+    availableCountries: filterOptions.availableCountries,
+    availableHackerspaces: filterOptions.availableHackerspaces,
+    selectedCountry: "all",
+    selectedHackerspace: "all",
     dateSections: buildDateSections({ calendarIndex: normalizedIndex, monthKey: resolvedMonth }),
     selectedDayEvents: normalizedIndex.months?.[resolvedDate.slice(0, 7)]?.dates?.[resolvedDate]?.events || [],
   };
@@ -107,6 +112,34 @@ function resolveMonthNavigation(availableMonthsWithEvents, resolvedMonth) {
     previousMonth,
     nextMonth,
   };
+}
+
+// Filter controls should reflect the curated metadata carried by the full
+// calendar payload, not only the currently selected month.
+function buildFilterOptions(calendarIndex) {
+  const countries = new Set();
+  const hackerspaces = new Set();
+
+  for (const event of listAllIndexedEvents(calendarIndex)) {
+    if (typeof event?.countryName === "string" && event.countryName.trim() !== "") {
+      countries.add(event.countryName.trim());
+    }
+
+    if (typeof event?.hackerspaceName === "string" && event.hackerspaceName.trim() !== "") {
+      hackerspaces.add(event.hackerspaceName.trim());
+    }
+  }
+
+  return {
+    availableCountries: [...countries].sort((left, right) => left.localeCompare(right)),
+    availableHackerspaces: [...hackerspaces].sort((left, right) => left.localeCompare(right)),
+  };
+}
+
+function listAllIndexedEvents(calendarIndex) {
+  return Object.values(calendarIndex.months || {})
+    .flatMap((month) => Object.values(month?.dates || {}))
+    .flatMap((dateBucket) => Array.isArray(dateBucket?.events) ? dateBucket.events : []);
 }
 
 // The renderer expects only eventful dates for the current month, so the page

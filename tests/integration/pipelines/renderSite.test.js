@@ -324,6 +324,11 @@ describe("renderSite", () => {
     expect(aboutHtml).toContain('<link rel="stylesheet" href="/site.css" />');
     expect(calendarHtml).toContain("Calendar");
     expect(calendarHtml).toContain('href="/calendar/" aria-current="page"');
+    expect(calendarHtml).toContain('id="calendar-country-filter-select"');
+    expect(calendarHtml).toContain('id="calendar-hackerspace-filter-select"');
+    expect(calendarHtml).toContain("All countries");
+    expect(calendarHtml).toContain("All hackerspaces");
+    expect(calendarHtml).toContain('id="calendar-filter-empty-state"');
     expect(calendarHtml).toContain('<span class="calendar-date-band-weekday">Wednesday/</span><span class="calendar-date-band-date">March 18</span>');
     expect(calendarHtml).toContain("Calendar event");
     expect(calendarHtml).toContain("🇨🇭");
@@ -350,12 +355,14 @@ describe("renderSite", () => {
     expect(siteCss).toContain(".spaces-controls");
     expect(siteCss).toContain(".authors-controls");
     expect(siteCss).toContain(".calendar-shell");
+    expect(siteCss).toContain(".calendar-controls");
     expect(siteCss).toContain(".calendar-columns");
     expect(siteCss).toContain(".calendar-date-band");
     expect(siteCss).toContain("@media (max-width: 560px)");
     expect(siteCss).toContain(".calendar-event + .calendar-event");
     expect(calendarTimeJs).toContain("fetch(eventsPath)");
     expect(calendarTimeJs).toContain("window.location.pathname");
+    expect(calendarTimeJs).toContain("hackerspace-news-feed.calendar.country");
     expect(spacesIndexJs).toContain("hackerspace-news-feed.query");
     expect(authorsIndexJs).toContain("hackerspace-news-feed.authors.query");
 

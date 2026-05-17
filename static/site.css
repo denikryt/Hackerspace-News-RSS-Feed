@@ -353,6 +353,23 @@ code { background: #f0f0eb; padding: 2px 4px; border-radius: 4px; }
   padding: 0 0 2rem;
 }
 
+.calendar-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.9rem 1rem;
+  align-items: end;
+}
+
+.calendar-control {
+  display: block;
+  min-inline-size: 0;
+}
+
+.calendar-control .control-select {
+  inline-size: 100%;
+  max-inline-size: 100%;
+}
+
 .calendar-month-switcher {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -490,6 +507,10 @@ code { background: #f0f0eb; padding: 2px 4px; border-radius: 4px; }
 }
 
 @media (max-width: 560px) {
+  .calendar-controls {
+    grid-template-columns: 1fr;
+  }
+
   .calendar-month-switcher {
     grid-template-columns: 1fr;
     gap: 0.45rem;

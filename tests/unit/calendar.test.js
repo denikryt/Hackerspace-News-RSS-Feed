@@ -290,6 +290,53 @@ END:VCALENDAR`, "utf8");
     });
   });
 
+  it("derives sorted unique country and hackerspace filter options from calendar metadata", () => {
+    const model = buildCalendarPageModel([
+      {
+        uid: "event-1",
+        summary: "Open Night",
+        dateKind: "timed",
+        startInstant: "2026-05-14T19:00:00.000Z",
+        endInstant: "2026-05-14T21:00:00.000Z",
+        sourceTimeZone: "UTC",
+        country: "Germany",
+        hackerspaceName: "Alpha Lab",
+        sourceFile: "source.ics",
+      },
+      {
+        uid: "event-2",
+        summary: "Hackday",
+        dateKind: "timed",
+        startInstant: "2026-05-15T19:00:00.000Z",
+        endInstant: "2026-05-15T21:00:00.000Z",
+        sourceTimeZone: "UTC",
+        country: "Austria",
+        hackerspaceName: "Beta Space",
+        sourceFile: "source.ics",
+      },
+      {
+        uid: "event-3",
+        summary: "Workshop",
+        dateKind: "timed",
+        startInstant: "2026-05-16T19:00:00.000Z",
+        endInstant: "2026-05-16T21:00:00.000Z",
+        sourceTimeZone: "UTC",
+        country: "Germany",
+        hackerspaceName: "Alpha Lab",
+        sourceFile: "source.ics",
+      },
+    ], {
+      timeZone: "UTC",
+      selectedMonth: "2026-05",
+      now: new Date("2026-05-14T12:00:00.000Z"),
+    });
+
+    expect(model.availableCountries).toEqual(["Austria", "Germany"]);
+    expect(model.availableHackerspaces).toEqual(["Alpha Lab", "Beta Space"]);
+    expect(model.selectedCountry).toBe("all");
+    expect(model.selectedHackerspace).toBe("all");
+  });
+
   it("omits previous and next month links when the selected month has no eventful neighbors", () => {
     const model = buildCalendarPageModel([
       {

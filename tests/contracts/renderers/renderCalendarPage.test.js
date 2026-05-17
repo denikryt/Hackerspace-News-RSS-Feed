@@ -13,6 +13,10 @@ const MODEL = {
   nextMonth: "2026-06",
   nextMonthLabel: "June 2026",
   nextMonthHref: "/calendar/2026-06/",
+  availableCountries: ["Germany", "United States of America"],
+  availableHackerspaces: ["Noisebridge", "Test Space"],
+  selectedCountry: "all",
+  selectedHackerspace: "all",
   dateSections: [
     {
       date: "2026-05-14",
@@ -68,6 +72,22 @@ describe("renderCalendarPage", () => {
     expect(html).not.toContain("calendar-tag");
     expect(html).toContain('class="calendar-month-switcher"');
     expect(html).toContain('class="calendar-columns"');
+  });
+
+  it("renders filter controls and filtered empty-state hook nodes", () => {
+    const html = renderCalendarPage(MODEL);
+
+    expect(html).toContain('class="calendar-controls"');
+    expect(html).toContain('id="calendar-country-filter-select"');
+    expect(html).toContain('data-calendar-country-filter="true"');
+    expect(html).toContain(">All countries</option>");
+    expect(html).toContain(">Germany</option>");
+    expect(html).toContain('id="calendar-hackerspace-filter-select"');
+    expect(html).toContain('data-calendar-hackerspace-filter="true"');
+    expect(html).toContain(">All hackerspaces</option>");
+    expect(html).toContain(">Noisebridge</option>");
+    expect(html).toContain('id="calendar-filter-empty-state"');
+    expect(html).toContain("No events match the selected filters.");
   });
 
   it("renders without the old interactive calendar runtime", () => {

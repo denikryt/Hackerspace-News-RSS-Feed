@@ -1,9 +1,24 @@
-// Calendar pages ship with fully rendered server HTML as a crawler-friendly
-// fallback. When JavaScript is available, the browser rebuilds the month body
-// from absolute instants so day columns and time labels use one timezone.
-(async function enhanceCalendarPage() {
+const DAY_MS = 86_400_000;
+const FILTER_STORAGE_KEYS = {
+  country: "hackerspace-news-feed.calendar.country",
+  hackerspace: "hackerspace-news-feed.calendar.hackerspace",
+};
+
+// Calendar pages ship with rendered HTML fallback for crawlers and no-JS
+// clients. When JavaScript is available, the browser rebuilds the visible
+// month in the client timezone and applies interactive filters on top.
+if (typeof document !== "undefined") {
+  enhanceCalendarPage().catch(() => {});
+}
+
+async function enhanceCalendarPage() {
   const shell = document.querySelector(".calendar-shell");
   if (!shell) {
+    return;
+  }
+
+  const controls = resolveCalendarControls(shell);
+  if (!controls) {
     return;
   }
 
@@ -14,39 +29,204 @@
     return;
   }
 
-  let payload;
-  try {
-    const response = await fetch(eventsPath);
-    if (!response.ok) {
-      return;
-    }
-
-    payload = await response.json();
-  } catch {
+  const payload = await loadCalendarPayload(eventsPath);
+  if (!payload) {
     return;
   }
 
-  const now = new Date();
+  const events = Array.isArray(payload.events) ? payload.events : [];
+  const filterOptions = buildFilterOptions(events);
+  populateFilterSelect({
+    select: controls.countrySelect,
+    defaultLabel: "All countries",
+    options: filterOptions.availableCountries,
+  });
+  populateFilterSelect({
+    select: controls.hackerspaceSelect,
+    defaultLabel: "All hackerspaces",
+    options: filterOptions.availableHackerspaces,
+  });
+
+  const storedSelection = loadStoredFilterSelection({
+    storage: window.localStorage,
+    filterOptions,
+  });
+  controls.countrySelect.value = storedSelection.selectedCountry;
+  controls.hackerspaceSelect.value = storedSelection.selectedHackerspace;
+
   const selectedMonth = resolveSelectedMonth({
     pathname: window.location.pathname,
     fallbackMonth,
     timeZone,
-    now,
-  });
-  const model = buildClientCalendarModel({
-    events: Array.isArray(payload?.events) ? payload.events : [],
-    selectedMonth,
-    timeZone,
-    now,
+    now: new Date(),
   });
 
-  shell.innerHTML = renderCalendarShell(model);
-})();
+  const renderCurrentView = () => {
+    const filterSelection = normalizeFilterSelection({
+      selectedCountry: controls.countrySelect.value,
+      selectedHackerspace: controls.hackerspaceSelect.value,
+      filterOptions,
+    });
+    controls.countrySelect.value = filterSelection.selectedCountry;
+    controls.hackerspaceSelect.value = filterSelection.selectedHackerspace;
+    persistFilterSelection({
+      storage: window.localStorage,
+      filterSelection,
+    });
+
+    const model = buildClientCalendarModel({
+      events,
+      selectedMonth,
+      timeZone,
+      now: new Date(),
+      selectedCountry: filterSelection.selectedCountry,
+      selectedHackerspace: filterSelection.selectedHackerspace,
+    });
+
+    renderCalendarShell({
+      controls,
+      model,
+    });
+  };
+
+  controls.countrySelect.addEventListener("change", renderCurrentView);
+  controls.hackerspaceSelect.addEventListener("change", renderCurrentView);
+  renderCurrentView();
+}
+
+function resolveCalendarControls(shell) {
+  const countrySelect = shell.querySelector("[data-calendar-country-filter]");
+  const hackerspaceSelect = shell.querySelector("[data-calendar-hackerspace-filter]");
+  const monthSwitcher = shell.querySelector("[data-calendar-month-switcher]");
+  const columns = shell.querySelector("[data-calendar-columns]");
+  const emptyState = shell.querySelector("#calendar-filter-empty-state");
+
+  if (!countrySelect || !hackerspaceSelect || !monthSwitcher || !columns || !emptyState) {
+    return null;
+  }
+
+  return {
+    shell,
+    countrySelect,
+    hackerspaceSelect,
+    monthSwitcher,
+    columns,
+    emptyState,
+  };
+}
+
+async function loadCalendarPayload(eventsPath) {
+  try {
+    const response = await fetch(eventsPath);
+    if (!response.ok) {
+      return null;
+    }
+
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+// Filter options come from curated event metadata, not from month-local
+// derived columns, so they stay stable when the user switches months.
+function buildFilterOptions(events) {
+  const countries = new Set();
+  const hackerspaces = new Set();
+
+  for (const event of Array.isArray(events) ? events : []) {
+    if (typeof event?.country === "string" && event.country.trim() !== "") {
+      countries.add(event.country.trim());
+    }
+
+    if (typeof event?.hackerspaceName === "string" && event.hackerspaceName.trim() !== "") {
+      hackerspaces.add(event.hackerspaceName.trim());
+    }
+  }
+
+  return {
+    availableCountries: [...countries].sort((left, right) => left.localeCompare(right)),
+    availableHackerspaces: [...hackerspaces].sort((left, right) => left.localeCompare(right)),
+  };
+}
+
+function populateFilterSelect({ select, defaultLabel, options }) {
+  const previousValue = select.value;
+  const optionHtml = [
+    `<option value="all">${escapeHtml(defaultLabel)}</option>`,
+    ...options.map((option) => `<option value="${escapeHtml(option)}">${escapeHtml(option)}</option>`),
+  ].join("");
+
+  select.innerHTML = optionHtml;
+  select.value = optionValueExists(options, previousValue) ? previousValue : "all";
+}
+
+function loadStoredFilterSelection({ storage, filterOptions }) {
+  return normalizeFilterSelection({
+    selectedCountry: readStorageValue(storage, FILTER_STORAGE_KEYS.country),
+    selectedHackerspace: readStorageValue(storage, FILTER_STORAGE_KEYS.hackerspace),
+    filterOptions,
+  });
+}
+
+function persistFilterSelection({ storage, filterSelection }) {
+  writeStorageValue(storage, FILTER_STORAGE_KEYS.country, filterSelection.selectedCountry);
+  writeStorageValue(storage, FILTER_STORAGE_KEYS.hackerspace, filterSelection.selectedHackerspace);
+}
+
+function normalizeFilterSelection({
+  selectedCountry,
+  selectedHackerspace,
+  filterOptions,
+}) {
+  return {
+    selectedCountry: normalizeFilterValue(selectedCountry, filterOptions.availableCountries),
+    selectedHackerspace: normalizeFilterValue(selectedHackerspace, filterOptions.availableHackerspaces),
+  };
+}
+
+function normalizeFilterValue(value, options) {
+  return optionValueExists(options, value) ? value : "all";
+}
+
+function optionValueExists(options, value) {
+  return value === "all" || (typeof value === "string" && options.includes(value));
+}
+
+function readStorageValue(storage, key) {
+  try {
+    return storage?.getItem(key) || "all";
+  } catch {
+    return "all";
+  }
+}
+
+function writeStorageValue(storage, key, value) {
+  try {
+    storage?.setItem(key, value);
+  } catch {
+    // Ignore storage failures and keep the page interactive.
+  }
+}
 
 // Timed events regroup by the client's timezone, while date-only events stay
 // pinned to their source day to avoid accidental day drift.
-function buildClientCalendarModel({ events, selectedMonth, timeZone, now }) {
-  const eventIndex = buildEventIndex(events, timeZone);
+function buildClientCalendarModel({
+  events,
+  selectedMonth,
+  timeZone,
+  now,
+  selectedCountry = "all",
+  selectedHackerspace = "all",
+}) {
+  const filterOptions = buildFilterOptions(events);
+  const filterSelection = normalizeFilterSelection({
+    selectedCountry,
+    selectedHackerspace,
+    filterOptions,
+  });
+  const filteredEvents = filterCalendarEvents(events, filterSelection);
+  const eventIndex = buildEventIndex(filteredEvents, timeZone);
   const availableDates = [...eventIndex.keys()].sort((left, right) => left.localeCompare(right));
   const availableMonthsWithEvents = [...new Set(availableDates.map((dateKey) => dateKey.slice(0, 7)))];
   const currentMonth = formatMonthKey(now, timeZone);
@@ -58,23 +238,46 @@ function buildClientCalendarModel({ events, selectedMonth, timeZone, now }) {
     currentMonth,
     previousMonth: monthNavigation.previousMonth,
     nextMonth: monthNavigation.nextMonth,
+    availableCountries: filterOptions.availableCountries,
+    availableHackerspaces: filterOptions.availableHackerspaces,
+    selectedCountry: filterSelection.selectedCountry,
+    selectedHackerspace: filterSelection.selectedHackerspace,
     dateSections: buildDateSections({ monthKey: selectedMonth, eventIndex, timeZone }),
   };
 }
 
-function renderCalendarShell(model) {
-  return `<div class="calendar-month-switcher" data-calendar-month-switcher="true" aria-label="Calendar month navigation">
-      <div class="calendar-month-switcher-side calendar-month-switcher-side--left">
+function filterCalendarEvents(events, filterSelection) {
+  return (Array.isArray(events) ? events : []).filter((event) => {
+    const matchesCountry = filterSelection.selectedCountry === "all"
+      || event?.country === filterSelection.selectedCountry;
+    const matchesHackerspace = filterSelection.selectedHackerspace === "all"
+      || event?.hackerspaceName === filterSelection.selectedHackerspace;
+
+    return matchesCountry && matchesHackerspace;
+  });
+}
+
+function renderCalendarShell({ controls, model }) {
+  controls.monthSwitcher.innerHTML = renderMonthSwitcher(model);
+
+  if (!model.dateSections.length) {
+    controls.columns.innerHTML = "";
+    controls.emptyState.hidden = false;
+    return;
+  }
+
+  controls.columns.innerHTML = renderDateSections(model.dateSections);
+  controls.emptyState.hidden = true;
+}
+
+function renderMonthSwitcher(model) {
+  return `<div class="calendar-month-switcher-side calendar-month-switcher-side--left">
         ${renderMonthNavLink(model.previousMonth, model.currentMonth)}
       </div>
       <h2 class="calendar-month-current">${escapeHtml(model.selectedMonthLabel)}</h2>
       <div class="calendar-month-switcher-side calendar-month-switcher-side--right">
         ${renderMonthNavLink(model.nextMonth, model.currentMonth)}
-      </div>
-    </div>
-    <div class="calendar-columns" data-calendar-columns="true">
-      ${renderDateSections(model.dateSections)}
-    </div>`;
+      </div>`;
 }
 
 function renderMonthNavLink(monthKey, currentMonth) {
@@ -87,10 +290,6 @@ function renderMonthNavLink(monthKey, currentMonth) {
 }
 
 function renderDateSections(sections) {
-  if (!sections.length) {
-    return '<p class="muted calendar-empty-state">No events scheduled for this month.</p>';
-  }
-
   return sections.map((section) => `<section class="calendar-date-column">
       <h3 class="calendar-date-band">${renderDateBandLabel(section.dateLabel)}</h3>
       <div class="calendar-date-events">
@@ -155,7 +354,7 @@ function buildDateSections({ monthKey, eventIndex, timeZone }) {
     .map(([dateKey, entries]) => ({
       date: dateKey,
       dateLabel: formatDateBandLabel(dateKey, timeZone),
-      events: entries.map((entry) => toVisibleDayEvent(entry.event, timeZone, dateKey)),
+      events: entries.map((entry) => toVisibleDayEvent(entry.event, timeZone)),
     }));
 }
 
@@ -209,10 +408,9 @@ function listDateKeysBetween(startDateKey, endDateKey) {
   return dates;
 }
 
-function toVisibleDayEvent(event, timeZone, visibleDate) {
+function toVisibleDayEvent(event, timeZone) {
   return {
     summary: event.summary || "Untitled event",
-    dateLabel: formatLongDateLabel(visibleDate, timeZone),
     timeLabel: formatEventTimeLabel(event, timeZone),
     countryName: event.country || null,
     countryFlag: event.countryFlag || null,
@@ -310,46 +508,34 @@ function formatMonthLabel(monthKey) {
   }).format(new Date(`${monthKey}-01T00:00:00.000Z`));
 }
 
-function formatLongDateLabel(dateKey, timeZone) {
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone,
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(`${dateKey}T00:00:00.000Z`));
-}
-
-function formatDateBandLabel(dateKey, timeZone) {
-  const parts = Object.fromEntries(
-    new Intl.DateTimeFormat("en-US", {
-      timeZone,
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-    })
-      .formatToParts(new Date(`${dateKey}T00:00:00.000Z`))
-      .filter((part) => part.type !== "literal")
-      .map((part) => [part.type, part.value]),
-  );
-
-  return `${parts.weekday}/${parts.month} ${parts.day}`;
-}
-
-function formatShortDate(value, timeZone) {
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone,
-    month: "short",
-    day: "numeric",
-  }).format(value);
-}
-
-function formatTime(value, timeZone) {
+function formatTime(date, timeZone) {
   return new Intl.DateTimeFormat("en-US", {
     timeZone,
     hour: "numeric",
     minute: "2-digit",
-  }).format(value);
+  }).format(date);
+}
+
+function formatShortDate(date, timeZone) {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    month: "short",
+    day: "numeric",
+  }).format(date);
+}
+
+function formatDateBandLabel(dateKey, timeZone) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  }).formatToParts(new Date(`${dateKey}T00:00:00.000Z`));
+
+  const weekday = parts.find((part) => part.type === "weekday")?.value || "";
+  const month = parts.find((part) => part.type === "month")?.value || "";
+  const day = parts.find((part) => part.type === "day")?.value || "";
+  return `${weekday}/${month} ${day}`;
 }
 
 function escapeHtml(value) {
@@ -357,8 +543,5 @@ function escapeHtml(value) {
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+    .replaceAll('"', "&quot;");
 }
-
-const DAY_MS = 24 * 60 * 60 * 1000;

@@ -32,6 +32,20 @@ export function renderCalendarPageTsx(model: RecordLike) {
 
 function renderCalendarShell(model: RecordLike) {
   return `<section class="calendar-shell page-shell-wide" data-calendar-events-path="/calendar/events.json" data-calendar-fallback-month="${escapeHtml((model.selectedMonth as string) || "")}">
+    <div class="calendar-controls" data-calendar-controls="true">
+      <label class="calendar-control calendar-control-country">
+        <select id="calendar-country-filter-select" class="control-select control-select-country" data-calendar-country-filter="true" aria-label="Filter events by country">
+          <option value="all"${!model.selectedCountry || (model.selectedCountry as string) === "all" ? " selected" : ""}>All countries</option>
+          ${renderSelectOptions((model.availableCountries as string[]) || [], model.selectedCountry as string | undefined)}
+        </select>
+      </label>
+      <label class="calendar-control calendar-control-hackerspace">
+        <select id="calendar-hackerspace-filter-select" class="control-select" data-calendar-hackerspace-filter="true" aria-label="Filter events by hackerspace">
+          <option value="all"${!model.selectedHackerspace || (model.selectedHackerspace as string) === "all" ? " selected" : ""}>All hackerspaces</option>
+          ${renderSelectOptions((model.availableHackerspaces as string[]) || [], model.selectedHackerspace as string | undefined)}
+        </select>
+      </label>
+    </div>
     <div class="calendar-month-switcher" data-calendar-month-switcher="true" aria-label="Calendar month navigation">
       <div class="calendar-month-switcher-side calendar-month-switcher-side--left">
         ${renderMonthNavLink(model.previousMonthLabel as string | null | undefined, model.previousMonthHref as string | null | undefined)}
@@ -44,6 +58,7 @@ function renderCalendarShell(model: RecordLike) {
     <div class="calendar-columns" data-calendar-columns="true">
       ${renderDateSections((model.dateSections as RecordLike[]) || [])}
     </div>
+    <p id="calendar-filter-empty-state" class="muted calendar-empty-state" hidden>No events match the selected filters.</p>
   </section>`;
 }
 
@@ -53,6 +68,12 @@ function renderMonthNavLink(label: string | null | undefined, href: string | nul
   }
 
   return `<a class="calendar-month-link" href="${escapeHtml(href)}">${escapeHtml(label)}</a>`;
+}
+
+function renderSelectOptions(options: string[], selectedValue: string | undefined) {
+  return options
+    .map((option) => `<option value="${escapeHtml(option)}"${selectedValue === option ? " selected" : ""}>${escapeHtml(option)}</option>`)
+    .join("");
 }
 
 function renderDateSections(sections: RecordLike[]) {
