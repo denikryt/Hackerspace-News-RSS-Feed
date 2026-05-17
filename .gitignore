@@ -8,3 +8,4 @@ notes/
 .claude/
 logs/
 .codex/.playwright-mcp/
+.playwright-mcp/
