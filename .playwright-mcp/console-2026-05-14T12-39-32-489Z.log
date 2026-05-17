@@ -1,8 +1,0 @@
-[      50ms] ReferenceError: Cannot access 'DAY_MS' before initialization
-    at listDateKeysBetween (http://127.0.0.1:4173/calendar-page.js:258:76)
-    at listVisibleDatesForEvent (http://127.0.0.1:4173/calendar-page.js:129:10)
-    at buildEventIndex (http://127.0.0.1:4173/calendar-page.js:92:26)
-    at buildCalendarPageModel (http://127.0.0.1:4173/calendar-page.js:67:22)
-    at render (http://127.0.0.1:4173/calendar-page.js:40:19)
-    at calendarPageRuntime (http://127.0.0.1:4173/calendar-page.js:37:3)
-    at http://127.0.0.1:4173/calendar-page.js:56:3
