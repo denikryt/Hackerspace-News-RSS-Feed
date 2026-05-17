@@ -1,5 +1,5 @@
 import { getAuthorDetailOutputPath } from "./authors.js";
-import { buildCalendarPageModel } from "./calendar/index.js";
+import { buildCalendarPageModelFromIndex } from "./calendar/index.js";
 import { formatLoopProgressLog } from "./renderProgress.js";
 import { renderAboutPage } from "./renderers/renderAboutPage.js";
 import { renderAuthorDetail } from "./renderers/renderAuthorDetail.js";
@@ -31,21 +31,22 @@ export function buildRootStaticPageEntries(context) {
 // its own builder instead of being mixed into the feed/date page loops.
 export async function buildCalendarPageEntries(context, { logger } = {}) {
   const calendarPayload = context.calendarPayload || { events: [] };
+  const calendarIndexPayload = context.calendarIndexPayload || { availableMonthsWithEvents: [], months: {} };
   const events = Array.isArray(calendarPayload.events) ? calendarPayload.events : [];
   const now = context.now || new Date();
   const currentMonth = now.toISOString().slice(0, 7);
-  const baseModel = buildCalendarPageModel(events, {
+  const baseModel = buildCalendarPageModelFromIndex(calendarIndexPayload, {
     timeZone: "UTC",
     now,
   });
   const monthEntries = buildCalendarMonthEntries({
-    events,
+    calendarIndexPayload,
     currentMonth,
     monthKeys: baseModel.availableMonthsWithEvents || [],
     now,
   });
 
-  logInfo(logger, `[render] calendar page: events=${events.length}`);
+  logInfo(logger, `[render] calendar page: events=${events.length} months=${(baseModel.availableMonthsWithEvents || []).length}`);
   return [
     ["calendar/index.html", renderCalendarPage(withCalendarNavigation(baseModel, { currentMonth }))],
     ...monthEntries,
@@ -243,11 +244,11 @@ function logInfo(logger, message) {
   }
 }
 
-function buildCalendarMonthEntries({ events, currentMonth, monthKeys, now }) {
+function buildCalendarMonthEntries({ calendarIndexPayload, currentMonth, monthKeys, now }) {
   return monthKeys
     .filter((monthKey) => monthKey !== currentMonth)
     .map((monthKey) => {
-      const model = buildCalendarPageModel(events, {
+      const model = buildCalendarPageModelFromIndex(calendarIndexPayload, {
         timeZone: "UTC",
         selectedMonth: monthKey,
         now,

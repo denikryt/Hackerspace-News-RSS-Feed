@@ -56,7 +56,7 @@ vi.mock("../../src/viewModels/spaceDetail.js", () => ({
 }));
 
 vi.mock("../../src/calendar/index.js", () => ({
-  buildCalendarPageModel: vi.fn((events, options) => ({
+  buildCalendarPageModelFromIndex: vi.fn((calendarIndex, options) => ({
     selectedMonth: options?.selectedMonth || "2026-05",
     previousMonth: null,
     nextMonth: null,
@@ -98,6 +98,15 @@ describe("renderSitePageBuilders", () => {
             sourceFile: "source-001.ics",
           },
         ],
+      },
+      calendarIndexPayload: {
+        availableMonthsWithEvents: ["2026-05"],
+        months: {
+          "2026-05": {
+            monthKey: "2026-05",
+            dates: {},
+          },
+        },
       },
     });
 

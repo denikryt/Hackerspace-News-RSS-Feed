@@ -29,6 +29,7 @@ describe("refreshDataset", () => {
       calendarSources: resolve(outputDir, "content/ics_events.json"),
       calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
       calendarEvents: resolve(outputDir, "data/calendar/events.json"),
+      calendarIndex: resolve(outputDir, "data/calendar/index.json"),
     };
 
     await mkdir(resolve(outputDir, "content"), { recursive: true });
@@ -107,14 +108,16 @@ END:VCALENDAR`,
       validationsPayload: expect.any(Array),
       normalizedPayload: expect.any(Object),
       calendarPayload: expect.any(Object),
+      calendarIndexPayload: expect.any(Object),
     });
     expect(result.site).toBeUndefined();
 
-    const [sourceRowsJson, validationsJson, normalizedJson, calendarJson] = await Promise.all([
+    const [sourceRowsJson, validationsJson, normalizedJson, calendarJson, calendarIndexJson] = await Promise.all([
       readFile(paths.sourceRows, "utf8"),
       readFile(paths.validations, "utf8"),
       readFile(paths.normalizedFeeds, "utf8"),
       readFile(paths.calendarEvents, "utf8"),
+      readFile(paths.calendarIndex, "utf8"),
     ]);
 
     expect(JSON.parse(sourceRowsJson).urls).toHaveLength(3);
@@ -164,6 +167,27 @@ END:VCALENDAR`,
         countryFlag: "🇨🇭",
         hackerspaceName: "Test Hackerspace",
       })],
+    });
+    expect(JSON.parse(calendarIndexJson)).toMatchObject({
+      timeZone: "UTC",
+      availableMonthsWithEvents: ["2026-05"],
+      months: {
+        "2026-05": {
+          monthKey: "2026-05",
+          dates: {
+            "2026-05-23": {
+              dateKey: "2026-05-23",
+              events: [
+                expect.objectContaining({
+                  uid: "direct-1",
+                  summary: "Direct ICS Event",
+                  timeLabel: "7:00 AM - 9:00 AM",
+                }),
+              ],
+            },
+          },
+        },
+      },
     });
 
     const rawFileNames = (await readDir(paths.calendarRawDirectory)).sort();
@@ -235,6 +259,7 @@ END:VCALENDAR`,
       calendarSources: resolve(outputDir, "content/ics_events.json"),
       calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
       calendarEvents: resolve(outputDir, "data/calendar/events.json"),
+      calendarIndex: resolve(outputDir, "data/calendar/index.json"),
     };
 
     await mkdir(resolve(outputDir, "content"), { recursive: true });
@@ -281,10 +306,14 @@ END:VCALENDAR`,
           failedSources: 0,
         },
       }),
+      calendarIndexPayload: expect.objectContaining({
+        availableMonthsWithEvents: ["2026-05"],
+      }),
     });
     expect(fetchImpl).toHaveBeenCalledTimes(1);
     expect(fetchImpl).toHaveBeenCalledWith("https://calendar.example/direct.ics");
     await expect(readFile(paths.calendarEvents, "utf8")).resolves.toContain("Calendar Only Event");
+    await expect(readFile(paths.calendarIndex, "utf8")).resolves.toContain("\"availableMonthsWithEvents\"");
     await expect(readFile(paths.sourceRows, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
     await expect(readFile(paths.validations, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
     await expect(readFile(paths.normalizedFeeds, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
@@ -292,6 +321,7 @@ END:VCALENDAR`,
 
   it("probes feeds with concurrency capped at 4", async () => {
     vi.resetModules();
+    const outputDir = await createTrackedTempDir("hnf-refresh-concurrency-", tempDirs);
 
     let activeCount = 0;
     let peakConcurrency = 0;
@@ -335,7 +365,19 @@ END:VCALENDAR`,
 
     const { refreshDataset: isolatedRefreshDataset } = await import("../../../src/refreshDataset.js");
 
-    await isolatedRefreshDataset();
+    const paths = {
+      sourceRows: resolve(outputDir, "data/source_urls.json"),
+      validations: resolve(outputDir, "data/feed_validation.json"),
+      normalizedFeeds: resolve(outputDir, "data/feeds_normalized.json"),
+      calendarSources: resolve(outputDir, "content/ics_events.json"),
+      calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
+      calendarEvents: resolve(outputDir, "data/calendar/events.json"),
+      calendarIndex: resolve(outputDir, "data/calendar/index.json"),
+    };
+    await mkdir(resolve(outputDir, "content"), { recursive: true });
+    await writeFile(paths.calendarSources, JSON.stringify({ items: [] }, null, 2), "utf8");
+
+    await isolatedRefreshDataset({ paths });
 
     expect(peakConcurrency).toBe(4);
 
@@ -347,6 +389,7 @@ END:VCALENDAR`,
 
   it("adds discovery-valid rows only when explicitly provided and keeps wiki priority on overlap", async () => {
     vi.resetModules();
+    const outputDir = await createTrackedTempDir("hnf-refresh-discovery-", tempDirs);
 
     const feedProbe = vi.fn(async ({ sourceRow }) => ({
       candidateUrl: sourceRow.candidateFeedUrl,
@@ -382,7 +425,20 @@ END:VCALENDAR`,
 
     const { refreshDataset: isolatedRefreshDataset } = await import("../../../src/refreshDataset.js");
 
+    const paths = {
+      sourceRows: resolve(outputDir, "data/source_urls.json"),
+      validations: resolve(outputDir, "data/feed_validation.json"),
+      normalizedFeeds: resolve(outputDir, "data/feeds_normalized.json"),
+      calendarSources: resolve(outputDir, "content/ics_events.json"),
+      calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
+      calendarEvents: resolve(outputDir, "data/calendar/events.json"),
+      calendarIndex: resolve(outputDir, "data/calendar/index.json"),
+    };
+    await mkdir(resolve(outputDir, "content"), { recursive: true });
+    await writeFile(paths.calendarSources, JSON.stringify({ items: [] }, null, 2), "utf8");
+
     const result = await isolatedRefreshDataset({
+      paths,
       additionalSourceRows: [
         {
           hackerspaceName: "Discovery Alpha",

@@ -36,6 +36,9 @@ export async function runBuildCli({
   if (paths.calendarEvents) {
     logger(`Wrote ${paths.calendarEvents}`);
   }
+  if (paths.calendarIndex) {
+    logger(`Wrote ${paths.calendarIndex}`);
+  }
   logger(`Rendered ${Object.keys(renderResult.pages).length} pages into ${distDir}`);
   logger(`Rendered ${Object.keys(renderResult.pages).length} pages in ${renderElapsedMs}ms`);
 }

@@ -260,6 +260,14 @@ Any implementation plan should:
 - define what is in scope and what remains unchanged;
 - include concrete readiness criteria for each stage;
 - include a test plan, not only implementation steps.
+- prefer short, concrete statements over broad explanatory text;
+- avoid filler, repeated restatements, and generic process narration;
+- name the actual modules, files, artifacts, commands, and contracts that will change;
+- keep each stage focused on one concrete deliverable or boundary change;
+- write only enough text to make the implementation path clear.
+- when a behavior or artifact would be ambiguous without an example, include a small concrete example;
+- prefer schematic pseudocode, shape examples, or minimal before/after examples over long prose;
+- do not fully script the implementation in the plan unless that level of detail is actually needed to remove ambiguity.
 
 ## Notes Writing Rules
 

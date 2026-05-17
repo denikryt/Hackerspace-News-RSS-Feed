@@ -18,6 +18,7 @@ export const PATHS = {
   calendarSources: resolve(CONTENT_DIR, "ics_events.json"),
   calendarRawDirectory: resolve(DATA_DIR, "calendar/raw"),
   calendarEvents: resolve(DATA_DIR, "calendar/events.json"),
+  calendarIndex: resolve(DATA_DIR, "calendar/index.json"),
   calendarIcsDirectory: resolve(DATA_DIR, "ICS"),
   discoveredValidSourceRows: resolve(CONTENT_DIR, "discovered_valid_source_urls.json"),
   discoveredHackerspaceSourceSnapshot: resolve(DATA_DIR, "discovery/list_of_hacker_spaces.html"),

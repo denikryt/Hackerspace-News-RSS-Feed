@@ -34,6 +34,9 @@ export async function runRefreshCli({
   if (paths.calendarEvents) {
     logger(`Wrote ${paths.calendarEvents}`);
   }
+  if (paths.calendarIndex) {
+    logger(`Wrote ${paths.calendarIndex}`);
+  }
 }
 
 async function loadDiscoveryValidSourceRows({ argv, env, readJsonImpl, paths }) {

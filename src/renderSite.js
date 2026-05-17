@@ -2,6 +2,7 @@ import { copyFile, mkdir, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { injectCanonicalHref, pagePathToCanonicalUrl } from "./canonical.js";
+import { buildCalendarIndex } from "./calendar/index.js";
 import { DIST_DIR, PATHS, SITE_URL } from "./config.js";
 import { listStaticRenderAssets } from "./renderAssets.js";
 import {
@@ -29,6 +30,7 @@ export async function renderSite({
   validationsPayload,
   normalizedPayload,
   calendarPayload,
+  calendarIndexPayload,
   now = Date.now(),
   writePages = false,
   logger = null,
@@ -39,6 +41,7 @@ export async function renderSite({
     validationsPayload,
     normalizedPayload,
     calendarPayload,
+    calendarIndexPayload,
   });
 
   const context = buildRenderContext(data, { now, logger });
@@ -47,6 +50,7 @@ export async function renderSite({
 
   const calendarPageEntries = await buildCalendarPageEntries({
     calendarPayload: data.calendarPayload,
+    calendarIndexPayload: data.calendarIndexPayload,
     now: nowDate,
   }, { logger });
 
@@ -74,6 +78,7 @@ export async function renderSite({
     validationsPayload: data.validationsPayload,
     normalizedPayload: data.normalizedPayload,
     calendarPayload: data.calendarPayload,
+    calendarIndexPayload: data.calendarIndexPayload,
     pages,
   };
 }
@@ -111,13 +116,17 @@ function buildRenderContext(data, { now, logger }) {
   };
 }
 
-async function loadRenderInputs({ paths, sourceRowsPayload, validationsPayload, normalizedPayload, calendarPayload }) {
+async function loadRenderInputs({ paths, sourceRowsPayload, validationsPayload, normalizedPayload, calendarPayload, calendarIndexPayload }) {
   if (sourceRowsPayload && validationsPayload && normalizedPayload && calendarPayload) {
     return {
       sourceRowsPayload,
       validationsPayload,
       normalizedPayload: validateNormalizedRenderPayloadForDisplay(normalizedPayload),
       calendarPayload,
+      calendarIndexPayload: calendarIndexPayload ?? buildCalendarIndex(calendarPayload.events, {
+        generatedAt: calendarPayload.generatedAt,
+        timeZone: "UTC",
+      }),
     };
   }
 
@@ -127,6 +136,8 @@ async function loadRenderInputs({ paths, sourceRowsPayload, validationsPayload, 
     normalizedPayload ?? readJson(paths.normalizedFeeds),
     calendarPayload ?? readCalendarPayload(paths.calendarEvents),
   ]);
+  const loadedCalendarIndexPayload = calendarIndexPayload
+    ?? await readCalendarIndexPayload(paths.calendarIndex, loadedCalendarPayload);
 
   const validatedNormalizedPayload = validateNormalizedRenderPayloadForDisplay(loadedNormalizedPayload);
 
@@ -135,6 +146,7 @@ async function loadRenderInputs({ paths, sourceRowsPayload, validationsPayload, 
     validationsPayload: loadedValidationsPayload,
     normalizedPayload: validatedNormalizedPayload,
     calendarPayload: loadedCalendarPayload,
+    calendarIndexPayload: loadedCalendarIndexPayload,
   };
 }
 
@@ -150,6 +162,29 @@ async function readCalendarPayload(filePath) {
   } catch (error) {
     if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
       return buildEmptyCalendarPayload();
+    }
+    throw error;
+  }
+}
+
+// The refresh-time calendar index is preferred. Render can rebuild a fallback
+// index only when older snapshots do not have the new artifact yet.
+async function readCalendarIndexPayload(filePath, calendarPayload) {
+  if (!filePath) {
+    return buildCalendarIndex(calendarPayload?.events || [], {
+      generatedAt: calendarPayload?.generatedAt || null,
+      timeZone: "UTC",
+    });
+  }
+
+  try {
+    return await readJson(filePath);
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+      return buildCalendarIndex(calendarPayload?.events || [], {
+        generatedAt: calendarPayload?.generatedAt || null,
+        timeZone: "UTC",
+      });
     }
     throw error;
   }

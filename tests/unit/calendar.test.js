@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 
 import { cleanupTrackedTempDirs, createTempDirTracker, createTrackedTempDir } from "../_shared/tempDirs.js";
 import { formatDateKeyInTimeZone, shiftMonthKey } from "../../src/calendar/dateFormatting.js";
-import { buildCalendarPageModel, readCalendarEvents } from "../../src/calendar/index.js";
+import { buildCalendarIndex, buildCalendarPageModel, readCalendarEvents } from "../../src/calendar/index.js";
 
 const tempDirs = createTempDirTracker();
 
@@ -225,6 +225,63 @@ END:VCALENDAR`, "utf8");
     expect(model.dateSections[1]).toMatchObject({
       date: "2026-04-12",
       dateLabel: "Sunday/April 12",
+    });
+  });
+
+  it("builds a persisted calendar index from normalized events", () => {
+    const index = buildCalendarIndex([
+      {
+        uid: "march-1",
+        summary: "March event",
+        dateKind: "timed",
+        startInstant: "2026-03-04T09:00:00.000Z",
+        endInstant: "2026-03-04T10:00:00.000Z",
+        sourceTimeZone: "UTC",
+        sourceFile: "source.ics",
+      },
+      {
+        uid: "april-overnight",
+        summary: "Reading Group",
+        dateKind: "timed",
+        startInstant: "2026-04-10T22:00:00.000Z",
+        endInstant: "2026-04-11T02:00:00.000Z",
+        sourceTimeZone: "UTC",
+        sourceFile: "source.ics",
+        country: "United Kingdom",
+        countryFlag: "🇬🇧",
+        hackerspaceName: "Glasgow Hackerspace",
+      },
+      {
+        uid: "april-date",
+        summary: "Hackday",
+        dateKind: "date",
+        sourceDate: "2026-04-12",
+        sourceFile: "source.ics",
+      },
+    ], {
+      generatedAt: "2026-03-19T20:00:00.000Z",
+      timeZone: "UTC",
+    });
+
+    expect(index).toMatchObject({
+      generatedAt: "2026-03-19T20:00:00.000Z",
+      timeZone: "UTC",
+      availableMonthsWithEvents: ["2026-03", "2026-04"],
+    });
+    expect(Object.keys(index.months)).toEqual(["2026-03", "2026-04"]);
+    expect(Object.keys(index.months["2026-04"].dates)).toEqual(["2026-04-10", "2026-04-11", "2026-04-12"]);
+    expect(index.months["2026-04"].dates["2026-04-10"].events[0]).toMatchObject({
+      uid: "april-overnight",
+      summary: "Reading Group",
+      timeLabel: "Apr 10 10:00 PM - Apr 11 2:00 AM",
+      countryName: "United Kingdom",
+      countryFlag: "🇬🇧",
+      hackerspaceName: "Glasgow Hackerspace",
+    });
+    expect(index.months["2026-04"].dates["2026-04-12"].events[0]).toMatchObject({
+      uid: "april-date",
+      summary: "Hackday",
+      timeLabel: "All day",
     });
   });
 

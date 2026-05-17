@@ -1,5 +1,5 @@
 import { SOURCE_PAGE_URL, PATHS } from "./config.js";
-import { refreshCalendarSnapshot } from "./calendar/index.js";
+import { buildCalendarIndex, refreshCalendarSnapshot } from "./calendar/index.js";
 import { enrichFeed } from "./feedEnricher.js";
 import { normalizeFeed } from "./feedNormalizer.js";
 import { parseFeedBody } from "./feedParser.js";
@@ -24,15 +24,24 @@ export async function refreshDataset({
     writeSnapshots,
     logger,
   });
+  const calendarIndexPayload = buildCalendarIndex(calendarPayload.events, {
+    generatedAt: calendarPayload.generatedAt,
+    timeZone: "UTC",
+  });
 
   if (refreshCalendarOnly) {
     if (writeSnapshots) {
-      await writeJson(paths.calendarEvents, calendarPayload);
+      await Promise.all([
+        writeJson(paths.calendarEvents, calendarPayload),
+        writeJson(paths.calendarIndex, calendarIndexPayload),
+      ]);
     }
 
+    logInfo(logger, `[refresh] calendar index prepared: months=${calendarIndexPayload.availableMonthsWithEvents.length}`);
     logInfo(logger, "[refresh] calendar-only refresh complete");
     return {
       calendarPayload,
+      calendarIndexPayload,
     };
   }
 
@@ -134,6 +143,7 @@ export async function refreshDataset({
       },
     },
     calendarPayload,
+    calendarIndexPayload,
   };
 
   if (writeSnapshots) {
@@ -142,9 +152,11 @@ export async function refreshDataset({
       writeJson(paths.validations, result.validationsPayload),
       writeJson(paths.normalizedFeeds, result.normalizedPayload),
       writeJson(paths.calendarEvents, result.calendarPayload),
+      writeJson(paths.calendarIndex, result.calendarIndexPayload),
     ]);
   }
 
+  logInfo(logger, `[refresh] calendar index prepared: months=${calendarIndexPayload.availableMonthsWithEvents.length}`);
   logInfo(logger, `[refresh] refresh complete: feeds=${feeds.length} failures=${failures.length}`);
 
   return result;

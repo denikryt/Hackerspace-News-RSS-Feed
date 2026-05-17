@@ -55,6 +55,7 @@ describe("renderSite", () => {
           failedSources: 0,
         },
       },
+      calendarIndexPayload: buildCalendarIndexPayload([]),
     });
 
     expect(renderAboutPage).toHaveBeenCalledWith();
@@ -121,6 +122,7 @@ describe("renderSite", () => {
           failedSources: 0,
         },
       },
+      calendarIndexPayload: buildCalendarIndexPayload([]),
       now: Date.parse("2026-03-19T12:00:00.000Z"),
     });
 
@@ -155,6 +157,7 @@ describe("renderSite", () => {
       validations: resolve(dataDir, "feed_validation.json"),
       normalizedFeeds: resolve(dataDir, "feeds_normalized.json"),
       calendarEvents: resolve(dataDir, "calendar/events.json"),
+      calendarIndex: resolve(dataDir, "calendar/index.json"),
     };
 
     const sourceRowsPayload = {
@@ -258,6 +261,7 @@ describe("renderSite", () => {
         failedSources: 0,
       },
     };
+    const calendarIndexPayload = buildCalendarIndexPayload(calendarPayload.events);
 
     await mkdir(resolve(distDir, "news"), { recursive: true });
 
@@ -266,6 +270,7 @@ describe("renderSite", () => {
       writeJson(paths.validations, validationsPayload),
       writeJson(paths.normalizedFeeds, normalizedPayload),
       writeJson(paths.calendarEvents, calendarPayload),
+      writeJson(paths.calendarIndex, calendarIndexPayload),
     ]);
 
     const firstRun = await renderSite({ paths, distDir, now: Date.parse("2026-03-19T12:00:00.000Z"), writePages: true });
@@ -496,6 +501,7 @@ describe("renderSite", () => {
           failedSources: 0,
         },
       },
+      calendarIndexPayload: buildCalendarIndexPayload([]),
       logger,
       writePages: false,
     });
@@ -572,6 +578,7 @@ describe("renderSite", () => {
           failedSources: 0,
         },
       },
+      calendarIndexPayload: buildCalendarIndexPayload([]),
     });
 
     expect(Object.keys(result.pages).sort()).toEqual([
@@ -596,8 +603,7 @@ describe("renderSite", () => {
 
 
   it("rejects invalid normalized payloads before building page output", async () => {
-    await expect(() =>
-      renderSite({
+    await expect(renderSite({
         sourceRowsPayload: {
           sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
           sectionTitle: "Spaces with RSS feeds",
@@ -618,8 +624,19 @@ describe("renderSite", () => {
           feeds: [],
           failures: [],
         },
-      }),
-    ).rejects.toThrow(/parsedFeeds/i);
+        calendarPayload: {
+          generatedAt: "2026-03-19T20:00:00.000Z",
+          items: [],
+          events: [],
+          summary: {
+            sources: 0,
+            parsedSources: 0,
+            parsedEvents: 0,
+            failedSources: 0,
+          },
+        },
+        calendarIndexPayload: buildCalendarIndexPayload([]),
+      })).rejects.toThrow(/parsedFeeds/i);
   });
 
 });
@@ -644,4 +661,44 @@ async function listRelativeFiles(rootDir, currentDir = rootDir) {
   );
 
   return relativePaths.flat();
+}
+
+function buildCalendarIndexPayload(events) {
+  if (!Array.isArray(events) || events.length === 0) {
+    return {
+      generatedAt: "2026-03-19T20:00:00.000Z",
+      timeZone: "UTC",
+      availableMonthsWithEvents: [],
+      months: {},
+    };
+  }
+
+  return {
+    generatedAt: "2026-03-19T20:00:00.000Z",
+    timeZone: "UTC",
+    availableMonthsWithEvents: ["2026-03"],
+    months: {
+      "2026-03": {
+        monthKey: "2026-03",
+        dates: {
+          "2026-03-18": {
+            dateKey: "2026-03-18",
+            dateLabel: "Wednesday/March 18",
+            events: [
+              {
+                uid: "calendar-1",
+                summary: "Calendar event",
+                timeLabel: "6:00 PM - 8:00 PM",
+                countryName: "Switzerland",
+                countryFlag: "🇨🇭",
+                hackerspaceName: "Test Hackerspace",
+                description: null,
+                url: null,
+              },
+            ],
+          },
+        },
+      },
+    },
+  };
 }

@@ -12,6 +12,7 @@ export async function buildDataset({
     validationsPayload: refreshResult.validationsPayload,
     normalizedPayload: refreshResult.normalizedPayload,
     calendarPayload: refreshResult.calendarPayload,
+    calendarIndexPayload: refreshResult.calendarIndexPayload,
     now,
   });
 

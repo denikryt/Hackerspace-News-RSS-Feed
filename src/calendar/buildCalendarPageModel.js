@@ -1,25 +1,32 @@
+import { buildCalendarIndex, buildEmptyCalendarIndex } from "./buildCalendarIndex.js";
 import {
-  formatDateBandLabel,
   formatDateKeyInTimeZone,
   formatLongDateLabel,
-  formatMediumDateLabel,
   formatMonthLabel,
-  formatTimeLabel,
 } from "./dateFormatting.js";
-import { getCountryFlag } from "../countryFlags.js";
 
-// The calendar page model is pure and timezone-aware so the same rules can be
-// applied for server fallback rendering and for client-side reformatting.
-export function buildCalendarPageModel(events, {
+// Calendar page models are now built from a month/date index. The old
+// build-from-events entrypoint stays as a thin wrapper for compatibility and
+// for tests that still exercise the pure page-model contract directly.
+export function buildCalendarPageModel(events, options = {}) {
+  const timeZone = options.timeZone || "UTC";
+  const index = buildCalendarIndex(Array.isArray(events) ? events : [], { timeZone });
+  return buildCalendarPageModelFromIndex(index, options);
+}
+
+// Render consumes a persisted refresh artifact, so this builder accepts a
+// precomputed index and resolves only month selection and navigation.
+export function buildCalendarPageModelFromIndex(calendarIndex, {
   timeZone = "UTC",
   selectedDate,
   selectedMonth,
   now = new Date(),
 } = {}) {
-  const normalizedEvents = Array.isArray(events) ? events : [];
-  const eventIndex = buildEventIndex(normalizedEvents, timeZone);
-  const availableDates = [...eventIndex.keys()].sort((left, right) => left.localeCompare(right));
-  const availableMonthsWithEvents = listAvailableMonthsWithEvents(availableDates);
+  const normalizedIndex = normalizeCalendarIndex(calendarIndex, timeZone);
+  const availableDates = listAvailableDates(normalizedIndex);
+  const availableMonthsWithEvents = Array.isArray(normalizedIndex.availableMonthsWithEvents)
+    ? normalizedIndex.availableMonthsWithEvents
+    : [];
   const fallbackDate = formatDateKeyInTimeZone(now, timeZone);
   const resolvedMonth = resolveSelectedMonth({ fallbackDate, selectedDate, selectedMonth });
   const resolvedDate = resolveSelectedDate({ availableDates, fallbackDate, selectedDate, resolvedMonth });
@@ -37,31 +44,30 @@ export function buildCalendarPageModel(events, {
     nextMonth: monthNavigation.nextMonth,
     nextMonthLabel: monthNavigation.nextMonth ? formatMonthLabel(monthNavigation.nextMonth) : null,
     availableMonthsWithEvents,
-    dateSections: buildDateSections({ monthKey: resolvedMonth, eventIndex, timeZone }),
-    selectedDayEvents: (eventIndex.get(resolvedDate) || []).map((entry) => toVisibleDayEvent(entry.event, timeZone, resolvedDate)),
+    dateSections: buildDateSections({ calendarIndex: normalizedIndex, monthKey: resolvedMonth }),
+    selectedDayEvents: normalizedIndex.months?.[resolvedDate.slice(0, 7)]?.dates?.[resolvedDate]?.events || [],
   };
 }
 
-// Timed events are indexed by the day they occupy in the target timezone,
-// while date-only events stay pinned to their original source day.
-function buildEventIndex(events, timeZone) {
-  const index = new Map();
-
-  for (const event of events) {
-    const visibleDates = listVisibleDatesForEvent(event, timeZone);
-    for (const visibleDate of visibleDates) {
-      if (!index.has(visibleDate)) {
-        index.set(visibleDate, []);
-      }
-      index.get(visibleDate).push({ visibleDate, event });
-    }
+function normalizeCalendarIndex(calendarIndex, timeZone) {
+  if (!calendarIndex || typeof calendarIndex !== "object") {
+    return buildEmptyCalendarIndex({ timeZone });
   }
 
-  for (const entries of index.values()) {
-    entries.sort(compareIndexedEvents);
-  }
+  return {
+    ...buildEmptyCalendarIndex({ timeZone }),
+    ...calendarIndex,
+    months: calendarIndex.months && typeof calendarIndex.months === "object" ? calendarIndex.months : {},
+    availableMonthsWithEvents: Array.isArray(calendarIndex.availableMonthsWithEvents)
+      ? calendarIndex.availableMonthsWithEvents
+      : [],
+  };
+}
 
-  return index;
+function listAvailableDates(calendarIndex) {
+  return Object.values(calendarIndex.months || {})
+    .flatMap((month) => Object.keys(month?.dates || {}))
+    .sort((left, right) => left.localeCompare(right));
 }
 
 function resolveSelectedMonth({ fallbackDate, selectedDate, selectedMonth }) {
@@ -91,93 +97,6 @@ function resolveSelectedDate({ availableDates, fallbackDate, selectedDate, resol
   return `${resolvedMonth}-01`;
 }
 
-function listVisibleDatesForEvent(event, timeZone) {
-  if (!event) {
-    return [];
-  }
-
-  if (event.dateKind === "date") {
-    return event.sourceDate ? [event.sourceDate] : [];
-  }
-
-  if (!event.startInstant) {
-    return [];
-  }
-
-  const startDateKey = formatDateKeyInTimeZone(event.startInstant, timeZone);
-  const endDateKey = formatDateKeyInTimeZone(event.endInstant || event.startInstant, timeZone);
-  return listDateKeysBetween(startDateKey, endDateKey);
-}
-
-function toVisibleDayEvent(event, timeZone, visibleDate) {
-  return {
-    uid: event.uid,
-    summary: event.summary || "Untitled event",
-    dateLabel: formatLongDateLabel(visibleDate, timeZone),
-    timeLabel: formatEventTimeLabel(event, timeZone),
-    countryName: event.country || null,
-    // Prefer the refresh snapshot metadata so server fallback and browser
-    // enhancement render the same source identity from one contract.
-    countryFlag: event.countryFlag || getCountryFlag(event.country),
-    hackerspaceName: event.hackerspaceName || null,
-    location: event.location || null,
-    description: event.description || null,
-    url: event.url || null,
-    organizer: event.organizer || null,
-    sourceFile: event.sourceFile || null,
-  };
-}
-
-function formatEventTimeLabel(event, timeZone) {
-  if (!event || event.dateKind === "date" || !event.startInstant) {
-    return "All day";
-  }
-
-  const startDate = new Date(event.startInstant);
-  const endDate = event.endInstant ? new Date(event.endInstant) : null;
-  const startDateKey = formatDateKeyInTimeZone(startDate, timeZone);
-  const endDateKey = endDate ? formatDateKeyInTimeZone(endDate, timeZone) : startDateKey;
-  const startTime = formatTimeLabel(startDate, timeZone);
-
-  if (!endDate) {
-    return startTime;
-  }
-
-  const endTime = formatTimeLabel(endDate, timeZone);
-  if (startDateKey === endDateKey) {
-    return `${startTime} - ${endTime}`;
-  }
-
-  return `${formatMediumDateLabel(startDateKey)} ${startTime} - ${formatMediumDateLabel(endDateKey)} ${endTime}`;
-}
-
-function listDateKeysBetween(startDateKey, endDateKey) {
-  const dates = [];
-  const start = new Date(`${startDateKey}T00:00:00.000Z`);
-  const end = new Date(`${endDateKey}T00:00:00.000Z`);
-
-  for (let current = start.getTime(); current <= end.getTime(); current += DAY_MS) {
-    dates.push(new Date(current).toISOString().slice(0, 10));
-  }
-
-  return dates;
-}
-
-function compareIndexedEvents(left, right) {
-  const leftSortKey = left.event.startInstant || `${left.event.sourceDate || ""}T00:00:00.000Z`;
-  const rightSortKey = right.event.startInstant || `${right.event.sourceDate || ""}T00:00:00.000Z`;
-
-  if (leftSortKey !== rightSortKey) {
-    return leftSortKey.localeCompare(rightSortKey);
-  }
-
-  return (left.event.summary || "").localeCompare(right.event.summary || "");
-}
-
-function listAvailableMonthsWithEvents(availableDates) {
-  return [...new Set(availableDates.map((dateKey) => dateKey.slice(0, 7)))];
-}
-
 function resolveMonthNavigation(availableMonthsWithEvents, resolvedMonth) {
   const previousMonth = [...availableMonthsWithEvents]
     .reverse()
@@ -190,17 +109,19 @@ function resolveMonthNavigation(availableMonthsWithEvents, resolvedMonth) {
   };
 }
 
-// The static calendar page renders one editorial column per eventful day, so
-// this model filters out every empty date before the renderer sees it.
-function buildDateSections({ monthKey, eventIndex, timeZone }) {
-  return [...eventIndex.entries()]
-    .filter(([dateKey]) => dateKey.startsWith(`${monthKey}-`))
-    .sort(([leftDate], [rightDate]) => leftDate.localeCompare(rightDate))
-    .map(([dateKey, entries]) => ({
+// The renderer expects only eventful dates for the current month, so the page
+// model flattens one month bucket into an ordered array of editorial columns.
+function buildDateSections({ calendarIndex, monthKey }) {
+  const monthBucket = calendarIndex.months?.[monthKey];
+  if (!monthBucket || typeof monthBucket !== "object") {
+    return [];
+  }
+
+  return Object.keys(monthBucket.dates || {})
+    .sort((left, right) => left.localeCompare(right))
+    .map((dateKey) => ({
       date: dateKey,
-      dateLabel: formatDateBandLabel(dateKey, timeZone),
-      events: entries.map((entry) => toVisibleDayEvent(entry.event, timeZone, dateKey)),
+      dateLabel: monthBucket.dates[dateKey].dateLabel,
+      events: monthBucket.dates[dateKey].events || [],
     }));
 }
-
-const DAY_MS = 24 * 60 * 60 * 1000;
