@@ -421,4 +421,59 @@ END:VCALENDAR`;
       "[refresh] retrying calendar source fetch: https://calendar.example/events.ics after EAI_AGAIN (attempt 2/2, wait 1ms)",
     );
   });
+
+  it("uses a 5 second timeout on the final calendar fetch attempt by default", async () => {
+    const fetchImpl = vi.fn();
+    fetchImpl
+      .mockRejectedValueOnce(Object.assign(new Error("temporary dns failure"), { code: "EAI_AGAIN" }))
+      .mockRejectedValueOnce(Object.assign(new Error("temporary dns failure"), { code: "EAI_AGAIN" }))
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        url: "https://calendar.example/events.ics",
+        headers: {
+          get(name) {
+            return name.toLowerCase() === "content-type" ? "text/calendar; charset=utf-8" : null;
+          },
+        },
+        async text() {
+          return `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+UID:event-1
+SUMMARY:Open Night
+DTSTART:20260514T190000Z
+DTEND:20260514T210000Z
+END:VEVENT
+END:VCALENDAR`;
+        },
+      });
+
+    const timeoutCalls = [];
+    const originalSetTimeout = globalThis.setTimeout;
+    const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout").mockImplementation((handler, timeout, ...args) => {
+      timeoutCalls.push(timeout);
+      return originalSetTimeout(handler, timeout, ...args);
+    });
+
+    try {
+      await refreshCalendarSnapshot({
+        sourceItems: [
+          {
+            url: "https://calendar.example/events.ics",
+            country: "Germany",
+            hs_name: "Test Space",
+          },
+        ],
+        fetchImpl,
+        logger: vi.fn(),
+        waitImpl: vi.fn().mockResolvedValue(undefined),
+        retryDelaysMs: [1, 1],
+      });
+    } finally {
+      setTimeoutSpy.mockRestore();
+    }
+
+    expect(timeoutCalls).toContain(5000);
+  });
 });

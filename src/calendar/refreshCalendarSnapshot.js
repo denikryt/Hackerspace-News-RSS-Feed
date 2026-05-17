@@ -6,6 +6,10 @@ import { getCountryFlag } from "../countryFlags.js";
 import { readJson, writeText } from "../storage.js";
 import { parseCalendarIcsText, sortCalendarEvents } from "./readCalendarEvents.js";
 
+// Calendar sources can be slower than the RSS polling targets, so the refresh
+// pipeline gives them a longer final attempt before aborting.
+export const DEFAULT_CALENDAR_ATTEMPT_TIMEOUTS_MS = [1000, 2000, 5000];
+
 // Refresh owns network acquisition for calendar sources. The source list must
 // contain direct ICS URLs only; refresh snapshots that raw ICS text and
 // returns one normalized event payload for the render pipeline to consume
@@ -40,7 +44,7 @@ export async function refreshCalendarSnapshot({
       logger,
       waitImpl,
       retryDelaysMs,
-      attemptTimeoutsMs,
+      attemptTimeoutsMs: attemptTimeoutsMs || DEFAULT_CALENDAR_ATTEMPT_TIMEOUTS_MS,
     });
   });
 
