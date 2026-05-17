@@ -1,12 +1,14 @@
 import { getAuthorDetailOutputPath } from "./authors.js";
+import { buildCalendarPageModelFromIndex } from "./calendar/index.js";
 import { formatLoopProgressLog } from "./renderProgress.js";
 import { renderAboutPage } from "./renderers/renderAboutPage.js";
 import { renderAuthorDetail } from "./renderers/renderAuthorDetail.js";
 import { renderAuthorsIndex } from "./renderers/renderAuthorsIndex.js";
+import { renderCalendarPage } from "./renderers/renderCalendarPage.js";
 import { renderSpaceDetail } from "./renderers/renderSpaceDetail.js";
 import { renderSpacesIndex } from "./renderers/renderSpacesIndex.js";
 import { renderNewspaperFeedPageTsx } from "./renderers/tsxPageRuntime.js";
-import { getAuthorsIndexHref, getCuratedHref, getHomeHref, getNewsIndexHref } from "./sitePaths.js";
+import { buildPrimaryNavItems } from "./siteNav.js";
 import { buildAuthorDetailModel } from "./viewModels/authors.js";
 import { buildSpaceDetailModel } from "./viewModels/spaceDetail.js";
 import {
@@ -16,7 +18,6 @@ import {
   encodeCountryForPath,
 } from "./viewModels/newspaperFeed.js";
 
-// Root pages do not depend on pagination loops, so keep them as a small stable builder.
 export function buildRootStaticPageEntries(context) {
   return [
     ["index.html", renderSpacesIndex(context.spacesIndexModel)],
@@ -24,7 +25,32 @@ export function buildRootStaticPageEntries(context) {
   ];
 }
 
-// Author detail pages depend on the shared author directory, so keep that dependency explicit.
+export async function buildCalendarPageEntries(context, { logger } = {}) {
+  const calendarPayload = context.calendarPayload || { events: [] };
+  const calendarIndexPayload = context.calendarIndexPayload || { availableMonthsWithEvents: [], months: {} };
+  const events = Array.isArray(calendarPayload.events) ? calendarPayload.events : [];
+  const now = context.now || new Date();
+  const currentMonth = now.toISOString().slice(0, 7);
+  const baseModel = buildCalendarPageModelFromIndex(calendarIndexPayload, {
+    timeZone: "UTC",
+    selectedMonth: currentMonth,
+    now,
+  });
+  const monthEntries = buildCalendarMonthEntries({
+    calendarIndexPayload,
+    currentMonth,
+    monthKeys: baseModel.availableMonthsWithEvents || [],
+    now,
+  });
+
+  logInfo(logger, `[render] calendar page: events=${events.length} months=${(baseModel.availableMonthsWithEvents || []).length}`);
+  return [
+    ["calendar/index.html", `<!doctype html><html><head><meta http-equiv="refresh" content="0;url=${currentMonth}/" /><title>Redirecting…</title></head><body></body></html>`],
+    ...monthEntries,
+    ["calendar/events.json", JSON.stringify(calendarPayload, null, 2)],
+  ];
+}
+
 export function buildAuthorPageEntries(context, { logger } = {}) {
   logInfo(logger, `[render] rendering author pages: authors=${context.authorsIndexModel.authors.length}`);
   const entries = [["authors/index.html", renderAuthorsIndex(context.authorsIndexModel)]];
@@ -65,7 +91,6 @@ export function buildAuthorPageEntries(context, { logger } = {}) {
   return entries;
 }
 
-// Space detail pages derive page count from the current display payload and author directory.
 export function buildSpacePageEntries(context, { logger } = {}) {
   logInfo(logger, `[render] rendering space pages: spaces=${context.spaceSlugs.length}`);
   const entries = [];
@@ -87,8 +112,6 @@ export function buildSpacePageEntries(context, { logger } = {}) {
 
     entries.push(
       ...buildPaginatedEntityEntries({
-        // enrichedItems is undefined on page 1; the model builds it and returns it as
-        // _enrichedItems so subsequent pages can skip rebuilding display content.
         renderPage(currentPage, enrichedItems) {
           const pagedModel = buildSpaceDetailModel(context.displayPayload, spaceSlug, {
             currentPage,
@@ -118,13 +141,7 @@ export function buildNewspaperFeedPageEntries(normalizedPayload, context, { logg
 
   const availableDates = buildAvailableDatesFromPayload(normalizedPayload, today);
   const availableDatesByCountry = buildAvailableDatesByCountry(normalizedPayload, today);
-
-  const navItems = [
-    { href: getHomeHref(), label: "Hackerspaces", isCurrent: false },
-    { href: getNewsIndexHref(), label: "News", isCurrent: true },
-    { href: getCuratedHref(), label: "Curated", isCurrent: false },
-    { href: getAuthorsIndexHref(), label: "Authors", isCurrent: false },
-  ];
+  const navItems = buildPrimaryNavItems("News");
 
   if (availableDates.length === 0) {
     logInfo(logger, "[render] newspaper feed: no dates with items found");
@@ -152,7 +169,6 @@ export function buildNewspaperFeedPageEntries(normalizedPayload, context, { logg
     })),
   );
 
-  // Group items by date once — avoids O(dates × items) repeated filtering.
   const itemsByDate = new Map();
   for (const item of allItems) {
     const date = item.displayDate?.slice(0, 10);
@@ -180,12 +196,9 @@ export function buildNewspaperFeedPageEntries(normalizedPayload, context, { logg
     }
 
     const dayItems = itemsByDate.get(date) || [];
-
-    // All-countries page
     const dayModel = buildNewspaperDayModel(dayItems, date, now, null, availableDates, availableDatesByCountry, { navItems });
     entries.push([`news/${date}/index.html`, renderNewspaperFeedPageTsx(dayModel)]);
 
-    // Per-country pages — only for countries that have items on this date
     const countriesOnDay = [...new Set(dayItems.map((i) => i.country).filter(Boolean))].sort();
     for (const country of countriesOnDay) {
       const countryItems = dayItems.filter((i) => i.country === country);
@@ -194,15 +207,12 @@ export function buildNewspaperFeedPageEntries(normalizedPayload, context, { logg
     }
   }
 
-  // Shared date index — loaded by newspaper-nav.js to populate date <select> on the client.
-  // Avoids embedding 4000+ <option> elements in every HTML page.
   const byCountry = {};
   for (const [country, dates] of availableDatesByCountry) {
     byCountry[country] = dates;
   }
   entries.push(["news/dates.json", JSON.stringify({ dates: availableDates, byCountry })]);
 
-  // Redirect from /news/index.html to the most recent date page.
   const latestDate = availableDates[0];
   entries.push([
     "news/index.html",
@@ -219,15 +229,40 @@ function logInfo(logger, message) {
   }
 }
 
+function buildCalendarMonthEntries({ calendarIndexPayload, currentMonth, monthKeys, now }) {
+  const orderedMonthKeys = [...new Set([currentMonth, ...monthKeys])];
+
+  return orderedMonthKeys.map((monthKey) => {
+    const model = buildCalendarPageModelFromIndex(calendarIndexPayload, {
+      timeZone: "UTC",
+      selectedMonth: monthKey,
+      now,
+    });
+
+    return [
+      `calendar/${monthKey}/index.html`,
+      renderCalendarPage(withCalendarNavigation(model)),
+    ];
+  });
+}
+
+function withCalendarNavigation(model) {
+  return {
+    ...model,
+    navItems: buildPrimaryNavItems("Calendar"),
+    previousMonthHref: model.previousMonth ? getCalendarMonthHref(model.previousMonth) : null,
+    nextMonthHref: model.nextMonth ? getCalendarMonthHref(model.nextMonth) : null,
+  };
+}
+
+function getCalendarMonthHref(monthKey) {
+  return `/calendar/${monthKey}/`;
+}
+
 function shouldLogLoopCheckpoint(currentIndex, totalItems) {
   return currentIndex === 1 || currentIndex === totalItems || currentIndex % 100 === 0;
 }
 
-// Author and space detail builders share the same paginated render shape.
-// renderPage returns a [path, html, totalPages, cache] tuple. Page 1 is rendered first
-// to discover totalPages without a separate model build, then remaining pages follow.
-// The optional cache element lets callers thread pre-built data (e.g. enriched items)
-// through subsequent pages so expensive per-item work is not repeated.
 function buildPaginatedEntityEntries({ renderPage }) {
   const [firstPath, firstHtml, totalPages, cache] = renderPage(1, undefined);
   const entries = [[firstPath, firstHtml]];

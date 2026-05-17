@@ -1,4 +1,4 @@
-const REDIRECT_ONLY_PATHS = new Set(["news/index.html"]);
+const REDIRECT_ONLY_PATHS = new Set(["news/index.html", "calendar/index.html"]);
 
 // Canonical URLs are derived from the final output path so every rendered HTML
 // page points search engines at one stable public URL shape.

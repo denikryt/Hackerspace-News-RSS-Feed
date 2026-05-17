@@ -6,6 +6,7 @@ const pageModule = await tsImport("../renderers-tsx/pages.tsx", import.meta.url)
 
 export const {
   renderAboutPageTsx,
+  renderCalendarPageTsx,
   renderAuthorDetailPageTsx,
   renderAuthorsIndexPageTsx,
   renderGlobalFeedPageTsx,

@@ -4,6 +4,7 @@ import {
   getAboutHref,
   getAuthorsIndexHref,
   getCuratedHref,
+  getCalendarHref,
   getHomeHref,
   getNewsIndexHref,
 } from "../../src/sitePaths.js";
@@ -14,6 +15,7 @@ describe("sitePaths", () => {
     expect(getAboutHref()).toBe("/about/");
     expect(getAuthorsIndexHref()).toBe("/authors/");
     expect(getCuratedHref()).toBe("/curated/");
+    expect(getCalendarHref()).toBe("/calendar/");
     expect(getNewsIndexHref()).toBe("/news/");
   });
 });

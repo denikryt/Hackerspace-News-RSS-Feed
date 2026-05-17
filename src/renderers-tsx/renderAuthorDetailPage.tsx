@@ -1,3 +1,4 @@
+import { getCalendarHref } from "../sitePaths.js";
 import { renderGlobalFeedPageTsx } from "./renderGlobalFeedPage.js";
 import { getCuratedHref } from "../sitePaths.js";
 import type { RecordLike } from "./pageHelpers.js";
@@ -18,6 +19,7 @@ export function renderAuthorDetailPageTsx(model: RecordLike) {
     streamNavItems: [
       { href: model.feedHref, label: "News", isCurrent: false },
       { href: getCuratedHref(), label: "Curated", isCurrent: false },
+      { href: getCalendarHref(), label: "Calendar", isCurrent: false },
       { href: model.authorsIndexHref, label: "Authors", isCurrent: false },
       { href: model.canonicalHref || model.authorsIndexHref, label: model.authorDisplayName, isCurrent: true },
     ],

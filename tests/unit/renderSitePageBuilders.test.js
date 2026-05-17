@@ -16,6 +16,10 @@ vi.mock("../../src/renderers/renderAboutPage.js", () => ({
   renderAboutPage: vi.fn(() => "about-page"),
 }));
 
+vi.mock("../../src/renderers/renderCalendarPage.js", () => ({
+  renderCalendarPage: vi.fn((model) => `calendar-page:${model.selectedMonth || "empty"}`),
+}));
+
 vi.mock("../../src/renderers/renderAuthorsIndex.js", () => ({
   renderAuthorsIndex: vi.fn((model) => `authors-index:${model.id}`),
 }));
@@ -51,6 +55,16 @@ vi.mock("../../src/viewModels/spaceDetail.js", () => ({
   })),
 }));
 
+vi.mock("../../src/calendar/index.js", () => ({
+  buildCalendarPageModelFromIndex: vi.fn((calendarIndex, options) => ({
+    selectedMonth: options?.selectedMonth || "2026-05",
+    previousMonth: null,
+    nextMonth: null,
+    availableMonthsWithEvents: ["2026-05"],
+    dateSections: [],
+  })),
+}));
+
 const pageBuilders = await import("../../src/renderSitePageBuilders.js");
 
 describe("renderSitePageBuilders", () => {
@@ -63,9 +77,56 @@ describe("renderSitePageBuilders", () => {
     expect(pageBuilders.buildAuthorPageEntries).toBeTypeOf("function");
     expect(pageBuilders.buildSpacePageEntries).toBeTypeOf("function");
     expect(pageBuilders.buildNewspaperFeedPageEntries).toBeTypeOf("function");
+    expect(pageBuilders.buildCalendarPageEntries).toBeTypeOf("function");
     expect("buildPrimaryFeedSectionPageEntries" in pageBuilders).toBe(false);
     expect("buildSecondaryFeedSectionPageEntries" in pageBuilders).toBe(false);
     expect("buildCountryFeedPageEntries" in pageBuilders).toBe(false);
+  });
+
+  it("builds a calendar redirect root plus month pages", async () => {
+    const entries = await pageBuilders.buildCalendarPageEntries({
+      now: new Date("2026-05-14T12:00:00.000Z"),
+      calendarPayload: {
+        events: [
+          {
+            uid: "evt-1",
+            summary: "Open Night",
+            dateKind: "timed",
+            startInstant: "2026-05-14T19:00:00.000Z",
+            endInstant: "2026-05-14T21:00:00.000Z",
+            sourceTimeZone: "UTC",
+            sourceFile: "source-001.ics",
+          },
+        ],
+      },
+      calendarIndexPayload: {
+        availableMonthsWithEvents: ["2026-05"],
+        months: {
+          "2026-05": {
+            monthKey: "2026-05",
+            dates: {},
+          },
+        },
+      },
+    });
+
+    expect(entries).toEqual([
+      ["calendar/index.html", '<!doctype html><html><head><meta http-equiv="refresh" content="0;url=2026-05/" /><title>Redirecting…</title></head><body></body></html>'],
+      ["calendar/2026-05/index.html", "calendar-page:2026-05"],
+      ["calendar/events.json", JSON.stringify({
+        events: [
+          {
+            uid: "evt-1",
+            summary: "Open Night",
+            dateKind: "timed",
+            startInstant: "2026-05-14T19:00:00.000Z",
+            endInstant: "2026-05-14T21:00:00.000Z",
+            sourceTimeZone: "UTC",
+            sourceFile: "source-001.ics",
+          },
+        ],
+      }, null, 2)],
+    ]);
   });
 
   it("builds root static pages in the stable index/about order", () => {

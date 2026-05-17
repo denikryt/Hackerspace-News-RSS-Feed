@@ -33,6 +33,8 @@ export async function runBuildCli({
     validationsPayload: refreshResult.validationsPayload,
     normalizedPayload: refreshResult.normalizedPayload,
     curatedPayload: curatedRefreshResult.curatedPayload,
+    calendarPayload: refreshResult.calendarPayload,
+    calendarIndexPayload: refreshResult.calendarIndexPayload,
     logger,
     writePages: true,
   });
@@ -42,6 +44,15 @@ export async function runBuildCli({
   logger(`Wrote ${paths.validations}`);
   logger(`Wrote ${paths.normalizedFeeds}`);
   logger(`Wrote ${paths.curatedNormalized}`);
+  if (paths.calendarSources) {
+    logger(`Wrote ${paths.calendarSources}`);
+  }
+  if (paths.calendarEvents) {
+    logger(`Wrote ${paths.calendarEvents}`);
+  }
+  if (paths.calendarIndex) {
+    logger(`Wrote ${paths.calendarIndex}`);
+  }
   logger(`Rendered ${Object.keys(renderResult.pages).length} pages into ${distDir}`);
   logger(`Rendered ${Object.keys(renderResult.pages).length} pages in ${renderElapsedMs}ms`);
 }

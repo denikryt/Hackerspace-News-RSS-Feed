@@ -12,11 +12,24 @@ describe("tsx-backed page runtime", () => {
         `
           import {
             renderAboutPageTsx,
+            renderCalendarPageTsx,
             renderGlobalFeedPageTsx,
           } from "./src/renderers/tsxPageRuntime.js";
 
           console.log(JSON.stringify({
             about: renderAboutPageTsx(),
+            calendar: renderCalendarPageTsx({
+              pageTitle: "Calendar",
+              pageIntro: "Upcoming events from ICS feeds.",
+              navItems: [{ href: "/calendar/", label: "Calendar", isCurrent: true }],
+              selectedMonth: "2026-05",
+              selectedMonthLabel: "May 2026",
+              previousMonthLabel: "April 2026",
+              previousMonthHref: "/calendar/2026-04/",
+              nextMonthLabel: "June 2026",
+              nextMonthHref: "/calendar/2026-06/",
+              dateSections: [],
+            }),
             feed: renderGlobalFeedPageTsx({
               items: [],
               homeHref: "/",
@@ -36,6 +49,10 @@ describe("tsx-backed page runtime", () => {
     const payload = JSON.parse(stdout.trim());
 
     expect(payload.about).toContain("<title>About</title>");
+    expect(payload.calendar).toContain("<title>Calendar</title>");
+    expect(payload.calendar).toContain("May 2026");
+    expect(payload.calendar).toContain('src="/calendar-time.js"');
+    expect(payload.calendar).not.toContain('src="/calendar-page.js"');
     expect(payload.about).toContain("<strong>Data Sources:</strong>");
     expect(payload.feed).toContain("<title>Feed</title>");
     expect(payload.feed).toContain('href="/news/"');

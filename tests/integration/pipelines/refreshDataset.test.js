@@ -12,6 +12,23 @@ import { refreshDataset } from "../../../src/refreshDataset.js";
 
 const sourceHtml = readFixtureText("source-page", "user-jomat-oldid-94788-snippet.html");
 const sourcePageUrl = "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds";
+const EMPTY_CALENDAR_PAYLOAD = {
+  generatedAt: expect.any(String),
+  items: [],
+  events: [],
+  summary: {
+    sources: 0,
+    parsedSources: 0,
+    parsedEvents: 0,
+    failedSources: 0,
+  },
+};
+const EMPTY_CALENDAR_INDEX_PAYLOAD = {
+  generatedAt: expect.any(String),
+  timeZone: "UTC",
+  availableMonthsWithEvents: [],
+  months: {},
+};
 
 const tempDirs = createTempDirTracker();
 
@@ -28,6 +45,10 @@ describe("refreshDataset", () => {
       validations: resolve(outputDir, "data/feed_validation.json"),
       normalizedFeeds: resolve(outputDir, "data/feeds_normalized.json"),
       curatedNormalized: resolve(outputDir, "data/curated_publications_normalized.json"),
+      calendarSources: resolve(outputDir, "content/ics_events.json"),
+      calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
+      calendarEvents: resolve(outputDir, "data/calendar/events.json"),
+      calendarIndex: resolve(outputDir, "data/calendar/index.json"),
     };
 
     const fetchImpl = vi.fn(async (url) => {
@@ -74,14 +95,20 @@ describe("refreshDataset", () => {
       validationsPayload: expect.any(Array),
       normalizedPayload: expect.any(Object),
       curatedPayload: expect.any(Object),
+      calendarSourcesPayload: { items: [] },
+      calendarPayload: EMPTY_CALENDAR_PAYLOAD,
+      calendarIndexPayload: EMPTY_CALENDAR_INDEX_PAYLOAD,
     });
     expect(result.site).toBeUndefined();
 
-    const [sourceRowsJson, validationsJson, normalizedJson, curatedJson] = await Promise.all([
+    const [sourceRowsJson, validationsJson, normalizedJson, curatedJson, calendarSourcesJson, calendarEventsJson, calendarIndexJson] = await Promise.all([
       readFile(paths.sourceRows, "utf8"),
       readFile(paths.validations, "utf8"),
       readFile(paths.normalizedFeeds, "utf8"),
       readFile(paths.curatedNormalized, "utf8"),
+      readFile(paths.calendarSources, "utf8"),
+      readFile(paths.calendarEvents, "utf8"),
+      readFile(paths.calendarIndex, "utf8"),
     ]);
 
     expect(JSON.parse(sourceRowsJson).urls).toHaveLength(3);
@@ -110,9 +137,32 @@ expect(JSON.parse(curatedJson)).toEqual({
         extraFeedFailures: 0,
       },
     });
+    expect(JSON.parse(calendarSourcesJson)).toEqual({ items: [] });
+    expect(JSON.parse(calendarEventsJson)).toMatchObject({
+      items: [],
+      events: [],
+      summary: {
+        sources: 0,
+        parsedSources: 0,
+        parsedEvents: 0,
+        failedSources: 0,
+      },
+    });
+    expect(JSON.parse(calendarIndexJson)).toMatchObject({
+      timeZone: "UTC",
+      availableMonthsWithEvents: [],
+      months: {},
+    });
   });
 
   it("logs feed fetch progress and outcomes when a logger is provided", async () => {
+    const outputDir = await createTrackedTempDir("hnf-refresh-logs-", tempDirs);
+    const paths = {
+      calendarSources: resolve(outputDir, "content/ics_events.json"),
+      calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
+      calendarEvents: resolve(outputDir, "data/calendar/events.json"),
+      calendarIndex: resolve(outputDir, "data/calendar/index.json"),
+    };
     const logger = vi.fn();
     const fetchImpl = vi.fn(async (url) => {
       if (url === sourcePageUrl) {
@@ -154,6 +204,7 @@ expect(JSON.parse(curatedJson)).toEqual({
     await refreshDataset({
       sourcePageUrl,
       fetchImpl,
+      paths,
       logger,
     });
 
@@ -178,6 +229,10 @@ expect(JSON.parse(curatedJson)).toEqual({
       normalizedFeeds: resolve(outputDir, "data/feeds_normalized.json"),
       curatedNormalized: resolve(outputDir, "data/curated_publications_normalized.json"),
       curatedPublications: resolve(outputDir, "content/curated_publications.yml"),
+      calendarSources: resolve(outputDir, "content/ics_events.json"),
+      calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
+      calendarEvents: resolve(outputDir, "data/calendar/events.json"),
+      calendarIndex: resolve(outputDir, "data/calendar/index.json"),
     };
 
     await mkdir(resolve(outputDir, "content"), { recursive: true });
@@ -285,6 +340,8 @@ expect(JSON.parse(curatedJson)).toEqual({
 
   it("probes feeds with concurrency capped at 4", async () => {
     vi.resetModules();
+    const outputDir = await mkdtemp(resolve(tmpdir(), "hnf-refresh-concurrency-"));
+    tempDirs.push(outputDir);
 
     let activeCount = 0;
     let peakConcurrency = 0;
@@ -328,7 +385,14 @@ expect(JSON.parse(curatedJson)).toEqual({
 
     const { refreshDataset: isolatedRefreshDataset } = await import("../../../src/refreshDataset.js");
 
-    await isolatedRefreshDataset();
+    await isolatedRefreshDataset({
+      paths: {
+        calendarSources: resolve(outputDir, "content/ics_events.json"),
+        calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
+        calendarEvents: resolve(outputDir, "data/calendar/events.json"),
+        calendarIndex: resolve(outputDir, "data/calendar/index.json"),
+      },
+    });
 
     expect(peakConcurrency).toBe(4);
 
@@ -383,6 +447,10 @@ expect(JSON.parse(curatedJson)).toEqual({
         validations: resolve(outputDir, "data/feed_validation.json"),
         normalizedFeeds: resolve(outputDir, "data/feeds_normalized.json"),
         curatedPublications: resolve(outputDir, "content/missing-curated.yml"),
+        calendarSources: resolve(outputDir, "content/ics_events.json"),
+        calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
+        calendarEvents: resolve(outputDir, "data/calendar/events.json"),
+        calendarIndex: resolve(outputDir, "data/calendar/index.json"),
       },
       additionalSourceRows: [
         {

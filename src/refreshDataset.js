@@ -1,9 +1,11 @@
 import { SOURCE_PAGE_URL, PATHS } from "./config.js";
+import { buildCalendarIndex, refreshCalendarSnapshot } from "./calendar/index.js";
 import {
   buildCuratedSourceRows,
   readCuratedPublications,
   resolveCuratedPublications,
 } from "./curated.js";
+import { refreshCalendarSourcesCatalog } from "./calendarSourceCatalog.js";
 import { enrichFeed } from "./feedEnricher.js";
 import { normalizeFeed } from "./feedNormalizer.js";
 import { parseFeedBody } from "./feedParser.js";
@@ -19,14 +21,57 @@ export async function refreshDataset({
   writeSnapshots = false,
   logger = null,
   additionalSourceRows = [],
+  refreshCalendarOnly = false,
 } = {}) {
   const html = await fetchPageHtml({ sourcePageUrl, fetchImpl, logger });
+
+  const calendarSourcesResult = await refreshCalendarSourcesCatalog({
+    sourcePageUrl,
+    sourcePageHtml: html,
+    calendarSourcesPath: paths.calendarSources,
+    fetchImpl,
+    writeSnapshots,
+    logger,
+    allowMissingSection: true,
+  });
+  const calendarSourcesPayload = calendarSourcesResult.payload;
+  const calendarPayload = await refreshCalendarSnapshot({
+    calendarSourcesPath: paths.calendarSources,
+    sourceItems: calendarSourcesPayload.items,
+    rawDirectoryPath: paths.calendarRawDirectory,
+    fetchImpl,
+    writeSnapshots,
+    logger,
+  });
+  const calendarIndexPayload = buildCalendarIndex(calendarPayload.events, {
+    generatedAt: calendarPayload.generatedAt,
+    timeZone: "UTC",
+  });
+
+  if (refreshCalendarOnly) {
+    if (writeSnapshots) {
+      await Promise.all([
+        writeJson(paths.calendarEvents, calendarPayload),
+        writeJson(paths.calendarIndex, calendarIndexPayload),
+      ]);
+    }
+
+    logInfo(logger, `[refresh] calendar index prepared: months=${calendarIndexPayload.availableMonthsWithEvents.length}`);
+    logInfo(logger, "[refresh] calendar-only refresh complete");
+    return {
+      calendarSourcesPayload,
+      calendarPayload,
+      calendarIndexPayload,
+    };
+  }
+
   const curatedSelections = await readCuratedPublications(paths.curatedPublications);
   const sourceRows = mergeSourceRows({
     wikiSourceRows: extractSourceRows({ html, sourcePageUrl }),
     additionalSourceRows,
   });
   logInfo(logger, `[refresh] source rows extracted: ${sourceRows.length}`);
+
   const results = await processSourceRows(sourceRows, { fetchImpl, logger });
   const curatedSourceRows = buildCuratedSourceRows(curatedSelections, sourceRows);
   const curatedFeedResults = await processSourceRows(curatedSourceRows, { fetchImpl, logger });
@@ -67,6 +112,9 @@ export async function refreshDataset({
       },
     },
     curatedPayload,
+    calendarSourcesPayload,
+    calendarPayload,
+    calendarIndexPayload,
   };
 
   if (writeSnapshots) {
@@ -75,18 +123,19 @@ export async function refreshDataset({
       writeJson(paths.validations, result.validationsPayload),
       writeJson(paths.normalizedFeeds, result.normalizedPayload),
       writeJson(paths.curatedNormalized, result.curatedPayload),
+      writeJson(paths.calendarEvents, result.calendarPayload),
+      writeJson(paths.calendarIndex, result.calendarIndexPayload),
     ]);
   }
 
+  logInfo(logger, `[refresh] calendar index prepared: months=${calendarIndexPayload.availableMonthsWithEvents.length}`);
   logInfo(logger, `[refresh] refresh complete: feeds=${feeds.length} failures=${failures.length}`);
 
   return result;
 }
 
-/**
- * Curated selections are stored outside the main feed snapshot so the regular
- * normalized payload keeps only the wiki/discovery feed inventory.
- */
+// Curated selections are stored outside the main feed snapshot so the regular
+// normalized payload keeps only the wiki/discovery feed inventory.
 function buildCuratedPayload({ curated, curatedSelections, curatedFeeds, curatedFeedFailures }) {
   return {
     items: curated.items,

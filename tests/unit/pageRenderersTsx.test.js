@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { renderAboutPage } from "../../src/renderers/renderAboutPage.js";
+import { renderCalendarPage } from "../../src/renderers/renderCalendarPage.js";
 import { renderAuthorDetail } from "../../src/renderers/renderAuthorDetail.js";
 import { renderAuthorsIndex } from "../../src/renderers/renderAuthorsIndex.js";
 import { renderGlobalFeed } from "../../src/renderers/renderGlobalFeed.js";
@@ -8,6 +9,7 @@ import { renderSpaceDetail } from "../../src/renderers/renderSpaceDetail.js";
 import { renderSpacesIndex } from "../../src/renderers/renderSpacesIndex.js";
 import {
   renderAboutPageTsx,
+  renderCalendarPageTsx,
   renderAuthorDetailPageTsx,
   renderAuthorsIndexPageTsx,
   renderGlobalFeedPageTsx,
@@ -18,6 +20,43 @@ import {
 describe("page renderer TSX parity", () => {
   it("matches the current about page output", () => {
     expect(renderAboutPageTsx()).toBe(renderAboutPage());
+  });
+
+  it("matches the current calendar page output", () => {
+    const model = {
+      pageTitle: "Calendar",
+      pageIntro: "Upcoming events from ICS feeds.",
+      selectedMonth: "2026-05",
+      selectedMonthLabel: "May 2026",
+      previousMonthLabel: "April 2026",
+      previousMonthHref: "/calendar/2026-04/",
+      nextMonthLabel: "June 2026",
+      nextMonthHref: "/calendar/2026-06/",
+      dateSections: [
+        {
+          date: "2026-05-14",
+          dateLabel: "Thursday, May 14, 2026",
+          events: [
+            {
+              summary: "DC415",
+              dateLabel: "Thursday, May 14, 2026",
+              timeLabel: "7:30 PM - 10:00 PM",
+              location: "Noisebridge",
+              url: "https://example.com/dc415",
+              categories: [],
+            },
+          ],
+        },
+      ],
+      navItems: [
+        { href: "/", label: "Hackerspaces" },
+        { href: "/news/", label: "News" },
+        { href: "/calendar/", label: "Calendar", isCurrent: true },
+        { href: "/authors/", label: "Authors" },
+      ],
+    };
+
+    expect(renderCalendarPageTsx(model)).toBe(renderCalendarPage(model));
   });
 
   it("matches the current spaces index page output", () => {
