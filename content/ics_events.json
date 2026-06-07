@@ -1,6 +1,16 @@
 {
   "items": [
     {
+      "url": "https://hsbxl.be/events/index.ics",
+      "country": "Belgium",
+      "hs_name": "Hackerspace Brussels"
+    }, 
+    {
+      "url": "https://www.meetup.com/AllHandsActive/events/ical/",
+      "country": "United States of America",
+      "hs_name": "All Hands Active"
+    },
+    {
       "url": "https://www.google.com/calendar/ical/hive13.org_udjdae3tclqjlm6o9uu7t3pp7g%40group.calendar.google.com/public/basic.ics",
       "country": "United States of America",
       "hs_name": "Hive13"
