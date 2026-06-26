@@ -36,17 +36,32 @@
       "hs_name": "Noisebridge"
     },
     {
+      "url": "https://owncloud.hackerspace.pl/remote.php/dav/public-calendars/g8toktZrA9fyAHNi/?export",
+      "country": "Poland",
+      "hs_name": "Warsawski Hackerspace"
+    },
+    {
+      "url": "https://hsp.sh/calendar.ics",
+      "country": "Poland",
+      "hs_name": "Hackerspace Pomorze"
+    },
+    {
       "url": "https://hs3.pl/wydarzenia/index.ics",
       "country": "Poland",
       "hs_name": "Hackerspace Trojmiasto"
     },
     {
-      "url": "https://mobilizon.pl/@hakierspejs_lodz/feed/ics",
+      "url": "https://www.meetup.com/HackerspaceKrakow/events/ical",
+      "country": "Poland",
+      "hs_name": "Hackerspace Kraków"
+    },
+    {
+      "url": "https://www.meetup.com/hakierspejs-łódź/events/ical",
       "country": "Poland",
       "hs_name": "Hakierspejs Lodz"
     },
     {
-      "url": "https://mobilizon.pl/@hswro/feed/ics",
+      "url": "https://forum.hswro.org/discourse-post-event/events.ics",
       "country": "Poland",
       "hs_name": "Hackerspace Wrocław"
     },
@@ -56,19 +71,9 @@
       "hs_name": "Knyfyrtel Hackerspace Poznań"
     },
     {
-      "url": "https://mobilizon.pl/@golang_trojmiasto/feed/ics",
+      "url": "https://wydarzenia.phub.pl/@hsgru_group/feed/ics",
       "country": "Poland",
-      "hs_name": "Golang Trojmiasto"
-    },
-    {
-      "url": "https://mobilizon.pl/@hswaw/feed/ics",
-      "country": "Poland",
-      "hs_name": "Warszawski Hackerspace"
-    },
-    {
-      "url": "https://hsp.sh/calendar.ics",
-      "country": "Poland",
-      "hs_name": "Hackerspace Pomorze"
+      "hs_name": "Hackerspace Grudziądz"
     },
     {
       "url": "https://cloud.bckspc.de/remote.php/dav/public-calendars/sTMap39wFwkJERjt/?export",
@@ -259,11 +264,6 @@
       "url": "http://www.google.com/calendar/ical/ij2r5jaqg6l2bdt5uv6ltngfq0%40group.calendar.google.com/public/basic.ics",
       "country": "Netherlands",
       "hs_name": "TkkrLab"
-    },
-    {
-      "url": "https://owncloud.hackerspace.pl/remote.php/dav/public-calendars/g8toktZrA9fyAHNi/?export",
-      "country": "Poland",
-      "hs_name": "Warsaw Hackerspace"
     },
     {
       "url": "https://www.werkraum.space/ics/werkraum.ics",
