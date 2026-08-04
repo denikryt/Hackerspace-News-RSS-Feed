@@ -97,84 +97,95 @@ Detailed discovery flow documentation:
 
 ## Production Deployment
 
-This project is intended to be served as static files behind `nginx`.
+Production uses two nginx layers:
 
-The production flow was tested on Ubuntu 24.04.
+- host `nginx` keeps TLS certificates, public ports, redirects, access logs, and probe blocking;
+- Docker `site` nginx serves only the generated static files from a read-only Docker volume on `127.0.0.1:18088`.
 
-Typical setup:
+The generated site is no longer copied to `/var/www/hackerspace.news`.
 
-1. Point your domain to the server with DNS records.
-2. Configure `nginx` to serve a directory from `/var/www/...`.
-3. Build or render the site so that `dist/` contains the current static output.
-4. Copy `dist/` into the directory used by `nginx`.
-5. Reload `nginx`.
+First publish the Docker site volume and start the local web container:
+
+```bash
+./scripts/deploy-site.sh build --include-discovery-valid
+```
+
+Then install the host nginx reverse proxy config:
+
+```bash
+sudo ./scripts/install-nginx-container-proxy.sh
+```
+
+The installed nginx config is based on:
+
+- `deploy/nginx/hackerspace.news.container.conf`
+
+It proxies `https://hackerspace.news/` to `http://127.0.0.1:18088/`.
 
 ## Deploy Script
 
 The repository includes:
 
-- [scripts/deploy-site.sh](/home/denchik/projects/Hackerspace-news-rss-feed/scripts/deploy-site.sh)
+- [scripts/deploy-site.sh](/home/denchik/projects/deploy/hackerspace-news-rss-feed/scripts/deploy-site.sh)
 
-This script supports three modes:
+The script publishes through Docker Compose:
 
-- default mode: copies the current `dist/` to `TARGET_DIR` and reloads `nginx`
-- `render` mode: runs `npm run render`, then copies `dist/` to `TARGET_DIR`, then reloads `nginx`
-- `build` mode: runs `npm run build`, then copies `dist/` to `TARGET_DIR`, then reloads `nginx`
+- builds the `site-builder` and `site` images;
+- runs `site-builder` as a one-shot container;
+- writes the generated static files into the `site-html` Docker volume;
+- starts the `site` nginx container;
+- verifies `index.html` and `favicon.png` inside the running container.
 
-It does not run `npm install`.
+Supported modes:
 
-Current target directory defaults to:
+- default mode: same as `build`;
+- `build`: runs `npm run build` inside `site-builder` and publishes the result;
+- `render`: runs `npm run render` inside `site-builder` and publishes the result.
 
-```bash
-/var/www/hackerspace.news
-```
-
-You can change it in the script or override it through the environment:
-
-```bash
-TARGET_DIR="/var/www/your-site" ./scripts/deploy-site.sh
-```
-
-Typical manual deployment with existing already-built `dist/`:
+Typical full deployment:
 
 ```bash
-./scripts/deploy-site.sh
+./scripts/deploy-site.sh build --include-discovery-valid
 ```
 
-Typical manual deployment after re-rendering from existing local data snapshots:
+Fast deployment after rendering-only changes:
 
 ```bash
 ./scripts/deploy-site.sh render
 ```
 
-Typical manual deployment with fresh data refresh and full rebuild:
+Check the local container endpoint:
 
 ```bash
-./scripts/deploy-site.sh build
+curl -I http://127.0.0.1:18088/
+docker compose ps
 ```
 
 ## systemd Timer
 
-The repository also includes scripts for installing and removing a `systemd` timer that runs deployment every hour:
+The repository includes scripts for installing and removing the hourly Docker deployment timer:
 
-- [scripts/install-deploy-site-timer.sh](/home/denchik/projects/Hackerspace-news-rss-feed/scripts/install-deploy-site-timer.sh)
-- [scripts/uninstall-deploy-site-timer.sh](/home/denchik/projects/Hackerspace-news-rss-feed/scripts/uninstall-deploy-site-timer.sh)
+- [scripts/install-deploy-site-timer.sh](/home/denchik/projects/deploy/hackerspace-news-rss-feed/scripts/install-deploy-site-timer.sh)
+- [scripts/uninstall-deploy-site-timer.sh](/home/denchik/projects/deploy/hackerspace-news-rss-feed/scripts/uninstall-deploy-site-timer.sh)
 
-Install:
-
-```bash
-./scripts/install-deploy-site-timer.sh
-```
-
-Remove:
+Install the container timer:
 
 ```bash
-./scripts/uninstall-deploy-site-timer.sh
+sudo ./scripts/install-deploy-site-timer.sh --include-discovery-valid
 ```
 
-By default, the timer runs once per hour. It executes `./scripts/deploy-site.sh build`, refreshes data from the network, rebuilds the static site, copies `dist/` to the target directory, and reloads `nginx`.
+Remove the container timer and any legacy host-copy timer:
 
-The installer creates a `systemd` service and timer for the current project path and configures the service to run `./scripts/deploy-site.sh build`. That means each timer run refreshes data, rebuilds the site, copies `dist/` to the target directory, and reloads `nginx`. The installer also starts the deploy service once immediately to verify that deployment works.
+```bash
+sudo ./scripts/uninstall-deploy-site-timer.sh
+```
+
+The installer removes the old `hackerspace-news-feed-deploy.service` and `hackerspace-news-feed-deploy.timer` units, then creates:
+
+- `hackerspace-news-feed-container-deploy.service`
+- `hackerspace-news-feed-container-deploy.timer`
+
+The timer runs once per hour and executes `./scripts/deploy-site.sh build` from the current checkout path.
 
 ## Data Source and Behavior
 

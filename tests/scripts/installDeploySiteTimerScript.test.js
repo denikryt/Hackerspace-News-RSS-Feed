@@ -1,12 +1,5 @@
 import { execFileSync } from "node:child_process";
-import {
-  chmodSync,
-  copyFileSync,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  writeFileSync,
-} from "node:fs";
+import { chmodSync, copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
@@ -20,7 +13,7 @@ afterEach(async () => {
 });
 
 describe("install-deploy-site-timer.sh", () => {
-  it("enables the timer without starting the deploy service immediately", () => {
+  it("removes the legacy host-copy units and enables the container deploy timer", () => {
     const rootDir = createFixtureProject();
     const logPath = join(rootDir, "commands.log");
 
@@ -28,37 +21,42 @@ describe("install-deploy-site-timer.sh", () => {
 
     const logLines = readLog(logPath);
 
-    expect(logLines).toContain("sudo systemctl daemon-reload");
-    expect(logLines).toContain("sudo systemctl enable --now hackerspace-news-feed-deploy.timer");
-    expect(logLines).not.toContain("sudo systemctl start hackerspace-news-feed-deploy.service");
-    expect(logLines).toContain("sudo systemctl status hackerspace-news-feed-deploy.timer --no-pager");
-    expect(logLines).not.toContain("sudo systemctl status hackerspace-news-feed-deploy.service --no-pager");
-    expect(readFileSync(join(rootDir, "etc/systemd/system/hackerspace-news-feed-deploy.service"), "utf8")).toContain("ExecStart=");
-    expect(readFileSync(join(rootDir, "etc/systemd/system/hackerspace-news-feed-deploy.timer"), "utf8")).toContain("OnCalendar=hourly");
+    expect(logLines).toContain("sudo systemctl disable --now hackerspace-news-feed-deploy.timer");
+    expect(logLines).toContain("sudo systemctl stop hackerspace-news-feed-deploy.service");
+    expect(logLines).toContain("sudo rm -f /etc/systemd/system/hackerspace-news-feed-deploy.service /etc/systemd/system/hackerspace-news-feed-deploy.timer");
+    expect(logLines).toContain("sudo systemctl enable --now hackerspace-news-feed-container-deploy.timer");
+    expect(logLines).not.toContain("sudo systemctl enable --now hackerspace-news-feed-deploy.timer");
   });
 
-  it("writes the deploy service with the discovery-valid build flag when explicitly enabled", () => {
+  it("writes the container deploy service without starting it immediately", () => {
+    const rootDir = createFixtureProject();
+    const logPath = join(rootDir, "commands.log");
+
+    runScript(rootDir, logPath);
+
+    const service = readFileSync(
+      join(rootDir, "etc/systemd/system/hackerspace-news-feed-container-deploy.service"),
+      "utf8",
+    );
+    const timer = readFileSync(join(rootDir, "etc/systemd/system/hackerspace-news-feed-container-deploy.timer"), "utf8");
+
+    expect(service).toContain("Description=Deploy Hackerspace News Feed Docker static site");
+    expect(service).toContain("WorkingDirectory=" + rootDir.replace(/ /g, "\\ "));
+    expect(service).toContain("ExecStart=" + join(rootDir, "scripts/deploy-site.sh").replace(/ /g, "\\ ") + " build");
+    expect(service).toContain("NoNewPrivileges=true");
+    expect(service).toContain("PrivateTmp=true");
+    expect(timer).toContain("OnCalendar=hourly");
+    expect(readLog(logPath)).not.toContain("sudo systemctl start hackerspace-news-feed-container-deploy.service");
+  });
+
+  it("writes the container deploy service with the discovery-valid build flag when explicitly enabled", () => {
     const rootDir = createFixtureProject();
     const logPath = join(rootDir, "commands.log");
 
     runScript(rootDir, logPath, ["--include-discovery-valid"]);
 
-    expect(readFileSync(join(rootDir, "etc/systemd/system/hackerspace-news-feed-deploy.service"), "utf8")).toContain(
+    expect(readFileSync(join(rootDir, "etc/systemd/system/hackerspace-news-feed-container-deploy.service"), "utf8")).toContain(
       "ExecStart=" + join(rootDir, "scripts/deploy-site.sh").replace(/ /g, "\\ ") + " build --include-discovery-valid",
-    );
-  });
-
-  it("writes the deploy service without the discovery-valid build flag when explicitly disabled", () => {
-    const rootDir = createFixtureProject();
-    const logPath = join(rootDir, "commands.log");
-
-    runScript(rootDir, logPath, ["--no-include-discovery-valid"]);
-
-    expect(readFileSync(join(rootDir, "etc/systemd/system/hackerspace-news-feed-deploy.service"), "utf8")).toContain(
-      "ExecStart=" + join(rootDir, "scripts/deploy-site.sh").replace(/ /g, "\\ ") + " build",
-    );
-    expect(readFileSync(join(rootDir, "etc/systemd/system/hackerspace-news-feed-deploy.service"), "utf8")).not.toContain(
-      "--include-discovery-valid",
     );
   });
 
@@ -68,20 +66,18 @@ describe("install-deploy-site-timer.sh", () => {
 
     const stdout = runScript(rootDir, logPath, ["--help"]);
 
-    expect(stdout).toContain("Install a systemd timer for scheduled deploys.");
+    expect(stdout).toContain("Install a systemd timer for Docker-based scheduled deploys.");
     expect(stdout).toContain(
       "Usage: ./scripts/install-deploy-site-timer.sh [--include-discovery-valid|--no-include-discovery-valid]",
     );
-    expect(stdout).toContain("Default behavior: schedule `deploy-site.sh build` without discovery-valid rows.");
-    expect(stdout).toContain("--include-discovery-valid  Schedule builds with discovery-valid rows included.");
-    expect(stdout).toContain("--no-include-discovery-valid  Schedule builds without discovery-valid rows.");
-    expect(stdout).toContain("./scripts/install-deploy-site-timer.sh --include-discovery-valid");
+    expect(stdout).toContain("Default behavior: schedule containerized `deploy-site.sh build` without discovery-valid rows.");
+    expect(stdout).toContain("--include-discovery-valid  Schedule container builds with discovery-valid rows included.");
     expect(readLog(logPath)).toEqual([]);
   });
 });
 
 function createFixtureProject() {
-  const rootDir = createTrackedTempDirSync("hnf-install-timer-", tempDirs);
+  const rootDir = createTrackedTempDirSync("hnf-install-container-timer-", tempDirs);
 
   mkdirSync(join(rootDir, "scripts"), { recursive: true });
   mkdirSync(join(rootDir, "bin"), { recursive: true });
@@ -115,7 +111,7 @@ if [[ "$1" == "tee" ]]; then
   exit 0
 fi
 
-if [[ "$1" == "systemctl" ]]; then
+if [[ "$1" == "systemctl" || "$1" == "rm" ]]; then
   exit 0
 fi
 
@@ -152,12 +148,7 @@ function readLog(logPath) {
 }
 
 function writeExecutable(path, body) {
+  mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, body, "utf8");
   chmodSync(path, 0o755);
-}
-
-function writeProjectFile(rootDir, relativePath, value) {
-  const absolutePath = join(rootDir, relativePath);
-  mkdirSync(dirname(absolutePath), { recursive: true });
-  writeFileSync(absolutePath, value, "utf8");
 }
