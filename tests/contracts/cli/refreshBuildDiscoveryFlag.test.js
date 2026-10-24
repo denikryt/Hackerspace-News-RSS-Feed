@@ -19,7 +19,7 @@ describe("refresh/build discovery-valid flag", () => {
         validations: "/tmp/data/feed_validation.json",
         normalizedFeeds: "/tmp/data/feeds_normalized.json",
         curatedNormalized: "/tmp/data/curated_publications_normalized.json",
-        discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
+        rssFeeds: "/tmp/content/rss_feeds.json",
       },
     });
 
@@ -35,13 +35,13 @@ describe("refresh/build discovery-valid flag", () => {
   it("refresh loads discovery-valid rows only when the flag is present", async () => {
     const refreshImpl = vi.fn().mockResolvedValue({});
     const readJsonImpl = vi.fn().mockResolvedValue({
-      urls: [
+      items: [
         {
           hackerspaceName: "Alpha",
           hackerspaceWikiUrl: "https://wiki.hackerspaces.org/Alpha",
-          country: "Wonderland",
-          candidateFeedUrl: "https://alpha.example/feed.xml",
-          sourceType: "discovery",
+          feedUrl: "https://alpha.example/feed.xml",
+          website: "https://alpha.example/",
+          country: "France",
         },
       ],
     });
@@ -53,7 +53,7 @@ describe("refresh/build discovery-valid flag", () => {
       curatedNormalized: "/tmp/data/curated_publications_normalized.json",
       calendarSources: "/tmp/content/ics_events.json",
       curatedNormalized: "/tmp/data/curated_publications_normalized.json",
-      discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
+      rssFeeds: "/tmp/content/rss_feeds.json",
     };
 
     await runRefreshCli({
@@ -64,7 +64,7 @@ describe("refresh/build discovery-valid flag", () => {
       paths,
     });
 
-    expect(readJsonImpl).toHaveBeenCalledWith(paths.discoveredValidSourceRows);
+    expect(readJsonImpl).toHaveBeenCalledWith(paths.rssFeeds);
     expect(refreshImpl).toHaveBeenCalledWith({
       writeSnapshots: true,
       logger,
@@ -88,7 +88,7 @@ describe("refresh/build discovery-valid flag", () => {
       normalizedFeeds: "/tmp/data/feeds_normalized.json",
       calendarSources: "/tmp/content/ics_events.json",
       calendarEvents: "/tmp/data/calendar/events.json",
-      discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
+      rssFeeds: "/tmp/content/rss_feeds.json",
     };
 
     await runRefreshCli({
@@ -131,7 +131,7 @@ describe("refresh/build discovery-valid flag", () => {
         normalizedFeeds: "/tmp/data/feeds_normalized.json",
         calendarSources: "/tmp/content/ics_events.json",
         calendarEvents: "/tmp/data/calendar/events.json",
-        discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
+        rssFeeds: "/tmp/content/rss_feeds.json",
       },
     });
 

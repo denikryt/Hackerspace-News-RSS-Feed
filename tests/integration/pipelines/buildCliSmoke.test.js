@@ -19,7 +19,7 @@ it("runs standalone refresh/render and isolated-process build with discovery, pr
     await cp(resolve(repository, "static"), resolve(root, "static"), { recursive: true });
     const scripts = Object.fromEntries(["refresh", "render", "build"].map(name => [name, `node ${resolve(root, "src/cli", `${name}.js`)}`]));
     await writeFile(resolve(root, "package.json"), JSON.stringify({ type: "module", scripts }));
-    await writeFile(resolve(root, "content/discovered_valid_source_urls.json"), JSON.stringify({ urls: [{ rowNumber: 100, hackerspaceName: "Discovery", candidateFeedUrl: "https://discovery.example/feed", hackerspaceWikiUrl: "https://wiki.hackerspaces.org/Discovery", country: "Germany" }] }));
+    await writeFile(resolve(root, "content/rss_feeds.json"), JSON.stringify({ items: [{ rowNumber: 100, hackerspaceName: "Discovery", website: "https://discovery.example/", feedUrl: "https://discovery.example/feed", hackerspaceWikiUrl: "https://wiki.hackerspaces.org/Discovery", country: "Germany" }] }));
     const wiki = await readFile(resolve(repository, "tests/fixtures/source-page/user-jomat-oldid-94788-snippet.html"), "utf8");
     const preload = resolve(root, "acquisition.mjs");
     const rss = `<rss version="2.0"><channel><title>Fixture</title><link>https://example.test</link><description>fixture</description><item><guid>keep</guid><title>Kept article</title><link>https://example.test/keep</link><pubDate>Thu, 01 Jan 2026 12:00:00 GMT</pubDate><description>${"x".repeat(1096)}</description></item></channel></rss>`;

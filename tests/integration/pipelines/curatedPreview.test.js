@@ -17,12 +17,12 @@ afterEach(async () => {
 describe("renderCuratedPreview", () => {
   it("renders curated into the main dist dir and replaces only the curated page", async () => {
     const rootDir = await createTrackedTempDir("hnf-curated-preview-", tempDirs);
-    const curatedPath = resolve(rootDir, "content/curated_publications.yml");
+    const curatedPath = resolve(rootDir, "content/curated_publications.json");
     const distDir = resolve(rootDir, "dist");
 
     await writeText(
       curatedPath,
-      `- feedUrl: https://blog.nachitima.com/feed/\n  guid: https://blog.nachitima.com/interview-with-sasha-hackerspace-stories\n`,
+      JSON.stringify({"items": [{"feedUrl": "https://blog.nachitima.com/feed/", "guid": "https://blog.nachitima.com/interview-with-sasha-hackerspace-stories"}]}),
     );
     await writeText(resolve(distDir, "index.html"), "<html><body>Existing home</body></html>");
     await writeText(resolve(distDir, "news/index.html"), "<html><body>Existing feed</body></html>");

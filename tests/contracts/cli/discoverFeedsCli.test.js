@@ -22,7 +22,7 @@ describe("runDiscoverFeedsCli", () => {
     const stdout = [];
     const logger = vi.fn((line) => stdout.push(line));
 
-    const discoveredValidSourceRows = resolve(outputDir, "content/discovered_valid_source_urls.json");
+    const rssFeeds = resolve(outputDir, "content/rss_feeds.json");
 
     await runDiscoverFeedsCli({
       logger,
@@ -42,12 +42,12 @@ describe("runDiscoverFeedsCli", () => {
           groupedByValidationStatus: { valid: [], empty: [], invalid: [], unreachable: [], not_checked: [] },
         },
       }),
-      paths: { discoveredHackerspaceSourceSnapshot, discoveredHackerspaceFeeds, discoveredValidSourceRows },
+      paths: { discoveredHackerspaceSourceSnapshot, discoveredHackerspaceFeeds, rssFeeds },
     });
 
     expect(logger).toHaveBeenCalledWith(`Wrote ${discoveredHackerspaceSourceSnapshot}`);
     expect(logger).toHaveBeenCalledWith(`Wrote ${discoveredHackerspaceFeeds}`);
-    expect(logger).toHaveBeenCalledWith(`Wrote ${discoveredValidSourceRows}`);
+    expect(logger).toHaveBeenCalledWith(`Wrote ${rssFeeds}`);
     expect(stdout.join("\n")).toContain("Discovery completed: sites=2 confirmed=1 valid=1");
     expect(stdout.join("\n")).toContain("Discovery valid source list completed: valid=0");
   });

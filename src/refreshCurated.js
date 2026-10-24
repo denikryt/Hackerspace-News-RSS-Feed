@@ -53,7 +53,7 @@ export async function refreshCurated({
 
 /**
  * Incremental curated refresh keeps the existing snapshot authoritative for
- * already-saved selections and fetches only YAML entries that are still absent.
+ * already-saved selections and fetches only JSON entries that are still absent.
  */
 function hasCuratedSelection(curatedPayload, entry) {
   const selectionKey = buildSelectionKey(entry);

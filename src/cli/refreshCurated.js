@@ -8,7 +8,7 @@ import { refreshCurated } from "../refreshCurated.js";
 const HELP_LINE = "Usage: npm run curated:refresh -- [--force]";
 
 /**
- * This command refreshes only the curated snapshot from the manual YAML list.
+ * This command refreshes only the curated snapshot from the manual JSON registry.
  */
 export async function runRefreshCuratedCli({
   argv = process.argv.slice(2),

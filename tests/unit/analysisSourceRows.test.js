@@ -21,7 +21,7 @@ describe("loadAnalysisSourceRows", () => {
       readJsonImpl,
       includeDiscoveryValid: false,
       paths: {
-        discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
+        rssFeeds: "/tmp/content/rss_feeds.json",
       },
     });
 
@@ -56,21 +56,23 @@ describe("loadAnalysisSourceRows", () => {
       },
     ]);
     const readJsonImpl = vi.fn().mockResolvedValue({
-      urls: [
+      items: [
         {
           hackerspaceName: "Discovery Alpha",
-          candidateFeedUrl: "https://alpha.example/feed.xml",
-          sourceType: "discovery",
+          feedUrl: "https://alpha.example/feed.xml",
+          website: "https://alpha.example/",
+          country: "France",
         },
         {
           hackerspaceName: "Discovery Gamma",
-          candidateFeedUrl: "https://gamma.example/feed.xml",
-          sourceType: "discovery",
+          feedUrl: "https://gamma.example/feed.xml",
+          website: "https://gamma.example/",
+          country: "France",
         },
       ],
     });
     const paths = {
-      discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
+      rssFeeds: "/tmp/content/rss_feeds.json",
     };
 
     const result = await loadAnalysisSourceRows({
@@ -82,7 +84,7 @@ describe("loadAnalysisSourceRows", () => {
       paths,
     });
 
-    expect(readJsonImpl).toHaveBeenCalledWith(paths.discoveredValidSourceRows);
+    expect(readJsonImpl).toHaveBeenCalledWith(paths.rssFeeds);
     expect(result).toEqual({
       sourceRows: [
         expect.objectContaining({
@@ -96,7 +98,6 @@ describe("loadAnalysisSourceRows", () => {
         expect.objectContaining({
           hackerspaceName: "Discovery Gamma",
           candidateFeedUrl: "https://gamma.example/feed.xml",
-          sourceType: "discovery",
         }),
       ],
       selectedSourceMode: "wiki+discovery-valid",

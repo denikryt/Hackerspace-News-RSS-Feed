@@ -1,46 +1,13 @@
 import { readFile } from "node:fs/promises";
 
-export function parseCuratedPublicationsYaml(text) {
-  if (!text || !String(text).trim()) {
-    return [];
+// Curated selections use the same JSON items wrapper as the calendar registry.
+// GUIDs remain exact strings: they identify publications within a feed.
+export function parseCuratedPublications(text) {
+  const payload = JSON.parse(text);
+  if (!Array.isArray(payload?.items)) {
+    throw new Error("Invalid curated registry: expected an items array");
   }
-
-  const entries = [];
-  let current = null;
-
-  for (const rawLine of String(text).split(/\r?\n/)) {
-    const trimmed = rawLine.trim();
-    if (!trimmed || trimmed.startsWith("#")) {
-      continue;
-    }
-
-    if (trimmed.startsWith("- ")) {
-      if (current) {
-        entries.push(finalizeCuratedEntry(current));
-      }
-
-      current = {};
-      const remainder = trimmed.slice(2).trim();
-      if (remainder) {
-        const [key, value] = parseKeyValue(remainder);
-        current[key] = value;
-      }
-      continue;
-    }
-
-    if (!current) {
-      throw new Error("Invalid curated yaml: expected list item");
-    }
-
-    const [key, value] = parseKeyValue(trimmed);
-    current[key] = value;
-  }
-
-  if (current) {
-    entries.push(finalizeCuratedEntry(current));
-  }
-
-  return entries;
+  return payload.items.map(finalizeCuratedEntry);
 }
 
 export async function readCuratedPublications(filePath) {
@@ -50,7 +17,7 @@ export async function readCuratedPublications(filePath) {
 
   try {
     const text = await readFile(filePath, "utf8");
-    return parseCuratedPublicationsYaml(text);
+    return parseCuratedPublications(text);
   } catch (error) {
     if (error && typeof error === "object" && error.code === "ENOENT") {
       return [];
@@ -109,21 +76,12 @@ export function resolveCuratedPublications(entries, feeds) {
   return { items, unresolved };
 }
 
-function parseKeyValue(line) {
-  const match = /^([A-Za-z0-9_]+):\s*(.+)$/.exec(line);
-  if (!match) {
-    throw new Error(`Invalid curated yaml line: ${line}`);
-  }
-
-  return [match[1], stripWrappingQuotes(match[2].trim())];
-}
-
 function finalizeCuratedEntry(entry) {
-  if (!entry.feedUrl) {
+  if (typeof entry?.feedUrl !== "string" || !entry.feedUrl.trim()) {
     throw new Error("Invalid curated entry: missing feedUrl");
   }
 
-  if (!entry.guid) {
+  if (typeof entry?.guid !== "string" || !entry.guid.trim()) {
     throw new Error("Invalid curated entry: missing guid");
   }
 
@@ -131,17 +89,6 @@ function finalizeCuratedEntry(entry) {
     feedUrl: entry.feedUrl,
     guid: entry.guid,
   };
-}
-
-function stripWrappingQuotes(value) {
-  if (
-    (value.startsWith('"') && value.endsWith('"')) ||
-    (value.startsWith("'") && value.endsWith("'"))
-  ) {
-    return value.slice(1, -1);
-  }
-
-  return value;
 }
 
 function removeUndefined(object) {

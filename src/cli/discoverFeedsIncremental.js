@@ -6,6 +6,7 @@
 import { PATHS } from "../config.js";
 import { discoverHackerspaceFeeds } from "../discoverHackerspaceFeeds.js";
 import { buildDiscoveryValidSourceRowsPayload, mergeValidSourceEntries } from "../discoveryValidSourceList.js";
+import { readRssFeedRegistry, validateRssFeedRegistry } from "../rssFeedRegistry.js";
 import { readJson, writeJson } from "../storage.js";
 
 export async function runDiscoverFeedsIncrementalCli({
@@ -21,10 +22,10 @@ export async function runDiscoverFeedsIncrementalCli({
   // Load the existing valid source list — used for the merge after discovery.
   let existing = existingValidSourceRows;
   if (existing === undefined) {
-    existing = await tryReadJson(paths.discoveredValidSourceRows);
+    existing = { items: await readRssFeedRegistry({ filePath: paths.rssFeeds }) };
   }
 
-  const existingUrls = existing?.urls ?? [];
+  const existingUrls = existing ? validateRssFeedRegistry(existing) : [];
 
   // Build knownSiteUrls from the audit file — includes all processed entries
   // regardless of when the valid source list was last written. Only sites with
@@ -52,19 +53,18 @@ export async function runDiscoverFeedsIncrementalCli({
   const newValidPayload = buildDiscoveryValidSourceRowsPayload({
     discoveryPayload: result.discoveryPayload,
   });
-  const mergedUrls = mergeValidSourceEntries(existingUrls, newValidPayload.urls);
+  validateRssFeedRegistry(newValidPayload);
+  const mergedUrls = mergeValidSourceEntries(existingUrls, newValidPayload.items);
   const newlyAdded = mergedUrls.length - existingUrls.length;
 
   const mergedPayload = {
-    sourcePageUrl: result.discoveryPayload.sourcePageUrl,
-    extractedAt: result.discoveryPayload.generatedAt,
-    urls: mergedUrls,
+    items: mergedUrls,
   };
 
-  await writeJson(paths.discoveredValidSourceRows, mergedPayload);
+  await writeJson(paths.rssFeeds, mergedPayload);
 
   const summary = result.discoveryPayload.summary;
-  logInfo(logger, `Wrote ${paths.discoveredValidSourceRows}`);
+  logInfo(logger, `Wrote ${paths.rssFeeds}`);
   logInfo(
     logger,
     `Discovery incremental completed: sites=${summary.sites} skippedKnown=${summary.skippedKnown} confirmed=${summary.confirmed} valid=${summary.valid} newlyAdded=${newlyAdded} total=${mergedUrls.length}`,

@@ -12,7 +12,7 @@ export const CONTENT_DIR = resolve(process.cwd(), "content");
 export const DIST_DIR = resolve(process.cwd(), "dist");
 
 export const PATHS = {
-  curatedPublications: resolve(CONTENT_DIR, "curated_publications.yml"),
+  curatedPublications: resolve(CONTENT_DIR, "curated_publications.json"),
   sourceRows: resolve(DATA_DIR, "source_urls.json"),
   validations: resolve(DATA_DIR, "feed_validation.json"),
   normalizedFeeds: resolve(DATA_DIR, "feeds_normalized.json"),
@@ -21,7 +21,7 @@ export const PATHS = {
   calendarRawDirectory: resolve(DATA_DIR, "calendar/raw"),
   calendarEvents: resolve(DATA_DIR, "calendar/events.json"),
   calendarIndex: resolve(DATA_DIR, "calendar/index.json"),
-  discoveredValidSourceRows: resolve(CONTENT_DIR, "discovered_valid_source_urls.json"),
+  rssFeeds: resolve(CONTENT_DIR, "rss_feeds.json"),
   discoveredHackerspaceSourceSnapshot: resolve(DATA_DIR, "discovery/list_of_hacker_spaces.html"),
   discoveredHackerspaceFeeds: resolve(DATA_DIR, "discovery/discovered_hackerspace_feeds.json"),
   htmlOutput: resolve(DIST_DIR, "index.html"),

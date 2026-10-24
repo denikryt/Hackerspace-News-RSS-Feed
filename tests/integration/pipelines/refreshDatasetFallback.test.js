@@ -51,6 +51,21 @@ describe("refresh with an unavailable wiki", () => {
     expect(JSON.parse(await readFile(ctx.paths.normalizedFeeds, "utf8")).feeds).toHaveLength(1);
   });
 
+  it("keeps manually added feeds without wiki links and ignores duplicate feed URLs", async () => {
+    const ctx = await setup();
+    const manual = (name, url) => ({ hackerspaceName: name, country: "France", siteUrl: url, candidateFeedUrl: `${url}/feed` });
+    const result = await refreshDataset({ ...ctx, sourcePageUrl, additionalSourceRows: [
+      manual("One", "https://manual-one.example"),
+      manual("Two", "https://manual-two.example"),
+      { ...ctx.registry.urls[0], hackerspaceWikiUrl: undefined },
+    ] });
+    expect(result.sourceRowsPayload.urls.map(row => row.candidateFeedUrl)).toEqual([
+      ctx.registry.urls[0].candidateFeedUrl,
+      "https://manual-one.example/feed", "https://manual-two.example/feed",
+    ]);
+    expect(new Set(result.sourceRowsPayload.urls.map(row => row.rowNumber)).size).toBe(3);
+  });
+
   it("uses the live wiki instead of an obsolete saved list when available", async () => {
     const ctx = await setup();
     ctx.fetchImpl.mockImplementationOnce(async url => createTextResponse({ url, body: sourceHtml }));

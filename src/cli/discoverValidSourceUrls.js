@@ -1,5 +1,6 @@
 import { PATHS } from "../config.js";
 import { buildDiscoveryValidSourceRowsPayload } from "../discoveryValidSourceList.js";
+import { updateRssFeedRegistry } from "../rssFeedRegistry.js";
 import { readJson, writeJson } from "../storage.js";
 
 export async function runDiscoverValidSourceUrlsCli({
@@ -11,12 +12,14 @@ export async function runDiscoverValidSourceUrlsCli({
   const discoveryPayload = await readJsonImpl(paths.discoveredHackerspaceFeeds);
   const validSourceRowsPayload = buildDiscoveryValidSourceRowsPayload({ discoveryPayload });
 
-  await writeJsonImpl(paths.discoveredValidSourceRows, validSourceRowsPayload);
+  const registry = await updateRssFeedRegistry({
+    filePath: paths.rssFeeds, newItems: validSourceRowsPayload.items, readJsonImpl, writeJsonImpl,
+  });
 
-  logger(`Wrote ${paths.discoveredValidSourceRows}`);
-  logger(`Discovery valid source list completed: valid=${validSourceRowsPayload.urls.length}`);
+  logger(`Wrote ${paths.rssFeeds}`);
+  logger(`Discovery valid source list completed: valid=${registry.items.length}`);
 
-  return validSourceRowsPayload;
+  return registry;
 }
 
 async function main() {

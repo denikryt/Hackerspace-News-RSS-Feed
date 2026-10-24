@@ -19,13 +19,13 @@ describe("refreshCurated", () => {
   it("writes only the curated normalized snapshot from curated publications", async () => {
     const rootDir = await createTrackedTempDir("hnf-refresh-curated-only-", tempDirs);
     const paths = {
-      curatedPublications: resolve(rootDir, "content/curated_publications.yml"),
+      curatedPublications: resolve(rootDir, "content/curated_publications.json"),
       curatedNormalized: resolve(rootDir, "data/curated_publications_normalized.json"),
     };
 
     await writeText(
       paths.curatedPublications,
-      `- feedUrl: https://blog.nachitima.com/feed/\n  guid: https://blog.nachitima.com/interview-with-sasha-hackerspace-stories\n`,
+      JSON.stringify({"items": [{"feedUrl": "https://blog.nachitima.com/feed/", "guid": "https://blog.nachitima.com/interview-with-sasha-hackerspace-stories"}]}),
     );
 
     const fetchImpl = vi.fn(async (url) => {
@@ -88,18 +88,16 @@ describe("refreshCurated", () => {
   it("by default fetches only curated entries that are missing from the existing snapshot and preserves saved ones", async () => {
     const rootDir = await createTrackedTempDir("hnf-refresh-curated-incremental-", tempDirs);
     const paths = {
-      curatedPublications: resolve(rootDir, "content/curated_publications.yml"),
+      curatedPublications: resolve(rootDir, "content/curated_publications.json"),
       curatedNormalized: resolve(rootDir, "data/curated_publications_normalized.json"),
     };
 
     await writeText(
       paths.curatedPublications,
-      [
-        "- feedUrl: https://blog.nachitima.com/feed/",
-        "  guid: existing-guid",
-        "- feedUrl: https://blog.nachitima.com/feed/",
-        "  guid: new-guid",
-      ].join("\n"),
+      JSON.stringify({ items: [
+        { feedUrl: "https://blog.nachitima.com/feed/", guid: "existing-guid" },
+        { feedUrl: "https://blog.nachitima.com/feed/", guid: "new-guid" },
+      ] }),
     );
 
     await writeText(
@@ -197,13 +195,13 @@ describe("refreshCurated", () => {
   it("force refresh rebuilds even already saved curated entries", async () => {
     const rootDir = await createTrackedTempDir("hnf-refresh-curated-force-", tempDirs);
     const paths = {
-      curatedPublications: resolve(rootDir, "content/curated_publications.yml"),
+      curatedPublications: resolve(rootDir, "content/curated_publications.json"),
       curatedNormalized: resolve(rootDir, "data/curated_publications_normalized.json"),
     };
 
     await writeText(
       paths.curatedPublications,
-      "- feedUrl: https://blog.nachitima.com/feed/\n  guid: existing-guid\n",
+      JSON.stringify({"items": [{"feedUrl": "https://blog.nachitima.com/feed/", "guid": "existing-guid"}]}),
     );
 
     await writeText(

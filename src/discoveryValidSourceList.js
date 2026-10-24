@@ -1,5 +1,5 @@
 /**
- * Build a clean, wiki-compatible source-list artifact from the verbose
+ * Build a clean, editable feed registry from the verbose
  * discovery audit payload. This keeps the audit JSON untouched while giving
  * downstream scripts a much smaller list with stable field names.
  */
@@ -7,37 +7,31 @@ export function buildDiscoveryValidSourceRowsPayload({ discoveryPayload }) {
   const validEntries = discoveryPayload?.groupedByValidationStatus?.valid ?? [];
 
   return {
-    sourcePageUrl: discoveryPayload?.sourcePageUrl,
-    extractedAt: discoveryPayload?.generatedAt,
-    urls: validEntries.map(normalizeDiscoveryValidEntry),
+    items: validEntries.map(normalizeDiscoveryValidEntry),
   };
 }
 
-/**
- * Discovery audit rows use `feedUrl`, but the existing wiki source-list
- * contract expects `candidateFeedUrl`. The clean artifact adopts the wiki
- * contract on purpose so refresh/build can opt into it without extra mapping.
- * `siteUrl` is preserved so the incremental CLI can build the knownSiteUrls
- * set without re-reading the full audit file.
- */
+// Keep the public registry free of audit-only fields and pipeline terminology.
 function normalizeDiscoveryValidEntry(entry) {
   return {
     hackerspaceName: entry.hackerspaceName,
     hackerspaceWikiUrl: entry.hackerspaceWikiUrl,
     country: entry.country,
-    siteUrl: entry.siteUrl,
-    candidateFeedUrl: entry.feedUrl,
-    sourceType: "discovery",
+    website: entry.siteUrl,
+    feedUrl: entry.feedUrl,
   };
 }
 
-/**
- * Merge two valid-source entry arrays without duplicates.
- * Keyed by siteUrl — existing entries win on conflict, so a re-run never
- * overwrites a previously confirmed feed.
- */
+// Keep manual entries authoritative and ignore repeated websites or feed URLs.
 export function mergeValidSourceEntries(existing, incoming) {
-  const knownSiteUrls = new Set(existing.map((entry) => entry.siteUrl));
-  const newEntries = incoming.filter((entry) => !knownSiteUrls.has(entry.siteUrl));
-  return [...existing, ...newEntries];
+  const seenWebsites = new Set(existing.map(entry => entry.website).filter(Boolean));
+  const seenFeeds = new Set(existing.map(entry => entry.feedUrl));
+  const merged = [...existing];
+  for (const entry of incoming) {
+    if (seenFeeds.has(entry.feedUrl) || (entry.website && seenWebsites.has(entry.website))) continue;
+    if (entry.website) seenWebsites.add(entry.website);
+    seenFeeds.add(entry.feedUrl);
+    merged.push(entry);
+  }
+  return merged;
 }

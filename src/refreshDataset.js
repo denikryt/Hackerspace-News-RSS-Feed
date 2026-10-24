@@ -264,14 +264,18 @@ function mergeSourceRows({ wikiSourceRows, additionalSourceRows }) {
   const seenWikiUrls = new Set(
     wikiSourceRows.map((row) => row.hackerspaceWikiUrl).filter(Boolean),
   );
+  const seenFeedUrls = new Set(wikiSourceRows.map(row => row.candidateFeedUrl));
   let nextRowNumber = Math.max(0, ...wikiSourceRows.map((row) => Number(row.rowNumber) || 0)) + 1;
 
   for (const row of additionalSourceRows) {
-    if (!row || typeof row !== "object" || seenWikiUrls.has(row.hackerspaceWikiUrl)) {
+    // Manual entries need no wiki metadata; dedupe their feed URLs directly.
+    if (!row || typeof row !== "object" || seenFeedUrls.has(row.candidateFeedUrl) ||
+        (row.hackerspaceWikiUrl && seenWikiUrls.has(row.hackerspaceWikiUrl))) {
       continue;
     }
 
-    seenWikiUrls.add(row.hackerspaceWikiUrl);
+    if (row.hackerspaceWikiUrl) seenWikiUrls.add(row.hackerspaceWikiUrl);
+    seenFeedUrls.add(row.candidateFeedUrl);
     mergedRows.push({
       ...row,
       rowNumber: nextRowNumber,

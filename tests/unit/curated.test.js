@@ -1,31 +1,23 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  parseCuratedPublicationsYaml,
+  parseCuratedPublications,
   resolveCuratedPublications,
 } from "../../src/curated.js";
 
-describe("curated yaml contract", () => {
-  it("parses feedUrl and guid entries from yaml", () => {
-    const entries = parseCuratedPublicationsYaml(`
-- feedUrl: https://blog.nachitima.com/feed/
-  guid: https://blog.nachitima.com/interview-with-sasha-hackerspace-stories
-`);
-
-    expect(entries).toEqual([
-      {
-        feedUrl: "https://blog.nachitima.com/feed/",
-        guid: "https://blog.nachitima.com/interview-with-sasha-hackerspace-stories",
-      },
-    ]);
+describe("curated JSON contract", () => {
+  it("reads exact feedUrl and guid strings from items", () => {
+    const entry = { feedUrl: "https://blog.nachitima.com/feed/", guid: "https://blog.nachitima.com/interview-with-sasha-hackerspace-stories" };
+    expect(parseCuratedPublications(JSON.stringify({ items: [entry] }))).toEqual([entry]);
   });
-
-  it("rejects yaml entries without guid", () => {
-    expect(() =>
-      parseCuratedPublicationsYaml(`
-- feedUrl: https://blog.nachitima.com/feed/
-`),
-    ).toThrow("guid");
+  it("accepts an explicitly empty registry", () => {
+    expect(parseCuratedPublications('{"items":[]}')).toEqual([]);
+  });
+  it.each([null, [], {}, { items: {} }, { items: [null] }, { items: [{ feedUrl: "https://example.org/feed" }] }, { items: [{ feedUrl: "", guid: "id" }] }, { items: [{ feedUrl: 123, guid: "id" }] }])("rejects invalid registry shapes: %j", payload => {
+    expect(() => parseCuratedPublications(JSON.stringify(payload))).toThrow(/curated/i);
+  });
+  it("rejects malformed JSON", () => {
+    expect(() => parseCuratedPublications("{broken")).toThrow();
   });
 });
 
