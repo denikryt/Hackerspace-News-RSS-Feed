@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { cp, mkdir, readFile, writeFile, symlink } from "node:fs/promises";
+import { cp, mkdir, readFile, writeFile, symlink, unlink } from "node:fs/promises";
 import { resolve } from "node:path";
 import { afterEach, expect, it } from "vitest";
 import { cleanupTrackedTempDirs, createTempDirTracker, createTrackedTempDir } from "../../_shared/tempDirs.js";
@@ -46,7 +46,12 @@ it("runs standalone refresh/render and isolated-process build with discovery, pr
     expect(new Set(stages.map(row => row.pid)).size).toBe(4);
     snapshot = JSON.parse(await readFile(resolve(root, "data/feeds_normalized.json"), "utf8"));
     expect(snapshot.feeds).toHaveLength(beforeCount + 1);
+    const fallbackOutput = run("build", ["--include-discovery-valid"], { SMOKE_FAIL_WIKI: "1" });
+    expect(fallbackOutput).toContain("using saved source registry");
+    snapshot = JSON.parse(await readFile(resolve(root, "data/feeds_normalized.json"), "utf8"));
+    expect(snapshot.feeds).toHaveLength(beforeCount + 1);
     const sentinel = await readFile(resolve(root, "dist/index.html"), "utf8");
+    await unlink(resolve(root, "data/source_urls.json"));
     expect(() => run("build", [], { SMOKE_FAIL_WIKI: "1" })).toThrow();
     expect(await readFile(resolve(root, "dist/index.html"), "utf8")).toBe(sentinel);
     console.log(JSON.stringify({ fixtureCliStages: stages }));
