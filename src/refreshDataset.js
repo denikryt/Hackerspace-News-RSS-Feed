@@ -13,7 +13,7 @@ import { parseFeedBody } from "./feedParser.js";
 import { probeFeedUrl } from "./feedProbe.js";
 import { fetchPageHtml } from "./pageFetcher.js";
 import { extractSourceRows } from "./sourceTableExtractor.js";
-import { writeJson } from "./storage.js";
+import { readJson, writeJson } from "./storage.js";
 
 export async function refreshDataset({
   sourcePageUrl = SOURCE_PAGE_URL,
@@ -24,18 +24,20 @@ export async function refreshDataset({
   additionalSourceRows = [],
   refreshCalendarOnly = false,
 } = {}) {
-  const html = await fetchPageHtml({ sourcePageUrl, fetchImpl, logger });
+  const source = await loadRefreshSources({ sourcePageUrl, fetchImpl, paths, logger, refreshCalendarOnly });
 
-  const calendarSourcesResult = await refreshCalendarSourcesCatalog({
-    sourcePageUrl,
-    sourcePageHtml: html,
-    calendarSourcesPath: paths.calendarSources,
-    fetchImpl,
-    writeSnapshots,
-    logger,
-    allowMissingSection: true,
-  });
-  const calendarSourcesPayload = calendarSourcesResult.payload;
+  // During a wiki outage, skip discovery and keep the saved ICS catalog intact.
+  const calendarSourcesPayload = source.html === null
+    ? await readJson(paths.calendarSources)
+    : (await refreshCalendarSourcesCatalog({
+        sourcePageUrl,
+        sourcePageHtml: source.html,
+        calendarSourcesPath: paths.calendarSources,
+        fetchImpl,
+        writeSnapshots,
+        logger,
+        allowMissingSection: true,
+      })).payload;
   const calendarPayload = await refreshCalendarSnapshot({
     calendarSourcesPath: paths.calendarSources,
     sourceItems: calendarSourcesPayload.items,
@@ -68,7 +70,7 @@ export async function refreshDataset({
 
   const curatedSelections = await readCuratedPublications(paths.curatedPublications);
   const sourceRows = mergeSourceRows({
-    wikiSourceRows: extractSourceRows({ html, sourcePageUrl }),
+    wikiSourceRows: source.rows,
     additionalSourceRows,
   });
   logInfo(logger, `[refresh] source rows extracted: ${sourceRows.length}`);
@@ -95,7 +97,7 @@ export async function refreshDataset({
     sourceRowsPayload: {
       sourcePageUrl,
       sectionTitle: "Spaces with RSS feeds",
-      extractedAt: generatedAt,
+      extractedAt: source.extractedAt ?? generatedAt,
       urls: sourceRows,
     },
     validationsPayload: validations,
@@ -278,4 +280,39 @@ function mergeSourceRows({ wikiSourceRows, additionalSourceRows }) {
   }
 
   return mergedRows;
+}
+
+// Only wiki acquisition/parsing failures activate the fallback. Errors in feed
+// processing or snapshot writes must still fail the refresh normally.
+async function loadRefreshSources({ sourcePageUrl, fetchImpl, paths, logger, refreshCalendarOnly }) {
+  try {
+    const html = await fetchPageHtml({ sourcePageUrl, fetchImpl, logger });
+    const rows = refreshCalendarOnly ? [] : extractSourceRows({ html, sourcePageUrl });
+    if (!refreshCalendarOnly && rows.length === 0) throw new Error("RSS source table is empty");
+    return { html, rows };
+  } catch (error) {
+    logInfo(logger, `[refresh] wiki source page unavailable: ${error.message}`);
+    if (refreshCalendarOnly) {
+      logInfo(logger, "[refresh] using saved calendar source catalog; wiki discovery skipped");
+      return { html: null, rows: [] };
+    }
+    const saved = await readSavedSourceRegistry(paths.sourceRows, error);
+    logInfo(logger, `[refresh] using saved source registry: ${paths.sourceRows} (${saved.urls.length} rows); wiki discovery skipped`);
+    // Preserve the last successful discovery date instead of dating cached rows as new.
+    return { html: null, rows: saved.urls, extractedAt: saved.extractedAt };
+  }
+}
+
+// Reject an unusable cache before processing sources or writing any snapshots.
+async function readSavedSourceRegistry(path, wikiError) {
+  try {
+    const saved = await readJson(path);
+    if (!Array.isArray(saved?.urls) || saved.urls.length === 0 ||
+        saved.urls.some(row => !row || typeof row.candidateFeedUrl !== "string" || !row.candidateFeedUrl.trim())) {
+      throw new Error("expected a non-empty urls array with feed URLs");
+    }
+    return saved;
+  } catch (error) {
+    throw new Error(`Wiki source page unavailable (${wikiError.message}); cannot use saved source registry ${path}: ${error.message}`, { cause: wikiError });
+  }
 }

@@ -1,0 +1,17 @@
+{
+  "sourcePageUrl": "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
+  "sectionTitle": "Spaces with RSS feeds",
+  "extractedAt": "2026-08-04T12:03:58.428Z",
+  "urls": [
+    {
+      "rowNumber": 2,
+      "hackerspaceName": "BetaMachine",
+      "hackerspaceWikiPath": "/BetaMachine",
+      "hackerspaceWikiUrl": "https://wiki.hackerspaces.org/BetaMachine",
+      "candidateFeedUrl": "https://www.betamachine.fr/feed/",
+      "rawHref": "https://www.betamachine.fr/feed/",
+      "country": "France",
+      "dedupeKey": "https://www.betamachine.fr/feed/"
+    }
+  ]
+}
