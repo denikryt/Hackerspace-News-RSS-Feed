@@ -288,6 +288,6 @@ function response({ url, body, contentType }) {
         return name.toLowerCase() === "content-type" ? contentType : null;
       },
     },
-    text: async () => body,
+    body: new Response(body).body,
   };
 }

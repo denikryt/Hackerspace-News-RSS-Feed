@@ -159,7 +159,7 @@ function htmlResponse(url, body, status = 200) {
     status,
     url,
     headers: new Headers({ "content-type": "text/html; charset=utf-8" }),
-    text: () => Promise.resolve(body),
+    body: new Response(body).body,
   };
 }
 
@@ -169,7 +169,7 @@ function feedResponse(url, body, status = 200) {
     status,
     url,
     headers: new Headers({ "content-type": "application/rss+xml; charset=utf-8" }),
-    text: () => Promise.resolve(body),
+    body: new Response(body).body,
   };
 }
 

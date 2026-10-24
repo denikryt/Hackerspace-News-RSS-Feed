@@ -202,7 +202,7 @@ describe("discoverFeedForSite", () => {
           status: 503,
           url,
           headers: new Headers({ "content-type": "text/html; charset=utf-8" }),
-          text: () => Promise.resolve("<html><body>bad gateway</body></html>"),
+          body: new Response("<html><body>bad gateway</body></html>").body,
         };
       }
 
@@ -230,7 +230,7 @@ describe("discoverFeedForSite", () => {
       status: 503,
       url: "https://delta.example/",
       headers: new Headers({ "content-type": "text/html; charset=utf-8" }),
-      text: () => Promise.resolve("bad"),
+      body: new Response("bad").body,
     });
 
     const result = await discoverFeedForSite({
@@ -552,7 +552,7 @@ function htmlResponse(url, body, status = 200) {
     status,
     url,
     headers: new Headers({ "content-type": "text/html; charset=utf-8" }),
-    text: () => Promise.resolve(body),
+    body: new Response(body).body,
   };
 }
 
@@ -562,7 +562,7 @@ function feedResponse(url, body, status = 200) {
     status,
     url,
     headers: new Headers({ "content-type": "application/rss+xml; charset=utf-8" }),
-    text: () => Promise.resolve(body),
+    body: new Response(body).body,
   };
 }
 

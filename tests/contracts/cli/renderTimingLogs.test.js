@@ -67,6 +67,7 @@ function createCliFixture() {
   mkdirSync(join(rootDir, "dist"), { recursive: true });
   mkdirSync(join(rootDir, "data"), { recursive: true });
 
+  for (const file of ["resourceLimits.js", "memoryDiagnostics.js"]) copyFileSync(resolve(process.cwd(), "src", file), join(rootDir, "src", file));
   copyFileSync(resolve(process.cwd(), "src/cli/refresh.js"), join(rootDir, "src/cli/refresh.js"));
   copyFileSync(resolve(process.cwd(), "src/cli/render.js"), join(rootDir, "src/cli/render.js"));
   copyFileSync(resolve(process.cwd(), "src/cli/build.js"), join(rootDir, "src/cli/build.js"));

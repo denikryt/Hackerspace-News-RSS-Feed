@@ -1,3 +1,5 @@
+import { fetchBoundedText } from "../http/fetchBoundedText.js";
+import { RESOURCE_LIMITS } from "../resourceLimits.js";
 import { mkdir, rm } from "node:fs/promises";
 
 import { getAttemptTimeoutMs } from "../networkAttemptTimeout.js";
@@ -128,10 +130,10 @@ async function fetchCalendarSource({
         );
       },
     });
-    const primaryText = await primaryResponse.text();
-    const primaryUrl = primaryResponse.url || sourceItem.url;
+    const primaryText = primaryResponse.text;
+    const primaryUrl = primaryResponse.finalUrl || sourceItem.url;
 
-    if (!isCalendarResponse({ url: primaryUrl, contentType: primaryResponse.headers.get("content-type"), body: primaryText })) {
+    if (!isCalendarResponse({ url: primaryUrl, contentType: primaryResponse.contentType, body: primaryText })) {
       logInfo(logger, `[refresh] failed calendar source: ${sourceItem.url} (non_calendar_response: ${primaryResponse.status})`);
       return {
         ...sourceItem,
@@ -178,24 +180,19 @@ async function fetchCalendarSource({
       status: "fetch_failed",
       events: [],
       rawIcsText: null,
-      errorCode: "fetch_error",
+      errorCode: error?.code || "fetch_error",
       errorMessage: error instanceof Error ? error.message : String(error),
     };
   }
 }
 
 function fetchCalendarSourceWithTimeout({ sourceUrl, fetchImpl, timeoutMs }) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-  return fetchImpl(sourceUrl, {
-    redirect: "follow",
-    signal: controller.signal,
+  return fetchBoundedText({ url: sourceUrl, fetchImpl, timeoutMs, maxBodyBytes: RESOURCE_LIMITS.icsMaxBodyBytes,
     headers: {
       "user-agent": "HackerspaceNewsFeed/0.1 (+local)",
       accept: "text/calendar, application/ics, */*",
-    },
-  }).finally(() => clearTimeout(timeoutId));
+    }
+  });
 }
 
 function isCalendarResponse({ url, contentType, body }) {

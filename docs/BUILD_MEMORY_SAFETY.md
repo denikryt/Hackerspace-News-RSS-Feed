@@ -90,3 +90,13 @@ author pagination expects May 2026 but does not freeze its clock (October).
 Failures predate implementation. Test runs use an external preload to let
 Vitest obtain V8 counters when `/proc` is hidden; its zero RSS sentinel is never
 used for profiling or production. No production data is modified by auditing.
+
+## Stage 1 ingress verification
+
+All maintained HTTP acquisition (including standalone calendar analysis) uses
+`fetchBoundedText`. Timeout covers headers and body; size checks count actual
+Uint8Array bytes, including chunked/decompressed bodies. Content-Length only
+rejects early. Streams are cancelled best-effort on failure. Existing retry
+schedules and original network error codes remain available without arbitrary
+remote exception messages. Text-only test mocks were replaced by streams.
+Stage 1 suite: 468 passing; only the same three baseline failures remain.

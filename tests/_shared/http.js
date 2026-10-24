@@ -5,7 +5,7 @@ export function createTextResponse({ url, contentType, body, status = 200 }) {
     status,
     url,
     headers: new Headers({ "content-type": contentType }),
-    text: () => Promise.resolve(body),
+    body: new Response(body).body,
   };
 }
 

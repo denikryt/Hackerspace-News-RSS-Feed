@@ -378,8 +378,7 @@ END:VCALENDAR`, "utf8");
             return name.toLowerCase() === "content-type" ? "text/calendar; charset=utf-8" : null;
           },
         },
-        async text() {
-          return `BEGIN:VCALENDAR
+        body: new Response(`BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT
 UID:event-1
@@ -387,8 +386,7 @@ SUMMARY:Open Night
 DTSTART:20260514T190000Z
 DTEND:20260514T210000Z
 END:VEVENT
-END:VCALENDAR`;
-        },
+END:VCALENDAR`).body,
       });
 
     const logger = vi.fn();
@@ -436,8 +434,7 @@ END:VCALENDAR`;
             return name.toLowerCase() === "content-type" ? "text/calendar; charset=utf-8" : null;
           },
         },
-        async text() {
-          return `BEGIN:VCALENDAR
+        body: new Response(`BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT
 UID:event-1
@@ -445,8 +442,7 @@ SUMMARY:Open Night
 DTSTART:20260514T190000Z
 DTEND:20260514T210000Z
 END:VEVENT
-END:VCALENDAR`;
-        },
+END:VCALENDAR`).body,
       });
 
     const timeoutCalls = [];

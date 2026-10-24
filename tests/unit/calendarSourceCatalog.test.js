@@ -187,9 +187,7 @@ function response({ url, body, contentType = "application/json; charset=utf-8", 
         return name.toLowerCase() === "content-type" ? contentType : null;
       },
     },
-    async text() {
-      return body;
-    },
+    body: new Response(body).body,
   };
 }
 

@@ -1,3 +1,5 @@
+import { fetchBoundedText } from "./http/fetchBoundedText.js";
+import { RESOURCE_LIMITS } from "./resourceLimits.js";
 import { getAttemptTimeoutMs } from "./networkAttemptTimeout.js";
 import { runWithNetworkRetry } from "./networkRetry.js";
 import { fetchPageHtml } from "./pageFetcher.js";
@@ -129,7 +131,7 @@ async function discoverCalendarSourceItems({
       return null;
     }
 
-    const body = await response.text();
+    const body = response.text;
     let payload;
     try {
       payload = JSON.parse(body);
@@ -171,17 +173,12 @@ function dedupeSpaceApiRows(sourceRows) {
 }
 
 function fetchSpaceApiWithTimeout({ url, fetchImpl, timeoutMs }) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-  return fetchImpl(url, {
-    redirect: "follow",
-    signal: controller.signal,
+  return fetchBoundedText({ url: url, fetchImpl, timeoutMs, maxBodyBytes: RESOURCE_LIMITS.spaceApiMaxBodyBytes,
     headers: {
       "user-agent": "HackerspaceNewsFeed/0.1 (+local)",
       accept: "application/json, */*",
-    },
-  }).finally(() => clearTimeout(timeoutId));
+    }
+  });
 }
 
 function logInfo(logger, message) {
