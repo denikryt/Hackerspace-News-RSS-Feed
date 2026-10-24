@@ -16,11 +16,11 @@ async function main() {
   memory("render:start");
   const startedAt = Date.now();
   const result = await renderSite({ writePages: true, logger: console.log, layout });
-  memory("render:complete", { pagesWritten: Object.keys(result.pages).length });
+  memory("render:complete", { pagesWritten: result.pageCount });
   const elapsedMs = Date.now() - startedAt;
 
-  console.log(`Rendered ${Object.keys(result.pages).length} pages into ${DIST_DIR}`);
-  console.log(`Rendered ${Object.keys(result.pages).length} pages in ${elapsedMs}ms`);
+  console.log(`Rendered ${result.pageCount} pages into ${DIST_DIR}`);
+  console.log(`Rendered ${result.pageCount} pages in ${elapsedMs}ms`);
 }
 
 main().catch((error) => {

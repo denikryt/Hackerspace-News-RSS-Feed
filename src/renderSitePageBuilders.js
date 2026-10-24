@@ -1,3 +1,4 @@
+import { checkPageTextBudget } from "./renderPageSink.js";
 import { publicCalendarPayload } from "./calendar/normalizeCalendarSnapshot.js";
 import { getAuthorDetailOutputPath } from "./authors.js";
 import { buildCalendarPageModelFromIndex } from "./calendar/index.js";
@@ -19,43 +20,34 @@ import {
   encodeCountryForPath,
 } from "./viewModels/newspaperFeed.js";
 
-export function buildRootStaticPageEntries(context) {
-  return [
-    ["index.html", renderSpacesIndex(context.spacesIndexModel)],
-    ["about/index.html", renderAboutPage()],
-  ];
+export function* buildRootStaticPageEntries(context) {
+  yield ["index.html", renderSpacesIndex(context.spacesIndexModel)];
+  yield ["about/index.html", renderAboutPage()];
 }
 
-export async function buildCalendarPageEntries(context, { logger } = {}) {
+export function* buildCalendarPageEntries(context, { logger } = {}) {
   const calendarPayload = context.calendarPayload || { events: [] };
   const calendarIndexPayload = context.calendarIndexPayload || { availableMonthsWithEvents: [], months: {} };
   const events = Array.isArray(calendarPayload.events) ? calendarPayload.events : [];
   const now = context.now || new Date();
   const currentMonth = now.toISOString().slice(0, 7);
-  const baseModel = buildCalendarPageModelFromIndex(calendarIndexPayload, {
-    events,
-    timeZone: "UTC",
-    selectedMonth: currentMonth,
-    now,
-  });
+  const monthKeys = calendarIndexPayload.availableMonthsWithEvents || [];
   const monthEntries = buildCalendarMonthEntries({
     calendarPayload, calendarIndexPayload,
     currentMonth,
-    monthKeys: baseModel.availableMonthsWithEvents || [],
+    monthKeys,
     now,
   });
 
-  logInfo(logger, `[render] calendar page: events=${events.length} months=${(baseModel.availableMonthsWithEvents || []).length}`);
-  return [
-    ["calendar/index.html", `<!doctype html><html><head><meta http-equiv="refresh" content="0;url=${currentMonth}/" /><title>Redirecting…</title></head><body></body></html>`],
-    ...monthEntries,
-    ["calendar/events.json", JSON.stringify(publicCalendarPayload(calendarPayload, { windowYear: calendarIndexPayload.windowYear, windowStart: calendarIndexPayload.windowStart, windowEndExclusive: calendarIndexPayload.windowEndExclusive }), null, 2)],
-  ];
+  logInfo(logger, `[render] calendar page: events=${events.length} months=${monthKeys.length}`);
+  yield ["calendar/index.html", `<!doctype html><html><head><meta http-equiv="refresh" content="0;url=${currentMonth}/" /><title>Redirecting…</title></head><body></body></html>`];
+  yield* monthEntries;
+  yield ["calendar/events.json", JSON.stringify(publicCalendarPayload(calendarPayload, { windowYear: calendarIndexPayload.windowYear, windowStart: calendarIndexPayload.windowStart, windowEndExclusive: calendarIndexPayload.windowEndExclusive }), null, 2)];
 }
 
-export function buildAuthorPageEntries(context, { logger } = {}) {
+export function* buildAuthorPageEntries(context, { logger } = {}) {
   logInfo(logger, `[render] rendering author pages: authors=${context.authorsIndexModel.authors.length}`);
-  const entries = [["authors/index.html", renderAuthorsIndex(context.authorsIndexModel)]];
+  yield ["authors/index.html", renderAuthorsIndex(context.authorsIndexModel)];
   let lastProgressAt = Date.now();
 
   for (const [authorIndex, author] of context.authorsIndexModel.authors.entries()) {
@@ -72,8 +64,7 @@ export function buildAuthorPageEntries(context, { logger } = {}) {
       lastProgressAt = progressLog.checkpointAt;
     }
 
-    entries.push(
-      ...buildPaginatedEntityEntries({
+    yield* buildPaginatedEntityEntries({
         renderPage(currentPage) {
           const pagedModel = buildAuthorDetailModel(context.displayPayload, author.slug, {
             currentPage,
@@ -85,17 +76,14 @@ export function buildAuthorPageEntries(context, { logger } = {}) {
             pagedModel.totalPages,
           ];
         },
-      }),
-    );
+      });
   }
 
   logInfo(logger, "[render] rendered author pages");
-  return entries;
 }
 
-export function buildSpacePageEntries(context, { logger } = {}) {
+export function* buildSpacePageEntries(context, { logger } = {}) {
   logInfo(logger, `[render] rendering space pages: spaces=${context.spaceSlugs.length}`);
-  const entries = [];
   let lastProgressAt = Date.now();
 
   for (const [spaceIndex, spaceSlug] of context.spaceSlugs.entries()) {
@@ -112,8 +100,7 @@ export function buildSpacePageEntries(context, { logger } = {}) {
       lastProgressAt = progressLog.checkpointAt;
     }
 
-    entries.push(
-      ...buildPaginatedEntityEntries({
+    yield* buildPaginatedEntityEntries({
         renderPage(currentPage, enrichedItems) {
           const pagedModel = buildSpaceDetailModel(context.displayPayload, spaceSlug, {
             currentPage,
@@ -129,15 +116,13 @@ export function buildSpacePageEntries(context, { logger } = {}) {
             pagedModel._enrichedItems,
           ];
         },
-      }),
-    );
+      });
   }
 
   logInfo(logger, "[render] rendered space pages");
-  return entries;
 }
 
-export function buildNewspaperFeedPageEntries(normalizedPayload, context, { logger } = {}) {
+export function* buildNewspaperFeedPageEntries(normalizedPayload, context, { logger } = {}) {
   const today = context.today || new Date().toISOString().slice(0, 10);
   const now = context.now || new Date();
 
@@ -147,10 +132,9 @@ export function buildNewspaperFeedPageEntries(normalizedPayload, context, { logg
 
   if (availableDates.length === 0) {
     logInfo(logger, "[render] newspaper feed: no dates with items found");
-    return [
-      ["news/dates.json", "[]"],
-      ["news/index.html", '<meta http-equiv="refresh" content="0;url=./">'],
-    ];
+    yield ["news/dates.json", "[]"];
+    yield ["news/index.html", '<meta http-equiv="refresh" content="0;url=./">'];
+    return;
   }
 
   const allItems = (normalizedPayload.feeds || []).flatMap((feed) =>
@@ -180,7 +164,6 @@ export function buildNewspaperFeedPageEntries(normalizedPayload, context, { logg
   }
 
   logInfo(logger, `[render] newspaper feed: dates=${availableDates.length}`);
-  const entries = [];
   let lastProgressAt = Date.now();
 
   for (const [dateIndex, date] of availableDates.entries()) {
@@ -198,14 +181,15 @@ export function buildNewspaperFeedPageEntries(normalizedPayload, context, { logg
     }
 
     const dayItems = itemsByDate.get(date) || [];
+    checkPageTextBudget(dayItems);
     const dayModel = buildNewspaperDayModel(dayItems, date, now, null, availableDates, availableDatesByCountry, { navItems });
-    entries.push([`news/${date}/index.html`, renderNewspaperFeedPageTsx(dayModel)]);
+    yield [`news/${date}/index.html`, renderNewspaperFeedPageTsx(dayModel)];
 
     const countriesOnDay = [...new Set(dayItems.map((i) => i.country).filter(Boolean))].sort();
     for (const country of countriesOnDay) {
       const countryItems = dayItems.filter((i) => i.country === country);
       const countryModel = buildNewspaperDayModel(countryItems, date, now, country, availableDates, availableDatesByCountry, { navItems });
-      entries.push([`news/${date}/${encodeCountryForPath(country)}/index.html`, renderNewspaperFeedPageTsx(countryModel)]);
+      yield [`news/${date}/${encodeCountryForPath(country)}/index.html`, renderNewspaperFeedPageTsx(countryModel)];
     }
   }
 
@@ -213,16 +197,15 @@ export function buildNewspaperFeedPageEntries(normalizedPayload, context, { logg
   for (const [country, dates] of availableDatesByCountry) {
     byCountry[country] = dates;
   }
-  entries.push(["news/dates.json", JSON.stringify({ dates: availableDates, byCountry })]);
+  yield ["news/dates.json", JSON.stringify({ dates: availableDates, byCountry })];
 
   const latestDate = availableDates[0];
-  entries.push([
+  yield [
     "news/index.html",
     `<!doctype html><html><head><meta http-equiv="refresh" content="0;url=${latestDate}/" /><title>Redirecting…</title></head><body></body></html>`,
-  ]);
+  ];
 
-  logInfo(logger, `[render] newspaper feed: rendered ${entries.length} pages`);
-  return entries;
+  logInfo(logger, "[render] newspaper feed: rendered pages");
 }
 
 function logInfo(logger, message) {
@@ -231,10 +214,10 @@ function logInfo(logger, message) {
   }
 }
 
-function buildCalendarMonthEntries({ calendarPayload, calendarIndexPayload, currentMonth, monthKeys, now }) {
+function* buildCalendarMonthEntries({ calendarPayload, calendarIndexPayload, currentMonth, monthKeys, now }) {
   const orderedMonthKeys = [...new Set([currentMonth, ...monthKeys])];
 
-  return orderedMonthKeys.map((monthKey) => {
+  for (const monthKey of orderedMonthKeys) {
     const model = buildCalendarPageModelFromIndex(calendarIndexPayload, {
       events: calendarPayload.events,
       timeZone: "UTC",
@@ -242,11 +225,11 @@ function buildCalendarMonthEntries({ calendarPayload, calendarIndexPayload, curr
       now,
     });
 
-    return [
+    yield [
       `calendar/${monthKey}/index.html`,
       renderCalendarPage(withCalendarNavigation(model)),
     ];
-  });
+  }
 }
 
 function withCalendarNavigation(model) {
@@ -266,14 +249,11 @@ function shouldLogLoopCheckpoint(currentIndex, totalItems) {
   return currentIndex === 1 || currentIndex === totalItems || currentIndex % 100 === 0;
 }
 
-function buildPaginatedEntityEntries({ renderPage }) {
-  const [firstPath, firstHtml, totalPages, cache] = renderPage(1, undefined);
-  const entries = [[firstPath, firstHtml]];
-
-  for (let currentPage = 2; currentPage <= totalPages; currentPage += 1) {
-    const [path, html] = renderPage(currentPage, cache);
-    entries.push([path, html]);
-  }
-
-  return entries;
+// Keep enriched entity input between pages, never earlier HTML strings.
+function* buildPaginatedEntityEntries({renderPage}) {
+ let cache;let totalPages=1;
+ for(let currentPage=1;currentPage<=totalPages;currentPage++){
+  const [path,html,count,nextCache]=renderPage(currentPage,cache);
+  totalPages=count;cache=nextCache;yield [path,html];
+ }
 }

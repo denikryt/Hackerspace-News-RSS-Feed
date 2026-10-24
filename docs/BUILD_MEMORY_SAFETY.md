@@ -145,3 +145,17 @@ justifies a streaming JSON writer, so conditional Stage 2b is not activated.
 - cached=True: peak RSS 42.74 MiB; output SHA-256 `0fd681fa942f4083eeb14f625c56302e67ec1e90abdbba6e0a1973e02419a18a`.
 
 - cached=False: peak RSS 95.28 MiB; output SHA-256 `0fd681fa942f4083eeb14f625c56302e67ec1e90abdbba6e0a1973e02419a18a`.
+
+## Stage 3 verification
+
+Disk render consumes generator entries sequentially and returns only pageCount
+and outputDir. It retains paths for sitemap, not all page HTML. In-memory mode
+remains supported for buildDataset. Both modes produce identical fixture files.
+Canonical injection runs once at the sink. Input text preflight, output byte
+budget, duplicate/traversal checks, ENOSPC and asset-copy failure tests pass;
+failed rendering preserves the previous directory and removes staging.
+Resume suite: 488 tests pass. Existing baseline clock failure disappears with
+May fixtures updated to derive a stable render date; baseline behavior changes
+are confined to the planned render contract and fixtures, not application fixes.
+Full production render smoke is deferred to Stage 5 with fresh bounded process
+measurements; a previous partial smoke is not counted as success.

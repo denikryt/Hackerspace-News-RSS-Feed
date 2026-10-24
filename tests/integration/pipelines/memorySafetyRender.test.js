@@ -16,3 +16,24 @@ it('offline render repairs a legacy snapshot, bounds text and does not mutate so
  expect(result.normalizedPayload.feeds[0].items[0].id).toBe('keep');expect(JSON.stringify(input)).toBe(before);
  const second=await renderSite({...input,normalizedPayload:result.normalizedPayload,calendarPayload:result.calendarPayload,calendarIndexPayload:result.calendarIndexPayload});expect(second.pages).toEqual(result.pages);
 });
+
+it('disk render exposes only a summary and produces the same HTML as in-memory render',async()=>{
+ const {mkdtemp,readFile,rm}=await import('node:fs/promises');const {tmpdir}=await import('node:os');const {join}=await import('node:path');
+ const root=await mkdtemp(join(tmpdir(),'disk-parity-'));const input=legacyInputs();
+ try{
+  const memory=await renderSite(input);const disk=await renderSite({...input,writePages:true,distDir:join(root,'dist')});
+  expect(disk).toEqual({pageCount:Object.keys(memory.pages).length,outputDir:join(root,'dist')});
+  for(const [path,html] of Object.entries(memory.pages))expect(await readFile(join(root,'dist',path),'utf8')).toBe(html);
+ }finally{await rm(root,{recursive:true,force:true});}
+});
+
+it('preserves existing disk output and cleans staging after ENOSPC or asset failure',async()=>{
+ const {mkdtemp,readFile,writeFile,mkdir,readdir,rm}=await import('node:fs/promises');const {tmpdir}=await import('node:os');const {join}=await import('node:path');
+ const root=await mkdtemp(join(tmpdir(),'disk-failure-'));const dist=join(root,'dist');await mkdir(dist);await writeFile(join(dist,'index.html'),'sentinel');
+ try{
+  for(const injected of [{writeTextImpl:async()=>{throw Object.assign(new Error('full'),{code:'ENOSPC'});}},{copyFileImpl:async()=>{throw Object.assign(new Error('denied'),{code:'EACCES'});}}]){
+   await expect(renderSite({...legacyInputs(),distDir:dist,writePages:true,...injected})).rejects.toThrow();
+   expect(await readFile(join(dist,'index.html'),'utf8')).toBe('sentinel');expect(await readdir(root)).toEqual(['dist']);
+  }
+ }finally{await rm(root,{recursive:true,force:true});}
+});

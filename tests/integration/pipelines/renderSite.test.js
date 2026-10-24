@@ -343,12 +343,14 @@ describe("renderSite", () => {
       writeJson(paths.calendarIndex, calendarIndexPayload),
     ]);
 
+    const inMemory = await renderSite({ paths, now: Date.parse("2026-05-19T12:00:00.000Z") });
     const firstRun = await renderSite({ paths, distDir, now: Date.parse("2026-05-19T12:00:00.000Z"), writePages: true });
+    const firstOutput = await Promise.all((await listRelativeFiles(distDir)).sort().map(async path => [path, await readFile(resolve(distDir, path))]));
     const secondRun = await renderSite({ paths, distDir, now: Date.parse("2026-05-19T12:00:00.000Z"), writePages: true });
 
     // Fixture items use publishedAt only (no displayDate), so the newspaper builder
     // produces only the base /news artifacts. Newspaper date pages require displayDate.
-    expect(Object.keys(firstRun.pages)).toEqual([
+    expect(Object.keys(inMemory.pages)).toEqual([
       "index.html",
       "about/index.html",
       "curated/index.html",
@@ -365,7 +367,9 @@ describe("renderSite", () => {
       "sitemap.xml",
       "robots.txt",
     ]);
-    expect(secondRun.pages).toEqual(firstRun.pages);
+    expect(firstRun).toEqual({ pageCount: Object.keys(inMemory.pages).length, outputDir: distDir });
+    expect(secondRun).toEqual(firstRun);
+    expect(await Promise.all((await listRelativeFiles(distDir)).sort().map(async path => [path, await readFile(resolve(distDir, path))]))).toEqual(firstOutput);
 
     const [indexHtml, aboutHtml, curatedHtml, calendarRedirectHtml, calendarHtml, calendarEventsJson, newsDatesJson, feedHtml, authorsHtml, detailHtml] = await Promise.all([
       readFile(resolve(distDir, "index.html"), "utf8"),
@@ -509,9 +513,11 @@ describe("renderSite", () => {
       writePages: true,
     });
 
+    const expected = await renderSite({ paths, now: Date.parse("2026-03-19T12:00:00.000Z") });
+    expect(result.pageCount).toBe(Object.keys(expected.pages).length);
     const actualDistFiles = await listRelativeFiles(distDir);
     expect(actualDistFiles.sort()).toEqual(
-      [...Object.keys(result.pages), "favicon.png", "site.css", "spaces-index.js", "authors-index.js", "calendar-time.js", "static/newspaper.css", "newspaper-nav.js"].sort(),
+      [...Object.keys(expected.pages), "favicon.png", "site.css", "spaces-index.js", "authors-index.js", "calendar-time.js", "static/newspaper.css", "newspaper-nav.js"].sort(),
     );
   });
 
@@ -588,6 +594,7 @@ describe("renderSite", () => {
 
   it("renders paginated author detail pages when an author has more than one page of items", async () => {
     const result = await renderSite({
+      now: Date.parse("2026-05-17T12:00:00.000Z"),
       sourceRowsPayload: {
         sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
         sectionTitle: "Spaces with RSS feeds",

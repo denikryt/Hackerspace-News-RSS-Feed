@@ -154,7 +154,7 @@ describe("refresh/build discovery-valid flag", () => {
       curatedPayload: { items: ["from-curated-refresh"] },
       outputPath: "/tmp/data/curated_publications_normalized.json",
     });
-    const renderImpl = vi.fn().mockResolvedValue({ pages: { "index.html": "<html></html>" } });
+    const renderImpl = vi.fn().mockResolvedValue({ pageCount: 1, pages: { "index.html": "<html></html>" } });
     const readJsonImpl = vi.fn().mockResolvedValue({
       urls: [
         {

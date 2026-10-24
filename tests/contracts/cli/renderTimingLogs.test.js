@@ -88,6 +88,7 @@ export const PATHS = {
     join(rootDir, "src/renderSite.js"),
     `export async function renderSite() {
   return {
+    pageCount: 2,
     pages: {
       "index.html": "<html></html>",
       "about/index.html": "<html></html>",

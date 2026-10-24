@@ -53,8 +53,8 @@ export async function runBuildCli({
   if (paths.calendarIndex) {
     logger(`Wrote ${paths.calendarIndex}`);
   }
-  logger(`Rendered ${Object.keys(renderResult.pages).length} pages into ${distDir}`);
-  logger(`Rendered ${Object.keys(renderResult.pages).length} pages in ${renderElapsedMs}ms`);
+  logger(`Rendered ${renderResult.pageCount} pages into ${distDir}`);
+  logger(`Rendered ${renderResult.pageCount} pages in ${renderElapsedMs}ms`);
 }
 
 async function loadDiscoveryValidSourceRows({ argv, readJsonImpl, paths }) {

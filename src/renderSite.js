@@ -1,10 +1,13 @@
+import { consumePageEntries } from "./renderPageSink.js";
+import { withStagedDirectory } from "./stagedDirectory.js";
+import { RESOURCE_LIMITS } from "./resourceLimits.js";
+import { createMemoryDiagnostics } from "./memoryDiagnostics.js";
 import { normalizeCalendarSnapshot } from "./calendar/normalizeCalendarSnapshot.js";
 import { isCalendarIndexValid } from "./calendar/buildCalendarIndex.js";
 import { limitFeedPayload, limitItemText } from "./truncateContentText.js";
-import { copyFile, mkdir, rm } from "node:fs/promises";
-import { resolve } from "node:path";
+import { copyFile, mkdir, stat } from "node:fs/promises";
+import { resolve, dirname } from "node:path";
 
-import { injectCanonicalHref, pagePathToCanonicalUrl } from "./canonical.js";
 import { buildCalendarIndex } from "./calendar/index.js";
 import { DIST_DIR, PATHS, SITE_URL } from "./config.js";
 import { listStaticRenderAssets } from "./renderAssets.js";
@@ -18,7 +21,6 @@ import {
 import { renderGlobalFeed } from "./renderers/renderGlobalFeed.js";
 import { readJson, writeText } from "./storage.js";
 import { validateNormalizedRenderPayloadForDisplay } from "./renderInputValidation.js";
-import { buildRobotsTxt, buildSitemapXml } from "./sitemap.js";
 import { slugify } from "./utils/slugify.js";
 import { filterNormalizedPayloadForDisplay } from "./visibleData.js";
 import { buildCuratedIndexModel } from "./viewModels/curated.js";
@@ -40,6 +42,8 @@ export async function renderSite({
   now = Date.now(),
   writePages = false,
   logger = null,
+  writeTextImpl = writeText,
+  copyFileImpl = copyFile,
 } = {}) {
   const data = await loadRenderInputs({
     now, paths,
@@ -55,41 +59,37 @@ export async function renderSite({
   const nowDate = now instanceof Date ? now : new Date(now);
   const today = nowDate.toISOString().slice(0, 10);
 
-  const calendarPageEntries = await buildCalendarPageEntries({
-    calendarPayload: data.calendarPayload,
-    calendarIndexPayload: data.calendarIndexPayload,
-    now: nowDate,
-  }, { logger });
-
-  const pageEntries = [
-    ...buildRootStaticPageEntries(context),
-    ...buildCuratedPageEntries(context),
-    ...calendarPageEntries,
-    ...buildNewspaperFeedPageEntries(data.normalizedPayload, { today, now: nowDate }, { logger }),
-    ...buildAuthorPageEntries(context, { logger }),
-    ...buildSpacePageEntries(context, { logger }),
-  ];
-  const pages = addCanonicalUrlsToRenderedPages(Object.fromEntries(pageEntries), SITE_URL);
-
-  pages["sitemap.xml"] = buildSitemapXml(Object.keys(pages), SITE_URL);
-  pages["robots.txt"] = buildRobotsTxt(SITE_URL);
-
-  if (writePages) {
-    logInfo(logger, `[render] writing pages: count=${Object.keys(pages).length}`);
-    await writeRenderOutput({ distDir, pages });
+  // The producer is suspended at each yield until the sink finishes its write.
+  function* pageEntries(){
+    yield* buildRootStaticPageEntries(context);
+    yield* buildCuratedPageEntries(context);
+    yield* buildCalendarPageEntries({calendarPayload:data.calendarPayload,calendarIndexPayload:data.calendarIndexPayload,now:nowDate},{logger});
+    yield* buildNewspaperFeedPageEntries(data.normalizedPayload,{today,now:nowDate},{logger});
+    yield* buildAuthorPageEntries(context,{logger});
+    yield* buildSpacePageEntries(context,{logger});
   }
-
-  logInfo(logger, `[render] render complete: pages=${Object.keys(pages).length}`);
-
-  return {
-    sourceRowsPayload: data.sourceRowsPayload,
-    validationsPayload: data.validationsPayload,
-    normalizedPayload: data.normalizedPayload,
-    curatedPayload: data.curatedPayload,
-    calendarPayload: data.calendarPayload,
-    calendarIndexPayload: data.calendarIndexPayload,
-    pages,
-  };
+  if(writePages){
+    const memory=createMemoryDiagnostics({logger:logger||console.log});let pagesWritten=0;
+    logInfo(logger,'[render] writing pages sequentially');
+    const result=await withStagedDirectory(resolve(distDir),async stage=>{
+      const summary=await consumePageEntries(pageEntries(),{siteUrl:SITE_URL,write:async(path,html)=>{
+        await writeTextImpl(resolve(stage,path),html);pagesWritten++;
+        if(pagesWritten%100===0)memory('render:pages',{pagesWritten});
+      }});
+      for(const asset of listStaticRenderAssets()){
+        if((await stat(asset.sourcePath)).size>RESOURCE_LIMITS.artifactMaxBytes)throw Object.assign(new Error('render_artifact_too_large'),{code:'render_artifact_too_large'});
+        await mkdir(dirname(resolve(stage,asset.outputPath)),{recursive:true});
+        await copyFileImpl(asset.sourcePath,resolve(stage,asset.outputPath));
+      }
+      return summary;
+    });
+    memory('render:complete',{pagesWritten});
+    logInfo(logger,`[render] render complete: pages=${result.pageCount}`);
+    return {pageCount:result.pageCount,outputDir:distDir};
+  }
+  const result=await consumePageEntries(pageEntries(),{siteUrl:SITE_URL});
+  logInfo(logger,`[render] render complete: pages=${result.pageCount}`);
+  return {...data,...result};
 }
 
 // Shared render data is built once so page builders stay pure and reuse the same inputs.
@@ -277,31 +277,6 @@ async function readOptionalCuratedPayload(paths) {
 
 // The render pipeline owns the output paths, so canonical link insertion lives
 // here rather than being duplicated across individual page renderers.
-function addCanonicalUrlsToRenderedPages(pages, siteUrl) {
-  return Object.fromEntries(
-    Object.entries(pages).map(([relativePath, content]) => {
-      const canonicalHref = pagePathToCanonicalUrl(relativePath, siteUrl);
-      return [relativePath, injectCanonicalHref(content, canonicalHref)];
-    }),
-  );
-}
-
-async function writeRenderOutput({ distDir, pages }) {
-  await rm(distDir, { recursive: true, force: true });
-  await mkdir(distDir, { recursive: true });
-  const assets = listStaticRenderAssets();
-  const assetDirs = [...new Set(assets.map((a) => resolve(distDir, a.outputPath).replace(/\/[^/]+$/, "")))];
-  await Promise.all(assetDirs.map((dir) => mkdir(dir, { recursive: true })));
-  await Promise.all([
-    ...Object.entries(pages).map(([relativePath, html]) =>
-      writeText(resolve(distDir, relativePath), html),
-    ),
-    ...assets.map((asset) =>
-      copyFile(asset.sourcePath, resolve(distDir, asset.outputPath)),
-    ),
-  ]);
-}
-
 function logInfo(logger, message) {
   if (typeof logger === "function") {
     logger(message);

@@ -84,7 +84,7 @@ describe("renderSitePageBuilders", () => {
   });
 
   it("builds a calendar redirect root plus month pages", async () => {
-    const entries = await pageBuilders.buildCalendarPageEntries({
+    const entries = await Array.from(pageBuilders.buildCalendarPageEntries({
       now: new Date("2026-05-14T12:00:00.000Z"),
       calendarPayload: {
         events: [
@@ -109,7 +109,7 @@ describe("renderSitePageBuilders", () => {
           },
         },
       },
-    });
+    }));
 
     expect(entries).toEqual([
       ["calendar/index.html", '<!doctype html><html><head><meta http-equiv="refresh" content="0;url=2026-05/" /><title>Redirecting…</title></head><body></body></html>'],
@@ -132,9 +132,9 @@ describe("renderSitePageBuilders", () => {
   });
 
   it("builds root static pages in the stable index/about order", () => {
-    const entries = pageBuilders.buildRootStaticPageEntries({
+    const entries = Array.from(pageBuilders.buildRootStaticPageEntries({
       spacesIndexModel: { id: "spaces-index" },
-    });
+    }));
 
     expect(entries).toEqual([
       ["index.html", "spaces-index:spaces-index"],
@@ -143,14 +143,14 @@ describe("renderSitePageBuilders", () => {
   });
 
   it("builds author pages with the index page first and then paginated author detail pages", () => {
-    const entries = pageBuilders.buildAuthorPageEntries({
+    const entries = Array.from(pageBuilders.buildAuthorPageEntries({
       displayPayload: { id: "display" },
       authorDirectory: { id: "author-directory" },
       authorsIndexModel: {
         id: "authors-index",
         authors: [{ slug: "alice" }, { slug: "bob" }],
       },
-    });
+    }));
 
     expect(entries).toEqual([
       ["authors/index.html", "authors-index:authors-index"],
@@ -161,11 +161,11 @@ describe("renderSitePageBuilders", () => {
   });
 
   it("builds space pages with canonical first-page paths and paginated follow-up paths", () => {
-    const entries = pageBuilders.buildSpacePageEntries({
+    const entries = Array.from(pageBuilders.buildSpacePageEntries({
       displayPayload: { id: "display" },
       authorDirectory: { id: "author-directory" },
       spaceSlugs: ["alpha", "beta"],
-    });
+    }));
 
     expect(entries).toEqual([
       ["spaces/alpha.html", "space-detail:alpha:page-1"],
