@@ -7,16 +7,31 @@ import { getCountryFlag } from "../countryFlags.js";
 export function buildCalendarIndex(events, { generatedAt = null, timeZone = "UTC", windowYear = new Date().getUTCFullYear() } = {}) {
     const normalizedEvents = Array.isArray(events) ? events : [];
     const window = calendarYearWindow(windowYear);
-    const monthMap = new Map();
+    const monthsByKey = {};
     for (const [eventIndex, event] of normalizedEvents.entries()) {
         for (const date of listVisibleDatesForEvent(event, timeZone, window)) {
-            const month = ensureMonthBucket(monthMap, date.slice(0, 7));
+            const month = ensureMonthBucket(monthsByKey, date.slice(0, 7));
             const bucket = ensureDateBucket(month, date, timeZone);
-            bucket.events.push(eventIndex);
+            bucket.eventIndexes.push(eventIndex);
         }
     }
-    const availableMonthsWithEvents = [...monthMap.keys()].sort();
-    const months = Object.fromEntries(availableMonthsWithEvents.map(monthKey => [monthKey, { monthKey, dates: Object.fromEntries([...monthMap.get(monthKey).dates].sort(([a], [b]) => a.localeCompare(b)).map(([dateKey, bucket]) => [dateKey, { dateKey, dateLabel: bucket.dateLabel, eventIndexes: bucket.events.sort((a, b) => compareCanonicalEvents(normalizedEvents[a], normalizedEvents[b])) }])) }]));
+
+    // Buckets already have the persisted shape. Reinsert only collection keys
+    // in canonical order, reusing each month/day object and its reference list.
+    const availableMonthsWithEvents = Object.keys(monthsByKey).sort();
+    const months = {};
+    for (const monthKey of availableMonthsWithEvents) {
+        const month = monthsByKey[monthKey];
+        const dates = {};
+        const dateKeys = Object.keys(month.dates).sort((a, b) => a.localeCompare(b));
+        for (const dateKey of dateKeys) {
+            const bucket = month.dates[dateKey];
+            bucket.eventIndexes.sort((a, b) => compareCanonicalEvents(normalizedEvents[a], normalizedEvents[b]));
+            dates[dateKey] = bucket;
+        }
+        month.dates = dates;
+        months[monthKey] = month;
+    }
     return { schemaVersion: 2, sourceEventsSha256: sourceEventsDigest(normalizedEvents), generatedAt, timeZone, ...window, availableMonthsWithEvents, months };
 }
 export function buildEmptyCalendarIndex(options = {}) { return buildCalendarIndex([], options); }
@@ -50,21 +65,24 @@ export function isCalendarIndexValid(index, events, { timeZone = "UTC", windowYe
     return true;
 }
 function compareCanonicalEvents(a, b) { return buildSortKey(a).localeCompare(buildSortKey(b)) || (a.summary || '').localeCompare(b.summary || ''); }
-function ensureMonthBucket(monthMap, monthKey) {
-    if (!monthMap.has(monthKey)) {
-        monthMap.set(monthKey, { monthKey, dates: new Map() });
+// Use the output month shape from the start; there is no intermediate Map.
+function ensureMonthBucket(monthsByKey, monthKey) {
+    if (!monthsByKey[monthKey]) {
+        monthsByKey[monthKey] = { monthKey, dates: {} };
     }
-    return monthMap.get(monthKey);
+    return monthsByKey[monthKey];
 }
+
+// A day's bucket survives finalization unchanged, including duplicate refs.
 function ensureDateBucket(monthBucket, dateKey, timeZone) {
-    if (!monthBucket.dates.has(dateKey)) {
-        monthBucket.dates.set(dateKey, {
+    if (!monthBucket.dates[dateKey]) {
+        monthBucket.dates[dateKey] = {
             dateKey,
             dateLabel: formatDateBandLabel(dateKey, timeZone),
-            events: [],
-        });
+            eventIndexes: [],
+        };
     }
-    return monthBucket.dates.get(dateKey);
+    return monthBucket.dates[dateKey];
 }
 // Timed events occupy every visible fallback day they cross, while date-only
 // events stay pinned to the source date from the ICS snapshot.
