@@ -1,3 +1,6 @@
+// Keep Intl native objects bounded and reusable across month/filter updates.
+const calendarFormatters=new Map();
+function getCalendarFormatter(options){const key=JSON.stringify(options);if(calendarFormatters.has(key))return calendarFormatters.get(key);const f=new Intl.DateTimeFormat("en-US",options);if(calendarFormatters.size>=64)calendarFormatters.delete(calendarFormatters.keys().next().value);calendarFormatters.set(key,f);return f;}
 const DAY_MS = 86_400_000;
 const FILTER_STORAGE_KEYS = {
   country: "hackerspace-news-feed.calendar.country",
@@ -76,6 +79,7 @@ async function enhanceCalendarPage() {
 
     const model = buildClientCalendarModel({
       events,
+      window: payload,
       selectedMonth,
       timeZone,
       now: new Date(),
@@ -218,7 +222,10 @@ function buildClientCalendarModel({
   now,
   selectedCountry = "all",
   selectedHackerspace = "all",
+  window,
 }) {
+  const year = new Date(now || Date.now()).getUTCFullYear();
+  window = window || { windowStart: `${year-1}-01-01`, windowEndExclusive: `${year+2}-01-01` };
   const filterOptions = buildFilterOptions(events);
   const filterSelection = normalizeFilterSelection({
     selectedCountry,
@@ -226,7 +233,7 @@ function buildClientCalendarModel({
     filterOptions,
   });
   const filteredEvents = filterCalendarEvents(events, filterSelection);
-  const eventIndex = buildEventIndex(filteredEvents, timeZone);
+  const eventIndex = buildEventIndex(filteredEvents, timeZone, window);
   const availableDates = [...eventIndex.keys()].sort((left, right) => left.localeCompare(right));
   const availableMonthsWithEvents = [...new Set(availableDates.map((dateKey) => dateKey.slice(0, 7)))];
   const currentMonth = formatMonthKey(now, timeZone);
@@ -358,11 +365,11 @@ function buildDateSections({ monthKey, eventIndex, timeZone }) {
     }));
 }
 
-function buildEventIndex(events, timeZone) {
+function buildEventIndex(events, timeZone, window) {
   const index = new Map();
 
   for (const event of events) {
-    const visibleDates = listVisibleDatesForEvent(event, timeZone);
+    const visibleDates = listVisibleDatesForEvent(event, timeZone, window);
     for (const visibleDate of visibleDates) {
       if (!index.has(visibleDate)) {
         index.set(visibleDate, []);
@@ -378,22 +385,24 @@ function buildEventIndex(events, timeZone) {
   return index;
 }
 
-function listVisibleDatesForEvent(event, timeZone) {
+function listVisibleDatesForEvent(event, timeZone, window) {
   if (!event) {
     return [];
   }
 
-  if (event.dateKind === "date") {
-    return event.sourceDate ? [event.sourceDate] : [];
+  let startDateKey, endDateKey;
+  if(event.dateKind === "date") {
+    startDateKey=event.sourceDate;
+    endDateKey=event.endSourceDateExclusive ? new Date(Date.parse(event.endSourceDateExclusive)-DAY_MS).toISOString().slice(0,10) : startDateKey;
+  } else {
+    if(!event.startInstant)return [];
+    startDateKey=formatDateKey(new Date(event.startInstant),timeZone);
+    endDateKey=formatDateKey(new Date(event.endInstant||event.startInstant),timeZone);
   }
-
-  if (!event.startInstant) {
-    return [];
-  }
-
-  const startDateKey = formatDateKey(new Date(event.startInstant), timeZone);
-  const endDateKey = formatDateKey(new Date(event.endInstant || event.startInstant), timeZone);
-  return listDateKeysBetween(startDateKey, endDateKey);
+  if(!startDateKey||!endDateKey||endDateKey<startDateKey)return [];
+  if(window?.windowStart && startDateKey<window.windowStart)startDateKey=window.windowStart;
+  if(window?.windowEndExclusive && endDateKey>=window.windowEndExclusive)endDateKey=new Date(Date.parse(window.windowEndExclusive)-DAY_MS).toISOString().slice(0,10);
+  return listDateKeysBetween(startDateKey,endDateKey);
 }
 
 function listDateKeysBetween(startDateKey, endDateKey) {
@@ -486,7 +495,7 @@ function formatMonthKey(value, timeZone) {
 function formatDateKey(value, timeZone) {
   const date = value instanceof Date ? value : new Date(value);
   const parts = Object.fromEntries(
-    new Intl.DateTimeFormat("en-US", {
+    getCalendarFormatter({
       timeZone,
       year: "numeric",
       month: "2-digit",
@@ -501,7 +510,7 @@ function formatDateKey(value, timeZone) {
 }
 
 function formatMonthLabel(monthKey) {
-  return new Intl.DateTimeFormat("en-US", {
+  return getCalendarFormatter({
     timeZone: "UTC",
     month: "long",
     year: "numeric",
@@ -509,7 +518,7 @@ function formatMonthLabel(monthKey) {
 }
 
 function formatTime(date, timeZone) {
-  return new Intl.DateTimeFormat("en-US", {
+  return getCalendarFormatter({
     timeZone,
     hour: "numeric",
     minute: "2-digit",
@@ -517,7 +526,7 @@ function formatTime(date, timeZone) {
 }
 
 function formatShortDate(date, timeZone) {
-  return new Intl.DateTimeFormat("en-US", {
+  return getCalendarFormatter({
     timeZone,
     month: "short",
     day: "numeric",
@@ -525,7 +534,7 @@ function formatShortDate(date, timeZone) {
 }
 
 function formatDateBandLabel(dateKey, timeZone) {
-  const parts = new Intl.DateTimeFormat("en-US", {
+  const parts = getCalendarFormatter({
     timeZone,
     weekday: "long",
     month: "long",

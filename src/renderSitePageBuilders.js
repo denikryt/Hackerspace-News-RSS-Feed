@@ -1,3 +1,4 @@
+import { publicCalendarPayload } from "./calendar/normalizeCalendarSnapshot.js";
 import { getAuthorDetailOutputPath } from "./authors.js";
 import { buildCalendarPageModelFromIndex } from "./calendar/index.js";
 import { formatLoopProgressLog } from "./renderProgress.js";
@@ -32,12 +33,13 @@ export async function buildCalendarPageEntries(context, { logger } = {}) {
   const now = context.now || new Date();
   const currentMonth = now.toISOString().slice(0, 7);
   const baseModel = buildCalendarPageModelFromIndex(calendarIndexPayload, {
+    events,
     timeZone: "UTC",
     selectedMonth: currentMonth,
     now,
   });
   const monthEntries = buildCalendarMonthEntries({
-    calendarIndexPayload,
+    calendarPayload, calendarIndexPayload,
     currentMonth,
     monthKeys: baseModel.availableMonthsWithEvents || [],
     now,
@@ -47,7 +49,7 @@ export async function buildCalendarPageEntries(context, { logger } = {}) {
   return [
     ["calendar/index.html", `<!doctype html><html><head><meta http-equiv="refresh" content="0;url=${currentMonth}/" /><title>Redirecting…</title></head><body></body></html>`],
     ...monthEntries,
-    ["calendar/events.json", JSON.stringify(calendarPayload, null, 2)],
+    ["calendar/events.json", JSON.stringify(publicCalendarPayload(calendarPayload, { windowYear: calendarIndexPayload.windowYear, windowStart: calendarIndexPayload.windowStart, windowEndExclusive: calendarIndexPayload.windowEndExclusive }), null, 2)],
   ];
 }
 
@@ -229,11 +231,12 @@ function logInfo(logger, message) {
   }
 }
 
-function buildCalendarMonthEntries({ calendarIndexPayload, currentMonth, monthKeys, now }) {
+function buildCalendarMonthEntries({ calendarPayload, calendarIndexPayload, currentMonth, monthKeys, now }) {
   const orderedMonthKeys = [...new Set([currentMonth, ...monthKeys])];
 
   return orderedMonthKeys.map((monthKey) => {
     const model = buildCalendarPageModelFromIndex(calendarIndexPayload, {
+      events: calendarPayload.events,
       timeZone: "UTC",
       selectedMonth: monthKey,
       now,

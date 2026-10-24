@@ -1,3 +1,6 @@
+import { mapWithConcurrency } from "./mapWithConcurrency.js";
+import { RESOURCE_LIMITS } from "./resourceLimits.js";
+import { limitParsedFeed } from "./feedInputLimits.js";
 import { copyFile, mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 
@@ -89,7 +92,7 @@ export async function renderCuratedPreview({
 export async function processCuratedSourceRows(sourceRows, { fetchImpl, logger }) {
   const selectedSourceRows = Array.isArray(sourceRows) ? sourceRows : [];
 
-  return Promise.all(selectedSourceRows.map(async (sourceRow, index) => {
+  return mapWithConcurrency(selectedSourceRows, RESOURCE_LIMITS.concurrency, async (sourceRow, index) => {
     const feedIndex = index + 1;
     logInfo(
       logger,
@@ -113,7 +116,7 @@ export async function processCuratedSourceRows(sourceRows, { fetchImpl, logger }
     }
 
     try {
-      const parsedFeed = await parseFeedBody({ xml: validation.body, validation });
+      const parsedFeed = limitParsedFeed(await parseFeedBody({ xml: validation.body, validation }));
       const normalizedFeed = normalizeFeed({
         sourceRow,
         validation,
@@ -138,12 +141,12 @@ export async function processCuratedSourceRows(sourceRows, { fetchImpl, logger }
         feed: null,
         failure: {
           candidateUrl: sourceRow.candidateFeedUrl,
-          errorCode: "parse_error",
+          errorCode: error?.code || "parse_error",
           errorMessage: error instanceof Error ? error.message : String(error),
         },
       };
     }
-  }));
+  });
 }
 
 function logInfo(logger, message) {

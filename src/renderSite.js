@@ -1,3 +1,6 @@
+import { normalizeCalendarSnapshot } from "./calendar/normalizeCalendarSnapshot.js";
+import { isCalendarIndexValid } from "./calendar/buildCalendarIndex.js";
+import { limitFeedPayload, limitItemText } from "./truncateContentText.js";
 import { copyFile, mkdir, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 
@@ -39,7 +42,7 @@ export async function renderSite({
   logger = null,
 } = {}) {
   const data = await loadRenderInputs({
-    paths,
+    now, paths,
     sourceRowsPayload,
     validationsPayload,
     normalizedPayload,
@@ -136,7 +139,7 @@ function buildCuratedPageEntries(context) {
   ];
 }
 
-async function loadRenderInputs({
+async function loadRawRenderInputs({
   paths,
   sourceRowsPayload,
   validationsPayload,
@@ -149,9 +152,7 @@ async function loadRenderInputs({
     return {
       sourceRowsPayload,
       validationsPayload,
-      normalizedPayload: validateNormalizedRenderPayloadForDisplay(
-        mergeCuratedPayload(normalizedPayload, curatedPayload),
-      ),
+      normalizedPayload: mergeCuratedPayload(normalizedPayload, curatedPayload),
       curatedPayload,
       calendarPayload,
       calendarIndexPayload: calendarIndexPayload ?? buildCalendarIndex(calendarPayload.events, {
@@ -177,9 +178,7 @@ async function loadRenderInputs({
   const loadedCalendarIndexPayload = calendarIndexPayload
     ?? await readCalendarIndexPayload(paths.calendarIndex, loadedCalendarPayload);
 
-  const validatedNormalizedPayload = validateNormalizedRenderPayloadForDisplay(
-    mergeCuratedPayload(loadedNormalizedPayload, loadedCuratedPayload),
-  );
+  const validatedNormalizedPayload = mergeCuratedPayload(loadedNormalizedPayload, loadedCuratedPayload);
 
   return {
     sourceRowsPayload: loadedSourceRowsPayload,
@@ -307,4 +306,18 @@ function logInfo(logger, message) {
   if (typeof logger === "function") {
     logger(message);
   }
+}
+
+// Publication boundary is identical for disk snapshots and injected payloads.
+// Normalize before Zod cloning, indexing, view models or JSON serialization.
+async function loadRenderInputs(options) {
+ const data=await loadRawRenderInputs(options);
+ const calendarPayload=normalizeCalendarSnapshot(data.calendarPayload);
+ const normalizedPayload=limitFeedPayload(data.normalizedPayload);
+ const curated=data.curatedPayload ?? normalizedPayload.curated;
+ const curatedPayload=curated ? {...curated,items:(curated.items||[]).map(item=>limitItemText(item))} : curated;
+ normalizedPayload.curated=curatedPayload;
+ const indexOptions={timeZone:'UTC',windowYear:new Date(options.now).getUTCFullYear(),generatedAt:calendarPayload.generatedAt};
+ const calendarIndexPayload=isCalendarIndexValid(data.calendarIndexPayload,calendarPayload.events,indexOptions)?data.calendarIndexPayload:buildCalendarIndex(calendarPayload.events,indexOptions);
+ return {...data,normalizedPayload:validateNormalizedRenderPayloadForDisplay(normalizedPayload),curatedPayload,calendarPayload,calendarIndexPayload};
 }

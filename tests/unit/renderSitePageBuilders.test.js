@@ -100,6 +100,7 @@ describe("renderSitePageBuilders", () => {
         ],
       },
       calendarIndexPayload: {
+        windowYear: 2026, windowStart: "2025-01-01", windowEndExclusive: "2028-01-01",
         availableMonthsWithEvents: ["2026-05"],
         months: {
           "2026-05": {
@@ -125,6 +126,7 @@ describe("renderSitePageBuilders", () => {
             sourceFile: "source-001.ics",
           },
         ],
+        windowYear: 2026, windowStart: "2025-01-01", windowEndExclusive: "2028-01-01",
       }, null, 2)],
     ]);
   });

@@ -1,6 +1,7 @@
 // One resource policy shared by ingress, render and CLI configuration. All byte
 // ceilings are inclusive. Docker must also apply its own OS memory ceiling.
 const DEFAULTS = {
+ textMaxCodePoints: 1095,
  htmlMaxBodyBytes: 8 * 1024 ** 2, feedMaxBodyBytes: 4 * 1024 ** 2,
  icsMaxBodyBytes: 8 * 1024 ** 2, spaceApiMaxBodyBytes: 1024 ** 2,
  maxFeedItems: 500, artifactMaxBytes: 32 * 1024 ** 2,
@@ -8,6 +9,7 @@ const DEFAULTS = {
  builderMemoryMiB: 1024, nodeOldSpaceMiB: 768,
 };
 const ENV_KEYS = {
+ textMaxCodePoints:'CONTENT_TEXT_MAX_CODE_POINTS',
  htmlMaxBodyBytes:'HTML_MAX_BODY_BYTES',feedMaxBodyBytes:'FEED_MAX_BODY_BYTES',
  icsMaxBodyBytes:'ICS_MAX_BODY_BYTES',spaceApiMaxBodyBytes:'SPACE_API_MAX_BODY_BYTES',
  maxFeedItems:'MAX_FEED_ITEMS',artifactMaxBytes:'RENDER_ARTIFACT_MAX_BYTES',

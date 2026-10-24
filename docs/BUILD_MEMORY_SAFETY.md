@@ -100,3 +100,48 @@ rejects early. Streams are cancelled best-effort on failure. Existing retry
 schedules and original network error codes remain available without arbitrary
 remote exception messages. Text-only test mocks were replaced by streams.
 Stage 1 suite: 468 passing; only the same three baseline failures remain.
+
+## Stage 2 verification
+
+L=1095 is now active through CONTENT_TEXT_MAX_CODE_POINTS; HTML fragments keep
+valid nesting, plain text counts Unicode code points. Shared limits apply before
+normalization and on every render boundary. Item count is independently rejected
+with too_many_feed_items. Local calendar source items contain metadata only.
+Raw ICS is written and released within each bounded worker using staged directory
+promotion and rollback; disk errors propagate.
+
+Calendar index v2 stores eventIndexes into the exact normalized canonical order;
+SHA-256 covers each event, including metadata, in that order. Schema, year,
+timezone, window and positional bounds are checked before reuse. Repair is
+derived from canonical events offline. Public JSON filters events to the window;
+the complete local canonical list remains available for future renders.
+Date-only DTSTART/DTEND repairs precede indexing. Timed date/time behavior remains
+unchanged. Both server and client clip before expanding days.
+
+Pinned ical.js expands the observed recurrence forms, RDATE/EXDATE and source-local
+overrides only within the window. Non-property tokenless lines in source-001
+are ignored consistently with the original parser. No unsupported recurrence
+semantics silently fall back to a master event. All 51 saved ICS files parse:
+17,817 records (includes preserved nonrecurring historical events); fresh-process
+peak RSS 219.53 MiB via getrusage. This is parsing, not a full production refresh.
+
+Synthetic 2025–2027 index experiment (fresh processes, cached date formatters):
+
+| Events | Refs | Ref JSON bytes | Full-object JSON bytes | Ref peak RSS MiB | Full peak RSS MiB |
+|---|---:|---:|---:|---:|---:|
+| 8 | 8760 | 114952 | 11250459 | 66.32 | 91.29 |
+| 32 | 35040 | 191602 | 44803353 | 69.90 | 161.92 |
+
+Reference index stores zero descriptions. Full-object baseline uses the original
+visible-event projection and retains all descriptions. Reproduce with
+`node --max-old-space-size=256 scripts/profile-calendar-index.mjs refs 32`
+and `full 32` (also 8).
+
+Formatter experiment: 2000 dates, separately profiled cached/uncached Intl
+formatters; see below. JSON snapshots still use ordinary serialization with
+optional before/serialized/written memory checkpoints. No evidence currently
+justifies a streaming JSON writer, so conditional Stage 2b is not activated.
+
+- cached=True: peak RSS 42.74 MiB; output SHA-256 `0fd681fa942f4083eeb14f625c56302e67ec1e90abdbba6e0a1973e02419a18a`.
+
+- cached=False: peak RSS 95.28 MiB; output SHA-256 `0fd681fa942f4083eeb14f625c56302e67ec1e90abdbba6e0a1973e02419a18a`.

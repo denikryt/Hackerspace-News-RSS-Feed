@@ -1,6 +1,8 @@
+import { withStagedDirectory } from "../stagedDirectory.js";
+import { mapWithConcurrency } from "../mapWithConcurrency.js";
+import { normalizeCalendarSnapshot } from "./normalizeCalendarSnapshot.js";
 import { fetchBoundedText } from "../http/fetchBoundedText.js";
 import { RESOURCE_LIMITS } from "../resourceLimits.js";
-import { mkdir, rm } from "node:fs/promises";
 
 import { getAttemptTimeoutMs } from "../networkAttemptTimeout.js";
 import { runWithNetworkRetry } from "../networkRetry.js";
@@ -27,19 +29,16 @@ export async function refreshCalendarSnapshot({
   waitImpl,
   retryDelaysMs,
   attemptTimeoutsMs,
+  writeTextImpl = writeText,
 } = {}) {
   const generatedAt = new Date().toISOString();
   const calendarSourceItems = Array.isArray(sourceItems)
     ? normalizeCalendarSourceItems(sourceItems)
     : await loadCalendarSourceItems({ calendarSourcesPath, readJsonImpl });
 
-  if (calendarSourceItems.length === 0) {
-    return buildCalendarPayload({ generatedAt, items: [], events: [] });
-  }
-
-  const sourceResults = await mapWithConcurrency(calendarSourceItems, 4, async (sourceItem, sourceIndex) => {
+  const collect = (stage) => mapWithConcurrency(calendarSourceItems, RESOURCE_LIMITS.concurrency, async (sourceItem, sourceIndex) => {
     const snapshotFile = `source-${String(sourceIndex + 1).padStart(3, "0")}.ics`;
-    return fetchCalendarSource({
+    const result = await fetchCalendarSource({
       sourceItem,
       snapshotFile,
       fetchImpl,
@@ -48,18 +47,20 @@ export async function refreshCalendarSnapshot({
       retryDelaysMs,
       attemptTimeoutsMs: attemptTimeoutsMs || DEFAULT_CALENDAR_ATTEMPT_TIMEOUTS_MS,
     });
+    if (stage && result.snapshotFile && result.rawIcsText) await writeTextImpl(`${stage}/${result.snapshotFile}`, result.rawIcsText);
+    delete result.rawIcsText;
+    return result;
   });
-
-  if (writeSnapshots && rawDirectoryPath) {
-    await writeCalendarRawSnapshots({ rawDirectoryPath, sourceResults });
-  }
+  const sourceResults = writeSnapshots && rawDirectoryPath
+    ? await withStagedDirectory(rawDirectoryPath, collect)
+    : await collect(null);
 
   const events = sortCalendarEvents(sourceResults.flatMap((result) => result.events));
-  return buildCalendarPayload({
+  return normalizeCalendarSnapshot(buildCalendarPayload({
     generatedAt,
     items: sourceResults.map(stripCalendarRawText),
     events,
-  });
+  }));
 }
 
 // The source list is hand-maintained and intentionally extensible, so the
@@ -205,17 +206,8 @@ function isCalendarResponse({ url, contentType, body }) {
     || normalizedBody.startsWith("BEGIN:VCALENDAR");
 }
 
-async function writeCalendarRawSnapshots({ rawDirectoryPath, sourceResults }) {
-  await rm(rawDirectoryPath, { recursive: true, force: true });
-  await mkdir(rawDirectoryPath, { recursive: true });
-
-  await Promise.all(sourceResults
-    .filter((result) => result.snapshotFile && result.rawIcsText)
-    .map((result) => writeText(`${rawDirectoryPath}/${result.snapshotFile}`, result.rawIcsText)));
-}
-
 function stripCalendarRawText(result) {
-  const { rawIcsText, ...rest } = result;
+  const { rawIcsText, events, ...rest } = result;
   return {
     ...rest,
     eventCount: result.events.length,
@@ -240,23 +232,4 @@ function logInfo(logger, message) {
   if (typeof logger === "function") {
     logger(message);
   }
-}
-
-async function mapWithConcurrency(items, concurrency, mapper) {
-  const results = new Array(items.length);
-  let index = 0;
-
-  async function worker() {
-    while (index < items.length) {
-      const currentIndex = index;
-      index += 1;
-      results[currentIndex] = await mapper(items[currentIndex], currentIndex);
-    }
-  }
-
-  await Promise.all(
-    Array.from({ length: Math.min(concurrency, items.length) }, () => worker()),
-  );
-
-  return results;
 }

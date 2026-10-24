@@ -1,9 +1,17 @@
+// Bounded cache: attacker-controlled timezone names cannot grow it forever.
+const formatters=new Map();
+export function getCalendarFormatter(options){
+ const key=JSON.stringify(options);if(formatters.has(key))return formatters.get(key);
+ const formatter=new Intl.DateTimeFormat("en-US",options);
+ if(formatters.size>=64)formatters.delete(formatters.keys().next().value);
+ formatters.set(key,formatter);return formatter;
+}
 // Calendar date labels must be locale-agnostic in their machine-readable form,
 // otherwise browser-specific Intl string output can break month navigation.
 export function formatDateKeyInTimeZone(value, timeZone) {
   const date = value instanceof Date ? value : new Date(value);
   const parts = Object.fromEntries(
-    new Intl.DateTimeFormat("en-US", {
+    getCalendarFormatter({
       timeZone,
       year: "numeric",
       month: "2-digit",
@@ -18,7 +26,7 @@ export function formatDateKeyInTimeZone(value, timeZone) {
 }
 
 export function formatLongDateLabel(dateKey, timeZone) {
-  return new Intl.DateTimeFormat("en-US", {
+  return getCalendarFormatter({
     timeZone,
     weekday: "long",
     month: "long",
@@ -29,7 +37,7 @@ export function formatLongDateLabel(dateKey, timeZone) {
 
 export function formatDateBandLabel(dateKey, timeZone) {
   const parts = Object.fromEntries(
-    new Intl.DateTimeFormat("en-US", {
+    getCalendarFormatter({
       timeZone,
       weekday: "long",
       month: "long",
@@ -44,7 +52,7 @@ export function formatDateBandLabel(dateKey, timeZone) {
 }
 
 export function formatMediumDateLabel(dateKey) {
-  return new Intl.DateTimeFormat("en-US", {
+  return getCalendarFormatter({
     timeZone: "UTC",
     month: "short",
     day: "numeric",
@@ -52,7 +60,7 @@ export function formatMediumDateLabel(dateKey) {
 }
 
 export function formatMonthLabel(monthKey) {
-  return new Intl.DateTimeFormat("en-US", {
+  return getCalendarFormatter({
     timeZone: "UTC",
     month: "long",
     year: "numeric",
@@ -60,7 +68,7 @@ export function formatMonthLabel(monthKey) {
 }
 
 export function formatTimeLabel(date, timeZone) {
-  return new Intl.DateTimeFormat("en-US", {
+  return getCalendarFormatter({
     timeZone,
     hour: "numeric",
     minute: "2-digit",

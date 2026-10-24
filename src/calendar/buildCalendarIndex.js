@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+import { calendarYearWindow, normalizeDateOnlyInterval } from "./normalizeCalendarSnapshot.js";
 import {
   formatDateBandLabel,
   formatDateKeyInTimeZone,
@@ -9,64 +11,39 @@ import { getCountryFlag } from "../countryFlags.js";
 
 // The persisted calendar index is a refresh artifact. It pre-groups normalized
 // events by visible fallback day so render can consume month slices directly.
-export function buildCalendarIndex(events, {
-  generatedAt = null,
-  timeZone = "UTC",
-} = {}) {
-  const normalizedEvents = Array.isArray(events) ? events : [];
-  const monthMap = new Map();
-
-  for (const event of normalizedEvents) {
-    for (const visibleDate of listVisibleDatesForEvent(event, timeZone)) {
-      const monthKey = visibleDate.slice(0, 7);
-      const monthBucket = ensureMonthBucket(monthMap, monthKey);
-      const dateBucket = ensureDateBucket(monthBucket, visibleDate, timeZone);
-      dateBucket.events.push(toVisibleDayEvent(event, timeZone, visibleDate));
-    }
+export function buildCalendarIndex(events, { generatedAt=null, timeZone="UTC", windowYear=new Date().getUTCFullYear() }={}) {
+ const normalizedEvents=Array.isArray(events)?events:[];
+ const window=calendarYearWindow(windowYear);const monthMap=new Map();
+ for(const [eventIndex,event] of normalizedEvents.entries()) {
+  for(const date of listVisibleDatesForEvent(event,timeZone,window)) {
+   const month=ensureMonthBucket(monthMap,date.slice(0,7));
+   const bucket=ensureDateBucket(month,date,timeZone);bucket.events.push(eventIndex);
   }
-
-  const availableMonthsWithEvents = [...monthMap.keys()].sort((left, right) => left.localeCompare(right));
-  const months = Object.fromEntries(
-    availableMonthsWithEvents.map((monthKey) => {
-      const monthBucket = monthMap.get(monthKey);
-      const sortedDateKeys = [...monthBucket.dates.keys()].sort((left, right) => left.localeCompare(right));
-      const dates = Object.fromEntries(
-        sortedDateKeys.map((dateKey) => {
-          const dateBucket = monthBucket.dates.get(dateKey);
-          dateBucket.events.sort(compareVisibleDayEvents);
-          return [dateKey, {
-            dateKey,
-            dateLabel: dateBucket.dateLabel,
-            events: dateBucket.events.map(stripInternalSortKey),
-          }];
-        }),
-      );
-
-      return [monthKey, {
-        monthKey,
-        dates,
-      }];
-    }),
-  );
-
-  return {
-    generatedAt,
-    timeZone,
-    availableMonthsWithEvents,
-    months,
-  };
+ }
+ const availableMonthsWithEvents=[...monthMap.keys()].sort();
+ const months=Object.fromEntries(availableMonthsWithEvents.map(monthKey=>[monthKey,{monthKey,dates:Object.fromEntries([...monthMap.get(monthKey).dates].sort(([a],[b])=>a.localeCompare(b)).map(([dateKey,bucket])=>[dateKey,{dateKey,dateLabel:bucket.dateLabel,eventIndexes:bucket.events.sort((a,b)=>compareCanonicalEvents(normalizedEvents[a],normalizedEvents[b]))}]))}]));
+ return {schemaVersion:2,sourceEventsSha256:sourceEventsDigest(normalizedEvents),generatedAt,timeZone,...window,availableMonthsWithEvents,months};
 }
-
-// Render keeps working without refresh artifacts, so an empty index still has
-// the same stable shape as a populated one.
-export function buildEmptyCalendarIndex({ generatedAt = null, timeZone = "UTC" } = {}) {
-  return {
-    generatedAt,
-    timeZone,
-    availableMonthsWithEvents: [],
-    months: {},
-  };
+export function buildEmptyCalendarIndex(options={}) { return buildCalendarIndex([],options); }
+// Hash in canonical order: equal UID/content never merges distinct positions.
+export function sourceEventsDigest(events) {
+ const hash=createHash('sha256');hash.update('[');
+ for(const [i,event] of events.entries()){if(i)hash.update(',');hash.update(JSON.stringify(event));}return hash.update(']').digest('hex');
 }
+export function isCalendarIndexValid(index,events,{timeZone="UTC",windowYear=new Date().getUTCFullYear()}={}) {
+ const window=calendarYearWindow(windowYear);
+ if(!index||index.schemaVersion!==2||index.sourceEventsSha256!==sourceEventsDigest(events)||index.timeZone!==timeZone||Object.entries(window).some(([k,v])=>index[k]!==v))return false;
+ if(!index.months||!Array.isArray(index.availableMonthsWithEvents)||JSON.stringify(Object.keys(index.months).sort())!==JSON.stringify(index.availableMonthsWithEvents))return false;
+ for(const [monthKey,month] of Object.entries(index.months)){
+  if(!month?.dates||monthKey!==month.monthKey)return false;
+  for(const [date,bucket] of Object.entries(month.dates)){
+   if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||date<window.windowStart||date>=window.windowEndExclusive||date.slice(0,7)!==monthKey||bucket.dateKey!==date||!Array.isArray(bucket.eventIndexes)||'events' in bucket)return false;
+   if(bucket.eventIndexes.some(ref=>!Number.isInteger(ref)||ref<0||ref>=events.length))return false;
+  }
+ }
+ return true;
+}
+function compareCanonicalEvents(a,b){return buildSortKey(a).localeCompare(buildSortKey(b))||(a.summary||'').localeCompare(b.summary||'');}
 
 function ensureMonthBucket(monthMap, monthKey) {
   if (!monthMap.has(monthKey)) {
@@ -90,22 +67,19 @@ function ensureDateBucket(monthBucket, dateKey, timeZone) {
 
 // Timed events occupy every visible fallback day they cross, while date-only
 // events stay pinned to the source date from the ICS snapshot.
-function listVisibleDatesForEvent(event, timeZone) {
-  if (!event) {
-    return [];
-  }
-
-  if (event.dateKind === "date") {
-    return event.sourceDate ? [event.sourceDate] : [];
-  }
-
-  if (!event.startInstant) {
-    return [];
-  }
-
-  const startDateKey = formatDateKeyInTimeZone(event.startInstant, timeZone);
-  const endDateKey = formatDateKeyInTimeZone(event.endInstant || event.startInstant, timeZone);
-  return listDateKeysBetween(startDateKey, endDateKey);
+export function listVisibleDatesForEvent(event,timeZone,window=calendarYearWindow()) {
+ if(!event)return [];
+ let startDateKey,endDateKey;
+ if(event.dateKind==='date') {
+  const normalized=normalizeDateOnlyInterval(event);if(!normalized)return [];
+  startDateKey=normalized.sourceDate;endDateKey=new Date(Date.parse(normalized.endSourceDateExclusive)-DAY_MS).toISOString().slice(0,10);
+ } else {
+  if(!event.startInstant||!Number.isFinite(Date.parse(event.startInstant)))return [];
+  if(event.endInstant&&(!Number.isFinite(Date.parse(event.endInstant))||event.endInstant<event.startInstant))return [];
+  startDateKey=formatDateKeyInTimeZone(event.startInstant,timeZone);endDateKey=formatDateKeyInTimeZone(event.endInstant||event.startInstant,timeZone);
+ }
+ const lastWindowDate=new Date(Date.parse(window.windowEndExclusive)-DAY_MS).toISOString().slice(0,10);
+ return listDateKeysBetween(startDateKey<window.windowStart?window.windowStart:startDateKey,endDateKey>lastWindowDate?lastWindowDate:endDateKey);
 }
 
 function listDateKeysBetween(startDateKey, endDateKey) {
@@ -122,7 +96,7 @@ function listDateKeysBetween(startDateKey, endDateKey) {
 
 // Each visible event slice stores only the fields the server fallback calendar
 // page actually renders. Raw event objects are intentionally not duplicated.
-function toVisibleDayEvent(event, timeZone, visibleDate) {
+export function toVisibleDayEvent(event, timeZone, visibleDate) {
   return {
     uid: event.uid,
     summary: event.summary || "Untitled event",

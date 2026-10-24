@@ -1,4 +1,4 @@
-import { buildCalendarIndex, buildEmptyCalendarIndex } from "./buildCalendarIndex.js";
+import { buildCalendarIndex, buildEmptyCalendarIndex, toVisibleDayEvent } from "./buildCalendarIndex.js";
 import {
   formatDateKeyInTimeZone,
   formatLongDateLabel,
@@ -10,20 +10,21 @@ import {
 // for tests that still exercise the pure page-model contract directly.
 export function buildCalendarPageModel(events, options = {}) {
   const timeZone = options.timeZone || "UTC";
-  const index = buildCalendarIndex(Array.isArray(events) ? events : [], { timeZone });
-  return buildCalendarPageModelFromIndex(index, options);
+  const index = buildCalendarIndex(Array.isArray(events) ? events : [], { timeZone, windowYear: new Date(options.now || Date.now()).getUTCFullYear() });
+  return buildCalendarPageModelFromIndex(index, { ...options, events });
 }
 
 // Render consumes a persisted refresh artifact, so this builder accepts a
 // precomputed index and resolves only month selection and navigation.
 export function buildCalendarPageModelFromIndex(calendarIndex, {
   timeZone = "UTC",
+  events = [],
   selectedDate,
   selectedMonth,
   now = new Date(),
 } = {}) {
   const normalizedIndex = normalizeCalendarIndex(calendarIndex, timeZone);
-  const filterOptions = buildFilterOptions(normalizedIndex);
+  const filterOptions = buildFilterOptions(normalizedIndex, events);
   const availableDates = listAvailableDates(normalizedIndex);
   const availableMonthsWithEvents = Array.isArray(normalizedIndex.availableMonthsWithEvents)
     ? normalizedIndex.availableMonthsWithEvents
@@ -49,8 +50,8 @@ export function buildCalendarPageModelFromIndex(calendarIndex, {
     availableHackerspaces: filterOptions.availableHackerspaces,
     selectedCountry: "all",
     selectedHackerspace: "all",
-    dateSections: buildDateSections({ calendarIndex: normalizedIndex, monthKey: resolvedMonth }),
-    selectedDayEvents: normalizedIndex.months?.[resolvedDate.slice(0, 7)]?.dates?.[resolvedDate]?.events || [],
+    dateSections: buildDateSections({ calendarIndex: normalizedIndex, monthKey: resolvedMonth, events, timeZone }),
+    selectedDayEvents: resolveDayEvents(normalizedIndex.months?.[resolvedDate.slice(0, 7)]?.dates?.[resolvedDate], events, timeZone, resolvedDate),
   };
 }
 
@@ -116,11 +117,12 @@ function resolveMonthNavigation(availableMonthsWithEvents, resolvedMonth) {
 
 // Filter controls should reflect the curated metadata carried by the full
 // calendar payload, not only the currently selected month.
-function buildFilterOptions(calendarIndex) {
+function buildFilterOptions(calendarIndex, events) {
   const countries = new Set();
   const hackerspaces = new Set();
 
-  for (const event of listAllIndexedEvents(calendarIndex)) {
+  for (const ref of listAllIndexedEvents(calendarIndex)) {
+    const event = { ...events[ref], countryName: events[ref]?.country };
     if (typeof event?.countryName === "string" && event.countryName.trim() !== "") {
       countries.add(event.countryName.trim());
     }
@@ -136,15 +138,13 @@ function buildFilterOptions(calendarIndex) {
   };
 }
 
-function listAllIndexedEvents(calendarIndex) {
-  return Object.values(calendarIndex.months || {})
-    .flatMap((month) => Object.values(month?.dates || {}))
-    .flatMap((dateBucket) => Array.isArray(dateBucket?.events) ? dateBucket.events : []);
+function* listAllIndexedEvents(calendarIndex) {
+ for(const month of Object.values(calendarIndex.months||{})) for(const bucket of Object.values(month.dates||{})) yield* bucket.eventIndexes || [];
 }
 
 // The renderer expects only eventful dates for the current month, so the page
 // model flattens one month bucket into an ordered array of editorial columns.
-function buildDateSections({ calendarIndex, monthKey }) {
+function buildDateSections({ calendarIndex, monthKey, events, timeZone }) {
   const monthBucket = calendarIndex.months?.[monthKey];
   if (!monthBucket || typeof monthBucket !== "object") {
     return [];
@@ -155,6 +155,11 @@ function buildDateSections({ calendarIndex, monthKey }) {
     .map((dateKey) => ({
       date: dateKey,
       dateLabel: monthBucket.dates[dateKey].dateLabel,
-      events: monthBucket.dates[dateKey].events || [],
+      events: resolveDayEvents(monthBucket.dates[dateKey], events, timeZone, dateKey),
     }));
+}
+
+// Materialize only the selected month, resolving each positional reference.
+function resolveDayEvents(bucket, events, timeZone, date) {
+ return (bucket?.eventIndexes || []).map(ref => toVisibleDayEvent(events[ref], timeZone, date));
 }
