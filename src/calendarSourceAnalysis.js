@@ -1,3 +1,5 @@
+import { fetchBoundedText } from "./http/fetchBoundedText.js";
+import { RESOURCE_LIMITS } from "./resourceLimits.js";
 import { readJson } from "./storage.js";
 
 // Calendar source analysis reads the curated source list, fetches each ICS
@@ -99,12 +101,12 @@ export function analyzeCalendarIcsText(text) {
 
 async function analyzeCalendarSource(sourceItem, { fetchImpl }) {
   try {
-    const response = await fetchImpl(sourceItem.url);
-    const body = await response.text();
+    const response = await fetchBoundedText({ url: sourceItem.url, fetchImpl, timeoutMs: 5000, maxBodyBytes: RESOURCE_LIMITS.icsMaxBodyBytes });
+    const body = response.text;
 
     if (!isCalendarResponse({
-      url: response.url || sourceItem.url,
-      contentType: response.headers.get("content-type"),
+      url: response.finalUrl || sourceItem.url,
+      contentType: response.contentType,
       body,
     })) {
       return {

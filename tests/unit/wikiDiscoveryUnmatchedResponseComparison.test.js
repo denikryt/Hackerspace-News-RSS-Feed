@@ -96,7 +96,7 @@ describe("analyzeWikiDiscoveryUnmatchedResponses", () => {
         status: response.status,
         url: response.url,
         headers: response.headers,
-        text: async () => response.text(),
+        body: new Response(await response.text()).body,
       };
     };
 

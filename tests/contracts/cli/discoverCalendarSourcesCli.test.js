@@ -169,7 +169,7 @@ describe("runDiscoverCalendarSourcesCli", () => {
       ],
     });
     expect(logger).toHaveBeenCalledWith(
-      "[calendar-discovery] skipped https://status.broken.example/spaceapi.json (getaddrinfo ENOTFOUND status.broken.example)",
+      "[calendar-discovery] skipped https://status.broken.example/spaceapi.json (fetch_error: bytes=0, limit=1048576)",
     );
   });
 });
@@ -184,8 +184,6 @@ function response({ url, body, contentType = "application/json; charset=utf-8", 
         return name.toLowerCase() === "content-type" ? contentType : null;
       },
     },
-    async text() {
-      return body;
-    },
+    body: new Response(body).body,
   };
 }

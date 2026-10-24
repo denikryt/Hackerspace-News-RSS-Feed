@@ -16,7 +16,14 @@ const parser = new Parser({
 });
 
 export async function parseFeedBody({ xml, validation }) {
-  const parsed = await parser.parseString(xml);
+  let parsed;
+  try {
+    parsed = await parser.parseString(xml);
+  } catch {
+    // XML parser messages can quote remote tag names or content. Callers log
+    // this error, so expose only the stable acquisition contract here.
+    throw Object.assign(new Error("parse_error"), { code: "parse_error" });
+  }
 
   return {
     ...parsed,

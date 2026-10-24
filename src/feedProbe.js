@@ -1,3 +1,5 @@
+import { fetchBoundedText } from "./http/fetchBoundedText.js";
+import { RESOURCE_LIMITS } from "./resourceLimits.js";
 import { runWithNetworkRetry } from "./networkRetry.js";
 import { getAttemptTimeoutMs } from "./networkAttemptTimeout.js";
 
@@ -29,14 +31,14 @@ export async function probeFeedUrl({
       },
     });
 
-    const body = await response.text();
-    const contentType = response.headers.get("content-type") || "";
+    const body = response.text;
+    const contentType = response.contentType;
     const detectedFormat = detectFeedFormat(body, contentType);
     const isParsable = Boolean(detectedFormat);
 
     return {
       candidateUrl,
-      finalUrl: response.url || candidateUrl,
+      finalUrl: response.finalUrl || candidateUrl,
       httpStatus: response.status,
       contentType,
       fetchOk: response.ok,
@@ -59,25 +61,20 @@ export async function probeFeedUrl({
       isFeedLike: false,
       isParsable: false,
       detectedFormat: null,
-      errorCode: error?.name === "AbortError" ? "timeout" : "fetch_error",
+      errorCode: error?.code || (error?.name === "AbortError" ? "timeout" : "fetch_error"),
       errorMessage: error instanceof Error ? error.message : String(error),
       body: null,
     };
   }
 }
 
-async function fetchFeedWithTimeout({ candidateUrl, fetchImpl, timeoutMs }) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-  return fetchImpl(candidateUrl, {
-    redirect: "follow",
-    signal: controller.signal,
+function fetchFeedWithTimeout({ candidateUrl, fetchImpl, timeoutMs }) {
+  return fetchBoundedText({ url: candidateUrl, fetchImpl, timeoutMs, maxBodyBytes: RESOURCE_LIMITS.feedMaxBodyBytes,
     headers: {
       "user-agent": "HackerspaceNewsFeed/0.1 (+local)",
       accept: "application/atom+xml, application/rss+xml, application/xml, text/xml, */*",
-    },
-  }).finally(() => clearTimeout(timeoutId));
+    }
+  });
 }
 
 function detectFeedFormat(body, contentType) {

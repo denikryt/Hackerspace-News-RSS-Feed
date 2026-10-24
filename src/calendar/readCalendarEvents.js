@@ -1,4 +1,10 @@
-import { readFile, readdir } from "node:fs/promises";
+import { getCalendarFormatter } from "./dateFormatting.js";
+import { expandCalendarRecurrences, captureCalendarRecurrences, validateRecurrenceDefinition } from "./expandCalendarRecurrences.js";
+import { normalizeDateOnlyInterval } from "./normalizeCalendarSnapshot.js";
+import { truncateContentText } from "../truncateContentText.js";
+import { mapWithConcurrency } from "../mapWithConcurrency.js";
+import { RESOURCE_LIMITS } from "../resourceLimits.js";
+import { readFile, readdir, stat } from "node:fs/promises";
 
 // Read every local ICS file and normalize only the fields the calendar page
 // actually renders. Missing directories are treated as "no calendar data".
@@ -22,12 +28,11 @@ export async function readCalendarEvents({ directoryPath } = {}) {
     .map((entry) => entry.name)
     .sort((left, right) => left.localeCompare(right));
 
-  const parsedEventCollections = await Promise.all(
-    icsFiles.map(async (fileName) => {
+  const parsedEventCollections = await mapWithConcurrency(icsFiles, RESOURCE_LIMITS.concurrency, async (fileName) => {
+      if ((await stat(`${directoryPath}/${fileName}`)).size > RESOURCE_LIMITS.icsMaxBodyBytes) throw Object.assign(new Error("response_too_large"), {code:"response_too_large"});
       const text = await readFile(`${directoryPath}/${fileName}`, "utf8");
       return parseCalendarIcsText(text, { sourceFile: fileName });
-    }),
-  );
+    });
 
   return parsedEventCollections
     .flat()
@@ -53,7 +58,8 @@ function unfoldIcsLines(text) {
 
 // Each VEVENT becomes one normalized event record with explicit date semantics
 // so later layers can keep timed and all-day values separate.
-export function parseCalendarIcsText(text, { sourceFile }) {
+export function parseCalendarIcsText(text, { sourceFile, windowYear = new Date().getUTCFullYear() }) {
+  if (/^(?:RRULE|RDATE|EXDATE|RECURRENCE-ID)[;:]/m.test(text)) return expandCalendarRecurrences(text, { windowYear, parseComponent: component => toCalendarEvent(unfoldIcsLines(component), { sourceFile }) });
   const lines = unfoldIcsLines(text);
   const events = [];
   let currentLines = null;
@@ -78,6 +84,19 @@ export function parseCalendarIcsText(text, { sourceFile }) {
   }
 
   return events.filter(Boolean);
+}
+
+// Refresh persists self-contained recurring source templates alongside the
+// current window's events, without changing the array-only parser API.
+export function parseCalendarIcsSnapshot(text, { sourceFile, windowYear = new Date().getUTCFullYear() }) {
+  if (!/^(?:RRULE|RDATE|EXDATE|RECURRENCE-ID)[;:]/m.test(text)) return {events: parseCalendarIcsText(text, {sourceFile, windowYear}), recurrence: null};
+  return captureCalendarRecurrences(text, {windowYear, parseComponent: component => toCalendarEvent(unfoldIcsLines(component), {sourceFile})});
+}
+
+// Resolve stored RFC definitions through the same occurrence and event parser.
+export function parseCalendarRecurrenceDefinition(definition, { sourceFile, windowYear }) {
+  const calendar = validateRecurrenceDefinition(definition);
+  return expandCalendarRecurrences(calendar, {windowYear, componentIndexes: definition.componentIndexes, parseComponent: component => toCalendarEvent(unfoldIcsLines(component), {sourceFile})});
 }
 
 function toCalendarEvent(lines, { sourceFile }) {
@@ -121,7 +140,7 @@ function toCalendarEvent(lines, { sourceFile }) {
         applyDateProperty(event, "end", property);
         break;
       case "DESCRIPTION":
-        event.description = unescapeIcsText(property.value);
+        event.description = truncateContentText(unescapeIcsText(property.value));
         break;
       case "LOCATION":
         event.location = unescapeIcsText(property.value);
@@ -148,7 +167,7 @@ function toCalendarEvent(lines, { sourceFile }) {
     event.summary = "Untitled event";
   }
 
-  return event.startInstant || event.sourceDate ? event : null;
+  return event.startInstant || event.sourceDate ? normalizeDateOnlyInterval(event) : null;
 }
 
 function parseIcsProperty(line) {
@@ -187,7 +206,8 @@ function applyDateProperty(event, fieldName, property) {
   event.hasTime = parsedDate.hasTime;
 
   if (parsedDate.dateKind === "date") {
-    event.sourceDate = parsedDate.sourceDate;
+    if (fieldName === "start") event.sourceDate = parsedDate.sourceDate;
+    else event.endSourceDateExclusive = parsedDate.sourceDate;
     event.sourceTimeZone = null;
     return;
   }
@@ -267,7 +287,7 @@ function toZonedInstant(value, timeZone) {
 }
 
 function getTimeZoneOffsetMs(timeZone, date) {
-  const formatter = new Intl.DateTimeFormat("en-US", {
+  const formatter = getCalendarFormatter({
     timeZone,
     hour12: false,
     year: "numeric",
@@ -345,7 +365,14 @@ function compareCalendarEvents(left, right) {
     return leftSortKey.localeCompare(rightSortKey);
   }
 
-  return (left.summary || "").localeCompare(right.summary || "");
+  const summaryOrder = (left.summary || "").localeCompare(right.summary || "");
+  if (summaryOrder) return summaryOrder;
+  // Original source/component positions preserve tie order after re-expansion;
+  // equal UID or content never identifies or merges independent records.
+  const sourceOrder = (left.sourceFile || "").localeCompare(right.sourceFile || "");
+  if (sourceOrder) return sourceOrder;
+  return Number.isInteger(left.sourceComponentIndex) && Number.isInteger(right.sourceComponentIndex)
+    ? left.sourceComponentIndex - right.sourceComponentIndex : 0;
 }
 
 export function sortCalendarEvents(events) {

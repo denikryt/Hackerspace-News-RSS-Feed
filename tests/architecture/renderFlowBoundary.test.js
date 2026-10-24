@@ -86,11 +86,8 @@ describe("render flow boundary", () => {
       });
 
       expect(globalThis.fetch).not.toHaveBeenCalled();
-      expect(Object.keys(result.pages)).toEqual(expect.arrayContaining([
-        "index.html",
-        "about/index.html",
-        "news/index.html",
-      ]));
+      expect(result).toEqual({pageCount:expect.any(Number),outputDir:distDir});
+      for(const path of ['index.html','about/index.html','news/index.html'])await access(resolve(distDir,path));
       expect(await readFile(resolve(distDir, "index.html"), "utf8")).toContain("Hackerspace News");
       await access(resolve(distDir, "favicon.png"));
     } finally {

@@ -51,11 +51,11 @@ describe("buildSpacePageEntries call count", () => {
   });
 
   it("calls buildSpaceDetailModel exactly totalPages times for a 2-page space (not totalPages+1)", () => {
-    buildSpacePageEntries({
+    Array.from(buildSpacePageEntries({
       displayPayload: { id: "d" },
       authorDirectory: {},
       spaceSlugs: ["multi"],
-    });
+    }));
 
     // Before fix: called 3 times (1 extra for getTotalPages + 2 for pages).
     // After fix: called exactly 2 times.
@@ -69,21 +69,21 @@ describe("buildSpacePageEntries call count", () => {
   });
 
   it("calls buildSpaceDetailModel exactly 1 time for a single-page space", () => {
-    buildSpacePageEntries({
+    Array.from(buildSpacePageEntries({
       displayPayload: { id: "d" },
       authorDirectory: {},
       spaceSlugs: ["single"],
-    });
+    }));
 
     expect(buildSpaceDetailModelMock).toHaveBeenCalledTimes(1);
   });
 
   it("produces correct page entries for a 2-page space", () => {
-    const entries = buildSpacePageEntries({
+    const entries = Array.from(buildSpacePageEntries({
       displayPayload: { id: "d" },
       authorDirectory: {},
       spaceSlugs: ["multi"],
-    });
+    }));
 
     expect(entries).toEqual([
       ["spaces/multi.html", "space:multi:p1"],
@@ -98,28 +98,28 @@ describe("buildAuthorPageEntries call count", () => {
   });
 
   it("calls buildAuthorDetailModel exactly totalPages times for a 2-page author (not totalPages+1)", () => {
-    buildAuthorPageEntries({
+    Array.from(buildAuthorPageEntries({
       displayPayload: { id: "d" },
       authorDirectory: {},
       authorsIndexModel: {
         id: "idx",
         authors: [{ slug: "multi-author" }],
       },
-    });
+    }));
 
     // Before fix: called 3 times. After fix: called exactly 2 times.
     expect(buildAuthorDetailModelMock).toHaveBeenCalledTimes(2);
   });
 
   it("calls buildAuthorDetailModel exactly 1 time for a single-page author", () => {
-    buildAuthorPageEntries({
+    Array.from(buildAuthorPageEntries({
       displayPayload: { id: "d" },
       authorDirectory: {},
       authorsIndexModel: {
         id: "idx",
         authors: [{ slug: "single-author" }],
       },
-    });
+    }));
 
     expect(buildAuthorDetailModelMock).toHaveBeenCalledTimes(1);
   });

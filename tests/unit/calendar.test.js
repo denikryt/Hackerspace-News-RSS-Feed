@@ -6,6 +6,7 @@ import { cleanupTrackedTempDirs, createTempDirTracker, createTrackedTempDir } fr
 import { formatDateKeyInTimeZone, shiftMonthKey } from "../../src/calendar/dateFormatting.js";
 import {
   buildCalendarIndex,
+  buildCalendarPageModelFromIndex,
   buildCalendarPageModel,
   readCalendarEvents,
   refreshCalendarSnapshot,
@@ -234,7 +235,7 @@ END:VCALENDAR`, "utf8");
   });
 
   it("builds a persisted calendar index from normalized events", () => {
-    const index = buildCalendarIndex([
+    const canonicalEvents = [
       {
         uid: "march-1",
         summary: "March event",
@@ -263,11 +264,14 @@ END:VCALENDAR`, "utf8");
         sourceDate: "2026-04-12",
         sourceFile: "source.ics",
       },
-    ], {
+    ];
+    const index = buildCalendarIndex(canonicalEvents, {
       generatedAt: "2026-03-19T20:00:00.000Z",
       timeZone: "UTC",
     });
 
+    const model = buildCalendarPageModelFromIndex(index, { events: canonicalEvents, selectedMonth: "2026-04", now: new Date("2026-04-10") });
+    expect(index.months["2026-04"].dates["2026-04-10"].eventIndexes).toEqual([1]);
     expect(index).toMatchObject({
       generatedAt: "2026-03-19T20:00:00.000Z",
       timeZone: "UTC",
@@ -275,7 +279,7 @@ END:VCALENDAR`, "utf8");
     });
     expect(Object.keys(index.months)).toEqual(["2026-03", "2026-04"]);
     expect(Object.keys(index.months["2026-04"].dates)).toEqual(["2026-04-10", "2026-04-11", "2026-04-12"]);
-    expect(index.months["2026-04"].dates["2026-04-10"].events[0]).toMatchObject({
+    expect(model.dateSections[0].events[0]).toMatchObject({
       uid: "april-overnight",
       summary: "Reading Group",
       timeLabel: "Apr 10 10:00 PM - Apr 11 2:00 AM",
@@ -283,7 +287,7 @@ END:VCALENDAR`, "utf8");
       countryFlag: "🇬🇧",
       hackerspaceName: "Glasgow Hackerspace",
     });
-    expect(index.months["2026-04"].dates["2026-04-12"].events[0]).toMatchObject({
+    expect(model.dateSections[2].events[0]).toMatchObject({
       uid: "april-date",
       summary: "Hackday",
       timeLabel: "All day",
@@ -378,8 +382,7 @@ END:VCALENDAR`, "utf8");
             return name.toLowerCase() === "content-type" ? "text/calendar; charset=utf-8" : null;
           },
         },
-        async text() {
-          return `BEGIN:VCALENDAR
+        body: new Response(`BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT
 UID:event-1
@@ -387,8 +390,7 @@ SUMMARY:Open Night
 DTSTART:20260514T190000Z
 DTEND:20260514T210000Z
 END:VEVENT
-END:VCALENDAR`;
-        },
+END:VCALENDAR`).body,
       });
 
     const logger = vi.fn();
@@ -436,8 +438,7 @@ END:VCALENDAR`;
             return name.toLowerCase() === "content-type" ? "text/calendar; charset=utf-8" : null;
           },
         },
-        async text() {
-          return `BEGIN:VCALENDAR
+        body: new Response(`BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT
 UID:event-1
@@ -445,8 +446,7 @@ SUMMARY:Open Night
 DTSTART:20260514T190000Z
 DTEND:20260514T210000Z
 END:VEVENT
-END:VCALENDAR`;
-        },
+END:VCALENDAR`).body,
       });
 
     const timeoutCalls = [];

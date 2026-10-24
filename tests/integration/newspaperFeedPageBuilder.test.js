@@ -68,7 +68,7 @@ const CONTEXT = { today: TODAY, now: new Date("2026-04-17T12:00:00.000Z") };
 
 describe("buildNewspaperFeedPageEntries", () => {
   it("returns an array of [outputPath, html] pairs", () => {
-    const entries = buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT);
+    const entries = Array.from(buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT));
     expect(Array.isArray(entries)).toBe(true);
     expect(entries.length).toBeGreaterThan(0);
     for (const [path, html] of entries) {
@@ -78,21 +78,21 @@ describe("buildNewspaperFeedPageEntries", () => {
   });
 
   it("produces all-countries page for each date with items", () => {
-    const entries = buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT);
+    const entries = Array.from(buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT));
     const paths = entries.map(([p]) => p);
     expect(paths).toContain("news/2026-04-15/index.html");
     expect(paths).toContain("news/2026-04-14/index.html");
   });
 
   it("does not produce page for date with no items", () => {
-    const entries = buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT);
+    const entries = Array.from(buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT));
     const paths = entries.map(([p]) => p);
     // 2026-04-16 has no items in fixture
     expect(paths).not.toContain("news/2026-04-16/index.html");
   });
 
   it("produces per-country page for each date × country with items", () => {
-    const entries = buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT);
+    const entries = Array.from(buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT));
     const paths = entries.map(([p]) => p);
     expect(paths).toContain("news/2026-04-15/Germany/index.html");
     expect(paths).toContain("news/2026-04-15/France/index.html");
@@ -100,20 +100,20 @@ describe("buildNewspaperFeedPageEntries", () => {
   });
 
   it("does not produce country page for date where that country has no items", () => {
-    const entries = buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT);
+    const entries = Array.from(buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT));
     const paths = entries.map(([p]) => p);
     // France has no item on 2026-04-14
     expect(paths).not.toContain("news/2026-04-14/France/index.html");
   });
 
   it("produces news/index.html redirect page", () => {
-    const entries = buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT);
+    const entries = Array.from(buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT));
     const paths = entries.map(([p]) => p);
     expect(paths).toContain("news/index.html");
   });
 
   it("news/index.html contains meta refresh redirect to latest date", () => {
-    const entries = buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT);
+    const entries = Array.from(buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT));
     const redirectEntry = entries.find(([p]) => p === "news/index.html");
     expect(redirectEntry).toBeDefined();
     const html = redirectEntry[1];
@@ -122,7 +122,7 @@ describe("buildNewspaperFeedPageEntries", () => {
   });
 
   it("all-countries HTML contains items from both countries on that date", () => {
-    const entries = buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT);
+    const entries = Array.from(buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT));
     const allCountries15 = entries.find(([p]) => p === "news/2026-04-15/index.html");
     expect(allCountries15).toBeDefined();
     const html = allCountries15[1];
@@ -131,7 +131,7 @@ describe("buildNewspaperFeedPageEntries", () => {
   });
 
   it("country page contains only items for that country", () => {
-    const entries = buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT);
+    const entries = Array.from(buildNewspaperFeedPageEntries(FIXTURE_PAYLOAD, CONTEXT));
     const de15 = entries.find(([p]) => p === "news/2026-04-15/Germany/index.html");
     expect(de15).toBeDefined();
     const html = de15[1];

@@ -1,3 +1,5 @@
+import { fetchBoundedText } from "./http/fetchBoundedText.js";
+import { RESOURCE_LIMITS } from "./resourceLimits.js";
 import { runWithNetworkRetry } from "./networkRetry.js";
 import { getAttemptTimeoutMs } from "./networkAttemptTimeout.js";
 
@@ -29,19 +31,14 @@ export async function fetchPageHtml({
     throw new Error(`Failed to fetch source page: HTTP ${response.status}`);
   }
 
-  return response.text();
+  return response.text;
 }
 
-async function fetchWithTimeout({ sourcePageUrl, fetchImpl, timeoutMs }) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-  return fetchImpl(sourcePageUrl, {
-    redirect: "follow",
-    signal: controller.signal,
+function fetchWithTimeout({ sourcePageUrl, fetchImpl, timeoutMs }) {
+  return fetchBoundedText({ url: sourcePageUrl, fetchImpl, timeoutMs, maxBodyBytes: RESOURCE_LIMITS.htmlMaxBodyBytes,
     headers: {
       "user-agent": "HackerspaceNewsFeed/0.1 (+local)",
       accept: "text/html,application/xhtml+xml",
-    },
-  }).finally(() => clearTimeout(timeoutId));
+    }
+  });
 }

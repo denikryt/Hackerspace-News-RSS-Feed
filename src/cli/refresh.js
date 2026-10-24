@@ -1,3 +1,5 @@
+import { readResourceLimits } from "../resourceLimits.js";
+import { createMemoryDiagnostics } from "../memoryDiagnostics.js";
 import { PATHS } from "../config.js";
 import { refreshDataset } from "../refreshDataset.js";
 import { readJson } from "../storage.js";
@@ -15,6 +17,9 @@ export async function runRefreshCli({
     return;
   }
 
+  readResourceLimits(env);
+  const memory = createMemoryDiagnostics({ enabled: env.BUILD_MEMORY_DIAGNOSTICS === "1", logger });
+  memory("refresh:start");
   const refreshCalendarOnly = hasCliFlag({ argv, env, flag: "--calendar" });
   const additionalSourceRows = await loadDiscoveryValidSourceRows({ argv, env, readJsonImpl, paths });
 
@@ -25,6 +30,7 @@ export async function runRefreshCli({
     refreshCalendarOnly,
   });
 
+  memory("refresh:complete");
   logger("Refresh completed. Reporting snapshot artifacts.");
   if (!refreshCalendarOnly) {
     logger(`Wrote ${paths.sourceRows}`);

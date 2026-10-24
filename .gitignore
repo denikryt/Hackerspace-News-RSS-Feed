@@ -9,3 +9,4 @@ notes/
 logs/
 .codex/.playwright-mcp/
 .playwright-mcp/
+.env 

@@ -143,69 +143,26 @@ describe("refresh/build discovery-valid flag", () => {
     });
   });
 
-  it("build passes the discovery-valid rows through to refresh when the flag is present", async () => {
-    const refreshImpl = vi.fn().mockResolvedValue({
-      sourceRowsPayload: {},
-      validationsPayload: {},
-      normalizedPayload: {},
-      curatedPayload: { items: ["from-refresh"] },
-    });
-    const refreshCuratedImpl = vi.fn().mockResolvedValue({
-      curatedPayload: { items: ["from-curated-refresh"] },
-      outputPath: "/tmp/data/curated_publications_normalized.json",
-    });
-    const renderImpl = vi.fn().mockResolvedValue({ pages: { "index.html": "<html></html>" } });
-    const readJsonImpl = vi.fn().mockResolvedValue({
-      urls: [
-        {
-          hackerspaceName: "Alpha",
-          hackerspaceWikiUrl: "https://wiki.hackerspaces.org/Alpha",
-          country: "Wonderland",
-          candidateFeedUrl: "https://alpha.example/feed.xml",
-          sourceType: "discovery",
-        },
-      ],
-    });
-    const logger = vi.fn();
-    const paths = {
-      sourceRows: "/tmp/data/source_urls.json",
-      validations: "/tmp/data/feed_validation.json",
-      normalizedFeeds: "/tmp/data/feeds_normalized.json",
-      curatedNormalized: "/tmp/data/curated_publications_normalized.json",
-      discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
-    };
+  it.each([false, true])("build forwards discovery only to refresh (flag=%s)", async (enabled) => {
+    const calls = [];
+    const runStageImpl = vi.fn(async (stage, args) => { calls.push([stage, args]); });
+    await runBuildCli({ argv: enabled ? ["--include-discovery-valid"] : [], env: {}, runStageImpl, logger: vi.fn() });
+    expect(calls).toEqual([
+      ["refresh", enabled ? ["--include-discovery-valid"] : []],
+      ["refreshCurated", []],
+      ["render", []],
+    ]);
+  });
 
-    await runBuildCli({
-      argv: ["--include-discovery-valid"],
-      refreshImpl,
-      refreshCuratedImpl,
-      renderImpl,
-      readJsonImpl,
-      logger,
-      paths,
-      distDir: "/tmp/dist",
-    });
+  it("build accepts npm's discovery env flag", async () => {
+    const runStageImpl = vi.fn();
+    await runBuildCli({ argv: [], env: { npm_config_include_discovery_valid: "true" }, runStageImpl, logger: vi.fn() });
+    expect(runStageImpl.mock.calls[0]).toEqual(["refresh", ["--include-discovery-valid"]]);
+  });
 
-    expect(readJsonImpl).toHaveBeenCalledWith(paths.discoveredValidSourceRows);
-    expect(refreshImpl).toHaveBeenCalledWith({
-      writeSnapshots: true,
-      logger,
-      additionalSourceRows: [
-        expect.objectContaining({
-          hackerspaceName: "Alpha",
-          candidateFeedUrl: "https://alpha.example/feed.xml",
-        }),
-      ],
-    });
-    expect(refreshCuratedImpl).toHaveBeenCalledWith({
-      logger,
-      writeSnapshot: true,
-      force: false,
-    });
-    expect(renderImpl).toHaveBeenCalledWith(
-      expect.objectContaining({
-        curatedPayload: { items: ["from-curated-refresh"] },
-      }),
-    );
+  it.each(["refresh", "refreshCurated", "render"])("stops after %s fails", async (failed) => {
+    const runStageImpl = vi.fn(async stage => { if (stage === failed) throw new Error("failed stage"); });
+    await expect(runBuildCli({ argv: [], env: {}, runStageImpl, logger: vi.fn() })).rejects.toThrow("failed stage");
+    expect(runStageImpl.mock.calls.map(([stage]) => stage)).toEqual(["refresh", "refreshCurated", "render"].slice(0, ["refresh", "refreshCurated", "render"].indexOf(failed) + 1));
   });
 });

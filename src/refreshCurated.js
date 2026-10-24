@@ -1,3 +1,4 @@
+import { limitItemText } from "./truncateContentText.js";
 import { PATHS } from "./config.js";
 import { collectCuratedSnapshot } from "./curatedSnapshot.js";
 import { readJson, writeJson } from "./storage.js";
@@ -35,7 +36,8 @@ export async function refreshCurated({
       })).curatedPayload
     : emptyCuratedPayload();
 
-  const curatedPayload = mergeCuratedPayload(existingPayload, newPayload);
+  const merged = mergeCuratedPayload(existingPayload, newPayload);
+  const curatedPayload = { ...merged, items: merged.items.map(item => limitItemText(item)) };
 
   if (writeSnapshot) {
     await writeJson(paths.curatedNormalized, curatedPayload);

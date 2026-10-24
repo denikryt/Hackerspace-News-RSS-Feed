@@ -1,3 +1,4 @@
+import { limitParsedFeed } from "./feedInputLimits.js";
 import { SOURCE_PAGE_URL, PATHS } from "./config.js";
 import { buildCalendarIndex, refreshCalendarSnapshot } from "./calendar/index.js";
 import {
@@ -177,7 +178,7 @@ async function processSourceRows(sourceRows, { fetchImpl, logger }) {
     }
 
     try {
-      const parsedFeed = await parseFeedBody({ xml: validation.body, validation });
+      const parsedFeed = limitParsedFeed(await parseFeedBody({ xml: validation.body, validation }));
       const normalizedFeed = normalizeFeed({
         sourceRow,
         validation,
@@ -209,7 +210,7 @@ async function processSourceRows(sourceRows, { fetchImpl, logger }) {
           country: sourceRow.country,
           sourceWikiUrl: sourceRow.hackerspaceWikiUrl,
           candidateUrl: sourceRow.candidateFeedUrl,
-          errorCode: "parse_error",
+          errorCode: error?.code || "parse_error",
           errorMessage: error instanceof Error ? error.message : String(error),
         },
       };

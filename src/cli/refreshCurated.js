@@ -1,3 +1,5 @@
+import { createMemoryDiagnostics } from "../memoryDiagnostics.js";
+import { readResourceLimits } from "../resourceLimits.js";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 
@@ -19,6 +21,9 @@ export async function runRefreshCuratedCli({
     return;
   }
 
+  readResourceLimits();
+  const memory = createMemoryDiagnostics({ logger });
+  memory("curated:start");
   const force = argv.includes("--force");
   if (force) {
     const isConfirmed = await confirmForceImpl();
@@ -35,6 +40,7 @@ export async function runRefreshCuratedCli({
     force,
   });
 
+  memory("curated:complete");
   logger(`Resolved curated publications ${result.resolvedCount}`);
   logger(`Unresolved curated publications ${result.unresolvedCount}`);
   logger(`Wrote ${result.outputPath}`);

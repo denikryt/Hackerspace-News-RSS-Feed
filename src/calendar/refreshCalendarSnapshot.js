@@ -1,10 +1,14 @@
-import { mkdir, rm } from "node:fs/promises";
+import { withStagedDirectory } from "../stagedDirectory.js";
+import { mapWithConcurrency } from "../mapWithConcurrency.js";
+import { normalizeCalendarSnapshot } from "./normalizeCalendarSnapshot.js";
+import { fetchBoundedText } from "../http/fetchBoundedText.js";
+import { RESOURCE_LIMITS } from "../resourceLimits.js";
 
 import { getAttemptTimeoutMs } from "../networkAttemptTimeout.js";
 import { runWithNetworkRetry } from "../networkRetry.js";
 import { getCountryFlag } from "../countryFlags.js";
 import { readJson, writeText } from "../storage.js";
-import { parseCalendarIcsText, sortCalendarEvents } from "./readCalendarEvents.js";
+import { parseCalendarIcsSnapshot, sortCalendarEvents } from "./readCalendarEvents.js";
 
 // Calendar sources can be slower than the RSS polling targets, so the refresh
 // pipeline gives them a longer final attempt before aborting.
@@ -25,39 +29,51 @@ export async function refreshCalendarSnapshot({
   waitImpl,
   retryDelaysMs,
   attemptTimeoutsMs,
+  writeTextImpl = writeText,
+  now = Date.now(),
 } = {}) {
-  const generatedAt = new Date().toISOString();
+  const generatedAt = new Date(now).toISOString();
+  const windowYear = new Date(now).getUTCFullYear();
   const calendarSourceItems = Array.isArray(sourceItems)
     ? normalizeCalendarSourceItems(sourceItems)
     : await loadCalendarSourceItems({ calendarSourcesPath, readJsonImpl });
 
-  if (calendarSourceItems.length === 0) {
-    return buildCalendarPayload({ generatedAt, items: [], events: [] });
-  }
-
-  const sourceResults = await mapWithConcurrency(calendarSourceItems, 4, async (sourceItem, sourceIndex) => {
+  const collect = (stage) => mapWithConcurrency(calendarSourceItems, RESOURCE_LIMITS.concurrency, async (sourceItem, sourceIndex) => {
     const snapshotFile = `source-${String(sourceIndex + 1).padStart(3, "0")}.ics`;
-    return fetchCalendarSource({
+    const result = await fetchCalendarSource({
       sourceItem,
       snapshotFile,
+      windowYear,
       fetchImpl,
       logger,
       waitImpl,
       retryDelaysMs,
       attemptTimeoutsMs: attemptTimeoutsMs || DEFAULT_CALENDAR_ATTEMPT_TIMEOUTS_MS,
     });
+    if (stage && result.snapshotFile && result.rawIcsText) await writeTextImpl(`${stage}/${result.snapshotFile}`, result.rawIcsText);
+    delete result.rawIcsText;
+    return result;
   });
-
-  if (writeSnapshots && rawDirectoryPath) {
-    await writeCalendarRawSnapshots({ rawDirectoryPath, sourceResults });
-  }
+  const sourceResults = writeSnapshots && rawDirectoryPath
+    ? await withStagedDirectory(rawDirectoryPath, collect)
+    : await collect(null);
 
   const events = sortCalendarEvents(sourceResults.flatMap((result) => result.events));
-  return buildCalendarPayload({
+  return normalizeCalendarSnapshot(buildCalendarPayload({
     generatedAt,
     items: sourceResults.map(stripCalendarRawText),
     events,
-  });
+    recurrence: {
+      schemaVersion: 1, windowYear,
+      sources: sourceResults.filter(result => result.recurrence).map(result => ({
+        sourceFile: result.snapshotFile,
+        country: result.country || null,
+        countryFlag: getCountryFlag(result.country),
+        hackerspaceName: result.hackerspaceName || null,
+        ...result.recurrence,
+      })),
+    },
+  }));
 }
 
 // The source list is hand-maintained and intentionally extensible, so the
@@ -102,6 +118,7 @@ function extractHackerspaceName(item) {
 }
 
 async function fetchCalendarSource({
+  windowYear,
   sourceItem,
   snapshotFile,
   fetchImpl,
@@ -128,10 +145,10 @@ async function fetchCalendarSource({
         );
       },
     });
-    const primaryText = await primaryResponse.text();
-    const primaryUrl = primaryResponse.url || sourceItem.url;
+    const primaryText = primaryResponse.text;
+    const primaryUrl = primaryResponse.finalUrl || sourceItem.url;
 
-    if (!isCalendarResponse({ url: primaryUrl, contentType: primaryResponse.headers.get("content-type"), body: primaryText })) {
+    if (!isCalendarResponse({ url: primaryUrl, contentType: primaryResponse.contentType, body: primaryText })) {
       logInfo(logger, `[refresh] failed calendar source: ${sourceItem.url} (non_calendar_response: ${primaryResponse.status})`);
       return {
         ...sourceItem,
@@ -146,8 +163,8 @@ async function fetchCalendarSource({
       };
     }
 
-    const events = parseCalendarIcsText(primaryText, { sourceFile: snapshotFile })
-      .map((event) => ({
+    const parsed = parseCalendarIcsSnapshot(primaryText, { sourceFile: snapshotFile, windowYear });
+    const events = parsed.events.map((event) => ({
         ...event,
         country: sourceItem.country || null,
         countryFlag: getCountryFlag(sourceItem.country),
@@ -160,16 +177,20 @@ async function fetchCalendarSource({
       resolvedIcsUrl: primaryUrl,
       snapshotFile,
       status: "parsed_ok",
+      recurrence: parsed.recurrence,
       events,
       rawIcsText: primaryText,
       errorCode: null,
       errorMessage: null,
     };
   } catch (error) {
-    logInfo(
-      logger,
-      `[refresh] failed calendar source: ${sourceItem.url} (fetch_error: ${error instanceof Error ? error.message : String(error)})`,
-    );
+    // Parser exception strings may contain arbitrary source text. Persist only
+    // stable local codes, including safe metadata produced by bounded ingress.
+    const knownCodes = new Set(['timeout', 'response_too_large', 'invalid_stream', 'fetch_error', 'unsupported_calendar_recurrence']);
+    const errorCode = knownCodes.has(error?.code) ? error.code : 'calendar_parse_failed';
+    const errorMessage = Number.isFinite(error?.bytesRead) && Number.isFinite(error?.maxBodyBytes)
+      ? `${errorCode}: bytes=${error.bytesRead}, limit=${error.maxBodyBytes}` : errorCode;
+    logInfo(logger, `[refresh] failed calendar source: ${sourceItem.url} (${errorMessage})`);
     return {
       ...sourceItem,
       finalUrl: sourceItem.url,
@@ -178,24 +199,19 @@ async function fetchCalendarSource({
       status: "fetch_failed",
       events: [],
       rawIcsText: null,
-      errorCode: "fetch_error",
-      errorMessage: error instanceof Error ? error.message : String(error),
+      errorCode,
+      errorMessage,
     };
   }
 }
 
 function fetchCalendarSourceWithTimeout({ sourceUrl, fetchImpl, timeoutMs }) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-  return fetchImpl(sourceUrl, {
-    redirect: "follow",
-    signal: controller.signal,
+  return fetchBoundedText({ url: sourceUrl, fetchImpl, timeoutMs, maxBodyBytes: RESOURCE_LIMITS.icsMaxBodyBytes,
     headers: {
       "user-agent": "HackerspaceNewsFeed/0.1 (+local)",
       accept: "text/calendar, application/ics, */*",
-    },
-  }).finally(() => clearTimeout(timeoutId));
+    }
+  });
 }
 
 function isCalendarResponse({ url, contentType, body }) {
@@ -208,28 +224,20 @@ function isCalendarResponse({ url, contentType, body }) {
     || normalizedBody.startsWith("BEGIN:VCALENDAR");
 }
 
-async function writeCalendarRawSnapshots({ rawDirectoryPath, sourceResults }) {
-  await rm(rawDirectoryPath, { recursive: true, force: true });
-  await mkdir(rawDirectoryPath, { recursive: true });
-
-  await Promise.all(sourceResults
-    .filter((result) => result.snapshotFile && result.rawIcsText)
-    .map((result) => writeText(`${rawDirectoryPath}/${result.snapshotFile}`, result.rawIcsText)));
-}
-
 function stripCalendarRawText(result) {
-  const { rawIcsText, ...rest } = result;
+  const { rawIcsText, events, recurrence, ...rest } = result;
   return {
     ...rest,
     eventCount: result.events.length,
   };
 }
 
-function buildCalendarPayload({ generatedAt, items, events }) {
+function buildCalendarPayload({ generatedAt, items, events, recurrence }) {
   return {
     generatedAt,
     items,
     events,
+    ...(recurrence.sources.length ? {recurrence} : {}),
     summary: {
       sources: items.length,
       parsedSources: items.filter((item) => item.status === "parsed_ok").length,
@@ -243,23 +251,4 @@ function logInfo(logger, message) {
   if (typeof logger === "function") {
     logger(message);
   }
-}
-
-async function mapWithConcurrency(items, concurrency, mapper) {
-  const results = new Array(items.length);
-  let index = 0;
-
-  async function worker() {
-    while (index < items.length) {
-      const currentIndex = index;
-      index += 1;
-      results[currentIndex] = await mapper(items[currentIndex], currentIndex);
-    }
-  }
-
-  await Promise.all(
-    Array.from({ length: Math.min(concurrency, items.length) }, () => worker()),
-  );
-
-  return results;
 }

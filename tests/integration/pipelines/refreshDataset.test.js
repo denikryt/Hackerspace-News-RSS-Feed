@@ -97,7 +97,7 @@ describe("refreshDataset", () => {
       curatedPayload: expect.any(Object),
       calendarSourcesPayload: { items: [] },
       calendarPayload: EMPTY_CALENDAR_PAYLOAD,
-      calendarIndexPayload: EMPTY_CALENDAR_INDEX_PAYLOAD,
+      calendarIndexPayload: expect.objectContaining({ ...EMPTY_CALENDAR_INDEX_PAYLOAD, schemaVersion: 2, sourceEventsSha256: expect.stringMatching(/^[a-f0-9]{64}$/), windowYear: expect.any(Number) }),
     });
     expect(result.site).toBeUndefined();
 

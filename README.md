@@ -219,3 +219,49 @@ Run the test suite:
 ```bash
 npm test
 ```
+
+## Build resource limits
+
+Build runs refresh, curated refresh (non-force), and render as three successive
+Node processes using the JSON snapshots. Standalone render stays offline.
+Disk rendering writes one page at a time into a sibling staging directory;
+handled failures preserve the previous output. Publication is best-effort,
+not power-loss atomic, and only one builder is supported.
+
+The measured text limit is 1095 Unicode code points, shared by RSS, curated
+items and calendar descriptions, including older snapshots at render time.
+Long texts retain their publication and metadata. A feed above 500 items is
+rejected explicitly. HTTP bodies default to HTML/ICS 8 MiB, RSS 4 MiB,
+SpaceAPI 1 MiB; timeout covers both headers and body. Output is capped at
+32 MiB per artifact, with a 16 MiB newspaper text preflight.
+
+Calendar dates cover the previous, current and next full UTC calendar years.
+All-day DTEND is exclusive; old dates are repaired before window filtering.
+Calendar source items contain metadata only. Index schema v2 stores numeric
+positions in the canonical local event array and is rebuilt offline when its
+schema, ordered-event digest, year or timezone is stale. Audited ICS recurrence
+forms use pinned ical.js and only materialize occurrences within that window.
+
+Compose configures 1024 MiB RAM/combined swap and 768 MiB V8 old-space for the
+builder. **Bare npm commands have no hard RSS guarantee.** On a Linux host,
+operators can use systemd cgroup limits after verifying the memory controller
+and active scope; V8 old-space alone does not constrain native allocations.
+Docker/cgroup execution has not been validated in this sandbox.
+
+See [limits, measurement methodology and validation](docs/BUILD_MEMORY_SAFETY.md)
+and the [invariant checklist](docs/BUILD_MEMORY_INVARIANTS.md) for configuration
+keys, errors, audit results, profiling commands and remaining runtime checks.
+For sparse phase diagnostics set `BUILD_MEMORY_DIAGNOSTICS=1`.
+Run the opt-in local allocation profiles with
+`BUILD_MEMORY_TESTS=1 npm test -- tests/performance/buildMemory.test.js`;
+these do not establish a cgroup hard-memory guarantee.
+
+
+Recurring-calendar snapshots retain private source definitions for offline year
+rollover. On a new year, render derives the next three-year occurrence window
+and rebuilds the calendar index without fetching ICS. Same-year render reuses
+its saved materialization. Rules and source positions are not published in
+/calendar/events.json. Older snapshots containing only expanded occurrences
+need a new refresh before changing years; render reports
+calendar_recurrence_refresh_required instead of silently omitting future events.
+See the review correction contract in docs/BUILD_MEMORY_SAFETY.md.

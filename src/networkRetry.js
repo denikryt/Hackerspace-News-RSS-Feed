@@ -69,7 +69,7 @@ function collectErrorCodes(error) {
     codes.push(...collectErrorCodes(error.cause));
   }
 
-  if (error instanceof AggregateError) {
+  if (error instanceof AggregateError || Array.isArray(error.errors)) {
     for (const nestedError of error.errors) {
       codes.push(...collectErrorCodes(nestedError));
     }
@@ -83,7 +83,7 @@ function getPrimaryErrorCode(error) {
     return "AbortError";
   }
 
-  return collectErrorCodes(error)[0] || "unknown_error";
+  return collectErrorCodes(error).find((code) => code !== "fetch_error") || "unknown_error";
 }
 
 function wait(delayMs) {

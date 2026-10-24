@@ -13,7 +13,7 @@ describe("probeFeedUrl", () => {
       status: 200,
       url: "https://example.com/feed.xml",
       headers: new Headers({ "content-type": "application/rss+xml; charset=utf-8" }),
-      text: () => Promise.resolve("<?xml version=\"1.0\"?><rss><channel><title>X</title></channel></rss>"),
+      body: new Response("<?xml version=\"1.0\"?><rss><channel><title>X</title></channel></rss>").body,
     });
 
     const result = await probeFeedUrl({
@@ -38,7 +38,7 @@ describe("probeFeedUrl", () => {
       status: 200,
       url: "https://t.me/akiba_space",
       headers: new Headers({ "content-type": "text/html; charset=utf-8" }),
-      text: () => Promise.resolve("<html><body>telegram page</body></html>"),
+      body: new Response("<html><body>telegram page</body></html>").body,
     });
 
     const result = await probeFeedUrl({
@@ -63,7 +63,7 @@ describe("probeFeedUrl", () => {
         status: 200,
         url: "https://example.com/feed.xml",
         headers: new Headers({ "content-type": "application/rss+xml; charset=utf-8" }),
-        text: () => Promise.resolve("<?xml version=\"1.0\"?><rss><channel><title>X</title></channel></rss>"),
+        body: new Response("<?xml version=\"1.0\"?><rss><channel><title>X</title></channel></rss>").body,
       });
     const waitImpl = vi.fn().mockResolvedValue(undefined);
     const logger = vi.fn();
@@ -94,7 +94,7 @@ describe("probeFeedUrl", () => {
       status: 404,
       url: "https://example.com/feed.xml",
       headers: new Headers({ "content-type": "text/html; charset=utf-8" }),
-      text: () => Promise.resolve("<html>not found</html>"),
+      body: new Response("<html>not found</html>").body,
     });
     const waitImpl = vi.fn().mockResolvedValue(undefined);
 

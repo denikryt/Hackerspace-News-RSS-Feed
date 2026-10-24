@@ -432,7 +432,7 @@ describe("analyzeFeedFields", () => {
             status: 200,
             url,
             headers: new Headers({ "content-type": "text/html; charset=utf-8" }),
-            text: async () => sourceHtml,
+            body: new Response(sourceHtml).body,
           };
         }
 
@@ -441,7 +441,7 @@ describe("analyzeFeedFields", () => {
           status: 200,
           url,
           headers: new Headers({ "content-type": "application/rss+xml" }),
-          text: async () => \`<?xml version="1.0"?><rss version="2.0"><channel><title>Feed</title><link>https://example.com</link><description>X</description><item><title>Post</title><link>https://example.com/post</link><pubDate>Wed, 01 Jan 2025 10:00:00 GMT</pubDate><description>Hello</description></item></channel></rss>\`,
+          body: new Response(\`<?xml version="1.0"?><rss version="2.0"><channel><title>Feed</title><link>https://example.com</link><description>X</description><item><title>Post</title><link>https://example.com/post</link><pubDate>Wed, 01 Jan 2025 10:00:00 GMT</pubDate><description>Hello</description></item></channel></rss>\`).body,
         };
       };
     `, "utf8");
@@ -503,7 +503,7 @@ describe("analyzeFeedFields", () => {
             status: 200,
             url,
             headers: new Headers({ "content-type": "text/html; charset=utf-8" }),
-            text: async () => sourceHtml,
+            body: new Response(sourceHtml).body,
           };
         }
 
@@ -512,7 +512,7 @@ describe("analyzeFeedFields", () => {
           status: 200,
           url,
           headers: new Headers({ "content-type": "application/rss+xml" }),
-          text: async () => \`<?xml version="1.0"?><rss version="2.0"><channel><title>Feed</title><link>https://example.com</link><description>X</description><item><title>Post</title><link>https://example.com/post</link><pubDate>Wed, 01 Jan 2025 10:00:00 GMT</pubDate><description>Hello</description></item></channel></rss>\`,
+          body: new Response(\`<?xml version="1.0"?><rss version="2.0"><channel><title>Feed</title><link>https://example.com</link><description>X</description><item><title>Post</title><link>https://example.com/post</link><pubDate>Wed, 01 Jan 2025 10:00:00 GMT</pubDate><description>Hello</description></item></channel></rss>\`).body,
         };
       };
     `, "utf8");

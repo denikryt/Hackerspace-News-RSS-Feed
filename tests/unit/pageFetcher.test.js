@@ -40,7 +40,7 @@ describe("fetchPageHtml", () => {
         fetchImpl,
         waitImpl,
       }),
-    ).rejects.toThrow("fetch failed");
+    ).rejects.toMatchObject({ code: "fetch_error" });
 
     expect(fetchImpl).toHaveBeenCalledTimes(4);
     expect(waitImpl).toHaveBeenCalledTimes(3);
@@ -105,7 +105,7 @@ describe("fetchPageHtml", () => {
 
     await vi.advanceTimersByTimeAsync(3000);
 
-    await expect(htmlPromise).rejects.toThrow("The operation was aborted");
+    await expect(htmlPromise).rejects.toMatchObject({ code: "timeout" });
   });
 });
 
@@ -114,7 +114,8 @@ function response({ url, body, status = 200 }) {
     ok: status >= 200 && status < 300,
     status,
     url,
-    text: () => Promise.resolve(body),
+    headers: new Headers(),
+    body: new Response(body).body,
   };
 }
 

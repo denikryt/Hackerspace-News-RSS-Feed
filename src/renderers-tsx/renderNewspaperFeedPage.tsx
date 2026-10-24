@@ -1,3 +1,4 @@
+import { truncateContentText } from "../truncateContentText.js";
 /** @jsxImportSource @kitajs/html */
 
 import { escapeHtml } from "../renderers/layout.js";
@@ -52,7 +53,7 @@ function renderItem(item: RecordLike): string {
     ? String(<img class="np-item-image" src={item.imageUrl as string} alt="" />)
     : "";
 
-  const plainText = pickPlainText(item);
+  const plainText = truncateContentText(pickPlainText(item));
   const bodyHtml = plainText ? `<p class="np-item-body">${escapeHtml(plainText)}</p>` : "";
 
   const rawTags = item.categoriesRaw as string[] | null;
