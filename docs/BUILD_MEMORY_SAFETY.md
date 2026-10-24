@@ -12,9 +12,10 @@ Direct npm commands have **no hard RSS guarantee**. V8 old-space excludes
 Buffers, external allocations and other process memory.
 
 Docker was not run, as requested. This sandbox also lacks a usable systemd bus,
-cgroup memory files and `/proc` RSS metrics. No hard limit or RSS result has
-been verified here. `process.memoryUsage()` reports `ENOENT`; diagnostics
-record null RSS plus an error rather than manufacturing measurements.
+cgroup memory files and `/proc` RSS metrics. No hard cgroup limit has been verified here. Instantaneous
+`process.memoryUsage()` reports `ENOENT`; diagnostics record null RSS plus an
+error. OS getrusage through process.resourceUsage().maxRSS does work and is
+used below for measured peak RSS, independently of the test preload.
 
 For an operator-controlled Linux host with cgroup v2 and delegated memory
 controller, check `/sys/fs/cgroup/cgroup.controllers` includes `memory`, then:
@@ -155,8 +156,8 @@ Canonical injection runs once at the sink. Input text preflight, output byte
 budget, duplicate/traversal checks, ENOSPC and asset-copy failure tests pass;
 failed rendering preserves the previous directory and removes staging.
 Resume suite: 488 tests pass. Existing baseline clock failure disappears with
-May fixtures updated to derive a stable render date; baseline behavior changes
-are confined to the planned render contract and fixtures, not application fixes.
+fixture edits present at resume. Stage 5 restores those unrelated fixture
+assertions, as required, and reports the original three baseline failures.
 Full production render smoke is deferred to Stage 5 with fresh bounded process
 measurements; a previous partial smoke is not counted as success.
 
@@ -170,3 +171,88 @@ spawn error and parent SIGINT/SIGTERM tests stop the chain and remove signal
 listeners; signal forwarding waits for close. Deploy tests use a fake Docker
 executable and confirm no publish/start step after builder failure; actual
 Docker is never invoked. Focused CLI/deploy suite: 50 passing, typecheck passes.
+
+## Stage 5 final validation (2026-10-24)
+
+All implementation stages are present; the user's execution amendment excludes
+Docker and permits available local checks. No commit was created. Existing
+uncommitted remote-deployment files are preserved separately from incremental
+implementation patches. See BUILD_MEMORY_INVARIANTS.md for boundary ownership,
+positive/negative tests and adversarial review results.
+
+Final ordinary suite: 510 passing, 3 failing, 3 opt-in performance tests skipped
+(116 files). The failures match the original baseline's three failures:
+
+- architecture/deadFeedModules: legacy /feed/ paths in renderContent fixtures;
+- contracts/renderers/renderNewspaperFeedPage: expects Events, existing nav says Calendar;
+- integration/pipelines/renderSite: unfrozen clock expects May calendar, current month is October.
+
+The unrelated fixture edits at resume were restored in checkpoint 05 rather
+than changing baseline assertions to make the suite green. No new regression
+was found. Typecheck and git diff --check pass. Opt-in performance suite passes
+all 3 tests separately. Test runs use an external preload solely because Vitest
+itself calls inaccessible instantaneous process.memoryUsage; production profiles
+run without it. No zero RSS sentinel enters the numbers below.
+
+| Synthetic render | Generated artifacts | Output bytes incl. assets | Peak RSS MiB |
+|---|---:|---:|---:|
+| 200 news pages | 250 | 2148567 | 139.07 |
+| 2000 news pages | 2410 | 20933691 | 189.45 |
+
+This is a fixed four 1024-code-point publications per day, Germany, one space;
+calendar density is measured independently below so a fixed calendar does not
+dominate the small sample. Peak growth is 50.39 MiB, below the 128 MiB target.
+Both profiles return only summary/path, never a pages object. The first attempt
+failed this target: per-publication layout date formatters and per-page news
+month formatters still allocated native Intl state. Fixed formatter reuse in
+those two existing functions eliminated the measured cause without changing
+labels or adding a subsystem. Dedicated red/green tests and HTML parity verify it.
+
+| Synthetic 3-year events | References | Reference/full JSON bytes | Reference/full peak RSS MiB |
+|---|---:|---:|---:|
+| 8 | 8760 | 114952 / 11250459 | 65.50 / 90.56 |
+| 32 | 35040 | 191602 / 44803353 | 70.15 / 163.05 |
+
+Each reference index contains zero description fields. The full-object baseline
+contains one description per day reference; independent event identities and
+all 1095 days remain. These numbers are synthetic, not production distributions.
+
+Production saved-snapshot render completed: 14207 generated artifacts plus
+7 static assets, 122824327 output bytes. First peak RSS was 2996.70 MiB; after
+fixed noncalendar formatter reuse it was 868.91 MiB. Output file count and total
+bytes are identical; this is not a claim that the two full production trees were
+byte-compared (fixture trees were). Profile uses fresh Node processes with
+768 MiB old-space and OS getrusage maxRSS. No cgroup hard bound was measured.
+
+Saved-source regression parses all 51 ICS files: 17817 records, valid reference
+indices, descriptions <=1095. Nine baseline timezone/month calendar cases have
+identical full models and HTML, including same-UID independent records, global
+filters, ordering, time labels and navigation. Date-only interval correction
+and browser timezone edge/window tests are separate intentional changes.
+
+Actual npm refresh, npm render, and npm build -- --include-discovery-valid
+run in an isolated fixture checkout against stream-backed acquisition responses.
+Refresh/curated/render use distinct PIDs and persisted JSON, with peak RSS
+67.71 / 114.71 / 121.30 MiB in a standalone smoke run (parent 37.88 MiB).
+After a forced wiki failure, build exits nonzero and previous HTML is unchanged.
+These are fixture-network measurements, not a live production refresh. Shell
+deploy tests use an inert docker stub, never actual Docker/nginx.
+
+Reproduction commands from repository root:
+
+```sh
+npm test
+npm run typecheck
+BUILD_MEMORY_TESTS=1 npm test -- tests/performance/buildMemory.test.js
+node scripts/check-calendar-html-parity.mjs
+node --max-old-space-size=384 scripts/profile-build-memory.mjs 200
+node --max-old-space-size=384 scripts/profile-build-memory.mjs 2000
+node --max-old-space-size=768 scripts/profile-build-memory.mjs real
+```
+
+Remaining operator checks: effective Docker/systemd cgroup RAM+swap settings,
+OOM behavior, container deployment and served nginx paths. Docker was explicitly
+not run. Live upstream source refresh was not performed. Current peak figures
+support keeping ordinary JSON serialization; there is no isolated serialization
+measurement demonstrating a need for conditional Stage 2b, so it is not enabled.
+The complete primary JSON/author model still consumes input-proportional memory.

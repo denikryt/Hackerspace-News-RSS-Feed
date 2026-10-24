@@ -92,17 +92,22 @@ export function formatCompactDate(value) {
   return `${formatted.month} ${formatted.day}, ${formatted.year}`;
 }
 
+// Repeated publication dates share the same three fixed UTC formatters.
+// Constructing them per item retains substantial native Intl memory.
+const publicationMonth = new Intl.DateTimeFormat("en-US", { month: "short", timeZone: "UTC" });
+const publicationDay = new Intl.DateTimeFormat("en-US", { day: "2-digit", timeZone: "UTC" });
+const publicationYear = new Intl.DateTimeFormat("en-US", { year: "numeric", timeZone: "UTC" });
+
 function formatDisplayDateParts(value) {
   const parsed = value ? new Date(value) : null;
   if (!parsed || Number.isNaN(parsed.getTime())) {
     return null;
   }
 
-  const month = new Intl.DateTimeFormat("en-US", { month: "short", timeZone: "UTC" })
-    .format(parsed)
+  const month = publicationMonth.format(parsed)
     .toUpperCase();
-  const day = new Intl.DateTimeFormat("en-US", { day: "2-digit", timeZone: "UTC" }).format(parsed);
-  const year = new Intl.DateTimeFormat("en-US", { year: "numeric", timeZone: "UTC" }).format(parsed);
+  const day = publicationDay.format(parsed);
+  const year = publicationYear.format(parsed);
 
   return { month, day, year };
 }

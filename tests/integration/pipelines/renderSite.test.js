@@ -594,7 +594,6 @@ describe("renderSite", () => {
 
   it("renders paginated author detail pages when an author has more than one page of items", async () => {
     const result = await renderSite({
-      now: Date.parse("2026-05-17T12:00:00.000Z"),
       sourceRowsPayload: {
         sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
         sectionTitle: "Spaces with RSS feeds",

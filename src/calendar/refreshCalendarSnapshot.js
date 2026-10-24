@@ -169,10 +169,13 @@ async function fetchCalendarSource({
       errorMessage: null,
     };
   } catch (error) {
-    logInfo(
-      logger,
-      `[refresh] failed calendar source: ${sourceItem.url} (fetch_error: ${error instanceof Error ? error.message : String(error)})`,
-    );
+    // Parser exception strings may contain arbitrary source text. Persist only
+    // stable local codes, including safe metadata produced by bounded ingress.
+    const knownCodes = new Set(['timeout', 'response_too_large', 'invalid_stream', 'fetch_error', 'unsupported_calendar_recurrence']);
+    const errorCode = knownCodes.has(error?.code) ? error.code : 'calendar_parse_failed';
+    const errorMessage = Number.isFinite(error?.bytesRead) && Number.isFinite(error?.maxBodyBytes)
+      ? `${errorCode}: bytes=${error.bytesRead}, limit=${error.maxBodyBytes}` : errorCode;
+    logInfo(logger, `[refresh] failed calendar source: ${sourceItem.url} (${errorMessage})`);
     return {
       ...sourceItem,
       finalUrl: sourceItem.url,
@@ -181,8 +184,8 @@ async function fetchCalendarSource({
       status: "fetch_failed",
       events: [],
       rawIcsText: null,
-      errorCode: error?.code || "fetch_error",
-      errorMessage: error instanceof Error ? error.message : String(error),
+      errorCode,
+      errorMessage,
     };
   }
 }

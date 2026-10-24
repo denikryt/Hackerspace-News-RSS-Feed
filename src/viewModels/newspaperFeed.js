@@ -147,10 +147,13 @@ function toDateStr(date) {
   return date.toISOString().slice(0, 10);
 }
 
+// Fixed UTC month labels recur on every day/country page. Reuse native state.
+const newspaperMonth = new Intl.DateTimeFormat("en-US", { month: "long", timeZone: "UTC" });
+
 function formatDayMonth(dateStr) {
   const [year, month, day] = dateStr.split("-").map(Number);
   const d = new Date(Date.UTC(year, month - 1, day));
-  const monthName = new Intl.DateTimeFormat("en-US", { month: "long", timeZone: "UTC" }).format(d);
+  const monthName = newspaperMonth.format(d);
   return `${day} ${monthName}`;
 }
 

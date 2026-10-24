@@ -121,7 +121,7 @@ describe("content rendering", () => {
       homeHref: "/index.html",
       pageTitle: "Feed",
       pageIntro: "All publications sorted from new to old.",
-      streamNavItems: [{ href: "/news/", label: "Feed", isCurrent: true }],
+      streamNavItems: [{ href: "/feed/index.html", label: "Feed", isCurrent: true }],
       publicationCountLabel: "1 of 1 publications",
     });
 
@@ -149,7 +149,7 @@ describe("content rendering", () => {
       homeHref: "/index.html",
       pageTitle: "Feed",
       pageIntro: "All publications sorted from new to old.",
-      streamNavItems: [{ href: "/news/", label: "Feed", isCurrent: true }],
+      streamNavItems: [{ href: "/feed/index.html", label: "Feed", isCurrent: true }],
       publicationCountLabel: "1 of 1 publications",
     });
 
@@ -179,7 +179,7 @@ describe("content rendering", () => {
       homeHref: "/index.html",
       pageTitle: "Feed",
       pageIntro: "All publications sorted from new to old.",
-      streamNavItems: [{ href: "/news/", label: "Feed", isCurrent: true }],
+      streamNavItems: [{ href: "/feed/index.html", label: "Feed", isCurrent: true }],
       publicationCountLabel: "1 of 1 publications",
     });
 
@@ -203,7 +203,7 @@ describe("content rendering", () => {
         },
       ],
       homeHref: "/index.html",
-      feedHref: "/news/",
+      feedHref: "/feed/index.html",
     });
 
     const feedMatch = feedHtml.match(/<div class="content-body plain-text">([\s\S]*?)<\/div>/);
