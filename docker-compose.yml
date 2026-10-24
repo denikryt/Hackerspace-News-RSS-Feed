@@ -4,8 +4,13 @@ services:
       context: .
       dockerfile: Dockerfile
       target: builder
+    mem_limit: ${BUILDER_MEMORY_MIB:-1024}m
+    memswap_limit: ${BUILDER_MEMORY_MIB:-1024}m
     init: true
     environment:
+      BUILDER_MEMORY_MIB: ${BUILDER_MEMORY_MIB:-1024}
+      NODE_OLD_SPACE_MIB: ${NODE_OLD_SPACE_MIB:-768}
+      NODE_OPTIONS: --max-old-space-size=${NODE_OLD_SPACE_MIB:-768}
       SITE_BUILD_MODE: build
       SITE_BUILD_ARGS: ""
     volumes:
