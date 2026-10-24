@@ -51,6 +51,9 @@ describe("render/build timing logs", () => {
     });
 
     expect(stdout).toContain("Curated refresh completed. Starting site render.");
+    const pids = [...stdout.matchAll(/stage-pid=(\d+)/g)].map(match => match[1]);
+    expect(pids).toHaveLength(3);
+    expect(new Set(pids).size).toBe(3);
     expect(stdout).toContain(`Wrote ${join(rootDir, "data/source_urls.json")}`);
     expect(stdout).toContain(`Wrote ${join(rootDir, "data/curated_publications_normalized.json")}`);
     expect(stdout).toContain(`Rendered 2 pages into ${join(rootDir, "dist")}`);
@@ -71,6 +74,7 @@ function createCliFixture() {
   copyFileSync(resolve(process.cwd(), "src/cli/refresh.js"), join(rootDir, "src/cli/refresh.js"));
   copyFileSync(resolve(process.cwd(), "src/cli/render.js"), join(rootDir, "src/cli/render.js"));
   copyFileSync(resolve(process.cwd(), "src/cli/build.js"), join(rootDir, "src/cli/build.js"));
+  copyFileSync(resolve(process.cwd(), "src/cli/refreshCurated.js"), join(rootDir, "src/cli/refreshCurated.js"));
 
   writeFileSync(
     join(rootDir, "src/config.js"),
@@ -87,6 +91,7 @@ export const PATHS = {
   writeFileSync(
     join(rootDir, "src/renderSite.js"),
     `export async function renderSite() {
+  console.log("stage-pid=" + process.pid);
   return {
     pageCount: 2,
     pages: {
@@ -101,6 +106,7 @@ export const PATHS = {
   writeFileSync(
     join(rootDir, "src/refreshDataset.js"),
     `export async function refreshDataset({ logger } = {}) {
+  console.log("stage-pid=" + process.pid);
   if (logger) {
     logger("[refresh] refresh complete: feeds=1 failures=0");
   }
@@ -117,6 +123,7 @@ export const PATHS = {
   writeFileSync(
     join(rootDir, "src/refreshCurated.js"),
     `export async function refreshCurated({ logger } = {}) {
+  console.log("stage-pid=" + process.pid);
   if (logger) {
     logger("[refresh] curated refresh complete: resolved=1 unresolved=0");
   }

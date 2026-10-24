@@ -159,3 +159,14 @@ May fixtures updated to derive a stable render date; baseline behavior changes
 are confined to the planned render contract and fixtures, not application fixes.
 Full production render smoke is deferred to Stage 5 with fresh bounded process
 measurements; a previous partial smoke is not counted as success.
+
+## Stage 4 verification
+
+Build now spawns refresh, refreshCurated (default non-force), and render in
+sequence with inherited stdio/environment, awaiting each child's close.
+Discovery argv/npm env flags reach only refresh. CLI fixture verifies three
+separate PIDs and the existing completion/timing messages. Child nonzero,
+spawn error and parent SIGINT/SIGTERM tests stop the chain and remove signal
+listeners; signal forwarding waits for close. Deploy tests use a fake Docker
+executable and confirm no publish/start step after builder failure; actual
+Docker is never invoked. Focused CLI/deploy suite: 50 passing, typecheck passes.
