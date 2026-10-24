@@ -219,7 +219,7 @@ expect(JSON.parse(curatedJson)).toEqual({
     expect(logLines).toContain("[refresh] refresh complete: feeds=1 failures=2");
   });
 
-  it("resolves curated publications from a local yaml list without changing wiki source summary", async () => {
+  it("resolves curated publications from a local JSON registry without changing wiki source summary", async () => {
     const outputDir = await mkdtemp(resolve(tmpdir(), "hnf-refresh-curated-"));
     tempDirs.push(outputDir);
 
@@ -228,7 +228,7 @@ expect(JSON.parse(curatedJson)).toEqual({
       validations: resolve(outputDir, "data/feed_validation.json"),
       normalizedFeeds: resolve(outputDir, "data/feeds_normalized.json"),
       curatedNormalized: resolve(outputDir, "data/curated_publications_normalized.json"),
-      curatedPublications: resolve(outputDir, "content/curated_publications.yml"),
+      curatedPublications: resolve(outputDir, "content/curated_publications.json"),
       calendarSources: resolve(outputDir, "content/ics_events.json"),
       calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
       calendarEvents: resolve(outputDir, "data/calendar/events.json"),
@@ -238,7 +238,7 @@ expect(JSON.parse(curatedJson)).toEqual({
     await mkdir(resolve(outputDir, "content"), { recursive: true });
     await writeFile(
       paths.curatedPublications,
-      `- feedUrl: https://blog.nachitima.com/feed/\n  guid: https://blog.nachitima.com/interview-with-sasha-hackerspace-stories\n`,
+      JSON.stringify({"items": [{"feedUrl": "https://blog.nachitima.com/feed/", "guid": "https://blog.nachitima.com/interview-with-sasha-hackerspace-stories"}]}),
       "utf8",
     );
 
@@ -446,7 +446,7 @@ expect(JSON.parse(curatedJson)).toEqual({
         sourceRows: resolve(outputDir, "data/source_urls.json"),
         validations: resolve(outputDir, "data/feed_validation.json"),
         normalizedFeeds: resolve(outputDir, "data/feeds_normalized.json"),
-        curatedPublications: resolve(outputDir, "content/missing-curated.yml"),
+        curatedPublications: resolve(outputDir, "content/missing-curated.json"),
         calendarSources: resolve(outputDir, "content/ics_events.json"),
         calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
         calendarEvents: resolve(outputDir, "data/calendar/events.json"),

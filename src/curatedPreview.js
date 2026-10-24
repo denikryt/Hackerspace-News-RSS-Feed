@@ -18,7 +18,7 @@ import { buildCuratedIndexModel } from "./viewModels/curated.js";
 
 /**
  * Curated preview intentionally stays narrow: it fetches only the feeds named
- * in curated_publications.yml and renders only the curated page.
+ * in curated_publications.json and renders only the curated page.
  */
 export async function renderCuratedPreview({
   paths = PATHS,

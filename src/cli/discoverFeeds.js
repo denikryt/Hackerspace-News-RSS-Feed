@@ -1,12 +1,14 @@
 import { PATHS } from "../config.js";
 import { discoverHackerspaceFeeds } from "../discoverHackerspaceFeeds.js";
 import { buildDiscoveryValidSourceRowsPayload } from "../discoveryValidSourceList.js";
-import { writeJson } from "../storage.js";
+import { updateRssFeedRegistry } from "../rssFeedRegistry.js";
+import { readJson, writeJson } from "../storage.js";
 
 export async function runDiscoverFeedsCli({
   logger = console.log,
   discoverImpl = discoverHackerspaceFeeds,
   writeJsonImpl = writeJson,
+  readJsonImpl = readJson,
   paths = PATHS,
 } = {}) {
   const result = await discoverImpl({
@@ -22,13 +24,15 @@ export async function runDiscoverFeedsCli({
     `Discovery completed: sites=${summary.sites} confirmed=${summary.confirmed} valid=${summary.valid}`,
   );
 
-  // Automatically write the valid source list so it stays in sync with the audit.
+  // Append discovered feeds without overwriting public registry entries.
   const validSourceRowsPayload = buildDiscoveryValidSourceRowsPayload({
     discoveryPayload: result.discoveryPayload,
   });
-  await writeJsonImpl(paths.discoveredValidSourceRows, validSourceRowsPayload);
-  logger(`Wrote ${paths.discoveredValidSourceRows}`);
-  logger(`Discovery valid source list completed: valid=${validSourceRowsPayload.urls.length}`);
+  const registry = await updateRssFeedRegistry({
+    filePath: paths.rssFeeds, newItems: validSourceRowsPayload.items, readJsonImpl, writeJsonImpl,
+  });
+  logger(`Wrote ${paths.rssFeeds}`);
+  logger(`Discovery valid source list completed: valid=${registry.items.length}`);
 
   return result;
 }

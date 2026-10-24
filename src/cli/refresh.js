@@ -3,6 +3,7 @@ import { createMemoryDiagnostics } from "../memoryDiagnostics.js";
 import { PATHS } from "../config.js";
 import { refreshDataset } from "../refreshDataset.js";
 import { readJson } from "../storage.js";
+import { loadRssSourceRows } from "../rssFeedRegistry.js";
 
 export async function runRefreshCli({
   argv = process.argv.slice(2),
@@ -21,7 +22,11 @@ export async function runRefreshCli({
   const memory = createMemoryDiagnostics({ enabled: env.BUILD_MEMORY_DIAGNOSTICS === "1", logger });
   memory("refresh:start");
   const refreshCalendarOnly = hasCliFlag({ argv, env, flag: "--calendar" });
-  const additionalSourceRows = await loadDiscoveryValidSourceRows({ argv, env, readJsonImpl, paths });
+  const additionalSourceRows = await loadRssSourceRows({
+    includeDiscoveryValid: hasCliFlag({ argv, env, flag: "--include-discovery-valid" }),
+    readJsonImpl,
+    paths,
+  });
 
   await refreshImpl({
     writeSnapshots: true,
@@ -47,15 +52,6 @@ export async function runRefreshCli({
   if (paths.calendarIndex) {
     logger(`Wrote ${paths.calendarIndex}`);
   }
-}
-
-async function loadDiscoveryValidSourceRows({ argv, env, readJsonImpl, paths }) {
-  if (!hasCliFlag({ argv, env, flag: "--include-discovery-valid" })) {
-    return [];
-  }
-
-  const payload = await readJsonImpl(paths.discoveredValidSourceRows);
-  return Array.isArray(payload?.urls) ? payload.urls : [];
 }
 
 // npm run foo --bar often exposes flags through npm_config_* instead of argv,

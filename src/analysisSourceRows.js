@@ -1,5 +1,5 @@
 import { SOURCE_PAGE_URL } from "./config.js";
-import { loadDiscoveryValidSourceRows } from "./discoveryValidSourceRows.js";
+import { loadRssSourceRows } from "./rssFeedRegistry.js";
 import { fetchPageHtml } from "./pageFetcher.js";
 import { extractSourceRows } from "./sourceTableExtractor.js";
 
@@ -14,13 +14,13 @@ export async function loadAnalysisSourceRows({
   includeDiscoveryValid = false,
   fetchPageHtmlImpl = fetchPageHtml,
   extractSourceRowsImpl = extractSourceRows,
-  loadDiscoveryValidSourceRowsImpl = loadDiscoveryValidSourceRows,
+  loadRssSourceRowsImpl = loadRssSourceRows,
   readJsonImpl,
   paths,
 } = {}) {
   const html = await fetchPageHtmlImpl({ sourcePageUrl, fetchImpl });
   const wikiSourceRows = extractSourceRowsImpl({ html, sourcePageUrl });
-  const discoveryValidSourceRows = await loadDiscoveryValidSourceRowsImpl({
+  const discoveryValidSourceRows = await loadRssSourceRowsImpl({
     includeDiscoveryValid,
     readJsonImpl,
     paths,

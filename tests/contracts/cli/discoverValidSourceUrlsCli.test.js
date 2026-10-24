@@ -13,16 +13,19 @@ describe("runDiscoverValidSourceUrlsCli", () => {
           {
             hackerspaceName: "Alpha",
             hackerspaceWikiUrl: "https://wiki.hackerspaces.org/Alpha",
-            country: "Wonderland",
             feedUrl: "https://alpha.example/feed.xml",
+            siteUrl: "https://alpha.example/",
+            country: "France",
           },
         ],
       },
     });
     const writeJsonImpl = vi.fn().mockResolvedValue(undefined);
+    const readAudit = readJsonImpl.getMockImplementation();
+    readJsonImpl.mockImplementation(path => path.endsWith("rss_feeds.json") ? { items: [] } : readAudit());
     const paths = {
       discoveredHackerspaceFeeds: "/tmp/data/discovery/discovered_hackerspace_feeds.json",
-      discoveredValidSourceRows: "/tmp/content/discovered_valid_source_urls.json",
+      rssFeeds: "/tmp/content/rss_feeds.json",
     };
 
     await runDiscoverValidSourceUrlsCli({
@@ -34,18 +37,17 @@ describe("runDiscoverValidSourceUrlsCli", () => {
 
     expect(readJsonImpl).toHaveBeenCalledWith(paths.discoveredHackerspaceFeeds);
     expect(writeJsonImpl).toHaveBeenCalledWith(
-      paths.discoveredValidSourceRows,
+      paths.rssFeeds,
       expect.objectContaining({
-        urls: [
+        items: [
           expect.objectContaining({
             hackerspaceName: "Alpha",
-            candidateFeedUrl: "https://alpha.example/feed.xml",
-            sourceType: "discovery",
+            feedUrl: "https://alpha.example/feed.xml",
           }),
         ],
       }),
     );
-    expect(logger).toHaveBeenCalledWith(`Wrote ${paths.discoveredValidSourceRows}`);
+    expect(logger).toHaveBeenCalledWith(`Wrote ${paths.rssFeeds}`);
     expect(logger).toHaveBeenCalledWith("Discovery valid source list completed: valid=1");
   });
 });

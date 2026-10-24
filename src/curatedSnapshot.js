@@ -8,7 +8,7 @@ import { processCuratedSourceRows } from "./curatedPreview.js";
 
 /**
  * Curated refresh/preview share the same narrow data-collection path: read the
- * manual YAML list, fetch only the referenced feeds, then resolve only the
+ * manual JSON registry, fetch only the referenced feeds, then resolve only the
  * selected GUIDs into the stable curated snapshot shape.
  */
 export async function collectCuratedSnapshot({

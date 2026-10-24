@@ -34,14 +34,13 @@ const twoSiteHtml = `
 const existingValidSourceList = {
   sourcePageUrl,
   extractedAt: "2026-01-01T00:00:00.000Z",
-  urls: [
+  items: [
     {
       hackerspaceName: "Alpha",
       hackerspaceWikiUrl: "https://wiki.hackerspaces.org/Alpha",
       country: "Wonderland",
-      siteUrl: "https://alpha.example/",
-      candidateFeedUrl: "https://alpha.example/feed.xml",
-      sourceType: "discovery",
+      website: "https://alpha.example/",
+      feedUrl: "https://alpha.example/feed.xml",
     },
   ],
 };
@@ -72,7 +71,7 @@ describe("runDiscoverFeedsIncrementalCli", () => {
     const paths = {
       discoveredHackerspaceSourceSnapshot: resolve(outputDir, "data/discovery/list_of_hacker_spaces.html"),
       discoveredHackerspaceFeeds: resolve(outputDir, "data/discovery/discovered_hackerspace_feeds.json"),
-      discoveredValidSourceRows: resolve(outputDir, "content/discovered_valid_source_urls.json"),
+      rssFeeds: resolve(outputDir, "content/rss_feeds.json"),
     };
 
     const fetchImpl = vi.fn(async (url) => {
@@ -110,14 +109,14 @@ describe("runDiscoverFeedsIncrementalCli", () => {
     expect(result.mergedUrls).toHaveLength(2);
     expect(result.mergedUrls).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ siteUrl: "https://alpha.example/" }),
-        expect.objectContaining({ siteUrl: "https://beta.example/" }),
+        expect.objectContaining({ website: "https://alpha.example/" }),
+        expect.objectContaining({ website: "https://beta.example/" }),
       ]),
     );
 
     // No duplicates.
-    const siteUrls = result.mergedUrls.map((u) => u.siteUrl);
-    expect(new Set(siteUrls).size).toBe(siteUrls.length);
+    const websites = result.mergedUrls.map((u) => u.website);
+    expect(new Set(websites).size).toBe(websites.length);
   });
 
   it("behaves like a full scan when no existing valid source list is provided", async () => {
@@ -125,7 +124,7 @@ describe("runDiscoverFeedsIncrementalCli", () => {
     const paths = {
       discoveredHackerspaceSourceSnapshot: resolve(outputDir, "data/discovery/list_of_hacker_spaces.html"),
       discoveredHackerspaceFeeds: resolve(outputDir, "data/discovery/discovered_hackerspace_feeds.json"),
-      discoveredValidSourceRows: resolve(outputDir, "content/discovered_valid_source_urls.json"),
+      rssFeeds: resolve(outputDir, "content/rss_feeds.json"),
     };
 
     const fetchImpl = vi.fn(async (url) => {
