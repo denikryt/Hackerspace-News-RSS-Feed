@@ -44,13 +44,22 @@ export function normalizeCalendarSnapshot(payload, { textLimit = RESOURCE_LIMITS
 // Keep one UTC day of timed candidates at each edge: the browser may move
 // them into the window in its timezone. Visible day expansion remains clipped.
 export function publicCalendarPayload(payload, window) {
-    const timedStart = Date.parse(window.windowStart) - DAY;
-    const timedEnd = Date.parse(window.windowEndExclusive) + DAY;
-    return { ...payload, ...window, events: payload.events.filter(event => {
-            if (event.dateKind === 'date')
-                return event.sourceDate < window.windowEndExclusive && event.endSourceDateExclusive > window.windowStart;
-            const start = Date.parse(event.startInstant);
-            const end = Date.parse(event.endInstant || event.startInstant);
-            return Number.isFinite(start) && Number.isFinite(end) && end >= start && start < timedEnd && end >= timedStart;
-        }) };
+    // Source recurrence templates are private; the browser receives occurrences only.
+    const { recurrence, ...published } = payload;
+    return { ...published, ...window, events: payload.events.filter(event => calendarEventIntersectsWindow(event, window)).map(event => {
+        if (!Object.hasOwn(event, 'sourceComponentIndex')) return event;
+        const {sourceComponentIndex, ...visible} = event;
+        return visible;
+    }) };
+}
+
+// Share the transport candidate policy with recurrence expansion. Timed events
+// retain one UTC day at each edge; visible server/client days are clipped later.
+export function calendarEventIntersectsWindow(event, window) {
+    if (event.dateKind === 'date') return event.sourceDate < window.windowEndExclusive && event.endSourceDateExclusive > window.windowStart;
+    const start = Date.parse(event.startInstant);
+    const end = Date.parse(event.endInstant || event.startInstant);
+    return Number.isFinite(start) && Number.isFinite(end) && end >= start
+        && start < Date.parse(window.windowEndExclusive) + DAY
+        && end >= Date.parse(window.windowStart) - DAY;
 }

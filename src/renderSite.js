@@ -1,3 +1,4 @@
+import { prepareCalendarRecurrences } from "./calendar/prepareCalendarRecurrences.js";
 import { consumePageEntries } from "./renderPageSink.js";
 import { withStagedDirectory } from "./stagedDirectory.js";
 import { RESOURCE_LIMITS } from "./resourceLimits.js";
@@ -217,12 +218,15 @@ function logInfo(logger, message) {
 // Normalize before Zod cloning, indexing, view models or JSON serialization.
 async function loadRenderInputs(options) {
     const data = await loadRawRenderInputs(options);
-    const calendarPayload = normalizeCalendarSnapshot(data.calendarPayload);
+    const windowYear = new Date(options.now).getUTCFullYear();
+    const calendarPayload = normalizeCalendarSnapshot(prepareCalendarRecurrences(data.calendarPayload, {
+        windowYear, previousWindowYear: data.calendarIndexPayload?.windowYear,
+    }));
     const normalizedPayload = limitFeedPayload(data.normalizedPayload);
     const curated = data.curatedPayload ?? normalizedPayload.curated;
     const curatedPayload = curated ? { ...curated, items: (curated.items || []).map(item => limitItemText(item)) } : curated;
     normalizedPayload.curated = curatedPayload;
-    const indexOptions = { timeZone: 'UTC', windowYear: new Date(options.now).getUTCFullYear(), generatedAt: calendarPayload.generatedAt };
+    const indexOptions = { timeZone: 'UTC', windowYear, generatedAt: calendarPayload.generatedAt };
     const calendarIndexPayload = isCalendarIndexValid(data.calendarIndexPayload, calendarPayload.events, indexOptions) ? data.calendarIndexPayload : buildCalendarIndex(calendarPayload.events, indexOptions);
     return { ...data, normalizedPayload: validateNormalizedRenderPayloadForDisplay(normalizedPayload), curatedPayload, calendarPayload, calendarIndexPayload };
 }

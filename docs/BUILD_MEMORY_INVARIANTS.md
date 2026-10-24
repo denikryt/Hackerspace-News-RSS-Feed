@@ -44,3 +44,15 @@ masters are iterated without retaining pre-window occurrences. Local directory
 promotion is best-effort rollback for handled errors, not power-loss atomicity.
 The snapshot set is not a cross-file transaction. A cgroup OOM may preclude
 cleanup; no crash-atomic publish guarantee is claimed.
+
+
+Review correction invariants (recurrence snapshot schema v1):
+
+| Boundary | Positive regression | Negative regression |
+|---|---|---|
+| Offline year rollover derives from persisted source definitions | calendarRecurrenceRollover disk test: 2026 snapshot -> 2028 event in 2027 render; subsequent 2028 rollover | fetch forbidden; input snapshots immutable; expanded-only stale cache rejected |
+| Same-year cache does not re-expand series | calendarRecurrenceSnapshot spies on absent RecurExpansion.next calls | next-year call must iterate and include formerly missing years |
+| Source-local recurrence identity/order and metadata persist | same UID across masters/sources plus independent records, equality to fresh refresh | no merging; finite COUNT/UNTIL and EXDATE/cancelled exceptions cannot invent occurrences |
+| Private definitions/schema are validated and bounded | serialized jCal, original component positions, L-bounded descriptions, all 51 saved sources roundtrip | malformed schema, duplicate source, bad position, ordinary-template and invalid metadata rejected |
+| Public calendar contains canonical occurrences only | public payload/day pages include newly materialized events | no recurrence definitions/source positions/nested event copies or out-of-window visible days |
+| Patches need only the supplied master | 00-06 clean sequential apply and exact tree comparison | corrected 05 has no dependency on absent remote-deploy tests |

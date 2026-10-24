@@ -175,9 +175,9 @@ Docker is never invoked. Focused CLI/deploy suite: 50 passing, typecheck passes.
 ## Stage 5 final validation (2026-10-24)
 
 All implementation stages are present; the user's execution amendment excludes
-Docker and permits available local checks. No commit was created. Existing
-uncommitted remote-deployment files are preserved separately from incremental
-implementation patches. See BUILD_MEMORY_INVARIANTS.md for boundary ownership,
+Docker and permits available local checks. The original delivery was uncommitted. Review correction below records
+scoped local feature commits. Unrelated remote-deployment files remain in the
+original workspace and are excluded from this clean implementation checkout. See BUILD_MEMORY_INVARIANTS.md for boundary ownership,
 positive/negative tests and adversarial review results.
 
 Final ordinary suite: 510 passing, 3 failing, 3 opt-in performance tests skipped
@@ -256,3 +256,82 @@ not run. Live upstream source refresh was not performed. Current peak figures
 support keeping ordinary JSON serialization; there is no isolated serialization
 measurement demonstrating a need for conditional Stage 2b, so it is not enabled.
 The complete primary JSON/author model still consumes input-proportional memory.
+
+## Review correction contract — 2026-10-24, before implementation
+
+Standalone render must regenerate future-window recurrence occurrences from
+self-contained local definitions. Persist `recurrence: {schemaVersion: 1,
+windowYear, sources}` only when a source has recurring masters or overrides.
+Each source stores bounded DESCRIPTION values, the required VEVENT properties
+and VTIMEZONE components in standard jCal, original component positions, and
+source metadata. Ordinary nonrecurring source records are not copied into the
+definitions. `calendarPayload.events` remains the canonical materialization;
+source items remain metadata-only. Private definitions never enter public JSON.
+
+At the render input boundary validate this contract; when the year differs,
+replace only those source-derived occurrences, preserve independent records,
+re-expand the new three-year window, normalize texts/dates and rebuild the
+positional index. Original component positions preserve order for equal dates,
+titles and UID without semantic deduplication. The same snapshot supports
+2026 -> 2027 -> 2028 offline rendering. Same-year render reuses its materialized
+canonical events and persisted index; no full recurrence recomputation is added
+for each ordinary month render.
+
+An older expanded-only snapshot cannot supply missing rules. If its window
+changes and it contains recurrence occurrences without definitions, fail with
+`calendar_recurrence_refresh_required`, rather than publish an incomplete
+calendar. A new snapshot with retained definitions is required once. No legacy
+migration state or raw-file/network fallback is introduced. The 500-item RSS
+policy stays unchanged. No curated-trim integration or Docker run is authorized
+in this review correction.
+
+
+## Review correction verification
+
+Corrected 05.patch excludes only three unrelated remote-deploy test formatting
+hunks; 00-04 are byte-identical to the original archive. All six patches apply
+sequentially to pristine master 1338ec92c5; no private initial working-tree files
+are required. The clean Stage 5 baseline is 501 passed / 3 existing failures /
+3 opt-in skipped. The earlier 510 total included nine unrelated deploy tests.
+
+Checkpoint 06 adds self-contained recurrence snapshot schema v1. Same-year
+render validates/reuses canonical events; on rollover it restores series and
+exceptions from stored jCal, keeps ordinary events and metadata, normalizes
+text/date intervals, updates the derived parsedEvents total and rebuilds stale
+indices. Source item eventCount remains the original refresh metadata. Private
+recurrence definitions and source component positions are removed at the public
+JSON boundary. A source with no current-window occurrences still retains its
+future rule. No UID-based deduplication is used. Timed candidates retain the
+existing one-day UTC transport margin; only actual in-window days are indexed.
+
+Focused tests cover 2026 -> 2027 -> 2028 offline, COUNT/UNTIL, future RDATE/EXDATE,
+moved/cancelled overrides, timezone/DST, independent same-UID masters and sources,
+fresh-vs-rolled canonical ordering, stable legacy-date correction, invalid stored
+definitions and refusing incomplete expanded-only legacy snapshots. A rebuilt
+derived index cannot establish the year coverage of missing source rules.
+The disk test reads JSON snapshots, forbids fetch, writes a 2028 month page and
+asserts original files are not mutated. Same-year recurrence iteration is absent.
+
+All 51 saved source files pass serialized-definition rollover equality against
+fresh parsing for 2027: 18147 resulting records. Current-window records are 17825
+(eight additional timed boundary candidates reflect the existing UTC margin).
+Private definitions for these inputs total 870911 bytes, with bounded descriptions;
+ordinary VEVENTs are not duplicated in them. This is real saved input evidence,
+not a live upstream refresh or cgroup measurement.
+
+Six Stage 0-5 commits and a correction commit are recorded locally on
+feature/memory-safe-build. No master/curated-trim merge, remote push or production
+publication is performed. The original user's dirty checkout remains untouched.
+The 500-item RSS limit is unchanged, including its stated rejection of the
+observed 5980-item source during refresh. That policy remains a deployment
+choice, not an implicit truncation or exemption introduced by this correction.
+
+Final correction checks: 514 passed, the same 3 baseline failures, 3 opt-in
+performance tests skipped in the ordinary suite (520 total). The opt-in suite
+passes all three tests separately. A final refresh-boundary regression rejects
+unsupported detached RANGE overrides before invalid future definitions can be
+saved. Typecheck, whitespace checks and nine-case baseline calendar HTML/model
+parity pass. Docker/cgroup/nginx/live refresh remain unverified by instruction.
+All original master and curated-trim refs stay at 1338ec92c5; feature commits
+are local only. Corrected patch replay and exact final tree verification are
+recorded in the delivery report.

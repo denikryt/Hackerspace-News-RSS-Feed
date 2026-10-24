@@ -8,7 +8,7 @@ import { getAttemptTimeoutMs } from "../networkAttemptTimeout.js";
 import { runWithNetworkRetry } from "../networkRetry.js";
 import { getCountryFlag } from "../countryFlags.js";
 import { readJson, writeText } from "../storage.js";
-import { parseCalendarIcsText, sortCalendarEvents } from "./readCalendarEvents.js";
+import { parseCalendarIcsSnapshot, sortCalendarEvents } from "./readCalendarEvents.js";
 
 // Calendar sources can be slower than the RSS polling targets, so the refresh
 // pipeline gives them a longer final attempt before aborting.
@@ -30,8 +30,10 @@ export async function refreshCalendarSnapshot({
   retryDelaysMs,
   attemptTimeoutsMs,
   writeTextImpl = writeText,
+  now = Date.now(),
 } = {}) {
-  const generatedAt = new Date().toISOString();
+  const generatedAt = new Date(now).toISOString();
+  const windowYear = new Date(now).getUTCFullYear();
   const calendarSourceItems = Array.isArray(sourceItems)
     ? normalizeCalendarSourceItems(sourceItems)
     : await loadCalendarSourceItems({ calendarSourcesPath, readJsonImpl });
@@ -41,6 +43,7 @@ export async function refreshCalendarSnapshot({
     const result = await fetchCalendarSource({
       sourceItem,
       snapshotFile,
+      windowYear,
       fetchImpl,
       logger,
       waitImpl,
@@ -60,6 +63,16 @@ export async function refreshCalendarSnapshot({
     generatedAt,
     items: sourceResults.map(stripCalendarRawText),
     events,
+    recurrence: {
+      schemaVersion: 1, windowYear,
+      sources: sourceResults.filter(result => result.recurrence).map(result => ({
+        sourceFile: result.snapshotFile,
+        country: result.country || null,
+        countryFlag: getCountryFlag(result.country),
+        hackerspaceName: result.hackerspaceName || null,
+        ...result.recurrence,
+      })),
+    },
   }));
 }
 
@@ -105,6 +118,7 @@ function extractHackerspaceName(item) {
 }
 
 async function fetchCalendarSource({
+  windowYear,
   sourceItem,
   snapshotFile,
   fetchImpl,
@@ -149,8 +163,8 @@ async function fetchCalendarSource({
       };
     }
 
-    const events = parseCalendarIcsText(primaryText, { sourceFile: snapshotFile })
-      .map((event) => ({
+    const parsed = parseCalendarIcsSnapshot(primaryText, { sourceFile: snapshotFile, windowYear });
+    const events = parsed.events.map((event) => ({
         ...event,
         country: sourceItem.country || null,
         countryFlag: getCountryFlag(sourceItem.country),
@@ -163,6 +177,7 @@ async function fetchCalendarSource({
       resolvedIcsUrl: primaryUrl,
       snapshotFile,
       status: "parsed_ok",
+      recurrence: parsed.recurrence,
       events,
       rawIcsText: primaryText,
       errorCode: null,
@@ -210,18 +225,19 @@ function isCalendarResponse({ url, contentType, body }) {
 }
 
 function stripCalendarRawText(result) {
-  const { rawIcsText, events, ...rest } = result;
+  const { rawIcsText, events, recurrence, ...rest } = result;
   return {
     ...rest,
     eventCount: result.events.length,
   };
 }
 
-function buildCalendarPayload({ generatedAt, items, events }) {
+function buildCalendarPayload({ generatedAt, items, events, recurrence }) {
   return {
     generatedAt,
     items,
     events,
+    ...(recurrence.sources.length ? {recurrence} : {}),
     summary: {
       sources: items.length,
       parsedSources: items.filter((item) => item.status === "parsed_ok").length,

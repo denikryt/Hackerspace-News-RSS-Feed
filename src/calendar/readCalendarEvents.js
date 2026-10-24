@@ -1,5 +1,5 @@
 import { getCalendarFormatter } from "./dateFormatting.js";
-import { expandCalendarRecurrences } from "./expandCalendarRecurrences.js";
+import { expandCalendarRecurrences, captureCalendarRecurrences, validateRecurrenceDefinition } from "./expandCalendarRecurrences.js";
 import { normalizeDateOnlyInterval } from "./normalizeCalendarSnapshot.js";
 import { truncateContentText } from "../truncateContentText.js";
 import { mapWithConcurrency } from "../mapWithConcurrency.js";
@@ -84,6 +84,19 @@ export function parseCalendarIcsText(text, { sourceFile, windowYear = new Date()
   }
 
   return events.filter(Boolean);
+}
+
+// Refresh persists self-contained recurring source templates alongside the
+// current window's events, without changing the array-only parser API.
+export function parseCalendarIcsSnapshot(text, { sourceFile, windowYear = new Date().getUTCFullYear() }) {
+  if (!/^(?:RRULE|RDATE|EXDATE|RECURRENCE-ID)[;:]/m.test(text)) return {events: parseCalendarIcsText(text, {sourceFile, windowYear}), recurrence: null};
+  return captureCalendarRecurrences(text, {windowYear, parseComponent: component => toCalendarEvent(unfoldIcsLines(component), {sourceFile})});
+}
+
+// Resolve stored RFC definitions through the same occurrence and event parser.
+export function parseCalendarRecurrenceDefinition(definition, { sourceFile, windowYear }) {
+  const calendar = validateRecurrenceDefinition(definition);
+  return expandCalendarRecurrences(calendar, {windowYear, componentIndexes: definition.componentIndexes, parseComponent: component => toCalendarEvent(unfoldIcsLines(component), {sourceFile})});
 }
 
 function toCalendarEvent(lines, { sourceFile }) {
@@ -352,7 +365,14 @@ function compareCalendarEvents(left, right) {
     return leftSortKey.localeCompare(rightSortKey);
   }
 
-  return (left.summary || "").localeCompare(right.summary || "");
+  const summaryOrder = (left.summary || "").localeCompare(right.summary || "");
+  if (summaryOrder) return summaryOrder;
+  // Original source/component positions preserve tie order after re-expansion;
+  // equal UID or content never identifies or merges independent records.
+  const sourceOrder = (left.sourceFile || "").localeCompare(right.sourceFile || "");
+  if (sourceOrder) return sourceOrder;
+  return Number.isInteger(left.sourceComponentIndex) && Number.isInteger(right.sourceComponentIndex)
+    ? left.sourceComponentIndex - right.sourceComponentIndex : 0;
 }
 
 export function sortCalendarEvents(events) {

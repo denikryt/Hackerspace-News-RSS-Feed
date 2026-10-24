@@ -255,3 +255,13 @@ For sparse phase diagnostics set `BUILD_MEMORY_DIAGNOSTICS=1`.
 Run the opt-in local allocation profiles with
 `BUILD_MEMORY_TESTS=1 npm test -- tests/performance/buildMemory.test.js`;
 these do not establish a cgroup hard-memory guarantee.
+
+
+Recurring-calendar snapshots retain private source definitions for offline year
+rollover. On a new year, render derives the next three-year occurrence window
+and rebuilds the calendar index without fetching ICS. Same-year render reuses
+its saved materialization. Rules and source positions are not published in
+/calendar/events.json. Older snapshots containing only expanded occurrences
+need a new refresh before changing years; render reports
+calendar_recurrence_refresh_required instead of silently omitting future events.
+See the review correction contract in docs/BUILD_MEMORY_SAFETY.md.
