@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, unlink, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { refreshDataset } from "../../../src/refreshDataset.js";
@@ -18,7 +18,7 @@ async function setup() {
   const dir = await createTrackedTempDir("hnf-wiki-fallback-", tempDirs);
   const paths = Object.fromEntries([
     "sourceRows", "validations", "normalizedFeeds", "curatedNormalized", "curatedPublications",
-    "calendarSources", "calendarEvents", "calendarIndex",
+    "calendarSources", "calendarSourcesSnapshot", "calendarEvents", "calendarIndex",
   ].map(key => [key, resolve(dir, `${key}.json`)]));
   paths.calendarRawDirectory = resolve(dir, "raw");
   const registry = { ...saved, urls: [savedRow] };
@@ -34,6 +34,28 @@ async function setup() {
 }
 
 describe("refresh with an unavailable wiki", () => {
+  it("boots an empty data volume from the bundled RSS registry", async () => {
+    const ctx = await setup();
+    await unlink(ctx.paths.sourceRows);
+    ctx.paths.rssFeeds = resolve(ctx.paths.calendarRawDirectory, "../rss_feeds.json");
+    await writeFile(ctx.paths.rssFeeds, JSON.stringify({ items: [{
+      hackerspaceName: "BetaMachine",
+      country: "France",
+      website: "https://www.betamachine.fr",
+      feedUrl: "https://www.betamachine.fr/feed/",
+    }] }));
+
+    const result = await refreshDataset({ ...ctx, sourcePageUrl, writeSnapshots: true });
+
+    expect(result.sourceRowsPayload.urls).toEqual([expect.objectContaining({
+      hackerspaceName: "BetaMachine",
+      candidateFeedUrl: "https://www.betamachine.fr/feed/",
+      rowNumber: 1,
+    })]);
+    expect(result.normalizedPayload.feeds[0].items[0].title).toBe("Fresh post");
+    expect(JSON.parse(await readFile(ctx.paths.sourceRows, "utf8")).urls).toHaveLength(1);
+    expect(ctx.logger.mock.calls.some(([line]) => line.includes("bundled RSS registry"))).toBe(true);
+  });
   it.each(["HTTP error", "network error", "invalid HTML", "empty table"])("refreshes saved RSS and ICS URLs after %s", async failure => {
     const ctx = await setup();
     if (failure === "network error") ctx.fetchImpl.mockImplementationOnce(async () => { throw new Error("fetch failed"); });
@@ -90,5 +112,21 @@ describe("refresh with an unavailable wiki", () => {
     const result = await refreshDataset({ ...ctx, sourcePageUrl, refreshCalendarOnly: true, writeSnapshots: true });
     expect(result.calendarPayload.summary.parsedSources).toBe(1);
     expect(ctx.fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
+  it("retains discovered calendar sources from the data snapshot when wiki is unavailable", async () => {
+    const ctx = await setup();
+    const discovered = { url: "https://calendar.saved.example/events.ics", hs_name: "Saved Space", country: "Germany" };
+    await writeFile(ctx.paths.calendarSourcesSnapshot, JSON.stringify({ items: [discovered] }));
+    const originalFetch = ctx.fetchImpl;
+    ctx.fetchImpl = vi.fn(async url => url === discovered.url
+      ? createTextResponse({ url, contentType: "text/calendar", body: "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nEND:VCALENDAR\r\n" })
+      : originalFetch(url));
+
+    const result = await refreshDataset({ ...ctx, sourcePageUrl, writeSnapshots: true });
+
+    expect(result.calendarSourcesPayload.items).toEqual([...ctx.calendar.items, discovered]);
+    expect(result.calendarPayload.summary.parsedSources).toBe(2);
+    expect(await readFile(ctx.paths.calendarSources, "utf8")).toBe(JSON.stringify(ctx.calendar));
   });
 });

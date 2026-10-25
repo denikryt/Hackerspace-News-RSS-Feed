@@ -13,6 +13,7 @@ export async function runDiscoverCalendarSourcesCli({
   const result = await refreshCalendarSourcesCatalog({
     sourcePageUrl,
     calendarSourcesPath: paths.calendarSources,
+    calendarSourcesSnapshotPath: paths.calendarSourcesSnapshot,
     fetchImpl,
     readJsonImpl,
     writeJsonImpl,
@@ -21,7 +22,7 @@ export async function runDiscoverCalendarSourcesCli({
   });
 
   const nextPayload = result.payload;
-  logger(`Wrote ${paths.calendarSources}`);
+  logger(`Wrote ${paths.calendarSourcesSnapshot}`);
   logger(`Calendar source discovery completed: added=${result.addedCount} total=${nextPayload.items.length}`);
 
   return nextPayload;

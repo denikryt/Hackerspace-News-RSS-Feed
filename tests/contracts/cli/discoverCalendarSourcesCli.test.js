@@ -70,6 +70,7 @@ describe("runDiscoverCalendarSourcesCli", () => {
 
     const paths = {
       calendarSources: "/tmp/content/ics_events.json",
+      calendarSourcesSnapshot: "/tmp/data/calendar/sources.json",
     };
 
     const payload = await runDiscoverCalendarSourcesCli({
@@ -82,13 +83,8 @@ describe("runDiscoverCalendarSourcesCli", () => {
     });
 
     expect(readJsonImpl).toHaveBeenCalledWith(paths.calendarSources);
-    expect(writeJsonImpl).toHaveBeenCalledWith(paths.calendarSources, {
+    expect(writeJsonImpl).toHaveBeenCalledWith(paths.calendarSourcesSnapshot, {
       items: [
-        {
-          url: "https://calendar.existing.example/public/basic.ics",
-          country: "USA",
-          hs_name: "Existing Space",
-        },
         {
           url: "https://calendar.new.example/public/basic.ics",
           country: "Germany",
@@ -155,6 +151,7 @@ describe("runDiscoverCalendarSourcesCli", () => {
       logger,
       paths: {
         calendarSources: "/tmp/content/ics_events.json",
+        calendarSourcesSnapshot: "/tmp/data/calendar/sources.json",
       },
       sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
     });

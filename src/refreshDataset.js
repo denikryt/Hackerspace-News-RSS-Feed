@@ -6,7 +6,7 @@ import {
   readCuratedPublications,
   resolveCuratedPublications,
 } from "./curated.js";
-import { refreshCalendarSourcesCatalog } from "./calendarSourceCatalog.js";
+import { loadCalendarSources, refreshCalendarSourcesCatalog } from "./calendarSourceCatalog.js";
 import { enrichFeed } from "./feedEnricher.js";
 import { normalizeFeed } from "./feedNormalizer.js";
 import { parseFeedBody } from "./feedParser.js";
@@ -14,6 +14,7 @@ import { probeFeedUrl } from "./feedProbe.js";
 import { fetchPageHtml } from "./pageFetcher.js";
 import { extractSourceRows } from "./sourceTableExtractor.js";
 import { readJson, writeJson } from "./storage.js";
+import { loadRssSourceRows } from "./rssFeedRegistry.js";
 
 export async function refreshDataset({
   sourcePageUrl = SOURCE_PAGE_URL,
@@ -28,11 +29,15 @@ export async function refreshDataset({
 
   // During a wiki outage, skip discovery and keep the saved ICS catalog intact.
   const calendarSourcesPayload = source.html === null
-    ? await readJson(paths.calendarSources)
+    ? await loadCalendarSources({
+        calendarSourcesPath: paths.calendarSources,
+        calendarSourcesSnapshotPath: paths.calendarSourcesSnapshot,
+      })
     : (await refreshCalendarSourcesCatalog({
         sourcePageUrl,
         sourcePageHtml: source.html,
         calendarSourcesPath: paths.calendarSources,
+        calendarSourcesSnapshotPath: paths.calendarSourcesSnapshot,
         fetchImpl,
         writeSnapshots,
         logger,
@@ -301,9 +306,15 @@ async function loadRefreshSources({ sourcePageUrl, fetchImpl, paths, logger, ref
       return { html: null, rows: [] };
     }
     const saved = await readSavedSourceRegistry(paths.sourceRows, error);
-    logInfo(logger, `[refresh] using saved source registry: ${paths.sourceRows} (${saved.urls.length} rows); wiki discovery skipped`);
-    // Preserve the last successful discovery date instead of dating cached rows as new.
-    return { html: null, rows: saved.urls, extractedAt: saved.extractedAt };
+    if (saved) {
+      logInfo(logger, `[refresh] using saved source registry: ${paths.sourceRows} (${saved.urls.length} rows); wiki discovery skipped`);
+      // Preserve the last successful discovery date instead of dating cached rows as new.
+      return { html: null, rows: saved.urls, extractedAt: saved.extractedAt };
+    }
+
+    const bundledRows = await readBundledSourceRegistry(paths, error);
+    logInfo(logger, `[refresh] using bundled RSS registry: ${paths.rssFeeds} (${bundledRows.length} rows); wiki discovery skipped`);
+    return { html: null, rows: bundledRows };
   }
 }
 
@@ -317,6 +328,22 @@ async function readSavedSourceRegistry(path, wikiError) {
     }
     return saved;
   } catch (error) {
+    if (error?.code === "ENOENT") return null;
     throw new Error(`Wiki source page unavailable (${wikiError.message}); cannot use saved source registry ${path}: ${error.message}`, { cause: wikiError });
   }
+}
+
+// A fresh Docker data volume has no wiki snapshot. Number the bundled rows
+// deterministically so feed IDs and the next saved registry stay stable.
+async function readBundledSourceRegistry(paths, wikiError) {
+  let rows;
+  try {
+    rows = await loadRssSourceRows({ includeDiscoveryValid: true, paths });
+  } catch (registryError) {
+    throw new Error(`Wiki source page unavailable (${wikiError.message}); cannot use saved source registry ${paths.sourceRows} or bundled RSS registry ${paths.rssFeeds}: ${registryError.message}`, { cause: wikiError });
+  }
+  if (rows.length === 0) {
+    throw new Error(`Wiki source page unavailable (${wikiError.message}); saved source registry is missing and bundled RSS registry is empty`, { cause: wikiError });
+  }
+  return rows.map((row, index) => ({ ...row, rowNumber: index + 1 }));
 }
