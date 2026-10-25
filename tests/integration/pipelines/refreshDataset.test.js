@@ -46,6 +46,7 @@ describe("refreshDataset", () => {
       normalizedFeeds: resolve(outputDir, "data/feeds_normalized.json"),
       curatedNormalized: resolve(outputDir, "data/curated_publications_normalized.json"),
       calendarSources: resolve(outputDir, "content/ics_events.json"),
+      calendarSourcesSnapshot: resolve(outputDir, "data/calendar/sources.json"),
       calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
       calendarEvents: resolve(outputDir, "data/calendar/events.json"),
       calendarIndex: resolve(outputDir, "data/calendar/index.json"),
@@ -106,7 +107,7 @@ describe("refreshDataset", () => {
       readFile(paths.validations, "utf8"),
       readFile(paths.normalizedFeeds, "utf8"),
       readFile(paths.curatedNormalized, "utf8"),
-      readFile(paths.calendarSources, "utf8"),
+      readFile(paths.calendarSourcesSnapshot, "utf8"),
       readFile(paths.calendarEvents, "utf8"),
       readFile(paths.calendarIndex, "utf8"),
     ]);
@@ -138,6 +139,7 @@ expect(JSON.parse(curatedJson)).toEqual({
       },
     });
     expect(JSON.parse(calendarSourcesJson)).toEqual({ items: [] });
+    await expect(readFile(paths.calendarSources, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
     expect(JSON.parse(calendarEventsJson)).toMatchObject({
       items: [],
       events: [],
@@ -159,6 +161,7 @@ expect(JSON.parse(curatedJson)).toEqual({
     const outputDir = await createTrackedTempDir("hnf-refresh-logs-", tempDirs);
     const paths = {
       calendarSources: resolve(outputDir, "content/ics_events.json"),
+      calendarSourcesSnapshot: resolve(outputDir, "data/calendar/sources.json"),
       calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
       calendarEvents: resolve(outputDir, "data/calendar/events.json"),
       calendarIndex: resolve(outputDir, "data/calendar/index.json"),
@@ -230,6 +233,7 @@ expect(JSON.parse(curatedJson)).toEqual({
       curatedNormalized: resolve(outputDir, "data/curated_publications_normalized.json"),
       curatedPublications: resolve(outputDir, "content/curated_publications.json"),
       calendarSources: resolve(outputDir, "content/ics_events.json"),
+      calendarSourcesSnapshot: resolve(outputDir, "data/calendar/sources.json"),
       calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
       calendarEvents: resolve(outputDir, "data/calendar/events.json"),
       calendarIndex: resolve(outputDir, "data/calendar/index.json"),
@@ -388,6 +392,7 @@ expect(JSON.parse(curatedJson)).toEqual({
     await isolatedRefreshDataset({
       paths: {
         calendarSources: resolve(outputDir, "content/ics_events.json"),
+        calendarSourcesSnapshot: resolve(outputDir, "data/calendar/sources.json"),
         calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
         calendarEvents: resolve(outputDir, "data/calendar/events.json"),
         calendarIndex: resolve(outputDir, "data/calendar/index.json"),
@@ -448,6 +453,7 @@ expect(JSON.parse(curatedJson)).toEqual({
         normalizedFeeds: resolve(outputDir, "data/feeds_normalized.json"),
         curatedPublications: resolve(outputDir, "content/missing-curated.json"),
         calendarSources: resolve(outputDir, "content/ics_events.json"),
+        calendarSourcesSnapshot: resolve(outputDir, "data/calendar/sources.json"),
         calendarRawDirectory: resolve(outputDir, "data/calendar/raw"),
         calendarEvents: resolve(outputDir, "data/calendar/events.json"),
         calendarIndex: resolve(outputDir, "data/calendar/index.json"),

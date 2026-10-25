@@ -14,6 +14,8 @@ services:
       SITE_BUILD_MODE: build
       SITE_BUILD_ARGS: ""
     volumes:
+      # Keep refresh snapshots across one-shot builder containers and image rebuilds.
+      - site-data:/app/data
       - site-html:/published-site
     command:
       - /bin/sh
@@ -74,4 +76,5 @@ services:
     restart: unless-stopped
 
 volumes:
+  site-data:
   site-html:

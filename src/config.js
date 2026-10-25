@@ -18,6 +18,8 @@ export const PATHS = {
   normalizedFeeds: resolve(DATA_DIR, "feeds_normalized.json"),
   curatedNormalized: resolve(DATA_DIR, "curated_publications_normalized.json"),
   calendarSources: resolve(CONTENT_DIR, "ics_events.json"),
+  // Discovery merges with the manual catalog but persists only in Docker data.
+  calendarSourcesSnapshot: resolve(DATA_DIR, "calendar/sources.json"),
   calendarRawDirectory: resolve(DATA_DIR, "calendar/raw"),
   calendarEvents: resolve(DATA_DIR, "calendar/events.json"),
   calendarIndex: resolve(DATA_DIR, "calendar/index.json"),

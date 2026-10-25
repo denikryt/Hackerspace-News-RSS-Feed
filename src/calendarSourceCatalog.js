@@ -11,12 +11,13 @@ import {
 } from "./spaceApiCalendarSources.js";
 
 // Calendar refresh treats the SpaceAPI section as a source-discovery stage.
-// It updates the hand-edited ICS catalog first, then the ICS fetch stage reads
-// from that catalog as the single source of truth for calendar URLs.
+// Merge the hand-edited catalog with saved discoveries. Persist discoveries in
+// data so a new image does not erase them or edit the manual catalog.
 export async function refreshCalendarSourcesCatalog({
   sourcePageUrl,
   sourcePageHtml,
   calendarSourcesPath,
+  calendarSourcesSnapshotPath,
   fetchImpl = fetch,
   readJsonImpl = readJson,
   writeJsonImpl = writeJson,
@@ -27,12 +28,20 @@ export async function refreshCalendarSourcesCatalog({
   retryDelaysMs,
   attemptTimeoutsMs,
 } = {}) {
+  if (writeSnapshots && !calendarSourcesSnapshotPath) {
+    throw new Error("Calendar source snapshot path is required");
+  }
+
   const html = typeof sourcePageHtml === "string"
     ? sourcePageHtml
     : await fetchPageHtml({ sourcePageUrl, fetchImpl, logger });
 
   const sourceRows = readSpaceApiSourceRows({ html, sourcePageUrl, allowMissingSection, logger });
-  const existingPayload = await readExistingCalendarSources({ calendarSourcesPath, readJsonImpl });
+  const { manualItems, items: existingItems } = await readCalendarSourceLayers({
+    calendarSourcesPath,
+    calendarSourcesSnapshotPath,
+    readJsonImpl,
+  });
   const discoveredItems = await discoverCalendarSourceItems({
     sourceRows,
     fetchImpl,
@@ -41,11 +50,14 @@ export async function refreshCalendarSourcesCatalog({
     retryDelaysMs,
     attemptTimeoutsMs,
   });
-  const mergedPayload = mergeDiscoveredCalendarSources(existingPayload.items, discoveredItems);
+  const mergedPayload = mergeDiscoveredCalendarSources(existingItems, discoveredItems);
   const nextPayload = { items: mergedPayload.items };
 
-  if (writeSnapshots && calendarSourcesPath) {
-    await writeJsonImpl(calendarSourcesPath, nextPayload);
+  if (writeSnapshots) {
+    // Store only discoveries so deleting a manual entry does not resurrect it.
+    const manualUrls = new Set(manualItems.map(item => item?.url?.trim()).filter(Boolean));
+    const savedDiscoveries = nextPayload.items.filter(item => !manualUrls.has(item.url?.trim()));
+    await writeJsonImpl(calendarSourcesSnapshotPath, { items: savedDiscoveries });
   }
 
   logInfo(
@@ -77,15 +89,27 @@ function readSpaceApiSourceRows({ html, sourcePageUrl, allowMissingSection, logg
   }
 }
 
-async function readExistingCalendarSources({ calendarSourcesPath, readJsonImpl }) {
+// Manual entries take precedence while saved discoveries survive new images.
+export async function loadCalendarSources({ calendarSourcesPath, calendarSourcesSnapshotPath, readJsonImpl = readJson }) {
+  const { items } = await readCalendarSourceLayers({ calendarSourcesPath, calendarSourcesSnapshotPath, readJsonImpl });
+  return { items };
+}
+
+async function readCalendarSourceLayers({ calendarSourcesPath, calendarSourcesSnapshotPath, readJsonImpl }) {
+  const manualItems = await readCalendarSourceItems(calendarSourcesPath, readJsonImpl);
+  const savedItems = await readCalendarSourceItems(calendarSourcesSnapshotPath, readJsonImpl);
+  return { manualItems, items: mergeDiscoveredCalendarSources(manualItems, savedItems).items };
+}
+
+// A missing volume snapshot is normal on the first build; malformed JSON is not.
+async function readCalendarSourceItems(path, readJsonImpl) {
+  if (!path) return [];
   try {
-    const payload = await readJsonImpl(calendarSourcesPath);
-    return {
-      items: Array.isArray(payload?.items) ? payload.items : [],
-    };
+    const payload = await readJsonImpl(path);
+    return Array.isArray(payload?.items) ? payload.items : [];
   } catch (error) {
     if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
-      return { items: [] };
+      return [];
     }
     throw error;
   }

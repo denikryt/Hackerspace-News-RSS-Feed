@@ -1,5 +1,7 @@
 .git
 node_modules
+# Runtime snapshots live in the site-data volume, never in the image layer.
+data
 dist
 logs
 tmp

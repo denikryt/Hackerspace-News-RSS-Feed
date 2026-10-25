@@ -3,6 +3,33 @@ import { describe, expect, it, vi } from "vitest";
 import { refreshCalendarSourcesCatalog } from "../../src/calendarSourceCatalog.js";
 
 describe("calendarSourceCatalog", () => {
+  it("combines manual and saved sources and writes the result only to the data snapshot", async () => {
+    const manualPath = "/tmp/content/ics_events.json";
+    const snapshotPath = "/tmp/data/calendar/sources.json";
+    const manual = { items: [{ url: "https://hsbxl.be/events/index.ics", hs_name: "Hackerspace Brussels", country: "Belgium" }] };
+    const saved = { items: [
+      { url: manual.items[0].url, hs_name: "Stale saved name", country: "Old country" },
+      { url: "https://calendar.saved.example/events.ics", hs_name: "Saved Space", country: "Germany" },
+    ] };
+    const readJsonImpl = vi.fn(async path => path === manualPath ? manual : saved);
+    const writeJsonImpl = vi.fn();
+
+    const result = await refreshCalendarSourcesCatalog({
+      sourcePageUrl: "https://wiki.hackerspaces.org/User%3AJomat#Spaces_with_RSS_feeds",
+      sourcePageHtml: "<html></html>",
+      calendarSourcesPath: manualPath,
+      calendarSourcesSnapshotPath: snapshotPath,
+      readJsonImpl,
+      writeJsonImpl,
+      writeSnapshots: true,
+      allowMissingSection: true,
+    });
+
+    expect(result.payload.items).toEqual([...manual.items, saved.items[1]]);
+    expect(writeJsonImpl).toHaveBeenCalledOnce();
+    expect(writeJsonImpl).toHaveBeenCalledWith(snapshotPath, { items: [saved.items[1]] });
+    expect(writeJsonImpl).not.toHaveBeenCalledWith(manualPath, expect.anything());
+  });
   it("probes SpaceAPI endpoints with concurrency capped at 4", async () => {
     let activeRequests = 0;
     let maxActiveRequests = 0;

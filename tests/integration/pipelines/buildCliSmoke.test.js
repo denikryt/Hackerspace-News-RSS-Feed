@@ -50,9 +50,16 @@ it("runs standalone refresh/render and isolated-process build with discovery, pr
     expect(fallbackOutput).toContain("using saved source registry");
     snapshot = JSON.parse(await readFile(resolve(root, "data/feeds_normalized.json"), "utf8"));
     expect(snapshot.feeds).toHaveLength(beforeCount + 1);
-    const sentinel = await readFile(resolve(root, "dist/index.html"), "utf8");
     await unlink(resolve(root, "data/source_urls.json"));
+    const coldFallbackOutput = run("build", [], { SMOKE_FAIL_WIKI: "1" });
+    expect(coldFallbackOutput).toContain("using bundled RSS registry");
+    expect(JSON.parse(await readFile(resolve(root, "data/source_urls.json"), "utf8")).urls).toHaveLength(1);
+    const published = await readFile(resolve(root, "dist/index.html"), "utf8");
+    expect(published).toContain("Discovery");
+
+    await unlink(resolve(root, "data/source_urls.json"));
+    await unlink(resolve(root, "content/rss_feeds.json"));
     expect(() => run("build", [], { SMOKE_FAIL_WIKI: "1" })).toThrow();
-    expect(await readFile(resolve(root, "dist/index.html"), "utf8")).toBe(sentinel);
+    expect(await readFile(resolve(root, "dist/index.html"), "utf8")).toBe(published);
     console.log(JSON.stringify({ fixtureCliStages: stages }));
 }, 60000);

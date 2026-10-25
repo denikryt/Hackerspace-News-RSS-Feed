@@ -43,8 +43,8 @@ export async function runRefreshCli({
     logger(`Wrote ${paths.normalizedFeeds}`);
     logger(`Wrote ${paths.curatedNormalized}`);
   }
-  if (paths.calendarSources) {
-    logger(`Wrote ${paths.calendarSources}`);
+  if (paths.calendarSourcesSnapshot) {
+    logger(`Wrote ${paths.calendarSourcesSnapshot}`);
   }
   if (paths.calendarEvents) {
     logger(`Wrote ${paths.calendarEvents}`);
